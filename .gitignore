@@ -31,8 +31,17 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
 
 # typescript
 *.tsbuildinfo
 
 app-example
+
+# prebuild
+/android
+/ios
+
+# credentials
+my-upload-key.keystore
+credentials.json

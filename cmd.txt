@@ -1,0 +1,24 @@
+- package check
+  npx @rnx-kit/align-deps --requirements react-native@[major.minor]
+
+- git crlf
+  git config --global core.autocrlf true
+
+- tags
+  git push -d origin v1.0.18
+
+- remove derived data
+  rm -rf ~/Library/Developer/Xcode/DerivedData
+
+- build (android emulator + device)
+  eas build --profile development --platform android
+
+- build (ios simulator)
+  eas build --profile development-simulator --platform ios
+
+- build (ios device) (developer mode setting needed)
+  eas device:create
+  eas build --profile development --platform ios
+
+- build (distribution)
+  eas build --platform all

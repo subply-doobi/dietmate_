@@ -1,74 +1,272 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+// RN
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ScrollView, TouchableOpacity } from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+// 3rd
+import { useIsFocused } from "@react-navigation/native";
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+// doobi
+import { useGetBaseLine } from "@/shared/api/queries/baseLine";
+import {
+  useDeleteDietAll,
+  useListDietTotalObj,
+} from "@/shared/api/queries/diet";
+import { useListOrder } from "@/shared/api/queries/order";
+import { loadBaseLineData } from "@/features/reduxSlices/userInputSlice";
+import colors from "@/shared/colors";
+import { regroupByBuyDateAndDietNo } from "@/shared/utils/dataTransform";
+import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
+import { useListProduct } from "@/shared/api/queries/product";
+import { updateNotShowAgainList } from "@/shared/utils/asyncStorage";
+import { flatOrderMenuWithQty } from "@/shared/utils/screens/checklist/menuFlat";
+import { SCREENWIDTH } from "@/shared/constants";
+import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
+import { queryClient } from "@/shared/store/reactQueryStore";
+import { PRODUCTS } from "@/shared/api/keys";
+import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
+
+import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
+import CtaButton from "@/shared/ui/CtaButton";
+import {
+  setCurrentDiet,
+  setTotalFoodList,
+  setTutorialEnd,
+  setTutorialProgress,
+} from "@/features/reduxSlices/commonSlice";
+
+import CurrentDietCard from "@/components/screens/home/CurrentDietCard";
+import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
+import LastOrderCard from "@/components/screens/home/LastOrderCard";
+import Profile from "@/components/screens/home/Profile";
+import DTPScreen from "@/shared/ui/DTPScreen";
+import DTooltip from "@/shared/ui/DTooltip";
+import DSmallBtn from "@/shared/ui/DSmallBtn";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useRouter } from "expo-router";
+
+const NewHome = () => {
+  // navigation
+  // const { navigate } = useNavigation();
+  const router = useRouter();
+  const isFocused = useIsFocused();
+
+  // redux
+  const dispatch = useAppDispatch();
+  const {
+    currentDietNo,
+    totalFoodListIsLoaded,
+    isTutorialMode,
+    tutorialProgress,
+  } = useAppSelector((state) => state.common);
+
+  const tutorialTPS = useAppSelector((state) => state.modal.modal.tutorialTPS);
+
+  // useRef (튜토리얼 식단 구성하기 버튼 위치)
+  const scrollRef = useRef<ScrollView | null>(null);
+  const ctaBtnRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
+
+  // react-query
+  const { data: baseLineData } = useGetBaseLine();
+  const { data: dTOData } = useListDietTotalObj();
+  const deleteDietAllMutation = useDeleteDietAll();
+  const { refetch: refetchLPData } = useListProduct(
+    {
+      dietNo: currentDietNo,
+      appliedSortFilter: initialSortFilterState.applied,
+    },
+    {
+      enabled: false,
+    }
   );
-}
+  const { data: orderData } = useListOrder();
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+  // useMemo
+  // orderData regroup.
+  const { orderGroupedDataFlatten, isOrderEmpty } = useMemo(() => {
+    if (!orderData) return { orderGroupedDataFlatten: [], isOrderEmpty: true };
+    const orderGroupedData = regroupByBuyDateAndDietNo(orderData);
+    let orderGroupedDataFlatten = [];
+    for (let i = 0; i < orderGroupedData.length; i++) {
+      const flattenData = flatOrderMenuWithQty(orderGroupedData[i]);
+      orderGroupedDataFlatten.push(flattenData);
+    }
+    const isOrderEmpty = orderGroupedDataFlatten.length === 0;
+    return { orderGroupedDataFlatten, isOrderEmpty };
+  }, [orderData]);
+
+  // useState
+  const [tutorialCtaBtnPy, setTutorialCtaBtnPy] = useState(0);
+
+  // useMemo
+  const { menuNum, productNum, priceTotal, totalShippingPrice } =
+    useMemo(() => {
+      // 총 끼니 수, 상품 수, 금액 계산
+      const { menuNum, productNum, priceTotal, totalShippingPrice } =
+        sumUpDietFromDTOData(dTOData);
+      return {
+        menuNum,
+        productNum,
+        priceTotal,
+        totalShippingPrice,
+      };
+    }, [dTOData]);
+
+  // useEffect
+  useEffect(() => {
+    baseLineData && dispatch(loadBaseLineData(baseLineData));
+  }, [baseLineData]);
+
+  // 앱 시작할 때 내가 어떤 끼니를 보고 있는지 redux에 저장해놓기 위해 필요함
+  useEffect(() => {
+    if (currentDietNo !== "") return;
+    const initializeDiet = async () => {
+      const firstDietNo = dTOData ? Object.keys(dTOData)[0] : "";
+      dispatch(setCurrentDiet(firstDietNo));
+    };
+
+    initializeDiet();
+  }, [dTOData]);
+
+  // 처음 앱 켰을 때 전체 식품리스트를 redux에 저장해놓고 끼니 자동구성에 사용
+  useEffect(() => {
+    const loadTotalFoodList = async () => {
+      if (!currentDietNo) return;
+      if (totalFoodListIsLoaded) return;
+      const lPData = (await refetchLPData()).data;
+      if (!lPData) return;
+      dispatch(setTotalFoodList(lPData));
+      queryClient.removeQueries({ queryKey: [PRODUCTS, currentDietNo] });
+    };
+
+    loadTotalFoodList();
+  }, [currentDietNo]);
+
+  // useEffect
+  // 튜토리얼 시작
+  // + 스크롤 맨 위로 올리고 튜토리얼 시작 버튼 위치 저장
+  useEffect(() => {
+    if (!isFocused) return;
+    if (!dTOData) return;
+    if (!isTutorialMode || tutorialProgress !== "Start") {
+      tutorialTPS.isOpen && dispatch(closeModal({ name: "tutorialTPS" }));
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      ctaBtnRef?.current?.measure((fx, fy, width, height, px, py) => {
+        scrollRef?.current?.scrollTo({ y: 0, animated: true });
+        setTutorialCtaBtnPy(py);
+      });
+    }, 300);
+
+    // 끼니 있는 경우는 모두 삭제
+    const deleteAllMenuAndStartTutorial = async () => {
+      await deleteDietAllMutation.mutateAsync();
+    };
+
+    dispatch(openModal({ name: "tutorialTPS", modalId: "NewHome" }));
+    if (Object.keys(dTOData).length !== 0) deleteAllMenuAndStartTutorial();
+    return () => clearTimeout(timeoutId);
+  }, [tutorialProgress, dTOData, menuNum]);
+
+  const isDietEmpty =
+    menuNum === 0 ||
+    (dTOData &&
+      Object.keys(dTOData).every(
+        (dietNo) => dTOData[dietNo].dietDetail.length === 0
+      )) ||
+    false;
+  const ctaBtnText = isDietEmpty ? "식단 구성하기" : "식단 구매하기";
+
+  return (
+    <Container
+      style={{
+        backgroundColor: colors.backgroundLight2,
+        // backgroundColor: colors.backgroundLight2,
+        paddingLeft: 0,
+        paddingRight: 0,
+      }}
+    >
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={{ paddingBottom: 64 }}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        {/* 상단 프로필 */}
+        <Profile />
+
+        <HorizontalSpace height={40} />
+
+        {/* 현재 식단 카드 (식단 있으면 구매, 없으면 식단구성버튼)*/}
+        <CurrentDietCard
+          ref={ctaBtnRef}
+          isDietEmpty={isDietEmpty}
+          ctaBtnText={ctaBtnText}
+          menuNum={menuNum}
+          priceTotal={priceTotal}
+          totalShippingPrice={totalShippingPrice}
+        />
+
+        {/* 주문끼니 체크리스트*/}
+        <OrderChecklistCard
+          isOrderEmpty={isOrderEmpty}
+          orderGroupedDataFlatten={orderGroupedDataFlatten}
+        />
+
+        {/* 마지막 주문정보 카드*/}
+        <LastOrderCard
+          isOrderEmpty={isOrderEmpty}
+          orderGroupedDataFlatten={orderGroupedDataFlatten}
+        />
+
+        <HorizontalSpace height={40} />
+
+        {/* 튜토리얼 */}
+        <DTPScreen
+          contentDelay={500}
+          visible={tutorialTPS.isOpen && tutorialTPS.modalId === "NewHome"}
+          renderContent={() => (
+            <>
+              <DSmallBtn
+                btnText="튜토리얼 건너뛰기"
+                style={{
+                  position: "absolute",
+                  bottom: 40,
+                  right: 16,
+                  backgroundColor: colors.blackOpacity70,
+                }}
+                onPress={() => {
+                  dispatch(setTutorialEnd());
+                  updateNotShowAgainList({ key: "tutorial", value: true });
+                }}
+              />
+              <DTooltip
+                tooltipShow={true}
+                boxTop={tutorialCtaBtnPy - 36}
+                text="식단구성을 시작해봐요!"
+                boxLeft={32}
+              />
+              <CtaButton
+                onPress={() => {
+                  dispatch(setTutorialProgress("AddMenu"));
+                  dispatch(closeModal({ name: "tutorialTPS" }));
+                  // navigate("BottomTabNav", { screen: "Diet" });
+                  router.push("/(tabs)/Diet");
+                }}
+                btnStyle="active"
+                btnText={ctaBtnText}
+                style={{
+                  width: SCREENWIDTH - 32 - 32,
+                  marginTop: tutorialCtaBtnPy,
+                }}
+              />
+            </>
+          )}
+        />
+      </ScrollView>
+    </Container>
+  );
+};
+
+export default NewHome;

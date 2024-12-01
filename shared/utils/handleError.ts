@@ -56,7 +56,7 @@ type ICodeToErrorAction = {
 const errorActionByCode: ICodeToErrorAction = {
   999: () => {
     // 네트워크 연결은 있는데 우리 서버 문제 있는 경우
-    router.dismissAll();
+    router.canDismiss() && router.dismissAll();
     router.replace({
       pathname: "/ErrorPage",
       params: { errorCode: "999", msg: getMsgByCode(999) },
@@ -72,7 +72,7 @@ const runErrorActionByCode = (code: IErrorCode | undefined | null) => {
 
   // 네트워크 연결 없음
   if (code === null) {
-    router.dismissAll();
+    router.canDismiss() && router.dismissAll();
     router.replace({
       pathname: "/ErrorPage",
       params: { errorCode: String(code), msg: getMsgByCode(code) },
@@ -117,8 +117,8 @@ const ErrAlertActionByCode: ICodeToErrorAction = {
     // 튜토리얼모드초기화 + 로그인화면이동 + queryCache clean
     store.getState().common.isTutorialMode &&
       store.dispatch(setTutorialStart());
-    router.dismissAll();
-    router.replace({ pathname: "/Login" });
+    router.canDismiss() && router.dismissAll();
+    router.replace({ pathname: "/" });
     queryClient.clear();
   },
 };

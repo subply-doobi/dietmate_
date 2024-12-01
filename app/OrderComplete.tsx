@@ -15,11 +15,11 @@ const OrderComplete = () => {
   const router = useRouter();
 
   const goToOrderHistory = () => {
-    router.dismissAll();
+    router.canDismiss() && router.dismissAll();
     router.push({ pathname: "/OrderHistory" });
   };
   const goToHome = () => {
-    router.dismissAll();
+    router.canDismiss() && router.dismissAll();
     router.replace({ pathname: "/(tabs)" });
   };
   return (

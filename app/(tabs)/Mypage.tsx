@@ -95,6 +95,7 @@ const Mypage = () => {
       style={{
         paddingLeft: 0,
         paddingRight: 0,
+        backgroundColor: colors.white,
       }}
     >
       {/* 메뉴 */}

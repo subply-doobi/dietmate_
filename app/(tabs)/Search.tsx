@@ -28,6 +28,7 @@ import { IProductData } from "@/shared/api/types/product";
 import { tutorialSortFilter } from "@/shared/constants";
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Search = () => {
   // navigation
@@ -99,9 +100,9 @@ const Search = () => {
       </Container>
     );
   }
-
+  const insetTop = useSafeAreaInsets().top;
   return (
-    <Container>
+    <Container style={{ marginTop: insetTop }}>
       {/* 끼니선택, progressBar section */}
       <MenuSection />
 

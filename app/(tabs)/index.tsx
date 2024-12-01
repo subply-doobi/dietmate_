@@ -43,6 +43,7 @@ import DTooltip from "@/shared/ui/DTooltip";
 import DSmallBtn from "@/shared/ui/DSmallBtn";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const NewHome = () => {
   // navigation
@@ -151,7 +152,6 @@ const NewHome = () => {
       tutorialTPS.isOpen && dispatch(closeModal({ name: "tutorialTPS" }));
       return;
     }
-
     const timeoutId = setTimeout(() => {
       ctaBtnRef?.current?.measure((fx, fy, width, height, px, py) => {
         scrollRef?.current?.scrollTo({ y: 0, animated: true });
@@ -163,11 +163,10 @@ const NewHome = () => {
     const deleteAllMenuAndStartTutorial = async () => {
       await deleteDietAllMutation.mutateAsync();
     };
-
     dispatch(openModal({ name: "tutorialTPS", modalId: "NewHome" }));
     if (Object.keys(dTOData).length !== 0) deleteAllMenuAndStartTutorial();
     return () => clearTimeout(timeoutId);
-  }, [tutorialProgress, dTOData, menuNum]);
+  }, [tutorialProgress, dTOData, menuNum, isFocused]);
 
   const isDietEmpty =
     menuNum === 0 ||
@@ -178,9 +177,12 @@ const NewHome = () => {
     false;
   const ctaBtnText = isDietEmpty ? "식단 구성하기" : "식단 구매하기";
 
+  const insetTop = useSafeAreaInsets().top;
+
   return (
     <Container
       style={{
+        paddingTop: insetTop,
         backgroundColor: colors.backgroundLight2,
         // backgroundColor: colors.backgroundLight2,
         paddingLeft: 0,

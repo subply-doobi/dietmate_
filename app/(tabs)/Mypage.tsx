@@ -86,7 +86,7 @@ const Mypage = () => {
     dispatch(closeModal({ name: "tutorialRestartAlert" }));
     dispatch(setTutorialStart());
     await updateNotShowAgainList({ key: "tutorial", value: false });
-    router.dismissAll();
+    router.canDismiss() && router.dismissAll();
     router.replace({ pathname: "/(tabs)" });
   };
 

@@ -67,7 +67,7 @@ const UserInput = () => {
       ? await createBaseLineMutation.mutateAsync(requestBody)
       : await updateBaseLineMutation.mutateAsync(requestBody);
 
-    router.dismissAll();
+    router.canDismiss() && router.dismissAll();
     router.replace({ pathname: "/(tabs)" });
     setProgress(["Start"]);
   };

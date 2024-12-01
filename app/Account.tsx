@@ -47,8 +47,8 @@ const Account = () => {
   const onLogout = async () => {
     try {
       await removeToken();
-      router.dismissAll();
-      router.replace({ pathname: "/Login" });
+      router.canDismiss() && router.dismissAll();
+      router.replace({ pathname: "/" });
     } catch (e) {
       console.log(e);
     }

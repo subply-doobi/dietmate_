@@ -49,7 +49,7 @@ export default function RootLayout() {
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
-          <SafeAreaView style={{ flex: 1, paddingTop: insetTop }}>
+          <SafeAreaView style={{ flex: 1 }}>
             <AppLoading />
             <Stack
               screenOptions={{

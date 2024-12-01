@@ -6,6 +6,7 @@ import {
   TERMS_OF_USE_URL,
 } from "@/shared/constants";
 import ListBtns from "@/shared/ui/ListBtns";
+import colors from "@/shared/colors";
 
 const Notice = () => {
   // etc
@@ -29,7 +30,7 @@ const Notice = () => {
   ];
 
   return (
-    <Container>
+    <Container style={{ backgroundColor: colors.white }}>
       <ListBtns btns={noticeBtns} />
     </Container>
   );

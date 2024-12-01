@@ -64,7 +64,7 @@ const Payment = () => {
 
   // handle paymentResult
   const onPaymentSuccess = async () => {
-    router.dismissAll();
+    router.canDismiss() && router.dismissAll();
     router.replace({ pathname: "/OrderComplete" });
     dispatch(setCurrentDiet(""));
     await updateDietMutation.mutateAsync({

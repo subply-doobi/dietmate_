@@ -14,7 +14,7 @@ const loginMutation = async (type: ILoginType) => {
   // kakaoLogin
   if (type === "kakao") {
     const kakaoToken = await login();
-    console.log("login.ts: LoginMutation: kakaoToken: ", kakaoToken);
+    // console.log("login.ts: LoginMutation: kakaoToken: ", kakaoToken);
     const kakaoAccessToken = kakaoToken?.accessToken;
     const res = await getDoobiToken(kakaoAccessToken);
     accessToken = res?.accessToken || undefined;

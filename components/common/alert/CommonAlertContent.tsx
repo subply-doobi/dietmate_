@@ -1,6 +1,6 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 
-import {Col, TextMain} from '../../../shared/ui/styledComps';
+import { Col, TextMain } from "../../../shared/ui/styledComps";
 
 const CommonAlertContent = ({
   text,
@@ -11,10 +11,12 @@ const CommonAlertContent = ({
 }) => {
   return (
     <Container>
-      <Col style={{marginTop: 28, alignItems: 'center'}}>
+      <Col style={{ marginTop: 28, alignItems: "center" }}>
         <AlertText>{text}</AlertText>
         {subText && (
-          <AlertText style={{fontSize: 12, marginTop: 16}}>{subText}</AlertText>
+          <AlertText style={{ fontSize: 12, marginTop: 16 }}>
+            {subText}
+          </AlertText>
         )}
       </Col>
     </Container>
@@ -29,5 +31,6 @@ const Container = styled.View`
 
 const AlertText = styled(TextMain)`
   font-size: 16px;
+  line-height: 20px;
   text-align: center;
 `;

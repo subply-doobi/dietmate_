@@ -1,66 +1,66 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 
-import colors from '../colors';
-import {SCREENWIDTH} from '../constants';
-import {ViewProps} from 'react-native';
+import colors from "../colors";
+import { SCREENWIDTH } from "../constants";
+import { ViewProps } from "react-native";
 
 export const NotoSansLight = styled.Text`
-  font-family: 'NotoSansKRLight';
+  font-family: "NotoSansKRLight";
   color: ${colors.textMain};
   include-font-padding: false;
 `;
 export const NotoSansRegular = styled.Text`
-  font-family: 'NotoSansKR';
+  font-family: "NotoSansKR";
   color: ${colors.textMain};
   include-font-padding: false;
 `;
 export const NotoSansMedium = styled.Text`
-  font-family: 'NotoSansKRMedium';
+  font-family: "NotoSansKRMedium";
   color: ${colors.textMain};
   include-font-padding: false;
 `;
 export const NotoSansBold = styled.Text`
-  font-family: 'NotoSansKRBold';
+  font-family: "NotoSansKRBold";
   color: ${colors.textMain};
   include-font-padding: false;
 `;
 export const NotoSansBlack = styled.Text`
-  font-family: 'NotoSansKRBlack';
+  font-family: "NotoSansKRBlack";
   color: ${colors.textMain};
   include-font-padding: false;
 `;
 export const NotoSansThin = styled.Text`
-  font-family: 'NotoSansKRThin';
+  font-family: "NotoSansKRThin";
   color: ${colors.textMain};
   include-font-padding: false;
 `;
 export const NotoSansLight_Sub = styled.Text`
-  font-family: 'NotoSansKRLight';
+  font-family: "NotoSansKRLight";
   color: ${colors.textSub};
   include-font-padding: false;
 `;
 export const NotoSansRegular_Sub = styled.Text`
-  font-family: 'NotoSansKR';
+  font-family: "NotoSansKR";
   color: ${colors.textSub};
   include-font-padding: false;
 `;
 export const NotoSansMedium_Sub = styled.Text`
-  font-family: 'NotoSansKRMedium';
+  font-family: "NotoSansKRMedium";
   color: ${colors.textSub};
   include-font-padding: false;
 `;
 export const NotoSansBold_Sub = styled.Text`
-  font-family: 'NotoSansKRBold';
+  font-family: "NotoSansKRBold";
   color: ${colors.textSub};
   include-font-padding: false;
 `;
 export const NotoSansBlack_Sub = styled.Text`
-  font-family: 'NotoSansKRBlack';
+  font-family: "NotoSansKRBlack";
   color: ${colors.textSub};
   include-font-padding: false;
 `;
 export const NotoSansThin_Sub = styled.Text`
-  font-family: 'NotoSansKRThin';
+  font-family: "NotoSansKRThin";
   color: ${colors.textSub};
   include-font-padding: false;
 `;
@@ -82,12 +82,8 @@ const PaddingView = styled.View`
   flex: 1;
   padding: 0px 16px 0px 16px;
 `;
-export const Container = ({children, ...props}: ViewProps) => {
-  return (
-    <SafeView>
-      <PaddingView {...props}>{children}</PaddingView>
-    </SafeView>
-  );
+export const Container = ({ children, ...props }: ViewProps) => {
+  return <PaddingView {...props}>{children}</PaddingView>;
 };
 
 export const AlertContentContainer = styled.View`
@@ -99,7 +95,7 @@ interface IInputHeaderText {
 }
 export const InputHeaderText = styled(TextMain)<IInputHeaderText>`
   font-size: 14px;
-  color: ${({isActive}) => (isActive ? colors.textMain : colors.white)};
+  color: ${({ isActive }) => (isActive ? colors.textMain : colors.white)};
 `;
 
 export const InputHeader = styled(InputHeaderText)`
@@ -159,36 +155,36 @@ export const Seperator = styled.View`
 interface IBtnCTA {
   height?: number;
   width?: number;
-  btnStyle?: 'activated' | 'inactivated' | 'border' | 'kakao' | 'borderActive';
+  btnStyle?: "activated" | "inactivated" | "border" | "kakao" | "borderActive";
   btnColor?: string;
 }
 export const BtnCTA = styled.TouchableOpacity<IBtnCTA>`
-  height: ${({height}) => (height ? `${height}px` : '52px')};
-  width: ${({width}) => (width ? `${width}px` : '100%')};
+  height: ${({ height }) => (height ? `${height}px` : "52px")};
+  width: ${({ width }) => (width ? `${width}px` : "100%")};
   border-radius: 4px;
-  background-color: ${({btnStyle, btnColor}) =>
+  background-color: ${({ btnStyle, btnColor }) =>
     btnColor
       ? btnColor
-      : btnStyle === 'activated'
-        ? `${colors.main}`
-        : btnStyle === 'inactivated'
-          ? `${colors.inactive}`
-          : btnStyle === 'border'
-            ? `${colors.white}`
-            : btnStyle === 'kakao'
-              ? `${colors.kakaoColor}`
-              : `${colors.white}`};
+      : btnStyle === "activated"
+      ? `${colors.main}`
+      : btnStyle === "inactivated"
+      ? `${colors.inactive}`
+      : btnStyle === "border"
+      ? `${colors.white}`
+      : btnStyle === "kakao"
+      ? `${colors.kakaoColor}`
+      : `${colors.white}`};
   align-items: center;
   align-self: center;
   justify-content: center;
-  border-width: ${({btnStyle}) =>
-    btnStyle === 'border' || btnStyle === 'borderActive' ? '1px' : '0px'};
-  border-color: ${({btnStyle}) =>
-    btnStyle === 'border'
+  border-width: ${({ btnStyle }) =>
+    btnStyle === "border" || btnStyle === "borderActive" ? "1px" : "0px"};
+  border-color: ${({ btnStyle }) =>
+    btnStyle === "border"
       ? colors.inactive
-      : btnStyle === 'borderActive'
-        ? colors.main
-        : colors.white};
+      : btnStyle === "borderActive"
+      ? colors.main
+      : colors.white};
 `;
 
 export const BtnBottomCTA = styled(BtnCTA)`
@@ -218,7 +214,7 @@ export const BtnSmall = styled.TouchableOpacity<IBtnSmall>`
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  background-color: ${({isActivated}) =>
+  background-color: ${({ isActivated }) =>
     isActivated ? colors.inactive : colors.white};
   border-width: 1px;
   border-color: ${colors.inactive};
@@ -234,7 +230,8 @@ interface IBtnSmallText {
 }
 export const BtnSmallText = styled.Text<IBtnSmallText>`
   font-size: 14px;
-  color: ${({isActivated}) => (isActivated ? colors.textMain : colors.textSub)};
+  color: ${({ isActivated }) =>
+    isActivated ? colors.textMain : colors.textSub};
   line-height: 18px;
 `;
 
@@ -243,8 +240,8 @@ interface IVerticalLine {
   width?: number;
 }
 export const VerticalLine = styled.View<IVerticalLine>`
-  height: ${({height}) => (height ? `${height}px` : '100%')};
-  width: ${({width}) => (width ? `${width}px` : `1px`)};
+  height: ${({ height }) => (height ? `${height}px` : "100%")};
+  width: ${({ width }) => (width ? `${width}px` : `1px`)};
   background-color: ${colors.inactive};
 `;
 
@@ -254,8 +251,8 @@ interface IHorizontalLine {
 }
 export const HorizontalLine = styled.View<IHorizontalLine>`
   height: 1px;
-  width: ${({width}) => (width ? `${width}px` : '100%')};
-  background-color: ${({lineColor}) =>
+  width: ${({ width }) => (width ? `${width}px` : "100%")};
+  background-color: ${({ lineColor }) =>
     lineColor ? lineColor : colors.lineLight};
 `;
 
@@ -264,7 +261,7 @@ interface IHorizontalSpace {
 }
 export const HorizontalSpace = styled.View<IHorizontalSpace>`
   width: 100%;
-  height: ${({height}) => `${height}px`};
+  height: ${({ height }) => `${height}px`};
 `;
 
 interface IVerticalSpace {
@@ -272,7 +269,7 @@ interface IVerticalSpace {
 }
 export const VerticalSpace = styled.View<IVerticalSpace>`
   height: 100%;
-  width: ${({width}) => `${width}px`};
+  width: ${({ width }) => `${width}px`};
   background-color: ${colors.white};
 `;
 
@@ -283,23 +280,23 @@ export const Dot = styled.View<IDot>`
   width: 10px;
   height: 10px;
   border-radius: 10px;
-  background-color: ${({backgroundColor}) => `${backgroundColor}`};
+  background-color: ${({ backgroundColor }) => `${backgroundColor}`};
 `;
 
 interface IIcon {
   size?: number;
 }
 export const Icon = styled.Image<IIcon>`
-  width: ${({size}) => (size ? `${size}px` : '24px')};
-  height: ${({size}) => (size ? `${size}px` : '24px')};
+  width: ${({ size }) => (size ? `${size}px` : "24px")};
+  height: ${({ size }) => (size ? `${size}px` : "24px")};
 `;
 
-export const ShadowView = styled.View<{opacity?: number}>`
+export const ShadowView = styled.View<{ opacity?: number }>`
   background-color: ${colors.white};
   background-color: #fff;
   shadow-color: #000;
   shadow-offset: 1px 3px;
-  shadow-opacity: ${({opacity}) => (opacity ? opacity : 0.14)};
+  shadow-opacity: ${({ opacity }) => (opacity ? opacity : 0.14)};
   shadow-radius: 3.84px;
   elevation: 3;
 `;

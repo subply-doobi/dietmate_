@@ -357,7 +357,6 @@ const Arrow = styled.Image`
   width: 20px;
   height: 20px;
   align-self: center;
-  z-index: -1;
 `;
 
 const PriceSum = styled(TextMain)`

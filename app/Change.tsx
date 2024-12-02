@@ -58,7 +58,7 @@ const Change = () => {
     productNo: string;
     food: string;
   } = useLocalSearchParams();
-  const food = JSON.parse(foodJString);
+  const food = foodJString && JSON.parse(foodJString);
 
   // useState
   const [flatlistData, setFlatlistData] = useState<IProductData[]>([]);

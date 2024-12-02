@@ -196,7 +196,7 @@ const Search = () => {
 
 export default Search;
 
-const Container = styled.SafeAreaView`
+const Container = styled.View`
   flex: 1;
 `;
 

@@ -143,9 +143,7 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
 
 export default Menu;
 
-const Container = styled.View`
-  z-index: -1;
-`;
+const Container = styled.View``;
 
 const SelectedDeleteRow = styled(Row)`
   justify-content: space-between;

@@ -47,9 +47,8 @@ const Payment = () => {
     payParams_iamport: string;
     orderNo: string;
   } = useLocalSearchParams();
-  const payParams_iamport: IIamportPayParams = JSON.parse(
-    payParams_iamportJString
-  );
+  const payParams_iamport: IIamportPayParams =
+    payParams_iamportJString && JSON.parse(payParams_iamportJString);
 
   // useState
   const [loading, setLoading] = useState(true);

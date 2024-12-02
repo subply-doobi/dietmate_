@@ -37,16 +37,14 @@ const Checklist = () => {
   );
 
   // navigation
-  // const {navigate, reset, setOptions} = useNavigation();
   const router = useRouter();
   const { setOptions } = useNavigation();
-  // const route = useRoute();
-  // const order: IFlattedOrderedProduct[][] = route.params?.order;
-  // const initialChecklist = route.params?.checklist;
   const { order: orderJString, checklist: initialChecklistJString } =
     useLocalSearchParams();
-  const initialChecklist = JSON.parse(initialChecklistJString as string);
-  const order: IFlattedOrderedProduct[][] = JSON.parse(orderJString as string);
+  const initialChecklist =
+    initialChecklistJString && JSON.parse(initialChecklistJString as string);
+  const order: IFlattedOrderedProduct[][] =
+    orderJString && JSON.parse(orderJString as string);
 
   // useState
   // map 안에서 asyncStorage에 직접 접근할 수 없음. -> state와 동시에 관리해서
@@ -81,7 +79,7 @@ const Checklist = () => {
   // asyncStorage checklist data
   useEffect(() => {
     initialChecklist && setChecklist(initialChecklist);
-  }, [initialChecklist]);
+  }, [initialChecklistJString]);
 
   // 몸무게, 목표 변경 알럿
   useEffect(() => {
@@ -150,19 +148,17 @@ const Checklist = () => {
             subText={"더 정확한 식단을 위해\n목표칼로리를 재설정해주세요"}
           />
         )}
-        onConfirm={() =>
-          // reset({
-          //   index: 0,
-          //   routes: [
-          //     {name: 'BottomTabNav', params: {screen: 'NewHome'}},
-          //     {name: 'UserInput', params: {from: 'Checklist'}},
-          //   ],
-          // })
+        onConfirm={() => {
           router.replace({
             pathname: "/(tabs)",
-            params: { from: "Checklist" },
-          })
-        }
+          });
+          Promise.resolve().then(() => {
+            router.push({
+              pathname: "/UserInput",
+              params: { from: "Checklist" },
+            });
+          });
+        }}
         NoOfBtn={2}
         onCancel={() => dispatch(closeModal({ name: "changeTargetAlert" }))}
         style={{ width: 280 }}

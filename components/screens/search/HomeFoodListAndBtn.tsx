@@ -190,7 +190,7 @@ const HomeFoodListAndBtn = ({
         />
       )}
 
-      {pathname === "ManualAdd" && (
+      {pathname === "/ManualAdd" && (
         <>
           {isTutorialMode && tutorialProgress === "SelectFood" && (
             <DTooltip

@@ -106,27 +106,10 @@ export const ErrorText = styled.Text`
   font-size: 16px;
   color: #ffffff;
 `;
-export const ErrorBox = styled.View`
-  position: relative;
-  align-self: flex-end;
-  z-index: 1;
-
-  width: auto;
-  height: 24px;
-  background-color: ${colors.warning};
-  opacity: 0.9;
-
-  border-radius: 3px;
-
-  margin-top: 4px;
-  margin-bottom: -28px;
-  padding: 0px 10px 0px 10px;
-`;
 
 export const AccordionContentContainer = styled.View`
   /* width: ${`${SCREENWIDTH}px`}; */
   width: 100%;
-  height: auto;
   background-color: ${colors.white};
   padding: 16px 16px 32px 16px;
   /* row-gap: 40px; */

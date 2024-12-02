@@ -1,5 +1,5 @@
 // RN
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView } from "react-native";
 
 // 3rd
@@ -20,11 +20,18 @@ const OrderHistoryDetail = () => {
   const navigation = useNavigation();
   const { orderDetailData: orderDDataJString, totalPrice } =
     useLocalSearchParams();
-  const orderDetailData = JSON.parse(orderDDataJString as string);
+  const orderDetailData =
+    orderDDataJString && JSON.parse(orderDDataJString as string);
 
   // useState
   const [activeSection, setActiveSection] = useState<number[]>([]);
 
+  // useMemo
+  const acContent = getHistoryDetailAcContent(
+    orderDetailData,
+    totalPrice as string
+  );
+  console.log("OrderhistoryDetail acContent", acContent);
   // useEffect
   useEffect(() => {
     orderDetailData &&
@@ -32,11 +39,6 @@ const OrderHistoryDetail = () => {
         title: orderDetailData[0][0]?.buyDate,
       });
   }, []);
-
-  const acContent = getHistoryDetailAcContent(
-    orderDetailData,
-    totalPrice as string
-  );
 
   return (
     <Container>

@@ -175,7 +175,7 @@ const FoodDetail = () => {
   }, [baseLineData, productData]);
 
   return !productData || !baseLineData || isPageLoading ? (
-    <SafeAreaView
+    <Container
       style={{
         flex: 1,
         backgroundColor: "white",
@@ -184,120 +184,115 @@ const FoodDetail = () => {
       }}
     >
       <ActivityIndicator size={"large"} />
-    </SafeAreaView>
+    </Container>
   ) : (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <Container>
-        {/* 영양성분 그래프 */}
+    <Container>
+      {/* 영양성분 그래프 */}
+      <InnerContainer>
+        {!!dietDetailData && (
+          <NutrientsProgress dietDetailData={dietDetailData} />
+        )}
+      </InnerContainer>
+
+      {/* 식품상세정보 */}
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        <View>
+          {/* 식품 썸네일 */}
+          <FoodImageContainer
+            source={{
+              uri: `${process.env.EXPO_PUBLIC_BASE_URL}${productData.mainAttUrl}`,
+            }}
+            style={{ resizeMode: "contain" }}
+          />
+          <NutritionInImage>
+            {/* 테이블 중 칼탄단지 */}
+            {[table[0], table[2], table[4], table[5]].map((el) => {
+              return (
+                <View
+                  key={el.name}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    flex: 0.25,
+                  }}
+                >
+                  <Dot
+                    style={{
+                      backgroundColor: el.color,
+                      marginHorizontal: 8,
+                    }}
+                  />
+                  <Text style={{ color: "white", fontSize: 12 }}>
+                    {el.column2}
+                  </Text>
+                </View>
+              );
+            })}
+          </NutritionInImage>
+        </View>
+
+        {/* 식품 정보 텍스트 */}
         <InnerContainer>
-          {!!dietDetailData && (
-            <NutrientsProgress dietDetailData={dietDetailData} />
-          )}
+          <SellerText style={{ marginTop: 20 }}>
+            [{productData.platformNm}]
+          </SellerText>
+          <ProductName>{productData.productNm}</ProductName>
+          <Row style={{ marginTop: 8, justifyContent: "space-between" }}>
+            <Col>
+              <ShippingText numberOfLines={1} ellipsizeMode="tail">
+                배송비: {commaToNum(productData.shippingPrice)} 원 (
+                {commaToNum(productData.freeShippingPrice)}원 이상 무료)
+              </ShippingText>
+              <ShippingText numberOfLines={1} ellipsizeMode="tail">
+                현재 장바구니 {productData.platformNm} 상품 :{" "}
+                <ShippingText style={{ color: colors.textMain }}>
+                  {commaToNum(
+                    sumUpPriceOfSeller(
+                      dietDetailAllData,
+                      productData.platformNm
+                    )
+                  )}
+                  원
+                </ShippingText>
+              </ShippingText>
+            </Col>
+          </Row>
+          <Price>
+            {commaToNum(
+              parseInt(productData.price) + SERVICE_PRICE_PER_PRODUCT
+            )}
+            원
+          </Price>
+
+          {/* 영양성분 - 식품상세 - 배송정책 */}
+          <Row
+            style={{
+              justifyContent: "flex-start",
+            }}
+          >
+            {detailMenu.map((el, index) => {
+              return (
+                <React.Fragment key={`${el}-${index}`}>
+                  <DetailMenu
+                    onPress={() => setClicked(el)}
+                    selected={el === clicked}
+                  >
+                    <DetailMenuText>{el}</DetailMenuText>
+                  </DetailMenu>
+                </React.Fragment>
+              );
+            })}
+          </Row>
+
+          {/* 영양성분 - 식품상세 - 배송정책에 따른 내용 */}
+          <PartContainer>
+            <ShowPart clicked={clicked} table={table} data={productData} />
+          </PartContainer>
         </InnerContainer>
 
-        {/* 식품상세정보 */}
-        <ScrollView
-          style={{ flex: 1, zIndex: -1 }}
-          showsVerticalScrollIndicator={false}
-        >
-          <View>
-            {/* 식품 썸네일 */}
-            <FoodImageContainer
-              source={{
-                uri: `${process.env.EXPO_PUBLIC_BASE_URL}${productData.mainAttUrl}`,
-              }}
-              style={{ resizeMode: "contain" }}
-            />
-            <NutritionInImage>
-              {/* 테이블 중 칼탄단지 */}
-              {[table[0], table[2], table[4], table[5]].map((el) => {
-                return (
-                  <View
-                    key={el.name}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      flex: 0.25,
-                    }}
-                  >
-                    <Dot
-                      style={{
-                        backgroundColor: el.color,
-                        marginHorizontal: 8,
-                      }}
-                    />
-                    <Text style={{ color: "white", fontSize: 12 }}>
-                      {el.column2}
-                    </Text>
-                  </View>
-                );
-              })}
-            </NutritionInImage>
-          </View>
-
-          {/* 식품 정보 텍스트 */}
-          <InnerContainer>
-            <SellerText style={{ marginTop: 20 }}>
-              [{productData.platformNm}]
-            </SellerText>
-            <ProductName>{productData.productNm}</ProductName>
-            <Row style={{ marginTop: 8, justifyContent: "space-between" }}>
-              <Col>
-                <ShippingText numberOfLines={1} ellipsizeMode="tail">
-                  배송비: {commaToNum(productData.shippingPrice)} 원 (
-                  {commaToNum(productData.freeShippingPrice)}원 이상 무료)
-                </ShippingText>
-                <ShippingText numberOfLines={1} ellipsizeMode="tail">
-                  현재 장바구니 {productData.platformNm} 상품 :{" "}
-                  <ShippingText style={{ color: colors.textMain }}>
-                    {commaToNum(
-                      sumUpPriceOfSeller(
-                        dietDetailAllData,
-                        productData.platformNm
-                      )
-                    )}
-                    원
-                  </ShippingText>
-                </ShippingText>
-              </Col>
-            </Row>
-            <Price>
-              {commaToNum(
-                parseInt(productData.price) + SERVICE_PRICE_PER_PRODUCT
-              )}
-              원
-            </Price>
-
-            {/* 영양성분 - 식품상세 - 배송정책 */}
-            <Row
-              style={{
-                justifyContent: "flex-start",
-              }}
-            >
-              {detailMenu.map((el, index) => {
-                return (
-                  <React.Fragment key={`${el}-${index}`}>
-                    <DetailMenu
-                      onPress={() => setClicked(el)}
-                      selected={el === clicked}
-                    >
-                      <DetailMenuText>{el}</DetailMenuText>
-                    </DetailMenu>
-                  </React.Fragment>
-                );
-              })}
-            </Row>
-
-            {/* 영양성분 - 식품상세 - 배송정책에 따른 내용 */}
-            <PartContainer>
-              <ShowPart clicked={clicked} table={table} data={productData} />
-            </PartContainer>
-          </InnerContainer>
-
-          {/* 사업자정보 */}
-          <BusinessInfo bgColor={colors.backgroundLight} />
-        </ScrollView>
-      </Container>
+        {/* 사업자정보 */}
+        <BusinessInfo bgColor={colors.backgroundLight} />
+      </ScrollView>
       <View>
         {/* 하단 CTA버튼, like 버튼 */}
         <BtnBox>
@@ -328,7 +323,7 @@ const FoodDetail = () => {
           />
         </BtnBox>
       </View>
-    </SafeAreaView>
+    </Container>
   );
 };
 

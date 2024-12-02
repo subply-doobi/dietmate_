@@ -79,7 +79,6 @@ const MenuBox = styled.View`
 
 const FoodBox = styled.View`
   flex-direction: row;
-  flex: 1;
   height: 80px;
   padding: 0px 16px;
 `;
@@ -135,5 +134,6 @@ const PriceTotal = styled(TextMain)`
   line-height: 18px;
   font-weight: bold;
   align-self: flex-end;
-  margin-top: 16px;
+  margin-top: 24px;
+  margin-right: 16px;
 `;

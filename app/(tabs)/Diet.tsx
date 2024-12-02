@@ -11,7 +11,6 @@ import Accordion from "react-native-collapsible/Accordion";
 import { useIsFocused } from "@react-navigation/native";
 
 // doobi
-
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import {
   useCreateDietCnt,

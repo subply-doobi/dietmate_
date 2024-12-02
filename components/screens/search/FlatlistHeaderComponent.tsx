@@ -90,7 +90,7 @@ const FlatlistHeaderComponent = ({
           isTutorialMode && tutorialProgress === "SelectFood"
             ? []
             : [{ translateY: translateY }],
-        zIndex: 10000,
+        zIndex: 1,
         backgroundColor: "white",
       }}
     >

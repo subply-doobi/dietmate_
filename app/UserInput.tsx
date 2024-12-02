@@ -144,7 +144,7 @@ const UserInput = () => {
   }, [params.from]);
 
   return (
-    <Container>
+    <Container style={{ backgroundColor: colors.white }}>
       <ProgressBox>
         <Progress.Bar
           progress={numerator / denominator}

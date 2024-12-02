@@ -18,7 +18,7 @@ import { TextMain, Col } from "@/shared/ui/styledComps";
 import DAlert from "@/shared/ui/DAlert";
 import ListBtns from "@/shared/ui/ListBtns";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 
 const WithdrawalContent = ({ deleteText }: { deleteText: string }) => {
   return (
@@ -39,6 +39,7 @@ const Account = () => {
 
   // navigation
   const router = useRouter();
+  const navigation = useNavigation();
   const deleteUser = useDeleteUser();
 
   // etc
@@ -47,8 +48,10 @@ const Account = () => {
   const onLogout = async () => {
     try {
       await removeToken();
-      router.canDismiss() && router.dismissAll();
-      router.replace({ pathname: "/" });
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "index" }],
+      });
     } catch (e) {
       console.log(e);
     }

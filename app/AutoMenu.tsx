@@ -141,13 +141,13 @@ const AutoMenu = () => {
   );
 
   return !pageloaded ? (
-    <Container>
+    <Container style={{ backgroundColor: colors.white }}>
       <Box>
         <ActivityIndicator size={20} color={colors.main} />
       </Box>
     </Container>
   ) : (
-    <Container>
+    <Container style={{ backgroundColor: colors.white }}>
       <ScrollView
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}

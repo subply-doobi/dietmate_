@@ -8,6 +8,7 @@ import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
+import { getHeaderTitle } from "@react-navigation/elements";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import colors from "@/shared/colors";
@@ -23,7 +24,6 @@ import { queryClient } from "@/shared/store/reactQueryStore";
 import { initializeKakaoSDK } from "@react-native-kakao/core";
 import AppLoading from "@/components/appLoading/AppLoading";
 import { SafeAreaView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Kakao SDK 초기화
 initializeKakaoSDK("5065665acbfa07f0dd876a374e66e618");
@@ -33,9 +33,6 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   // navigation
   const router = useRouter();
-
-  // safe inset
-  const insetTop = useSafeAreaInsets().top;
 
   const colorScheme = useColorScheme();
   // const [loaded] = useFonts({

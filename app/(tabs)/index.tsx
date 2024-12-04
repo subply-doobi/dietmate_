@@ -1,9 +1,11 @@
 // RN
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 
 // 3rd
 import { useIsFocused } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
@@ -42,12 +44,10 @@ import DTPScreen from "@/shared/ui/DTPScreen";
 import DTooltip from "@/shared/ui/DTooltip";
 import DSmallBtn from "@/shared/ui/DSmallBtn";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 const NewHome = () => {
   // navigation
-  // const { navigate } = useNavigation();
   const router = useRouter();
   const isFocused = useIsFocused();
 
@@ -245,7 +245,7 @@ const NewHome = () => {
               />
               <DTooltip
                 tooltipShow={true}
-                boxTop={tutorialCtaBtnPy - 36}
+                boxTop={tutorialCtaBtnPy - insetTop - 36}
                 text="식단구성을 시작해봐요!"
                 boxLeft={32}
               />
@@ -260,7 +260,7 @@ const NewHome = () => {
                 btnText={ctaBtnText}
                 style={{
                   width: SCREENWIDTH - 32 - 32,
-                  marginTop: tutorialCtaBtnPy,
+                  marginTop: tutorialCtaBtnPy - insetTop,
                 }}
               />
             </>

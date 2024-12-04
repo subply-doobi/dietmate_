@@ -30,6 +30,8 @@ import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// ManualAdd 와 튜토리얼, MenuSection 끼니선택만 다름
+// Search는 BottomTab에 보여져야해서 파일 분리
 const Search = () => {
   // navigation
   const headerHeight = useHeaderHeight();
@@ -153,43 +155,6 @@ const Search = () => {
           <CommonAlertContent text="해당 필터에 적용되는 상품이 없어요" />
         )}
         NoOfBtn={1}
-      />
-
-      {/* 튜토리얼 */}
-      <DTPScreen
-        contentDelay={500}
-        visible={tutorialTPS.isOpen && tutorialTPS.modalId === "Search"}
-        renderContent={() => (
-          <>
-            <Col
-              style={{
-                position: "absolute",
-                width: "100%",
-                backgroundColor: colors.white,
-                paddingHorizontal: 16,
-                marginTop: headerHeight + 40,
-              }}
-            >
-              <NutrientsProgress dietDetailData={dDData} />
-            </Col>
-            <DTooltip
-              tooltipShow={
-                isTutorialMode &&
-                tutorialProgress === "SelectFood" &&
-                currentNumOfFoods === 0
-              }
-              text="영양성분 부분을 눌러 식품 하나를 추가해봐요"
-              boxTop={headerHeight + 40 + 70 + 8 + 140 - 40}
-              boxLeft={16}
-            />
-            <HomeFoodListAndBtn
-              style={{ marginTop: headerHeight + 40 + 70 + 8 + 140 }}
-              scrollY={scrollY}
-              flatListRef={flatListRef}
-              scrollTop={scrollTop}
-            />
-          </>
-        )}
       />
     </Container>
   );

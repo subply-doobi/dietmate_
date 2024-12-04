@@ -333,6 +333,7 @@ export const useDeleteDietDetail = (options?: IMutationOptions) => {
     },
     onError: (e, { dietNo, productNo }, context) => {
       queryClient.setQueryData([DIET_TOTAL_OBJ], context?.prevDTOData);
+      console.log("useDeleteDietDetail error: ", e);
       handleError(e);
     },
   });

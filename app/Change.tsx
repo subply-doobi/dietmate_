@@ -179,6 +179,7 @@ const Change = () => {
     router.back();
     if (!!selectedProduct) {
       // change food
+      console.log("change food: dietNo, productNo", dietNo, productNo);
       await deleteDietDetailMutation.mutateAsync({
         dietNo,
         productNo,
@@ -208,7 +209,7 @@ const Change = () => {
   }, [isTutorialMode]);
 
   return (
-    <Container>
+    <Container style={{ backgroundColor: colors.white }}>
       <ChangeSummary foodToChange={food} selectedProduct={selectedProduct} />
       <HorizontalSpace height={16} />
       <FlatList

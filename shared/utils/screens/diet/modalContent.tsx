@@ -81,6 +81,7 @@ export const renderAlertContent: IRenderAlertContent = {
 
 interface IDTP {
   fn: ((event: GestureResponderEvent) => void) | undefined;
+  statusBarHeight: number;
   headerHeight: number;
   bottomTabBarHeight: number;
 }
@@ -109,7 +110,7 @@ interface IRenderDTPContent {
 }
 
 export const renderDTPContent: IRenderDTPContent = {
-  AddMenu: ({ fn, headerHeight, dTOData }) => (
+  AddMenu: ({ fn, headerHeight, statusBarHeight, dTOData }) => (
     <>
       <DSmallBtn
         btnText="튜토리얼 건너뛰기"
@@ -127,16 +128,16 @@ export const renderDTPContent: IRenderDTPContent = {
       <DTooltip
         tooltipShow={true}
         text="끼니를 먼저 추가해볼까요?"
-        boxTop={headerHeight}
+        boxTop={headerHeight - statusBarHeight}
       />
       <AddMenuBtn
         dTOData={dTOData}
         onPress={fn}
-        style={{ marginTop: headerHeight + 40 }}
+        style={{ marginTop: headerHeight - statusBarHeight + 40 }}
       />
     </>
   ),
-  AddFood: ({ headerHeight, dTOData, currentDietNo }) => (
+  AddFood: ({ headerHeight, statusBarHeight, dTOData, currentDietNo }) => (
     <>
       <DSmallBtn
         btnText="튜토리얼 건너뛰기"
@@ -154,13 +155,13 @@ export const renderDTPContent: IRenderDTPContent = {
       <DTooltip
         tooltipShow={true}
         text="식품을 추가할 차례에요!"
-        boxTop={headerHeight + 40 + 48 + 8 + 70}
+        boxTop={headerHeight - statusBarHeight + 40 + 48 + 8 + 70}
         boxLeft={8}
       />
       <AccordionCtaBtns
         style={{
           paddingHorizontal: 8,
-          marginTop: headerHeight + 40 + 48 + 8 + 70 + 40,
+          marginTop: headerHeight - statusBarHeight + 40 + 48 + 8 + 70 + 40,
         }}
         dDData={dTOData?.[Object.keys(dTOData)[0]]?.dietDetail ?? []}
         dietNo={currentDietNo}
@@ -168,7 +169,7 @@ export const renderDTPContent: IRenderDTPContent = {
       />
     </>
   ),
-  AutoRemain: ({ dTOData, currentDietNo, headerHeight }) => (
+  AutoRemain: ({ dTOData, currentDietNo, headerHeight, statusBarHeight }) => (
     <>
       <DSmallBtn
         btnText="튜토리얼 건너뛰기"
@@ -189,7 +190,7 @@ export const renderDTPContent: IRenderDTPContent = {
           width: "100%",
           backgroundColor: colors.white,
           paddingHorizontal: 8,
-          marginTop: headerHeight + 40 + 48 + 8,
+          marginTop: headerHeight - statusBarHeight + 40 + 48 + 8,
         }}
       >
         <NutrientsProgress
@@ -199,13 +200,36 @@ export const renderDTPContent: IRenderDTPContent = {
       <DTooltip
         tooltipShow={true}
         text="남은 영양을 자동으로 채워볼게요!"
-        boxTop={headerHeight + 40 + 48 + 8 + 70 + 24 + 32 + 24 + 104 + 1}
+        boxTop={
+          headerHeight -
+          statusBarHeight +
+          40 +
+          48 +
+          8 +
+          70 +
+          24 +
+          32 +
+          24 +
+          104 +
+          1
+        }
         boxLeft={8 + 48 + 8}
       />
       <AccordionCtaBtns
         style={{
           paddingHorizontal: 8,
-          marginTop: headerHeight + 40 + 48 + 8 + 70 + 24 + 32 + 24 + 104 + 41,
+          marginTop:
+            headerHeight -
+            statusBarHeight +
+            40 +
+            48 +
+            8 +
+            70 +
+            24 +
+            32 +
+            24 +
+            104 +
+            41,
         }}
         dDData={dTOData?.[Object.keys(dTOData)[0]]?.dietDetail ?? []}
         dietNo={currentDietNo}
@@ -213,7 +237,7 @@ export const renderDTPContent: IRenderDTPContent = {
       />
     </>
   ),
-  ChangeFood: ({ fn, headerHeight }) => (
+  ChangeFood: ({ fn, headerHeight, statusBarHeight }) => (
     <>
       <DSmallBtn
         btnText="튜토리얼 건너뛰기"
@@ -233,7 +257,8 @@ export const renderDTPContent: IRenderDTPContent = {
         triangleRight={16}
         text="영양이 비슷한 식품으로 교체할 수 있어요"
         boxTop={
-          headerHeight +
+          headerHeight -
+          statusBarHeight +
           40 +
           48 +
           8 +
@@ -254,7 +279,8 @@ export const renderDTPContent: IRenderDTPContent = {
         style={{
           position: "absolute",
           top:
-            headerHeight +
+            headerHeight -
+            statusBarHeight +
             40 +
             48 +
             8 +

@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 // 3rd
 // import {useIsFocused, useNavigation} from '@react-navigation/native';
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import Accordion from "react-native-collapsible/Accordion";
 import { useIsFocused } from "@react-navigation/native";
@@ -65,6 +66,7 @@ const Diet = () => {
   const isFocused = useIsFocused();
   const headerHeight = useHeaderHeight();
   const bottomTabBarHeight = useBottomTabBarHeight();
+  const insetTop = useSafeAreaInsets().top;
 
   // redux
   const dispatch = useAppDispatch();
@@ -125,7 +127,6 @@ const Diet = () => {
     // 비어있는 끼니 확인
     const { menuNum, priceTotal, totalShippingPrice } =
       sumUpDietFromDTOData(dTOData);
-
     const isDietEmpty = menuNum === 0 || priceTotal === 0;
     const orderBtnText = isDietEmpty
       ? `식단을 먼저 구성해봐요`
@@ -211,13 +212,21 @@ const Diet = () => {
         () =>
           autoMenuBtnRef?.current?.measure((fx, fy, width, height, px, py) => {
             scrollRef.current?.scrollTo({
-              y: IS_ANDROID
-                ? py -
-                  (SCREENHEIGHT -
-                    (height + headerHeight + bottomTabBarHeight + 40 + 60))
-                : IS_IOS
-                ? py - (SCREENHEIGHT - (height + bottomTabBarHeight + 40 + 44))
-                : 0,
+              // y: IS_ANDROID
+              //   ? py -
+              //     (SCREENHEIGHT -
+              //       (height + headerHeight + bottomTabBarHeight + 40 + 60))
+              //   : IS_IOS
+              //   ? py - (SCREENHEIGHT - (height + bottomTabBarHeight + 40 + 44))
+              //   : 0,
+
+              y:
+                py -
+                SCREENHEIGHT +
+                height +
+                headerHeight +
+                bottomTabBarHeight +
+                40,
               animated: true,
             });
           }),
@@ -342,10 +351,7 @@ const Diet = () => {
         pathname: "/Change",
         params: {
           dietNo: currentDietNo,
-          productNo:
-            JSON.stringify(
-              dTOData?.[currentDietNo]?.dietDetail[1]?.productNo
-            ) ?? "",
+          productNo: dTOData?.[currentDietNo]?.dietDetail[1]?.productNo,
           food:
             JSON.stringify(dTOData?.[currentDietNo]?.dietDetail[1]) ??
             undefined,
@@ -357,7 +363,7 @@ const Diet = () => {
     },
   };
 
-  console.log("Diet: currentDietNO", currentDietNo);
+  const statusBarHeight = useSafeAreaInsets().top;
 
   // render
   return (
@@ -478,6 +484,7 @@ const Diet = () => {
           renderDTPContent[tutorialProgress]({
             fn: dtpAction[tutorialProgress],
             headerHeight,
+            statusBarHeight,
             bottomTabBarHeight,
             dTOData: dTOData || {},
             currentDietNo,

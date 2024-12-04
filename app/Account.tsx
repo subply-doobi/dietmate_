@@ -38,7 +38,6 @@ const Account = () => {
   );
 
   // navigation
-  const router = useRouter();
   const navigation = useNavigation();
   const deleteUser = useDeleteUser();
 

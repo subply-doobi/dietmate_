@@ -3,6 +3,7 @@ import { ScrollView } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 // doobi
 import colors from "@/shared/colors";
@@ -21,6 +22,8 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
 const Mypage = () => {
   // navigation
+  const headerHeight = useHeaderHeight();
+  console.log("Mypage: headerHeight", headerHeight);
   const router = useRouter();
 
   // redux

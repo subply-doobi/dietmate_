@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface IModal {
   isOpen: boolean;
@@ -11,11 +11,13 @@ interface IModal {
 interface IModals {
   // alert
   appUpdateAlert: IModal;
-  requestErrorAlert: IModal & {values?: {code?: number | null; msg: string}};
-  menuDeleteAlert: IModal & {values?: {menuNo?: string}};
+  requestErrorAlert: IModal & {
+    values?: { code?: number | null; msg: string };
+  };
+  menuDeleteAlert: IModal & { values?: { menuNo?: string } };
   menuCreateAlert: IModal;
   menuCreateNAAlert: IModal;
-  productDeleteAlert: IModal & {values?: {productNoToDel?: string}};
+  productDeleteAlert: IModal & { values?: { productNoToDel?: string } };
   accountWithdrawalAlert: IModal;
   addressDeleteAlert: IModal;
   noProductAlert: IModal;
@@ -24,7 +26,7 @@ interface IModals {
   noStockAlert: IModal;
   myBonusGuideAlert: IModal;
   tutorialRestartAlert: IModal;
-  payFailAlert: IModal & {values?: {payFailMsg?: string}};
+  payFailAlert: IModal & { values?: { payFailMsg?: string } };
   orderEmptyAlert: IModal;
   recommendCodeAlert: IModal;
   tutorialFoodLimitAlert: IModal;
@@ -36,9 +38,9 @@ interface IModals {
   // bottomSheet
   filterBS: IModal;
   sortBS: IModal;
-  menuNumSelectBS: IModal & {values?: {dietNo?: string}};
+  menuNumSelectBS: IModal & { values?: { dietNo?: string } };
 }
-export type IModalState = {modal: IModals} & {modalSeq: string[]};
+export type IModalState = { modal: IModals } & { modalSeq: string[] };
 
 const initialState: IModalState = {
   modal: {
@@ -52,14 +54,14 @@ const initialState: IModalState = {
       modalId: undefined,
       values: {
         code: null,
-        msg: '',
+        msg: "",
       },
     },
     menuDeleteAlert: {
       isOpen: false,
       modalId: undefined,
       values: {
-        menuNo: '',
+        menuNo: "",
       },
     },
     menuCreateAlert: {
@@ -74,7 +76,7 @@ const initialState: IModalState = {
       isOpen: false,
       modalId: undefined,
       values: {
-        productNoToDel: '',
+        productNoToDel: "",
       },
     },
     accountWithdrawalAlert: {
@@ -113,7 +115,7 @@ const initialState: IModalState = {
       isOpen: false,
       modalId: undefined,
       values: {
-        payFailMsg: '',
+        payFailMsg: "",
       },
     },
     orderEmptyAlert: {
@@ -158,7 +160,7 @@ const initialState: IModalState = {
       isOpen: false,
       modalId: undefined,
       values: {
-        dietNo: '',
+        dietNo: "",
       },
     },
   },
@@ -166,10 +168,10 @@ const initialState: IModalState = {
 };
 
 type IModalName = keyof IModals;
-type IAlertValue = IModals[keyof IModals]['values'];
+type IAlertValue = IModals[keyof IModals]["values"];
 
 export const modalSlice = createSlice({
-  name: 'modal',
+  name: "modal",
   initialState,
   reducers: {
     openModal: (
@@ -178,7 +180,7 @@ export const modalSlice = createSlice({
         name: IModalName;
         modalId?: string;
         values?: IAlertValue;
-      }>,
+      }>
     ) => {
       // add to modalSeq
       if (!state.modalSeq.includes(action.payload.name))
@@ -198,10 +200,10 @@ export const modalSlice = createSlice({
       state.modal[action.payload.name].modalId = action.payload.modalId;
     },
 
-    closeModal: (state, action: PayloadAction<{name: IModalName}>) => {
+    closeModal: (state, action: PayloadAction<{ name: IModalName }>) => {
       // remove from modalSeq
       state.modalSeq = state.modalSeq.filter(
-        modalName => modalName !== action.payload.name,
+        (modalName) => modalName !== action.payload.name
       );
 
       // close modal
@@ -222,5 +224,5 @@ export const modalSlice = createSlice({
   },
 });
 
-export const {openModal, closeModal} = modalSlice.actions;
+export const { openModal, closeModal } = modalSlice.actions;
 export default modalSlice.reducer;

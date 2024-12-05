@@ -1,11 +1,12 @@
 // RN, expo
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { Platform, ScrollView, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
 // 3rd
 // import {useIsFocused, useNavigation} from '@react-navigation/native';
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import Accordion from "react-native-collapsible/Accordion";
 import { useIsFocused } from "@react-navigation/native";
@@ -43,6 +44,7 @@ import {
 } from "@/shared/utils/screens/diet/modalContent";
 
 import {
+  DEFAULT_BOTTOM_TAB_HEIGHT,
   IS_ANDROID,
   IS_IOS,
   SCREENHEIGHT,
@@ -125,7 +127,6 @@ const Diet = () => {
     // 비어있는 끼니 확인
     const { menuNum, priceTotal, totalShippingPrice } =
       sumUpDietFromDTOData(dTOData);
-
     const isDietEmpty = menuNum === 0 || priceTotal === 0;
     const orderBtnText = isDietEmpty
       ? `식단을 먼저 구성해봐요`
@@ -169,10 +170,14 @@ const Diet = () => {
     dispatch(closeModal({ name: "tutorialTPS" }));
     if (addDietStatus === "possible") {
       menuNum < 5 ? setNumOfCreateDiet(5 - menuNum) : setNumOfCreateDiet(1);
-      dispatch(openModal({ name: "menuCreateAlert" }));
+      setTimeout(() => {
+        dispatch(openModal({ name: "menuCreateAlert" }));
+      }, 200);
       return;
     }
-    dispatch(openModal({ name: "menuCreateNAAlert" }));
+    setTimeout(() => {
+      dispatch(openModal({ name: "menuCreateNAAlert" }));
+    }, 200);
   };
 
   const onCreateDiet = async () => {
@@ -211,13 +216,13 @@ const Diet = () => {
         () =>
           autoMenuBtnRef?.current?.measure((fx, fy, width, height, px, py) => {
             scrollRef.current?.scrollTo({
-              y: IS_ANDROID
-                ? py -
-                  (SCREENHEIGHT -
-                    (height + headerHeight + bottomTabBarHeight + 40 + 60))
-                : IS_IOS
-                ? py - (SCREENHEIGHT - (height + bottomTabBarHeight + 40 + 44))
-                : 0,
+              y:
+                py -
+                SCREENHEIGHT +
+                height +
+                headerHeight +
+                bottomTabBarHeight +
+                (IS_IOS ? 0 : 41),
               animated: true,
             });
           }),
@@ -318,7 +323,7 @@ const Diet = () => {
     ) {
       setTimeout(() => {
         dispatch(openModal({ name: "tutorialTPS", modalId: "Diet" }));
-      }, 100);
+      }, 300);
       return;
     }
     tutorialTPS.isOpen && dispatch(closeModal({ name: "tutorialTPS" }));
@@ -342,10 +347,7 @@ const Diet = () => {
         pathname: "/Change",
         params: {
           dietNo: currentDietNo,
-          productNo:
-            JSON.stringify(
-              dTOData?.[currentDietNo]?.dietDetail[1]?.productNo
-            ) ?? "",
+          productNo: dTOData?.[currentDietNo]?.dietDetail[1]?.productNo,
           food:
             JSON.stringify(dTOData?.[currentDietNo]?.dietDetail[1]) ??
             undefined,
@@ -357,7 +359,8 @@ const Diet = () => {
     },
   };
 
-  console.log("Diet: currentDietNO", currentDietNo);
+  const statusBarHeight = useSafeAreaInsets().top;
+  const insetTop = Platform.OS === "ios" ? 0 : statusBarHeight;
 
   // render
   return (
@@ -366,6 +369,7 @@ const Diet = () => {
         backgroundColor: colors.backgroundLight2,
         paddingLeft: 0,
         paddingRight: 0,
+        paddingBottom: Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0,
       }}
     >
       <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
@@ -423,7 +427,7 @@ const Diet = () => {
           width: SCREENWIDTH - 32,
           alignSelf: "center",
           position: "absolute",
-          bottom: 8,
+          bottom: Platform.OS === "ios" ? bottomTabBarHeight + 8 : 8,
         }}
         btnText={orderBtnText}
         onPress={async () => {
@@ -478,6 +482,7 @@ const Diet = () => {
           renderDTPContent[tutorialProgress]({
             fn: dtpAction[tutorialProgress],
             headerHeight,
+            insetTop,
             bottomTabBarHeight,
             dTOData: dTOData || {},
             currentDietNo,

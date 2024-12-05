@@ -1,7 +1,7 @@
-import styled from 'styled-components/native';
-import colors from '../colors';
-import {Modal, ViewProps} from 'react-native';
-import {useEffect, useState} from 'react';
+import styled from "styled-components/native";
+import colors from "../colors";
+import { Modal, View, ViewProps } from "react-native";
+import { useEffect, useState } from "react";
 
 interface IDTPScreen extends ViewProps {
   visible: boolean;

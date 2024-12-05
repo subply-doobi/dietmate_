@@ -1,6 +1,6 @@
 // RN
-import { useEffect, useRef } from "react";
-import { ActivityIndicator, Animated, FlatList } from "react-native";
+import { useEffect, useMemo, useRef } from "react";
+import { ActivityIndicator, Animated, FlatList, Platform } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -28,10 +28,16 @@ import { IProductData } from "@/shared/api/types/product";
 import { tutorialSortFilter } from "@/shared/constants";
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const Search = () => {
+// Search 와 튜토리얼, MenuSection 끼니선택만 다름
+// Search는 BottomTab에 보여져야해서 파일 분리
+const ManualAdd = () => {
   // navigation
   const headerHeight = useHeaderHeight();
+  const fixedHeaderHeight = useMemo(() => headerHeight, []);
+  const statusBarHeight = useSafeAreaInsets().top;
+  const insetTop = Platform.OS === "ios" ? 0 : statusBarHeight;
 
   // redux
   const dispatch = useAppDispatch();
@@ -166,7 +172,7 @@ const Search = () => {
                 width: "100%",
                 backgroundColor: colors.white,
                 paddingHorizontal: 16,
-                marginTop: headerHeight + 40,
+                marginTop: fixedHeaderHeight - insetTop + 40,
               }}
             >
               <NutrientsProgress dietDetailData={dDData} />
@@ -178,11 +184,13 @@ const Search = () => {
                 currentNumOfFoods === 0
               }
               text="영양성분 부분을 눌러 식품 하나를 추가해봐요"
-              boxTop={headerHeight + 40 + 70 + 8 + 140 - 40}
+              boxTop={fixedHeaderHeight + 40 + 70 + 8 + 140 - 40}
               boxLeft={16}
             />
             <HomeFoodListAndBtn
-              style={{ marginTop: headerHeight + 40 + 70 + 8 + 140 }}
+              style={{
+                marginTop: fixedHeaderHeight + 40 + 70 + 8 + 140,
+              }}
               scrollY={scrollY}
               flatListRef={flatListRef}
               scrollTop={scrollTop}
@@ -194,7 +202,7 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default ManualAdd;
 
 const Container = styled.View`
   flex: 1;

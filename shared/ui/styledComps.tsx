@@ -1,8 +1,12 @@
 import styled from "styled-components/native";
 
 import colors from "../colors";
-import { SCREENWIDTH } from "../constants";
-import { ViewProps } from "react-native";
+import {
+  BOTTOM_INDICATOR_IOS,
+  DEFAULT_BOTTOM_TAB_HEIGHT,
+  SCREENWIDTH,
+} from "../constants";
+import { Platform, ViewProps } from "react-native";
 
 export const NotoSansLight = styled.Text`
   font-family: "NotoSansKRLight";
@@ -74,10 +78,6 @@ export const TextSub = styled.Text`
   font-weight: 300;
 `;
 
-const SafeView = styled.SafeAreaView`
-  flex: 1;
-  background-color: ${colors.white};
-`;
 const PaddingView = styled.View`
   flex: 1;
   padding: 0px 16px 0px 16px;
@@ -179,7 +179,7 @@ export const BtnBottomCTA = styled(BtnCTA)`
 
 export const StickyFooter = styled.View`
   position: absolute;
-  bottom: 8px;
+  bottom: ${Platform.OS === "ios" ? `${BOTTOM_INDICATOR_IOS + 8}px` : "8px"};
   left: 0;
   right: 0;
   margin-left: 16px;

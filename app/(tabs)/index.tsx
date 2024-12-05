@@ -1,9 +1,11 @@
 // RN
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { Platform, ScrollView, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 
 // 3rd
 import { useIsFocused } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
@@ -19,7 +21,7 @@ import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useListProduct } from "@/shared/api/queries/product";
 import { updateNotShowAgainList } from "@/shared/utils/asyncStorage";
 import { flatOrderMenuWithQty } from "@/shared/utils/screens/checklist/menuFlat";
-import { SCREENWIDTH } from "@/shared/constants";
+import { DEFAULT_BOTTOM_TAB_HEIGHT, SCREENWIDTH } from "@/shared/constants";
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { queryClient } from "@/shared/store/reactQueryStore";
 import { PRODUCTS } from "@/shared/api/keys";
@@ -42,12 +44,10 @@ import DTPScreen from "@/shared/ui/DTPScreen";
 import DTooltip from "@/shared/ui/DTooltip";
 import DSmallBtn from "@/shared/ui/DSmallBtn";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 const NewHome = () => {
   // navigation
-  // const { navigate } = useNavigation();
   const router = useRouter();
   const isFocused = useIsFocused();
 
@@ -163,7 +163,10 @@ const NewHome = () => {
     const deleteAllMenuAndStartTutorial = async () => {
       await deleteDietAllMutation.mutateAsync();
     };
-    dispatch(openModal({ name: "tutorialTPS", modalId: "NewHome" }));
+    setTimeout(
+      () => dispatch(openModal({ name: "tutorialTPS", modalId: "NewHome" })),
+      200
+    );
     if (Object.keys(dTOData).length !== 0) deleteAllMenuAndStartTutorial();
     return () => clearTimeout(timeoutId);
   }, [tutorialProgress, dTOData, menuNum, isFocused]);
@@ -177,14 +180,17 @@ const NewHome = () => {
     false;
   const ctaBtnText = isDietEmpty ? "식단 구성하기" : "식단 구매하기";
 
-  const insetTop = useSafeAreaInsets().top;
+  const statusBarHeight = useSafeAreaInsets().top;
+  // paddingTop 적용시 안드로이드만 py에 padding만큼 inset이 적용됨
+  // android만 paddingTop 만큼 빼주기
+  const insetTop = Platform.OS === "android" ? statusBarHeight : 0;
 
   return (
     <Container
       style={{
-        paddingTop: insetTop,
-        backgroundColor: colors.backgroundLight2,
-        // backgroundColor: colors.backgroundLight2,
+        paddingTop: statusBarHeight,
+        paddingBottom: Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0,
+        backgroundColor: colors.backgroundLight,
         paddingLeft: 0,
         paddingRight: 0,
       }}
@@ -245,7 +251,7 @@ const NewHome = () => {
               />
               <DTooltip
                 tooltipShow={true}
-                boxTop={tutorialCtaBtnPy - 36}
+                boxTop={tutorialCtaBtnPy - insetTop - 36}
                 text="식단구성을 시작해봐요!"
                 boxLeft={32}
               />
@@ -260,7 +266,7 @@ const NewHome = () => {
                 btnText={ctaBtnText}
                 style={{
                   width: SCREENWIDTH - 32 - 32,
-                  marginTop: tutorialCtaBtnPy,
+                  marginTop: tutorialCtaBtnPy - insetTop,
                 }}
               />
             </>

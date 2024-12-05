@@ -166,7 +166,7 @@ const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
                       pathname: "/Change",
                       params: {
                         dietNo,
-                        prodcutNo: food.productNo,
+                        productNo: food.productNo,
                         food: JSON.stringify(food),
                       },
                     });

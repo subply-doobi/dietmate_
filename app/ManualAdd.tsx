@@ -1,6 +1,6 @@
 // RN
 import { useEffect, useMemo, useRef } from "react";
-import { ActivityIndicator, Animated, FlatList } from "react-native";
+import { ActivityIndicator, Animated, FlatList, Platform } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -36,8 +36,8 @@ const ManualAdd = () => {
   // navigation
   const headerHeight = useHeaderHeight();
   const fixedHeaderHeight = useMemo(() => headerHeight, []);
-  console.log("ManualAdd: fixedHeaderHeight: ", fixedHeaderHeight);
-  const insetTop = useSafeAreaInsets().top;
+  const statusBarHeight = useSafeAreaInsets().top;
+  const insetTop = Platform.OS === "ios" ? 0 : statusBarHeight;
 
   // redux
   const dispatch = useAppDispatch();
@@ -184,12 +184,12 @@ const ManualAdd = () => {
                 currentNumOfFoods === 0
               }
               text="영양성분 부분을 눌러 식품 하나를 추가해봐요"
-              boxTop={40 + 70 + 8 + 140 - 40}
+              boxTop={fixedHeaderHeight + 40 + 70 + 8 + 140 - 40}
               boxLeft={16}
             />
             <HomeFoodListAndBtn
               style={{
-                marginTop: 40 + 70 + 8 + 140,
+                marginTop: fixedHeaderHeight + 40 + 70 + 8 + 140,
               }}
               scrollY={scrollY}
               flatListRef={flatListRef}

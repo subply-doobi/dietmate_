@@ -1,27 +1,27 @@
-import {SafeAreaView} from 'react-native';
+import { View } from "react-native";
 
-import {TextMain} from '../../../shared/ui/styledComps';
-import styled from 'styled-components/native';
-import colors from '../../../shared/colors';
-import {link} from '../../../shared/utils/linking';
-import {INQUIRY_URL} from '../../../shared/constants';
+import { TextMain } from "../../../shared/ui/styledComps";
+import styled from "styled-components/native";
+import colors from "../../../shared/colors";
+import { link } from "../../../shared/utils/linking";
+import { INQUIRY_URL } from "../../../shared/constants";
 
 interface IShippingPart {
   platformUrl: string;
   platformNm: string;
 }
-const ShippingPart = ({platformUrl, platformNm}: IShippingPart) => {
-  const isDietmate = platformNm === '근의공식';
+const ShippingPart = ({ platformUrl, platformNm }: IShippingPart) => {
+  const isDietmate = platformNm === "근의공식";
   return (
-    <SafeAreaView>
+    <View>
       <Desc>
         근의공식은 여러 업체들의 식품들로 {`\n`}
         고객님이 구성한 식단을 {`\n`}한 번에 결제할 수 있도록 도와드립니다.
         {`\n`}
         {`\n`}
-        <Desc style={{fontWeight: 'bold'}}>
+        <Desc style={{ fontWeight: "bold" }}>
           (배송완료까지 2~4 영업일 소요)
-        </Desc>{' '}
+        </Desc>{" "}
         {`\n`}
         {`\n`}
         결제된 식품들은 해당 식품사에서 배송을 보내드리므로 {`\n`}각 식품사의
@@ -49,7 +49,7 @@ const ShippingPart = ({platformUrl, platformNm}: IShippingPart) => {
       {isDietmate && (
         <LinkText onPress={() => link(INQUIRY_URL)}>고객센터</LinkText>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 export default ShippingPart;

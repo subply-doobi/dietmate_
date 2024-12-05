@@ -1,6 +1,6 @@
 // RN
 import { useEffect, useRef } from "react";
-import { ActivityIndicator, Animated, FlatList } from "react-native";
+import { ActivityIndicator, Animated, FlatList, Platform } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -25,7 +25,10 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useListProduct } from "@/shared/api/queries/product";
 import { IProductData } from "@/shared/api/types/product";
-import { tutorialSortFilter } from "@/shared/constants";
+import {
+  DEFAULT_BOTTOM_TAB_HEIGHT,
+  tutorialSortFilter,
+} from "@/shared/constants";
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -104,7 +107,12 @@ const Search = () => {
   }
   const insetTop = useSafeAreaInsets().top;
   return (
-    <Container style={{ marginTop: insetTop }}>
+    <Container
+      style={{
+        paddingTop: insetTop,
+        paddingBottom: Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0,
+      }}
+    >
       {/* 끼니선택, progressBar section */}
       <MenuSection />
 

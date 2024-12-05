@@ -13,7 +13,7 @@ import { useListProduct } from "@/shared/api/queries/product";
 import { ISortFilter } from "@/features/reduxSlices/sortFilterSlice";
 import { IProductData } from "@/shared/api/types/product";
 
-import { FlatList } from "react-native";
+import { FlatList, Platform } from "react-native";
 import {
   useCreateDietDetail,
   useDeleteDietDetail,
@@ -28,6 +28,7 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import colors from "@/shared/colors";
 import DAlert from "@/shared/ui/DAlert";
 import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
+import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
 
 const FOOD_ERROR_RANGE = {
   calorie: [-20, 20],
@@ -179,7 +180,6 @@ const Change = () => {
     router.back();
     if (!!selectedProduct) {
       // change food
-      console.log("change food: dietNo, productNo", dietNo, productNo);
       await deleteDietDetailMutation.mutateAsync({
         dietNo,
         productNo,
@@ -207,6 +207,8 @@ const Change = () => {
         headerLeft: () => <></>,
       });
   }, [isTutorialMode]);
+
+  const insetBottom = Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS : 0;
 
   return (
     <Container style={{ backgroundColor: colors.white }}>
@@ -239,7 +241,7 @@ const Change = () => {
         style={{
           backgroundColor: colors.main,
           position: "absolute",
-          bottom: 8,
+          bottom: insetBottom + 8,
         }}
         onPress={onCTABtnPressed}
       />

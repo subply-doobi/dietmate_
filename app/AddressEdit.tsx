@@ -136,102 +136,100 @@ const AddressEdit = () => {
   }, [params]);
 
   return (
-    <>
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
-          <Container>
-            {hasAddrValue && (
-              <>
-                {/* 기본주소 */}
-                <Row style={{ marginTop: 24, justifyContent: "space-between" }}>
-                  <PostalCode>우편번호: {zipCode.value}</PostalCode>
-                  {isUpdate && (
-                    <AddressDeleteBtn
-                      onPress={() =>
-                        dispatch(openModal({ name: "addressDeleteAlert" }))
-                      }
-                    >
-                      <AddressDeleteIcon source={icons.cancelRound_24} />
-                    </AddressDeleteBtn>
-                  )}
-                </Row>
-                <AddressBase>{addr1.value}</AddressBase>
-                <HorizontalSpace height={24} />
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
+        <Container>
+          {hasAddrValue && (
+            <>
+              {/* 기본주소 */}
+              <Row style={{ marginTop: 24, justifyContent: "space-between" }}>
+                <PostalCode>우편번호: {zipCode.value}</PostalCode>
+                {isUpdate && (
+                  <AddressDeleteBtn
+                    onPress={() =>
+                      dispatch(openModal({ name: "addressDeleteAlert" }))
+                    }
+                  >
+                    <AddressDeleteIcon source={icons.cancelRound_24} />
+                  </AddressDeleteBtn>
+                )}
+              </Row>
+              <AddressBase>{addr1.value}</AddressBase>
+              <HorizontalSpace height={24} />
 
-                {/* 상세주소 */}
-                <DTextInput
-                  headerText="상세주소"
-                  placeholder={"상세주소"}
-                  value={addr2.value}
-                  onChangeText={(v) =>
-                    dispatch(setValue({ name: "addr2", value: v }))
-                  }
-                  isActive={!!addr2.value}
-                  isValid={addr2.isValid}
-                  keyboardType="default"
-                />
-              </>
-            )}
+              {/* 상세주소 */}
+              <DTextInput
+                headerText="상세주소"
+                placeholder={"상세주소"}
+                value={addr2.value}
+                onChangeText={(v) =>
+                  dispatch(setValue({ name: "addr2", value: v }))
+                }
+                isActive={!!addr2.value}
+                isValid={addr2.isValid}
+                keyboardType="default"
+              />
+            </>
+          )}
 
-            {/* 주소찾기 modal */}
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={postModalVisible}
-              onRequestClose={() => setPostModalVisible(!postModalVisible)}
-              style={{
-                flex: 1,
-                margin: 0,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <ModalBackground>
-                <ModalOutside onPress={() => setPostModalVisible(false)} />
-                {/* daum-post-code */}
-                <Postcode
-                  style={{ width: SCREENWIDTH - 32, height: 410 }}
-                  jsOptions={{ animation: true, hideMapBtn: false }}
-                  onSelected={(data) => onPostCodeSelected(data)}
-                  onError={() => console.error("오류")}
-                />
-              </ModalBackground>
-            </Modal>
-
-            {/* 주소 delete 알럿 */}
-            <DAlert
-              alertShow={addressDeleteAlert.isOpen}
-              onCancel={() =>
-                dispatch(closeModal({ name: "addressDeleteAlert" }))
-              }
-              onConfirm={() => onDeleteAlertConfirm()}
-              NoOfBtn={2}
-              renderContent={renderDeleteAlertContent}
-              confirmLabel={"삭제"}
-            />
-          </Container>
-        </ScrollView>
-
-        {/* 1. 주소추가,변경 | 2. 확인 버튼 */}
-        <BtnBox>
-          <AddressEditBtn
-            btnStyle="border"
-            onPress={() => setPostModalVisible(true)}
+          {/* 주소찾기 modal */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={postModalVisible}
+            onRequestClose={() => setPostModalVisible(!postModalVisible)}
+            style={{
+              flex: 1,
+              margin: 0,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            <BtnText style={{ color: colors.textSub, fontSize: 16 }}>
-              {hasAddrValue ? "주소 전체변경" : " + 주소 추가"}
-            </BtnText>
-          </AddressEditBtn>
-          <AddressConfirmBtn
-            btnStyle={ctaBtnText === "확인" ? "activated" : "inactivated"}
-            disabled={ctaBtnText !== "확인"}
-            onPress={() => onConfirmBtnPress()}
-          >
-            <BtnText>{ctaBtnText}</BtnText>
-          </AddressConfirmBtn>
-        </BtnBox>
-      </SafeAreaView>
-    </>
+            <ModalBackground>
+              <ModalOutside onPress={() => setPostModalVisible(false)} />
+              {/* daum-post-code */}
+              <Postcode
+                style={{ width: SCREENWIDTH - 32, height: 410 }}
+                jsOptions={{ animation: true, hideMapBtn: false }}
+                onSelected={(data) => onPostCodeSelected(data)}
+                onError={() => console.error("오류")}
+              />
+            </ModalBackground>
+          </Modal>
+
+          {/* 주소 delete 알럿 */}
+          <DAlert
+            alertShow={addressDeleteAlert.isOpen}
+            onCancel={() =>
+              dispatch(closeModal({ name: "addressDeleteAlert" }))
+            }
+            onConfirm={() => onDeleteAlertConfirm()}
+            NoOfBtn={2}
+            renderContent={renderDeleteAlertContent}
+            confirmLabel={"삭제"}
+          />
+        </Container>
+      </ScrollView>
+
+      {/* 1. 주소추가,변경 | 2. 확인 버튼 */}
+      <BtnBox>
+        <AddressEditBtn
+          btnStyle="border"
+          onPress={() => setPostModalVisible(true)}
+        >
+          <BtnText style={{ color: colors.textSub, fontSize: 16 }}>
+            {hasAddrValue ? "주소 전체변경" : " + 주소 추가"}
+          </BtnText>
+        </AddressEditBtn>
+        <AddressConfirmBtn
+          btnStyle={ctaBtnText === "확인" ? "activated" : "inactivated"}
+          disabled={ctaBtnText !== "확인"}
+          onPress={() => onConfirmBtnPress()}
+        >
+          <BtnText>{ctaBtnText}</BtnText>
+        </AddressConfirmBtn>
+      </BtnBox>
+    </SafeAreaView>
   );
 };
 

@@ -1,12 +1,6 @@
 // RN, expo
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  Text,
-  ScrollView,
-  SafeAreaView,
-  View,
-  ActivityIndicator,
-} from "react-native";
+import { Text, ScrollView, View, ActivityIndicator } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";

@@ -1,5 +1,5 @@
 // RN
-import { ScrollView } from "react-native";
+import { Platform, ScrollView } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -11,7 +11,7 @@ import { Container } from "@/shared/ui/styledComps";
 import DAlert from "@/shared/ui/DAlert";
 import ListBtns from "@/shared/ui/ListBtns";
 import { link } from "@/shared/utils/linking";
-import { INQUIRY_URL } from "@/shared/constants";
+import { DEFAULT_BOTTOM_TAB_HEIGHT, INQUIRY_URL } from "@/shared/constants";
 import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
 import { updateNotShowAgainList } from "@/shared/utils/asyncStorage";
 import { setTutorialStart } from "@/features/reduxSlices/commonSlice";
@@ -23,7 +23,6 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 const Mypage = () => {
   // navigation
   const headerHeight = useHeaderHeight();
-  console.log("Mypage: headerHeight", headerHeight);
   const router = useRouter();
 
   // redux
@@ -98,6 +97,7 @@ const Mypage = () => {
       style={{
         paddingLeft: 0,
         paddingRight: 0,
+        paddingBottom: Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0,
         backgroundColor: colors.white,
       }}
     >

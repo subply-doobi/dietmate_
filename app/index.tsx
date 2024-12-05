@@ -12,7 +12,8 @@ import colors from "@/shared/colors";
 import { ILoginType, useLoginByType } from "@/shared/api/queries/login";
 import { IS_IOS, SCREENWIDTH } from "@/shared/constants";
 import AppleLogin from "@/components/screens/login/AppleLogin";
-import { BtnCTA, BtnText, TextMain } from "@/shared/ui/styledComps";
+import { BtnCTA, BtnText, Container, TextMain } from "@/shared/ui/styledComps";
+import { Platform } from "react-native";
 
 const Login = () => {
   // navigation
@@ -65,12 +66,6 @@ const Login = () => {
 };
 
 export default Login;
-
-const Container = styled.View`
-  flex: 1;
-  padding: 0px 16px 0px 16px;
-  background-color: ${colors.white};
-`;
 
 const BtnBox = styled.View`
   width: 100%;

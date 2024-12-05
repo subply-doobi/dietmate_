@@ -1,6 +1,11 @@
 // RN, expo
 import { useMemo, useState } from "react";
-import { TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import {
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 
 // 3rd
 import Accordion from "react-native-collapsible/Accordion";
@@ -20,7 +25,7 @@ import { getOrderAccordionContent } from "@/shared/utils/screens/order/orderAcco
 import { tfDTOToDDA } from "@/shared/utils/dataTransform";
 
 import colors from "@/shared/colors";
-import { SCREENWIDTH } from "@/shared/constants";
+import { BOTTOM_INDICATOR_IOS, SCREENWIDTH } from "@/shared/constants";
 import { PAY_METHOD } from "@/shared/utils/screens/order/payConsts";
 
 import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
@@ -155,6 +160,8 @@ const Order = () => {
     });
   };
 
+  const insetBottom = Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS : 0;
+
   return listAddressDataLoading ? (
     <Container style={{ justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="small" color={colors.main} />
@@ -187,7 +194,11 @@ const Order = () => {
       {/* 결제버튼 */}
       <CtaButton
         btnStyle={ctaBtnStyle}
-        style={{ width: SCREENWIDTH - 32, position: "absolute", bottom: 8 }}
+        style={{
+          width: SCREENWIDTH - 32,
+          position: "absolute",
+          bottom: insetBottom + 8,
+        }}
         onPress={async () => onHandleOrder()}
         btnText={ctaBtnText}
       />

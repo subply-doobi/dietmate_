@@ -1,6 +1,6 @@
 // RN, expo
 import { useCallback, useEffect, useRef } from "react";
-import { FlatList, ViewProps } from "react-native";
+import { FlatList, Platform, ViewProps } from "react-native";
 
 // 3rd
 
@@ -18,6 +18,7 @@ import { useListProduct } from "@/shared/api/queries/product";
 import { applySortFilter } from "@/features/reduxSlices/sortFilterSlice";
 import { IProductData } from "@/shared/api/types/product";
 import {
+  BOTTOM_INDICATOR_IOS,
   FOOD_LIST_ITEM_HEIGHT,
   HOME_FILTER_HEADER_HEIGHT,
   SCREENWIDTH,
@@ -30,6 +31,7 @@ import {
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { usePathname, useRouter } from "expo-router";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface IHomeFoodListAndBtn extends ViewProps {
   scrollTop: any;
@@ -145,6 +147,7 @@ const HomeFoodListAndBtn = ({
   const currentNumOfFoods = dDData?.length || 0;
   const isCTABtnDisAbled =
     isTutorialMode && tutorialProgress === "SelectFood" && dDData?.length === 0;
+  const insetBottom = Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS : 0;
 
   return (
     <Container {...props}>
@@ -196,7 +199,7 @@ const HomeFoodListAndBtn = ({
             <DTooltip
               tooltipShow={currentNumOfFoods >= 1}
               text="완료버튼을 눌러주세요"
-              boxBottom={60}
+              boxBottom={60 + insetBottom}
               boxLeft={16}
             />
           )}
@@ -205,7 +208,7 @@ const HomeFoodListAndBtn = ({
             style={{
               width: SCREENWIDTH - 32,
               position: "absolute",
-              bottom: 8,
+              bottom: Platform.OS === "ios" ? insetBottom + 8 : 8,
               backgroundColor: isCTABtnDisAbled ? colors.inactive : colors.main,
             }}
             disabled={isCTABtnDisAbled}

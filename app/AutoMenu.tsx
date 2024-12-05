@@ -1,6 +1,11 @@
 // RN
 import { useCallback, useEffect, useState } from "react";
-import { ScrollView, BackHandler, ActivityIndicator } from "react-native";
+import {
+  ScrollView,
+  BackHandler,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -24,6 +29,7 @@ import {
   useNavigation,
   useRouter,
 } from "expo-router";
+import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
 
 const AutoMenu = () => {
   // redux
@@ -140,6 +146,8 @@ const AutoMenu = () => {
     }, [progress])
   );
 
+  const insetBottom = Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS : 0;
+
   return !pageloaded ? (
     <Container style={{ backgroundColor: colors.white }}>
       <Box>
@@ -183,7 +191,7 @@ const AutoMenu = () => {
       {currentPage === "Processing" || currentPage === "Error" || (
         <CtaButton
           btnStyle={btnStyle}
-          style={{ position: "absolute", bottom: 8 }}
+          style={{ position: "absolute", bottom: insetBottom + 8 }}
           btnText="다음"
           onPress={() =>
             goNext(

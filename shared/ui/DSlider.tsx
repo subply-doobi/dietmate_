@@ -1,9 +1,9 @@
-import {SetStateAction} from 'react';
-import styled from 'styled-components/native';
-import {Slider} from '@miblanchard/react-native-slider';
-import colors from '../colors';
-import {commaToNum} from '../utils/sumUp';
-import {TextMain} from './styledComps';
+import { SetStateAction } from "react";
+import styled from "styled-components/native";
+import { Slider } from "@miblanchard/react-native-slider";
+import colors from "../colors";
+import { commaToNum } from "../utils/sumUp";
+import { TextMain } from "./styledComps";
 
 interface IDSlider {
   sliderValue: number[];
@@ -26,22 +26,24 @@ const DSlider = ({
   sliderWidth,
   text,
 }: IDSlider) => {
-  const width = sliderWidth ? sliderWidth : '100%';
+  const width = sliderWidth ? sliderWidth : "95%";
   return (
     <Container>
-      <SliderContainer style={{width}}>
+      <SliderContainer style={{ width }}>
         <Slider
           value={sliderValue}
-          onValueChange={value => Array.isArray(value) && setSliderValue(value)}
+          onValueChange={(value) =>
+            Array.isArray(value) && setSliderValue(value)
+          }
           onSlidingComplete={onSlidingComplete}
           minimumValue={minimumValue}
           maximumValue={maximumValue}
           step={step}
           minimumTrackTintColor={colors.main}
           maximumTrackTintColor={colors.inactive}
-          trackStyle={{height: 2}}
+          trackStyle={{ height: 2 }}
           renderThumbComponent={() => <Thumb />}
-          renderAboveThumbComponent={index => (
+          renderAboveThumbComponent={(index) => (
             <AboveThumbComponent thumbIdx={index}>
               <ThumbText>
                 {commaToNum(sliderValue[index])}원{text}
@@ -69,19 +71,18 @@ const SliderContainer = styled.View`
   margin-top: 24px;
 `;
 
-const AboveThumbComponent = styled.View<{thumbIdx: number}>`
+const AboveThumbComponent = styled.View<{ thumbIdx: number }>`
   width: 56px;
   height: 20px;
-  position: absolute;
   left: -28px;
-  top: ${({thumbIdx}) =>
-    thumbIdx === 0 ? (THUMB_SIZE / 2) * 3 + 6 : -(THUMB_SIZE / 2 + 6)}px;
+  top: ${({ thumbIdx }) => (thumbIdx === 0 ? THUMB_SIZE + 32 : 8)}px;
   align-items: center;
   justify-content: center;
 `;
 
 const ThumbText = styled(TextMain)`
-  font-size: 14px;
+  font-size: 12px;
+  line-height: 18px;
 `;
 
 const Thumb = styled.View`

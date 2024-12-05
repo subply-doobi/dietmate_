@@ -112,9 +112,6 @@ export default function TabLayout() {
             fontWeight: "bold",
             color: colors.textMain,
           },
-          headerLeft: () => (
-            <BackArrow goBackFn={router.back} style={{ marginLeft: 16 }} />
-          ),
         }}
       />
     </Tabs>

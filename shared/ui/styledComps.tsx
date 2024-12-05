@@ -81,6 +81,7 @@ export const TextSub = styled.Text`
 const PaddingView = styled.View`
   flex: 1;
   padding: 0px 16px 0px 16px;
+  background-color: ${colors.white};
 `;
 export const Container = ({ children, ...props }: ViewProps) => {
   return <PaddingView {...props}>{children}</PaddingView>;

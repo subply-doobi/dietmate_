@@ -1,5 +1,5 @@
 // RN, expo
-import { ScrollView } from "react-native";
+import { Platform, ScrollView } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -19,7 +19,11 @@ import PriceFilter from "./PriceFilter";
 
 import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
-import { FILTER_LIST, SCREENWIDTH } from "@/shared/constants";
+import {
+  BOTTOM_INDICATOR_IOS,
+  FILTER_LIST,
+  SCREENWIDTH,
+} from "@/shared/constants";
 import {
   applySortFilter,
   changeSelectedFilter,
@@ -80,7 +84,11 @@ const FilterModalContent = () => {
 
       {/* 0: 카테고리 | 1: 영양성분 | 2: 가격 */}
       <Col style={{ flex: 1, marginBottom: 80 }}>
-        <ScrollView>
+        <ScrollView
+          contentContainerStyle={{
+            paddingBottom: Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS : 0,
+          }}
+        >
           {selectedFilter === 0 && <CategoryFilter />}
           {selectedFilter === 1 && <NutritionFilter />}
           {selectedFilter === 2 && <PriceFilter />}
@@ -167,7 +175,7 @@ const InitializeIcon = styled.Image`
 
 const BottomBtnBox = styled.View`
   position: absolute;
-  bottom: 16px;
+  bottom: ${Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS + 16 : 16}px;
   justify-content: center;
   column-gap: 8px;
   flex-direction: row;

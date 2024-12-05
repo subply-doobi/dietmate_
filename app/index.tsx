@@ -74,16 +74,6 @@ const BtnBox = styled.View`
   align-self: center;
 `;
 
-const TitleText = styled(TextMain)`
-  margin-top: 16px;
-  margin-bottom: 80px;
-  font-size: 32px;
-  text-align: center;
-  line-height: 32px;
-  font-family: "KotraHope";
-  include-font-padding: false;
-`;
-
 const LogoBox = styled.View`
   position: absolute;
   top: 40%;

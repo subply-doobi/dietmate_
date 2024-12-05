@@ -1,7 +1,8 @@
-import {TouchableOpacity} from 'react-native';
-import styled from 'styled-components/native';
+import { Alert, TouchableOpacity } from "react-native";
+import styled from "styled-components/native";
 
-import {icons} from '../iconSource';
+import { icons } from "../iconSource";
+import { usePathname, useRouter } from "expo-router";
 
 const Back = styled.Image`
   width: 24px;
@@ -12,11 +13,17 @@ const BackArrow = ({
   goBackFn,
   style,
 }: {
-  goBackFn: Function;
-  style?: {marginLeft?: number};
+  goBackFn?: Function;
+  style?: { marginLeft?: number };
 }) => {
+  const router = useRouter();
   return (
-    <TouchableOpacity onPress={() => goBackFn()} style={{...style}}>
+    <TouchableOpacity
+      onPressIn={() => {
+        goBackFn ? goBackFn() : router.back();
+      }}
+      style={{ ...style }}
+    >
       <Back source={icons.back_24} />
     </TouchableOpacity>
   );

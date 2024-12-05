@@ -36,7 +36,7 @@ const UserInput = () => {
   // navigation
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { reset, setOptions } = useNavigation();
+  const { setOptions } = useNavigation();
 
   // react-query
   const { data: baseLineData } = useGetBaseLine();
@@ -113,7 +113,7 @@ const UserInput = () => {
       headerRight: () =>
         currentPage === "Start" ||
         currentPage === "CalculationOptions" ? null : (
-          <GoStartBtn onPress={() => goStart()}>
+          <GoStartBtn onPressIn={() => goStart()}>
             <GoStartBtnText>처음으로</GoStartBtnText>
           </GoStartBtn>
         ),

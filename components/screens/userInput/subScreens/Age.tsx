@@ -1,5 +1,5 @@
 // RN, expo
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { TextInput } from "react-native";
 
 // 3rd
@@ -11,7 +11,7 @@ import {
   IUserInputState,
   setValue,
 } from "@/features/reduxSlices/userInputSlice";
-import { useNavigation } from "expo-router";
+import { useFocusEffect, useNavigation } from "expo-router";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 
 const Age = ({ userInputState }: { userInputState: IUserInputState }) => {
@@ -26,11 +26,11 @@ const Age = ({ userInputState }: { userInputState: IUserInputState }) => {
   const ageRef = useRef<TextInput | null>(null);
 
   // useEffect
-  useEffect(() => {
-    if (isFocused()) {
+  useFocusEffect(
+    useCallback(() => {
       ageRef?.current?.focus();
-    }
-  }, [isFocused()]);
+    }, [])
+  );
 
   return (
     <Container>

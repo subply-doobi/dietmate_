@@ -12,8 +12,7 @@ import colors from "@/shared/colors";
 import { ILoginType, useLoginByType } from "@/shared/api/queries/login";
 import { IS_IOS, SCREENWIDTH } from "@/shared/constants";
 import AppleLogin from "@/components/screens/login/AppleLogin";
-import { BtnCTA, BtnText, Container, TextMain } from "@/shared/ui/styledComps";
-import { Platform } from "react-native";
+import { BtnCTA, BtnText, Container } from "@/shared/ui/styledComps";
 
 const Login = () => {
   // navigation

@@ -23,6 +23,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/shared/store/reactQueryStore";
 import { initializeKakaoSDK } from "@react-native-kakao/core";
 import AppLoading from "@/components/appLoading/AppLoading";
+import ErrorAlert from "@/components/common/error/ErrorAlert";
 
 // Kakao SDK 초기화
 initializeKakaoSDK("5065665acbfa07f0dd876a374e66e618");
@@ -63,6 +64,8 @@ export default function RootLayout() {
         >
           {/* 로그인 */}
           <Stack.Screen name="index" />
+
+          <Stack.Screen name="ResetToRoot" />
 
           {/* 정보입력 */}
           <Stack.Screen
@@ -207,6 +210,7 @@ export default function RootLayout() {
 
           <Stack.Screen name="+not-found" />
         </Stack>
+        <ErrorAlert />
         {/* </ThemeProvider> */}
       </QueryClientProvider>
     </Provider>

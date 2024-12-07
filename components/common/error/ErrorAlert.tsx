@@ -53,5 +53,6 @@ const Container = styled.View`
 
 const AlertText = styled(TextMain)`
   font-size: 16px;
+  line-height: 20px;
   text-align: center;
 `;

@@ -264,6 +264,7 @@ const AddressConfirmBtn = styled(BtnCTA)`
 
 const AlertText = styled(TextMain)`
   font-size: 16px;
+  line-height: 20px;
   align-self: center;
 `;
 const ModalBackground = styled.View`

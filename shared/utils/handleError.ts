@@ -67,6 +67,7 @@ const errorActionByCode: ICodeToErrorAction = {
 
 // 에러코드 -> 액션
 const runErrorActionByCode = (code: IErrorCode | undefined | null) => {
+  console.log("runErrorActionByCode: ", code);
   // undefined -> nothing
   if (code === undefined) return;
 
@@ -94,14 +95,6 @@ const runErrorActionByCode = (code: IErrorCode | undefined | null) => {
   );
 };
 
-// 에러 핸들러
-export const handleError = async (error: Error) => {
-  console.log("handleError: ", error);
-  const errorCode = await convertErrorToCode(error);
-  console.log("errorCode: ", errorCode);
-  runErrorActionByCode(errorCode);
-};
-
 // ErrorAlert 띄우는 경우 확인버튼 눌렀을 때 실행할 함수
 const commonAlertAction = () => {
   queryClient.invalidateQueries();
@@ -118,7 +111,7 @@ const ErrAlertActionByCode: ICodeToErrorAction = {
     store.getState().common.isTutorialMode &&
       store.dispatch(setTutorialStart());
     router.canDismiss() && router.dismissAll();
-    router.replace({ pathname: "/" });
+    router.replace({ pathname: "/ResetToRoot" });
     queryClient.clear();
   },
 };
@@ -132,4 +125,12 @@ export const runErrAlertActionByCode = (
     return;
   }
   commonAlertAction();
+};
+
+// 에러 핸들러
+export const handleError = async (error: Error) => {
+  console.log("handleError: ", error);
+  const errorCode = await convertErrorToCode(error);
+  console.log("errorCode: ", errorCode, typeof errorCode);
+  runErrorActionByCode(errorCode);
 };

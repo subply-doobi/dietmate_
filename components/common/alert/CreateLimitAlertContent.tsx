@@ -1,11 +1,11 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 
-import {Col, TextMain} from '../../../shared/ui/styledComps';
+import { Col, TextMain } from "../../../shared/ui/styledComps";
 
 const CreateLimitAlertContent = () => {
   return (
     <Container>
-      <Col style={{marginTop: 28, alignItems: 'center'}}>
+      <Col style={{ marginTop: 28, alignItems: "center" }}>
         <AlertText>끼니는 5개 까지만 추가가 가능해요</AlertText>
       </Col>
     </Container>
@@ -20,5 +20,6 @@ const Container = styled.View`
 
 const AlertText = styled(TextMain)`
   font-size: 16px;
+  line-height: 20px;
   text-align: center;
 `;

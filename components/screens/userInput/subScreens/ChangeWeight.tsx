@@ -1,6 +1,6 @@
 // RN
 import { TextInput } from "react-native";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 // 3rd
 import styled from "styled-components/native";
@@ -12,7 +12,7 @@ import {
 } from "@/features/reduxSlices/userInputSlice";
 import SquareInput from "@/shared/ui/SquareInput";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import { useNavigation } from "expo-router";
+import { useFocusEffect, useNavigation } from "expo-router";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 
 const ChangeWeight = ({
@@ -34,11 +34,11 @@ const ChangeWeight = ({
   const weightRef = useRef<TextInput | null>(null);
 
   // useEffect
-  useEffect(() => {
-    if (isFocused()) {
+  useFocusEffect(
+    useCallback(() => {
       weightRef?.current?.focus();
-    }
-  }, [isFocused()]);
+    }, [])
+  );
 
   return (
     <Container>

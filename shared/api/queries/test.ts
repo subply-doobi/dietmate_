@@ -1,5 +1,5 @@
-import {useQuery} from '@tanstack/react-query';
-import {AxiosError, InternalAxiosRequestConfig} from 'axios';
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 function createAxiosError(status: number, message: string): AxiosError {
   const error = new Error(message) as AxiosError;
@@ -15,11 +15,11 @@ function createAxiosError(status: number, message: string): AxiosError {
   return error;
 }
 
-export const useTestQuery = () => {
+export const useTestErrQuery = () => {
   return useQuery<String>({
-    queryKey: ['test'],
+    queryKey: ["test"],
     queryFn: async () => {
-      throw createAxiosError(401, 'test error');
+      throw createAxiosError(500, "test error");
     },
     enabled: false,
   });

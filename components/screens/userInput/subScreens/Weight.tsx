@@ -11,8 +11,8 @@ import {
   IUserInputState,
   setValue,
 } from "@/features/reduxSlices/userInputSlice";
-import { useRef, useEffect } from "react";
-import { useNavigation } from "expo-router";
+import { useRef, useEffect, useCallback } from "react";
+import { useFocusEffect, useNavigation } from "expo-router";
 
 const Weight = ({ userInputState }: { userInputState: IUserInputState }) => {
   // navigation
@@ -26,11 +26,11 @@ const Weight = ({ userInputState }: { userInputState: IUserInputState }) => {
   const weightRef = useRef<TextInput | null>(null);
 
   // useEffect
-  useEffect(() => {
-    if (isFocused()) {
+  useFocusEffect(
+    useCallback(() => {
       weightRef?.current?.focus();
-    }
-  }, [isFocused()]);
+    }, [])
+  );
 
   return (
     <Container>

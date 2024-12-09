@@ -1,5 +1,5 @@
 // RN, expo
-import { useNavigation } from "expo-router";
+import { useFocusEffect, useNavigation } from "expo-router";
 
 // 3rd
 import styled from "styled-components/native";
@@ -10,7 +10,7 @@ import {
   IUserInputState,
   setValue,
 } from "@/features/reduxSlices/userInputSlice";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { TextInput } from "react-native";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 
@@ -26,11 +26,11 @@ const Height = ({ userInputState }: { userInputState: IUserInputState }) => {
   const heightRef = useRef<TextInput | null>(null);
 
   // useEffect
-  useEffect(() => {
-    if (isFocused()) {
+  useFocusEffect(
+    useCallback(() => {
       heightRef?.current?.focus();
-    }
-  }, [isFocused()]);
+    }, [])
+  );
 
   return (
     <Container>

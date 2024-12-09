@@ -1,12 +1,12 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 
-import {Col, TextMain} from '../../../shared/ui/styledComps';
+import { Col, TextMain } from "../../../shared/ui/styledComps";
 
-const DeleteAlertContent = ({deleteText}: {deleteText: string}) => {
+const DeleteAlertContent = ({ deleteText }: { deleteText: string }) => {
   return (
     <Container>
-      <Col style={{marginTop: 28, alignItems: 'center'}}>
-        <AlertText>{deleteText ?? ''}</AlertText>
+      <Col style={{ marginTop: 28, alignItems: "center" }}>
+        <AlertText>{deleteText ?? ""}</AlertText>
         <AlertText>삭제하시겠어요?</AlertText>
       </Col>
     </Container>
@@ -21,4 +21,5 @@ const Container = styled.View`
 
 const AlertText = styled(TextMain)`
   font-size: 16px;
+  line-height: 20px;
 `;

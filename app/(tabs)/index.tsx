@@ -44,7 +44,6 @@ import DTPScreen from "@/shared/ui/DTPScreen";
 import DTooltip from "@/shared/ui/DTooltip";
 import DSmallBtn from "@/shared/ui/DSmallBtn";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useHeaderHeight } from "@react-navigation/elements";
 
 const NewHome = () => {
   // navigation

@@ -78,10 +78,10 @@ export interface IIamportPayParams {
   vatAmount?: number; // 부가세 미입력시 자동 1/11
   customer: ICustomer;
   windowType?: IWindowType;
-  redirectUrl: string;
+  redirectUrl?: string;
   noticeUrls?: string[];
   confirmUrl?: string;
-  appScheme: string;
+  appScheme?: string;
   isEscrow?: boolean; // 미입력시 기본값 false
   products: IProduct[];
   locale?: string;
@@ -193,11 +193,11 @@ export const setPayParams = ({
   payParams_doobi: IDoobiPayParams;
 } => {
   const payParams_iamport: IIamportPayParams = {
-    storeId: process.env.EXPO_PUBLIC_STORE_ID_IAMPORT,
+    storeId: process.env.EXPO_PUBLIC_STORE_ID_IAMPORT as string,
     paymentId: `paymentU${userData.userId}D${Date.now()}`,
     orderName: `${menuNum}개 끼니 (식품 ${productNum}개)`,
     totalAmount: priceTotal + shippingPrice,
-    currency: "KRW",
+    currency: "CURRENCY_KRW",
     payMethod: paymentMethod,
     channelKey: channelKey[pg],
     // taxFreeAmount : '',
@@ -215,15 +215,15 @@ export const setPayParams = ({
         zipcode: listAddressData?.[selectedAddrIdx]?.zipCode,
       },
     },
-    windowType: {
-      pc: "REDIRECTION",
-      mobile: "REDIRECTION",
-    },
-    redirectUrl: process.env.EXPO_PUBLIC_REDIRECT_URL_IAMPORT,
+    // windowType: {
+    //   pc: "REDIRECTION",
+    //   mobile: "REDIRECTION",
+    // },
+    // redirectUrl: process.env.EXPO_PUBLIC_REDIRECT_URL_IAMPORT as string,
     // noticeUrls : '',
     // confirmUrl : '',
-    appScheme: process.env.EXPO_PUBLIC_APP_SCHEME_IAMPORT,
-    isEscrow: undefined,
+    // appScheme: process.env.EXPO_PUBLIC_APP_SCHEME_IAMPORT as string,
+    // isEscrow: undefined,
     products: [
       {
         id: `productU${userData.userId}D${Date.now()}`,
@@ -258,7 +258,7 @@ export const setPayParams = ({
         " | " +
         listAddressData?.[selectedAddrIdx]?.addr2 || "",
     buyerZipCode: listAddressData?.[selectedAddrIdx]?.zipCode || "",
-    appScheme: payParams_iamport.appScheme,
+    appScheme: process.env.EXPO_PUBLIC_APP_SCHEME_IAMPORT as string,
     customerUid: "customer_" + Date.now(),
     customData: `${customData.entranceType} | ${customData.entranceNote} | ${shippingPrice}`,
   };

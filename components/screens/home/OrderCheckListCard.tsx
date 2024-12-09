@@ -82,8 +82,11 @@ const OrderChecklistCard = ({
       <ChecklistBox>
         {!isOrderEmpty &&
           flattenOrderData.map((order, idx) => {
-            const numerator = totalChecklist[order[0][0].orderNo]?.length || 0;
-            const denominator = order.length;
+            const numerator =
+              (Object.keys(totalChecklist).length !== 0 &&
+                totalChecklist[order[0]?.[0]?.orderNo]?.length) ||
+              0;
+            const denominator = order.length === 0 ? 1 : order.length;
             const percentage = Math.round((numerator / denominator) * 100);
             return (
               <ShadowView
@@ -97,7 +100,7 @@ const OrderChecklistCard = ({
                       params: {
                         order: JSON.stringify(order),
                         checklist: JSON.stringify(
-                          totalChecklist[order[0][0].orderNo]
+                          totalChecklist[order[0]?.[0]?.orderNo] || []
                         ),
                       },
                     })
@@ -105,7 +108,7 @@ const OrderChecklistCard = ({
                 >
                   <LeftBar />
                   <CheckListTitle>
-                    {parseDate(order[0][0].buyDate)} 주문
+                    {parseDate(order[0]?.[0]?.buyDate)} 주문
                   </CheckListTitle>
                   <Row>
                     <CheckListSubTitle>{percentage}% 완료</CheckListSubTitle>

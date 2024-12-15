@@ -62,7 +62,8 @@
             "handleKakaoOpenUrl": true
           }
         }
-      ]
+      ],
+      ["@portone/react-native-sdk/plugin"]
     ],
     "experiments": {
       "typedRoutes": true

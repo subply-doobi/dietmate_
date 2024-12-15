@@ -44,7 +44,7 @@ const PaymentMethod = () => {
                 borderWidth,
                 borderColor,
               }}
-              onPress={() => {
+              onPressIn={() => {
                 dispatch(
                   setValue({ name: "paymentMethod", value: method.value })
                 );

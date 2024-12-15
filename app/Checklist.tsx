@@ -65,14 +65,14 @@ const Checklist = () => {
 
   // percentage
   const numerator = checklist.length || 0;
-  const denominator = order.length;
+  const denominator = order.length === 0 ? 1 : order.length;
   const percentage = Math.round((numerator / denominator) * 100);
 
   // useEffect
   useEffect(() => {
     if (!order) return;
     setOptions({
-      headerTitle: `${parseDate(order[0][0].buyDate)} 주문`,
+      headerTitle: `${parseDate(order[0]?.[0]?.buyDate)} 주문`,
     });
   }, []);
 

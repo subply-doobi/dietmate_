@@ -54,11 +54,11 @@ const LastOrderCard = ({
           </TargetChangeBtn>
         </Row>
         <HorizontalSpace height={40} />
-        <LastOrderNutr lastOrder={orderGroupedDataFlatten[0]} />
+        <LastOrderNutr lastOrder={orderGroupedDataFlatten[0] || [[]]} />
         <Col style={{ marginTop: 24 }}>
           <Row>
             <Icon source={icons.calendar_24} />
-            <CardDesc>{orderGroupedDataFlatten[0][0][0].buyDate}</CardDesc>
+            <CardDesc>{orderGroupedDataFlatten[0]?.[0]?.[0]?.buyDate}</CardDesc>
           </Row>
           <Row style={{ marginTop: 8 }}>
             <Icon source={icons.menu_24} />
@@ -67,7 +67,7 @@ const LastOrderCard = ({
           <Row style={{ marginTop: 8 }}>
             <Icon source={icons.card_24} />
             <CardDesc>
-              {commaToNum(orderGroupedDataFlatten[0][0][0].orderPrice)} 원
+              {commaToNum(orderGroupedDataFlatten[0]?.[0]?.[0]?.orderPrice)} 원
             </CardDesc>
           </Row>
         </Col>

@@ -16,6 +16,7 @@ import { IDietDetailData } from "@/shared/api/types/diet";
 import { useDeleteDietDetail } from "@/shared/api/queries/diet";
 import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { usePathname } from "expo-router";
 
 interface IMenu {
   dietNo: string;
@@ -23,6 +24,9 @@ interface IMenu {
 }
 
 const Menu = ({ dietNo, dietDetailData }: IMenu) => {
+  // navigation
+  const pathName = usePathname();
+
   // redux
   const dispatch = useAppDispatch();
   const productDeleteAlert = useAppSelector(
@@ -64,12 +68,13 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
     setCheckAllClicked(false);
     // setDeleteModalShow(false);
     dispatch(closeModal({ name: "productDeleteAlert" }));
-    const deleteMutations = selectedFoods[dietNo]?.map((productNo) =>
+    const deleteMutations = selectedFoods[dietNo]?.map((productNo) => {
+      console.log("delete: ", productNo);
       deleteDietDetailMutation.mutateAsync({
         dietNo,
         productNo,
-      })
-    );
+      });
+    });
 
     await Promise.all(deleteMutations)
       .then(() => {
@@ -105,7 +110,7 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
                 ? dispatch(
                     openModal({
                       name: "productDeleteAlert",
-                      modalId: `Menu_${dietNo}`,
+                      modalId: `Menu${pathName}_${dietNo}`,
                     })
                   )
                 : {}
@@ -129,7 +134,7 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
       <DAlert
         alertShow={
           productDeleteAlert.isOpen &&
-          productDeleteAlert.modalId === `Menu_${dietNo}`
+          productDeleteAlert.modalId === `Menu${pathName}_${dietNo}`
         }
         NoOfBtn={2}
         confirmLabel="삭제"

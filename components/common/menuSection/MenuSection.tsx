@@ -1,4 +1,5 @@
 // react, RN, 3rd
+import React from "react";
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,

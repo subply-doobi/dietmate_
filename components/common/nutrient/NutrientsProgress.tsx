@@ -1,10 +1,11 @@
 // RN, 3rd
 import styled from "styled-components/native";
 import * as Progress from "react-native-progress";
+import { useEffect, useMemo, useState } from "react";
 
 // util, const
 import colors from "@/shared/colors";
-import { Col, Row, VerticalSpace } from "@/shared/ui/styledComps";
+import { Col, Row } from "@/shared/ui/styledComps";
 import { sumUpNutrients } from "@/shared/utils/sumUp";
 
 // doobi components
@@ -13,13 +14,6 @@ import { NUTR_ERROR_RANGE } from "@/shared/constants";
 // react-query
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { IDietDetailData } from "@/shared/api/types/diet";
-
-const indicatorColorsByTitle2: { [key: string]: string } = {
-  "칼로리(kcal)": colors.main,
-  "탄수화물(g)": colors.main,
-  "단백질(g)": colors.main,
-  "지방(g)": colors.main,
-};
 
 const nutrLowerBoundByTitle: { [key: string]: number } = {
   "칼로리(kcal)": NUTR_ERROR_RANGE["calorie"][0],
@@ -45,22 +39,31 @@ interface INutrientProgress {
   denominator: number;
 }
 const ProgressBar = ({ title, numerator, denominator }: INutrientProgress) => {
-  const indicatorColor =
-    numerator > denominator + nutrUpperBoundByTitle[title]
-      ? colors.warning
-      : numerator < denominator + nutrLowerBoundByTitle[title]
-      ? indicatorColorsByTitle2[title]
-      : colors.success;
+  const [color, setColor] = useState(colors.main);
+  const progress = numerator / denominator;
+
+  useEffect(() => {
+    const indicatorColor =
+      numerator > denominator + nutrUpperBoundByTitle[title]
+        ? colors.warning
+        : numerator < denominator + nutrLowerBoundByTitle[title]
+        ? colors.main
+        : colors.success;
+    setTimeout(() => {
+      setColor(indicatorColor);
+    }, 500);
+  }, [numerator]);
 
   return (
     <ProgressBarContainer>
       <ProgressBarTitle>{title}</ProgressBarTitle>
       <Progress.Bar
+        key={`${title}_${color}`}
         style={{ marginTop: 5 }}
-        progress={numerator / denominator}
+        progress={progress}
         width={null}
         height={4}
-        color={indicatorColor}
+        color={color}
         unfilledColor={colors.bgBox}
         borderWidth={0}
       />
@@ -79,7 +82,37 @@ const NutrientsProgress = ({
   const { data: baseLineData } = useGetBaseLine();
 
   // etc
-  const { cal, carb, protein, fat } = sumUpNutrients(dietDetailData);
+  const PROGRESS_ITEM = useMemo(() => {
+    const { cal, carb, protein, fat } = sumUpNutrients(dietDetailData);
+    const PROGRESS_ITEM = [
+      {
+        id: "calorie",
+        title: "칼로리(kcal)",
+        nutr: cal,
+        baseline: parseInt(baseLineData?.calorie || "0"),
+      },
+      {
+        id: "carb",
+        title: "탄수화물(g)",
+        nutr: carb,
+        baseline: parseInt(baseLineData?.carb || "0"),
+      },
+      {
+        id: "protein",
+        title: "단백질(g)",
+        nutr: protein,
+        baseline: parseInt(baseLineData?.protein || "0"),
+      },
+      {
+        id: "fat",
+        title: "지방(g)",
+        nutr: fat,
+        baseline: parseInt(baseLineData?.fat || "0"),
+      },
+    ];
+
+    return PROGRESS_ITEM;
+  }, [dietDetailData, baseLineData]);
 
   return (
     <Container>
@@ -89,50 +122,17 @@ const NutrientsProgress = ({
             style={{
               alignItems: "center",
               justifyContent: "center",
+              columnGap: 8,
             }}
           >
-            <ProgressBar
-              title="칼로리(kcal)"
-              numerator={cal}
-              denominator={
-                Object.keys(baseLineData).length === 0
-                  ? 0
-                  : parseInt(baseLineData.calorie)
-              }
-            />
-            <VerticalSpace width={8} />
-
-            <ProgressBar
-              title="탄수화물(g)"
-              numerator={carb}
-              denominator={
-                Object.keys(baseLineData).length === 0
-                  ? 0
-                  : parseInt(baseLineData.carb)
-              }
-            />
-            <VerticalSpace width={8} />
-
-            <ProgressBar
-              title="단백질(g)"
-              numerator={protein}
-              denominator={
-                Object.keys(baseLineData).length === 0
-                  ? 0
-                  : parseInt(baseLineData.protein)
-              }
-            />
-            <VerticalSpace width={8} />
-
-            <ProgressBar
-              title="지방(g)"
-              numerator={fat}
-              denominator={
-                Object.keys(baseLineData).length === 0
-                  ? 0
-                  : parseInt(baseLineData.fat)
-              }
-            />
+            {PROGRESS_ITEM.map((item) => (
+              <ProgressBar
+                key={item.id}
+                title={item.title}
+                numerator={item.nutr}
+                denominator={item.baseline}
+              />
+            ))}
           </Row>
         )}
       </Col>

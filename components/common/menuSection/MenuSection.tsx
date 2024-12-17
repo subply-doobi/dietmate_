@@ -243,7 +243,7 @@ const MenuSection = () => {
         ),
       },
     ];
-  }, [dTOData, baseLineData, activeSection, isCreating]);
+  }, [dTOData, baseLineData, activeSection, isCreating, isDTOFetching]);
 
   // render
   return (

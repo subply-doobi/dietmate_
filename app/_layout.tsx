@@ -24,6 +24,8 @@ import { queryClient } from "@/shared/store/reactQueryStore";
 import { initializeKakaoSDK } from "@react-native-kakao/core";
 import AppLoading from "@/components/appLoading/AppLoading";
 import ErrorAlert from "@/components/common/error/ErrorAlert";
+import DAlert from "@/shared/ui/DAlert";
+import ModalComponent from "@/components/modal/ModalComponent";
 
 // Kakao SDK 초기화
 initializeKakaoSDK("5065665acbfa07f0dd876a374e66e618");
@@ -210,7 +212,9 @@ export default function RootLayout() {
 
           <Stack.Screen name="+not-found" />
         </Stack>
-        <ErrorAlert />
+
+        <ModalComponent />
+
         {/* </ThemeProvider> */}
       </QueryClientProvider>
     </Provider>

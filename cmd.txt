@@ -5,6 +5,7 @@
   git config --global core.autocrlf true
 
 - tags
+  git tag -d v1.0.18
   git push -d origin v1.0.18
 
 - remove derived data

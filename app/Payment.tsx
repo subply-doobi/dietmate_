@@ -14,7 +14,7 @@ import { useDeleteOrder, useUpdateOrder } from "@/shared/api/queries/order";
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { Container } from "@/shared/ui/styledComps";
 import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
+import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
 import { setCurrentDiet } from "@/features/reduxSlices/commonSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -26,7 +26,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const Payment = () => {
   // redux
   const dispatch = useAppDispatch();
-  const payUrlAlert = useAppSelector((state) => state.modal.modal.payUrlAlert);
 
   const router = useRouter();
   const {
@@ -96,19 +95,6 @@ const Payment = () => {
         request={payParams_iamport as PaymentRequest}
         onError={(error) => onPaymentFail(error.message)}
         onComplete={(complete) => onPaymentSuccess()}
-      />
-
-      <DAlert
-        alertShow={payUrlAlert.isOpen}
-        onCancel={() => dispatch(closeModal({ name: "payUrlAlert" }))}
-        onConfirm={() => dispatch(closeModal({ name: "payUrlAlert" }))}
-        renderContent={() => (
-          <CommonAlertContent
-            text={"앱이 설치되어있는지 확인해주세요"}
-            subText="문제가 계속되면 문의 바랍니다"
-          />
-        )}
-        NoOfBtn={1}
       />
     </SafeAreaView>
   );

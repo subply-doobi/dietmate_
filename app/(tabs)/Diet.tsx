@@ -22,30 +22,20 @@ import { useListProduct } from "@/shared/api/queries/product";
 
 import { getMenuAcContent } from "@/shared/utils/menuAccordion";
 import {
-  setAutoMenuStatus,
   setCurrentDiet,
   setMenuAcActive,
   setTotalFoodList,
-  setTutorialEnd,
-  setTutorialProgress,
 } from "@/features/reduxSlices/commonSlice";
 
 import { setFoodToOrder } from "@/features/reduxSlices/orderSlice";
 import { getAddDietStatusFrDTData } from "@/shared/utils/getDietAddStatus";
 import { commaToNum, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
-import { updateNotShowAgainList } from "@/shared/utils/asyncStorage";
 import { checkNoStockPAll } from "@/shared/utils/productStatusCheck";
 import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
 import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
 
 import {
-  renderAlertContent,
-  renderDTPContent,
-} from "@/shared/utils/screens/diet/modalContent";
-
-import {
   DEFAULT_BOTTOM_TAB_HEIGHT,
-  IS_ANDROID,
   IS_IOS,
   SCREENHEIGHT,
   SCREENWIDTH,
@@ -53,13 +43,9 @@ import {
 
 import colors from "@/shared/colors";
 import { Col, Container, HorizontalSpace } from "@/shared/ui/styledComps";
-import DBottomSheet from "@/components/common/bottomsheet/DBottomSheet";
 import CtaButton from "@/shared/ui/CtaButton";
 import AddMenuBtn from "@/components/screens/diet/AddMenuBtn";
 import CartSummary from "@/components/screens/diet/CartSummary";
-import MenuNumSelectContent from "@/components/common/cart/MenuNumSelectContent";
-import DAlert from "@/shared/ui/DAlert";
-import DTPScreen from "@/shared/ui/DTPScreen";
 
 const Diet = () => {
   // navigation
@@ -77,14 +63,6 @@ const Diet = () => {
     tutorialProgress,
     autoMenuStatus,
   } = useAppSelector((state) => state.common);
-  const {
-    menuCreateAlert,
-    menuCreateNAAlert,
-    noStockAlert,
-    autoMenuOverPriceAlert,
-    tutorialTPS,
-    menuNumSelectBS,
-  } = useAppSelector((state) => state.modal.modal);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -106,8 +84,6 @@ const Diet = () => {
 
   // useState
   const [forceModalQuit, setForceModalQuit] = useState(false);
-  const [numOfCreateDiet, setNumOfCreateDiet] = useState(5);
-  const [isCreating, setIsCreating] = useState(false);
 
   // useRef
   const scrollRef = useRef<ScrollView>(null);
@@ -163,13 +139,10 @@ const Diet = () => {
     currentDietNo && dispatch(setCurrentDiet(currentDietNo));
   };
 
-  const onAddCreatePressed = () => {
+  const onAddMenuPressed = () => {
     if (!dTOData) return;
-    // dispatch(setTutorialProgress(''));
-    setIsCreating(false);
-    dispatch(closeModal({ name: "tutorialTPS" }));
+    dispatch(closeModal({ name: "tutorialTPSAddMenu" }));
     if (addDietStatus === "possible") {
-      menuNum < 5 ? setNumOfCreateDiet(5 - menuNum) : setNumOfCreateDiet(1);
       setTimeout(() => {
         dispatch(openModal({ name: "menuCreateAlert" }));
       }, 200);
@@ -178,30 +151,6 @@ const Diet = () => {
     setTimeout(() => {
       dispatch(openModal({ name: "menuCreateNAAlert" }));
     }, 200);
-  };
-
-  const onCreateDiet = async () => {
-    setIsCreating(true);
-
-    await createDietCntMutation.mutateAsync({
-      dietCnt: String(numOfCreateDiet),
-    });
-
-    isTutorialMode && dispatch(setTutorialProgress("AddFood"));
-
-    setIsCreating(false);
-    dispatch(closeModal({ name: "menuCreateAlert" }));
-
-    const refetchedDTOData = (await refetchDTOData()).data;
-    const firstAddedDietNo = refetchedDTOData
-      ? Object.keys(refetchedDTOData)[0]
-      : "";
-    dispatch(setCurrentDiet(firstAddedDietNo));
-
-    isTutorialMode &&
-      setTimeout(() => {
-        dispatch(setMenuAcActive([0]));
-      }, 200);
   };
 
   // AutoMenu tutorial인 경우 스크롤 자동구성 버튼 위치로 내리기
@@ -237,6 +186,7 @@ const Diet = () => {
       setForceModalQuit(true);
       return;
     }
+
     setForceModalQuit(false);
   }, [isFocused]);
 
@@ -246,118 +196,23 @@ const Diet = () => {
   // ██  ██  ██ ██    ██ ██   ██ ██   ██ ██
   // ██      ██  ██████  ██████  ██   ██ ███████
 
-  // alert state
-  const alertState = menuCreateAlert.isOpen
-    ? "createDiet"
-    : menuCreateNAAlert.isOpen
-    ? "createDietNA"
-    : autoMenuStatus.isLoading
-    ? "autoMenuLoading"
-    : autoMenuStatus.isError
-    ? "autoMenuError"
-    : isTutorialMode && tutorialProgress === "Complete"
-    ? "tutorialComplete"
-    : autoMenuOverPriceAlert.isOpen
-    ? "autoMenuOverPrice"
-    : noStockAlert.isOpen
-    ? "noStock"
-    : "";
-  const alertShow = !forceModalQuit && alertState !== "";
-  // alert confirm fn
-  const alertConfirmFn: { [key: string]: Function } = {
-    createDiet: async () => await onCreateDiet(),
-    createDietNA: () => dispatch(closeModal({ name: "menuCreateNAAlert" })),
-    autoMenuLoading: () => {},
-    autoMenuError: () => dispatch(setAutoMenuStatus({ isError: false })),
-    tutorialComplete: () => {
-      dispatch(setTutorialEnd());
-      updateNotShowAgainList({ key: "tutorial", value: true });
-    },
-    noStock: () => dispatch(closeModal({ name: "noStockAlert" })),
-    autoMenuOverPrice: () =>
-      dispatch(closeModal({ name: "autoMenuOverPriceAlert" })),
-  };
-  // alert cancel fn
-  const alertCancelFn: { [key: string]: Function } = {
-    createDiet: () => dispatch(closeModal({ name: "menuCreateAlert" })),
-    createDietNA: () => dispatch(closeModal({ name: "menuCreateNAAlert" })),
-    autoMenuLoading: () => {},
-    autoMenuError: () => dispatch(setAutoMenuStatus({ isError: false })),
-    tutorialComplete: () => {},
-    noStock: () => dispatch(closeModal({ name: "noStockAlert" })),
-    autoMenuOverPrice: () =>
-      dispatch(closeModal({ name: "autoMenuOverPriceAlert" })),
-  };
-  const alertNumOfBtn: { [key: string]: 0 | 1 | 2 } = {
-    createDiet: isCreating
-      ? 0
-      : isTutorialMode && tutorialProgress === "AddMenu"
-      ? 1
-      : 2,
-    createDietNA: 1,
-    autoMenuLoading: 0,
-    autoMenuError: 1,
-    tutorialComplete: 1,
-    noStock: 1,
-    autoMenuOverPrice: 1,
-  };
-
-  const alertDelay = alertState === "tutorialComplete" ? 1000 : 0;
-  const alertConfirmLabel = alertState === "createDiet" ? "추가" : "확인";
-
   // DTP state
   useEffect(() => {
-    if (!isFocused) {
-      tutorialTPS.isOpen && dispatch(closeModal({ name: "tutorialTPS" }));
-      return;
-    }
+    if (!isFocused) return;
+
     if (
-      !forceModalQuit &&
-      !alertShow &&
-      isTutorialMode &&
-      (tutorialProgress === "AddMenu" ||
-        tutorialProgress === "AddFood" ||
-        tutorialProgress === "AutoRemain" ||
-        tutorialProgress === "ChangeFood" ||
-        tutorialProgress === "AutoMenu")
+      tutorialProgress === "AddMenu" ||
+      tutorialProgress === "AddFood" ||
+      tutorialProgress === "AutoRemain" ||
+      tutorialProgress === "ChangeFood" ||
+      tutorialProgress === "AutoMenu"
     ) {
       setTimeout(() => {
-        dispatch(openModal({ name: "tutorialTPS", modalId: "Diet" }));
+        dispatch(openModal({ name: `tutorialTPS${tutorialProgress}` }));
       }, 300);
       return;
     }
-    tutorialTPS.isOpen && dispatch(closeModal({ name: "tutorialTPS" }));
-  }, [tutorialProgress, alertShow, forceModalQuit, isFocused]);
-
-  const dtpDeley: { [key: string]: number } = {
-    AddMenu: 500,
-    AddFood: 1000,
-    AutoRemain: 500,
-    ChangeFood: 500,
-    AutoMenu: 2000,
-  };
-  const dtpAction: { [key: string]: () => void } = {
-    AddMenu: () => {
-      onAddCreatePressed();
-    },
-    AddFood: () => setForceModalQuit(true),
-    AutoRemain: () => {},
-    ChangeFood: () => {
-      router.push({
-        pathname: "/Change",
-        params: {
-          dietNo: currentDietNo,
-          productNo: dTOData?.[currentDietNo]?.dietDetail[1]?.productNo,
-          food:
-            JSON.stringify(dTOData?.[currentDietNo]?.dietDetail[1]) ??
-            undefined,
-        },
-      });
-    },
-    AutoMenu: () => {
-      router.push({ pathname: "/AutoMenu" });
-    },
-  };
+  }, [tutorialProgress, isFocused]);
 
   const statusBarHeight = useSafeAreaInsets().top;
   const insetTop = Platform.OS === "ios" ? 0 : statusBarHeight;
@@ -391,7 +246,7 @@ const Diet = () => {
 
           {/* 끼니추가 버튼 */}
           {dTOData && (
-            <AddMenuBtn onPress={onAddCreatePressed} dTOData={dTOData} />
+            <AddMenuBtn onPress={onAddMenuPressed} dTOData={dTOData} />
           )}
 
           {/* 여러끼니 자동구성 버튼 */}
@@ -408,7 +263,7 @@ const Diet = () => {
               }}
               btnText={`전체 자동구성`}
               onPress={() => {
-                dispatch(closeModal({ name: "tutorialTPS" }));
+                // dispatch(closeModal({ name: "tutorialTPS" }));
                 router.push({ pathname: "/AutoMenu" });
               }}
             />
@@ -443,51 +298,6 @@ const Diet = () => {
           !!dTOData && dispatch(setFoodToOrder(dTOData));
           router.push({ pathname: "/Order" });
         }}
-      />
-
-      {/* 끼니 수량 조절용 BottomSheet */}
-      <DBottomSheet
-        visible={menuNumSelectBS.isOpen}
-        closeModal={() => dispatch(closeModal({ name: "menuNumSelectBS" }))}
-        renderContent={() => <MenuNumSelectContent />}
-      />
-
-      {/* 알럿 */}
-      <DAlert
-        contentDelay={alertDelay}
-        style={{ width: 280 }}
-        alertShow={alertShow}
-        onCancel={alertCancelFn[alertState]}
-        onConfirm={alertConfirmFn[alertState]}
-        confirmLabel={alertConfirmLabel}
-        NoOfBtn={alertNumOfBtn[alertState]}
-        renderContent={() =>
-          renderAlertContent[alertState] &&
-          renderAlertContent[alertState]({
-            numOfCreateDiet,
-            setNumOfCreateDiet,
-            isCreating,
-            addDietNAText,
-          })
-        }
-      />
-
-      {/* DTP (튜토리얼)*/}
-      <DTPScreen
-        contentDelay={dtpDeley[tutorialProgress] || 0}
-        style={{ paddingHorizontal: 16 }}
-        visible={tutorialTPS.isOpen && tutorialTPS.modalId === "Diet"}
-        renderContent={() =>
-          renderDTPContent[tutorialProgress] &&
-          renderDTPContent[tutorialProgress]({
-            fn: dtpAction[tutorialProgress],
-            headerHeight,
-            insetTop,
-            bottomTabBarHeight,
-            dTOData: dTOData || {},
-            currentDietNo,
-          })
-        }
       />
     </Container>
   );

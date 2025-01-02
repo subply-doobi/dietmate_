@@ -35,7 +35,12 @@ const MenuAcContent = ({ dietNo }: IMenuAcContent) => {
   // fn
   const onMenuNoSelectPress = () => {
     if (isEmpty) return;
-    dispatch(openModal({ name: "menuNumSelectBS", values: { dietNo } }));
+    dispatch(
+      openModal({
+        name: "menuNumSelectBS",
+        values: { dietNoToNumControl: dietNo },
+      })
+    );
   };
 
   return (

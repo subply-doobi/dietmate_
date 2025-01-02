@@ -33,9 +33,6 @@ const WithdrawalContent = ({ deleteText }: { deleteText: string }) => {
 const Account = () => {
   // redux
   const dispatch = useAppDispatch();
-  const accountWDAlert = useAppSelector(
-    (state) => state.modal.modal.accountWithdrawalAlert
-  );
 
   // navigation
   const navigation = useNavigation();
@@ -83,28 +80,9 @@ const Account = () => {
     },
   ];
 
-  //회원탈퇴 alert
-  const WithdrawalAlert = () => {
-    return (
-      <DAlert
-        alertShow={accountWDAlert.isOpen}
-        renderContent={() => (
-          <WithdrawalContent deleteText={"계정을 삭제합니다"} />
-        )}
-        onConfirm={() => onWithdrawal()}
-        onCancel={() =>
-          dispatch(closeModal({ name: "accountWithdrawalAlert" }))
-        }
-        confirmLabel={"삭제"}
-        NoOfBtn={2}
-      />
-    );
-  };
-
   return (
     <Container>
       <ListBtns btns={accountBtns} />
-      <WithdrawalAlert />
     </Container>
   );
 };

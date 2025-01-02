@@ -1,4 +1,5 @@
 // RN, expo
+import React from "react";
 import { useCallback, useEffect, useRef } from "react";
 import { FlatList, Platform, ViewProps } from "react-native";
 
@@ -116,7 +117,7 @@ const HomeFoodListAndBtn = ({
       refetchProduct().then((res) => {
         if (res?.data?.length === 0) {
           dispatch(
-            openModal({ name: "noProductAlert", modalId: "HomeFoodListAndBtn" })
+            openModal({ name: "noProductAlert", values: { screen: "Search" } })
           );
         }
       });
@@ -134,7 +135,7 @@ const HomeFoodListAndBtn = ({
       return;
 
     if (isTutorialMode && tutorialProgress === "SelectFood") {
-      dispatch(closeModal({ name: "tutorialTPS" }));
+      dispatch(closeModal({ name: "tutorialTPSSelectFood" }));
       dispatch(setTutorialProgress("AutoRemain"));
     }
     router.back();

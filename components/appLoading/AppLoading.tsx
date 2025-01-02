@@ -6,11 +6,14 @@ import * as SplashScreen from "expo-splash-screen";
 import { version as appVersion } from "@/package.json";
 import { useGetLatestVersion } from "@/shared/api/queries/version";
 import { getNotShowAgainList } from "@/shared/utils/asyncStorage";
-import { setTutorialStart } from "@/features/reduxSlices/commonSlice";
+import {
+  setAppLoadingComplete,
+  setTutorialStart,
+} from "@/features/reduxSlices/commonSlice";
 import { APP_STORE_URL, IS_ANDROID, PLAY_STORE_URL } from "@/shared/constants";
 import { link } from "@/shared/utils/linking";
 import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "../common/alert/CommonAlertContent";
+import CommonAlertContent from "../modal/alert/CommonAlertContent";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { validateToken } from "@/shared/api/queries/token";
 import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
@@ -19,6 +22,7 @@ import { checkIsUpdateNeeded } from "@/shared/utils/versionCheck";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { navigateByUserInfo } from "@/shared/utils/screens/login/navigateByUserInfo";
 import { useRouter } from "expo-router";
+import React from "react";
 
 const loadSplash = new Promise((resolve) =>
   setTimeout(() => {
@@ -32,11 +36,6 @@ const AppLoading = () => {
 
   // redux
   const dispatch = useAppDispatch();
-  const appUpdateAlert = useAppSelector(
-    (state) => state.modal.modal.appUpdateAlert
-  );
-
-  const navigation = useNavigation();
 
   // react-query
   const { refetch: refetchBaseLine } = useGetBaseLine({ enabled: false });
@@ -84,31 +83,12 @@ const AppLoading = () => {
     };
 
     init().finally(async () => {
+      dispatch(setAppLoadingComplete());
       SplashScreen.hideAsync();
     });
   }, []);
 
-  // etc
-  const visitStore = () => {
-    IS_ANDROID ? link(PLAY_STORE_URL) : link(APP_STORE_URL);
-    dispatch(closeModal({ name: "appUpdateAlert" }));
-  };
-
-  return (
-    <DAlert
-      alertShow={appUpdateAlert.isOpen}
-      onConfirm={() => visitStore()}
-      onCancel={() => dispatch(closeModal({ name: "appUpdateAlert" }))}
-      NoOfBtn={2}
-      confirmLabel="업데이트"
-      renderContent={() => (
-        <CommonAlertContent
-          text="앱 업데이트가 필요합니다"
-          subText={`현재버전: ${appVersion}\n최신버전: ${latestAppVersion}`}
-        />
-      )}
-    />
-  );
+  return <></>;
 };
 
 export default AppLoading;

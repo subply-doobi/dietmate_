@@ -1,21 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {Modal, ViewProps} from 'react-native';
-import styled from 'styled-components/native';
+import React, { useEffect, useState } from "react";
+import { Modal, ViewProps } from "react-native";
+import styled from "styled-components/native";
 
-import colors from '../colors';
-import {DALERT_WIDTH, SCREENWIDTH} from '../constants';
-import {Icon, Row, TextMain} from './styledComps';
-import {icons} from '../iconSource';
+import colors from "../colors";
+import { DALERT_WIDTH, SCREENWIDTH } from "../constants";
+import { Icon, Row, TextMain } from "./styledComps";
+import { icons } from "../iconSource";
 
 interface IDAlert extends ViewProps {
   alertShow: boolean;
   renderContent: () => React.ReactElement;
-  onConfirm: Function;
-  onCancel: Function;
+  onConfirm?: Function;
+  onCancel?: Function;
   confirmLabel?: string;
   cancelLabel?: string;
   showTopCancel?: boolean;
-  NoOfBtn?: 0 | 1 | 2;
+  numOfBtn?: 0 | 1 | 2;
   contentDelay?: number;
 }
 const DAlert = ({
@@ -26,7 +26,7 @@ const DAlert = ({
   confirmLabel,
   cancelLabel,
   showTopCancel = false,
-  NoOfBtn = 2,
+  numOfBtn = 2,
   contentDelay,
   ...props
 }: IDAlert) => {
@@ -47,29 +47,31 @@ const DAlert = ({
       animationType="fade"
       transparent={true}
       visible={alertShow ? true : false}
-      onRequestClose={() => onCancel && onCancel()}>
+      onRequestClose={() => onCancel && onCancel()}
+    >
       <ModalBackGround>
         {contentVisible && (
           <PopUpContainer {...props}>
             <ContentContainer>{renderContent()}</ContentContainer>
 
             {/* 취소 | 확인 버튼 */}
-            {NoOfBtn !== 0 && (
+            {numOfBtn !== 0 && (
               <Row>
-                {NoOfBtn === 2 && (
+                {numOfBtn === 2 && (
                   <BtnLeft onPress={() => onCancel && onCancel()}>
                     <CancelBtnText>
-                      {' '}
-                      {cancelLabel ? cancelLabel : '취소'}
+                      {" "}
+                      {cancelLabel ? cancelLabel : "취소"}
                     </CancelBtnText>
                   </BtnLeft>
                 )}
 
                 <BtnRight
-                  style={{borderBottomLeftRadius: NoOfBtn === 1 ? 10 : 0}}
-                  onPress={async () => onConfirm && (await onConfirm())}>
+                  style={{ borderBottomLeftRadius: numOfBtn === 1 ? 10 : 0 }}
+                  onPress={async () => onConfirm && (await onConfirm())}
+                >
                   <ConfirmBtnText>
-                    {confirmLabel ? confirmLabel : '확인'}
+                    {confirmLabel ? confirmLabel : "확인"}
                   </ConfirmBtnText>
                 </BtnRight>
               </Row>

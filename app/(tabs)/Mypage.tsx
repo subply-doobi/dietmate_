@@ -8,14 +8,10 @@ import { useHeaderHeight } from "@react-navigation/elements";
 // doobi
 import colors from "@/shared/colors";
 import { Container } from "@/shared/ui/styledComps";
-import DAlert from "@/shared/ui/DAlert";
 import ListBtns from "@/shared/ui/ListBtns";
 import { link } from "@/shared/utils/linking";
 import { DEFAULT_BOTTOM_TAB_HEIGHT, INQUIRY_URL } from "@/shared/constants";
-import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
-import { updateNotShowAgainList } from "@/shared/utils/asyncStorage";
-import { setTutorialStart } from "@/features/reduxSlices/commonSlice";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 import { icons } from "@/shared/iconSource";
 import { useRouter } from "expo-router";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
@@ -27,9 +23,6 @@ const Mypage = () => {
 
   // redux
   const dispatch = useAppDispatch();
-  const tutorialRestartAlert = useAppSelector(
-    (state) => state.modal.modal.tutorialRestartAlert
-  );
 
   // etc
   // btns
@@ -84,14 +77,6 @@ const Mypage = () => {
     },
   ];
 
-  const goTutorial = async () => {
-    dispatch(closeModal({ name: "tutorialRestartAlert" }));
-    dispatch(setTutorialStart());
-    await updateNotShowAgainList({ key: "tutorial", value: false });
-    router.canDismiss() && router.dismissAll();
-    router.replace({ pathname: "/(tabs)" });
-  };
-
   return (
     <Container
       style={{
@@ -107,21 +92,6 @@ const Mypage = () => {
           <ListBtns btns={myPageBtns} />
         </Card>
       </ScrollView>
-
-      {/* 튜토리얼 진행 알럿 */}
-      <DAlert
-        alertShow={tutorialRestartAlert.isOpen}
-        renderContent={() => (
-          <CommonAlertContent
-            text="튜토리얼을 다시 진행할까요?"
-            subText="구성한 끼니가 있다면 삭제됩니다"
-          />
-        )}
-        onConfirm={goTutorial}
-        onCancel={() => dispatch(closeModal({ name: "tutorialRestartAlert" }))}
-        confirmLabel="진행"
-        NoOfBtn={2}
-      />
     </Container>
   );
 };

@@ -50,9 +50,6 @@ const AddressEdit = () => {
   const dispatch = useAppDispatch();
   const { selectedAddrIdx } = useAppSelector((state) => state.order);
   const { addr1, addr2, zipCode } = useAppSelector((state) => state.userInput);
-  const addressDeleteAlert = useAppSelector(
-    (state) => state.modal.modal.addressDeleteAlert
-  );
 
   // navigation
   const { setOptions } = useNavigation();
@@ -114,20 +111,6 @@ const AddressEdit = () => {
     setPostModalVisible(false);
   };
 
-  // 주소 삭제
-  const onDeleteAlertConfirm = () => {
-    const nextAddrIdx =
-      addrIdx === undefined || selectedAddrIdx === 0
-        ? 0
-        : selectedAddrIdx < addrIdx
-        ? selectedAddrIdx
-        : selectedAddrIdx - 1;
-
-    deleteAddressMutation.mutate(addrNo as string);
-    dispatch(setselectedAddrIdx(nextAddrIdx));
-    router.push({ pathname: "/Order" });
-  };
-
   // useEffect
   useEffect(() => {
     setOptions({
@@ -146,9 +129,24 @@ const AddressEdit = () => {
                 <PostalCode>우편번호: {zipCode.value}</PostalCode>
                 {isUpdate && (
                   <AddressDeleteBtn
-                    onPress={() =>
-                      dispatch(openModal({ name: "addressDeleteAlert" }))
-                    }
+                    onPress={() => {
+                      const nextAddrIdx =
+                        addrIdx === undefined || selectedAddrIdx === 0
+                          ? 0
+                          : selectedAddrIdx < addrIdx
+                          ? selectedAddrIdx
+                          : selectedAddrIdx - 1;
+
+                      dispatch(
+                        openModal({
+                          name: "addressDeleteAlert",
+                          values: {
+                            addressNoToDel: addrNo as string,
+                            nextAddrIdx,
+                          },
+                        })
+                      );
+                    }}
                   >
                     <AddressDeleteIcon source={icons.cancelRound_24} />
                   </AddressDeleteBtn>
@@ -196,18 +194,6 @@ const AddressEdit = () => {
               />
             </ModalBackground>
           </Modal>
-
-          {/* 주소 delete 알럿 */}
-          <DAlert
-            alertShow={addressDeleteAlert.isOpen}
-            onCancel={() =>
-              dispatch(closeModal({ name: "addressDeleteAlert" }))
-            }
-            onConfirm={() => onDeleteAlertConfirm()}
-            NoOfBtn={2}
-            renderContent={renderDeleteAlertContent}
-            confirmLabel={"삭제"}
-          />
         </Container>
       </ScrollView>
 

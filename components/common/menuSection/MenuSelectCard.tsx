@@ -9,7 +9,7 @@ import { Col, Row } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { getAddDietStatusFrDTData } from "@/shared/utils/getDietAddStatus";
 import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "../alert/CommonAlertContent";
+import CommonAlertContent from "../../modal/alert/CommonAlertContent";
 
 import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import { getNutrStatus } from "@/shared/utils/sumUp";
@@ -26,9 +26,6 @@ const MenuSelectCard = ({ isCreating, setIsCreating }: IMenuSelectCard) => {
   const dispatch = useAppDispatch();
   const { totalFoodList, currentDietNo } = useAppSelector(
     (state) => state.common
-  );
-  const menuCreateNAAlert = useAppSelector(
-    (state) => state.modal.modal.menuCreateNAAlert
   );
 
   // react-query
@@ -101,13 +98,6 @@ const MenuSelectCard = ({ isCreating, setIsCreating }: IMenuSelectCard) => {
           </CardBtn>
         </Row>
       </Row>
-      <DAlert
-        alertShow={menuCreateNAAlert.isOpen}
-        onCancel={() => dispatch(closeModal({ name: "menuCreateNAAlert" }))}
-        onConfirm={() => dispatch(closeModal({ name: "menuCreateNAAlert" }))}
-        NoOfBtn={1}
-        renderContent={() => <CommonAlertContent text={dietErrText} />}
-      />
     </Col>
   );
 };

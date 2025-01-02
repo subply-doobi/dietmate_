@@ -128,7 +128,7 @@ const CartSummary = () => {
                       dispatch(
                         openModal({
                           name: "menuNumSelectBS",
-                          values: { dietNo: e.dietNo },
+                          values: { dietNoToNumControl: e.dietNo },
                         })
                       );
                     }}

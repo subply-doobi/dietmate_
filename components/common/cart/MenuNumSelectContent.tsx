@@ -35,10 +35,9 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 const MenuNumSelectContent = () => {
   // redux
   const dispatch = useAppDispatch();
-  const menuNumSelectBS = useAppSelector(
-    (state) => state.modal.modal.menuNumSelectBS
-  );
-  const dietNoToNumControl = menuNumSelectBS.values?.dietNo ?? "";
+  const dietNoToNumControl = useAppSelector(
+    (state) => state.modal.values.menuNumSelectBS.dietNoToNumControl
+  ) as string;
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();

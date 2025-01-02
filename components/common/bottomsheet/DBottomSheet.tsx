@@ -1,21 +1,19 @@
-import React from 'react';
-import {Modal} from 'react-native';
-import styled from 'styled-components/native';
-import colors from '../../../shared/colors';
+import React from "react";
+import { Modal } from "react-native";
+import styled from "styled-components/native";
+import colors from "../../../shared/colors";
 
 interface IDBottomSheet {
   visible: boolean;
   renderContent: () => React.ReactElement;
   onCancel?: Function;
-  closeModal?: Function;
-  filterHeight?: number;
+  contentHeight?: number;
 }
 const DBottomSheet = ({
   visible,
   renderContent,
   onCancel,
-  closeModal,
-  filterHeight,
+  contentHeight,
 }: IDBottomSheet) => {
   return (
     <Modal
@@ -24,12 +22,14 @@ const DBottomSheet = ({
       visible={visible}
       onRequestClose={() => {
         onCancel ? onCancel() : null;
-      }}>
+      }}
+    >
       <ModalBackGround
         onPress={() => {
-          closeModal && closeModal();
-        }}>
-        <PopUpContainer filterHeight={filterHeight} activeOpacity={1}>
+          onCancel && onCancel();
+        }}
+      >
+        <PopUpContainer contentHeight={contentHeight} activeOpacity={1}>
           <PopupIndicator />
           <ContentContainer>{renderContent()}</ContentContainer>
         </PopUpContainer>
@@ -47,15 +47,16 @@ const ModalBackGround = styled.TouchableOpacity`
 `;
 
 interface IPopUpContainer {
-  filterHeight?: number;
+  contentHeight?: number;
   backgroundColor?: string;
 }
 const PopUpContainer = styled.TouchableOpacity<IPopUpContainer>`
   width: 100%;
-  height: ${({filterHeight}) => (filterHeight ? `${filterHeight}px` : 'auto')};
+  height: ${({ contentHeight }) =>
+    contentHeight ? `${contentHeight}px` : "auto"};
   padding: 0px 16px 16px 16px;
   align-items: center;
-  background-color: ${({backgroundColor}) =>
+  background-color: ${({ backgroundColor }) =>
     backgroundColor ? backgroundColor : colors.white};
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;

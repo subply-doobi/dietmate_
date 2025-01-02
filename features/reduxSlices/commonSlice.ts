@@ -29,6 +29,7 @@ type ITutorialProgress =
   | "Complete";
 
 export interface ICommonState {
+  isAppLoaded: boolean;
   currentDietNo: string;
   totalFoodList: IProductData[];
   totalFoodListIsLoaded: boolean;
@@ -47,6 +48,7 @@ export interface ICommonState {
 }
 
 const initialState: ICommonState = {
+  isAppLoaded: false,
   currentDietNo: "",
   totalFoodList: [],
   totalFoodListIsLoaded: false,
@@ -74,6 +76,9 @@ export const commonSlice = createSlice({
   name: "common",
   initialState,
   reducers: {
+    setAppLoadingComplete: (state) => {
+      state.isAppLoaded = true;
+    },
     setCurrentDiet: (state, action: PayloadAction<string>) => {
       state.currentDietNo = action.payload;
       state.progressTooltipShow = true;
@@ -140,6 +145,7 @@ export const commonSlice = createSlice({
 });
 
 export const {
+  setAppLoadingComplete,
   setCurrentDiet,
   setTotalFoodList,
   setMenuAcActive,

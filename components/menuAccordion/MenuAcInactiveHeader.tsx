@@ -10,7 +10,7 @@ import { IBaseLineData } from "@/shared/api/types/baseLine";
 import { IDietTotalObjData } from "@/shared/api/types/diet";
 
 import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
+import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
 import DTooltip from "@/shared/ui/DTooltip";
 import { Col, Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 
@@ -44,9 +44,6 @@ const MenuAcInactiveHeader = ({
   const { totalFoodList, currentDietNo } = useAppSelector(
     (state) => state.common
   );
-  const menuDeleteAlert = useAppSelector(
-    (state) => state.modal.modal.menuDeleteAlert
-  );
 
   // useState
   const [prevDTO, setPrevDTO] = useState<IDietTotalObjData>({});
@@ -60,12 +57,12 @@ const MenuAcInactiveHeader = ({
   // fn
   const onMenuNoSelectPress = () => {
     if (!dTOData) return;
-    dispatch(openModal({ name: "menuNumSelectBS", values: { dietNo } }));
-  };
-
-  const onDietDelete = () => {
-    deleteDietMutation.mutate({ dietNo, currentDietNo });
-    dispatch(closeModal({ name: "menuDeleteAlert" }));
+    dispatch(
+      openModal({
+        name: "menuNumSelectBS",
+        values: { dietNoToNumControl: dietNo },
+      })
+    );
   };
 
   // etc
@@ -201,7 +198,7 @@ const MenuAcInactiveHeader = ({
             dispatch(
               openModal({
                 name: "menuDeleteAlert",
-                modalId: `MenuAcInactiveHeader_${dietNo}`,
+                values: { dietNoToDel: dietNo },
               })
             )
           }
@@ -209,19 +206,6 @@ const MenuAcInactiveHeader = ({
           <Icon source={icons.cancelRound_24} />
         </DeleteBtn>
       )}
-
-      <DAlert
-        alertShow={
-          menuDeleteAlert.isOpen &&
-          menuDeleteAlert.modalId === `MenuAcInactiveHeader_${dietNo}`
-        }
-        onCancel={() => dispatch(closeModal({ name: "menuDeleteAlert" }))}
-        onConfirm={() => onDietDelete()}
-        NoOfBtn={2}
-        renderContent={() => (
-          <CommonAlertContent text={`${dietSeq}\n삭제할까요`} />
-        )}
-      />
       {hasNoStockP && <OpacityBox />}
     </Box>
   );

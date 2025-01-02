@@ -12,14 +12,11 @@ import {
   TextMain,
 } from "@/shared/ui/styledComps";
 import ToggleButton from "@/shared/ui/ToggleButton";
-import { SCREENWIDTH } from "@/shared/constants";
 import { icons } from "@/shared/iconSource";
-import DAlert from "@/shared/ui/DAlert";
-import CalGuideAlertContent from "../CalGuideAlertContent";
 import { useListCode } from "@/shared/api/queries/code";
 import SquareInput from "@/shared/ui/SquareInput";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { openModal } from "@/features/reduxSlices/modalSlice";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { getRecommendedNutr } from "@/shared/utils/screens/userInput/targetByUserInfo";
 
 const menuPerDayItem = [1, 2, 3, 4];
@@ -41,9 +38,6 @@ const TargetCalorie = ({
 }) => {
   // redux
   const dispatch = useAppDispatch();
-  const targetCalGuideAlert = useAppSelector(
-    (state) => state.modal.modal.targetCalorieGuideAlert
-  );
 
   // react-query
   const { data: seqCodeData } = useListCode("SP008"); // SP008 : 운동빈도 (sportsSeqCd)
@@ -107,7 +101,12 @@ const TargetCalorie = ({
         <OptionTitle>근의공식 한 끼 목표 칼로리</OptionTitle>
         <QuestionBtn
           onPress={() =>
-            dispatch(openModal({ name: "targetCalorieGuideAlert" }))
+            dispatch(
+              openModal({
+                name: "targetCalorieGuideAlert",
+                values: { menuPerDay },
+              })
+            )
           }
         >
           <Icon source={icons.question_24} />
@@ -138,22 +137,6 @@ const TargetCalorie = ({
         keyboardType="numeric"
         maxLength={4}
         placeholder={`한 끼 목표 칼로리 (권장 : ${caloriePerMenu}kcal)`}
-      />
-
-      {/* 목표칼로리 가이드 알럿 */}
-      <DAlert
-        style={{ width: SCREENWIDTH - 32 }}
-        alertShow={targetCalGuideAlert.isOpen}
-        showTopCancel={true}
-        onConfirm={() =>
-          dispatch(closeModal({ name: "targetCalorieGuideAlert" }))
-        }
-        onCancel={() =>
-          dispatch(closeModal({ name: "targetCalorieGuideAlert" }))
-        }
-        renderContent={() => <CalGuideAlertContent menuPerDay={menuPerDay} />}
-        NoOfBtn={0}
-        confirmLabel="확인"
       />
     </Container>
   );

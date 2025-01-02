@@ -22,7 +22,7 @@ import { parseDate } from "../shared/utils/dateParsing";
 import { IFlattedOrderedProduct } from "../shared/utils/screens/checklist/menuFlat";
 import PieChart from "react-native-pie-chart";
 import DAlert from "../shared/ui/DAlert";
-import CommonAlertContent from "../components/common/alert/CommonAlertContent";
+import CommonAlertContent from "../components/modal/alert/CommonAlertContent";
 import { useDispatch, useSelector } from "react-redux";
 import { openModal, closeModal } from "../features/reduxSlices/modalSlice";
 import MenuBox from "../components/screens/checklist/MenuBox";
@@ -32,9 +32,6 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 const Checklist = () => {
   // redux
   const dispatch = useDispatch();
-  const changeTargetAlert = useAppSelector(
-    (state) => state.modal.modal.changeTargetAlert
-  );
 
   // navigation
   const router = useRouter();
@@ -137,32 +134,6 @@ const Checklist = () => {
           />
         </Card>
       </ScrollView>
-
-      {/* 목표변경 알럿 */}
-      <DAlert
-        alertShow={changeTargetAlert.isOpen}
-        confirmLabel="목표변경"
-        renderContent={() => (
-          <CommonAlertContent
-            text={"식단을 완료했어요\n체형이나 체중변화가 있었나요?"}
-            subText={"더 정확한 식단을 위해\n목표칼로리를 재설정해주세요"}
-          />
-        )}
-        onConfirm={() => {
-          router.replace({
-            pathname: "/(tabs)",
-          });
-          Promise.resolve().then(() => {
-            router.push({
-              pathname: "/UserInput",
-              params: { from: "Checklist" },
-            });
-          });
-        }}
-        NoOfBtn={2}
-        onCancel={() => dispatch(closeModal({ name: "changeTargetAlert" }))}
-        style={{ width: 280 }}
-      />
     </Container>
   );
 };

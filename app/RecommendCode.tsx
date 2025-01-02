@@ -23,9 +23,6 @@ const RecommendCode = () => {
   // redux
   const dispatch = useAppDispatch();
   const friendCd = useAppSelector((state) => state.userInput.friendCd);
-  const recommendCodeAlert = useAppSelector(
-    (state) => state.modal.modal.recommendCodeAlert
-  );
 
   // navigation
   const router = useRouter();
@@ -51,7 +48,7 @@ const RecommendCode = () => {
         dispatch(
           setValue({ name: "friendCd", value: userData?.suggestFromCd || "" })
         );
-        dispatch(openModal({ name: "recommendCodeAlert" }));
+        dispatch(openModal({ name: "friendCdAlert" }));
       },
     },
     {
@@ -73,11 +70,11 @@ const RecommendCode = () => {
       ? await updateSuggestUserMutation.mutateAsync(friendCd.value)
       : await createSuggestUserMutation.mutateAsync(friendCd.value);
 
-    dispatch(closeModal({ name: "recommendCodeAlert" }));
+    dispatch(closeModal({ name: "friendCdAlert" }));
   };
 
   const onCodeAlertCancel = () => {
-    dispatch(closeModal({ name: "recommendCodeAlert" }));
+    dispatch(closeModal({ name: "friendCdAlert" }));
     setIsCodeError(false);
   };
 

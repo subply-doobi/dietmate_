@@ -18,7 +18,7 @@ import { HorizontalSpace, Icon, Row, TextMain } from "@/shared/ui/styledComps";
 // doobi Components
 import DAlert from "@/shared/ui/DAlert";
 import MenuSelectCard from "./MenuSelectCard";
-import DeleteAlertContent from "../alert/DeleteAlertContent";
+import DeleteAlertContent from "../../modal/alert/DeleteAlertContent";
 import NutrientsProgress from "../nutrient/NutrientsProgress";
 import DBottomSheet from "../bottomsheet/DBottomSheet";
 import MenuNumSelectContent from "@/components/common/cart/MenuNumSelectContent";
@@ -39,18 +39,11 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 const MenuSection = () => {
   // redux
   const dispatch = useAppDispatch();
-  const menuDeleteAlert = useAppSelector(
-    (state) => state.modal.modal.menuDeleteAlert
-  );
   const { currentDietNo } = useAppSelector((state) => state.common);
-  const menuNumSelectBS = useAppSelector(
-    (state) => state.modal.modal.menuNumSelectBS
-  );
 
   // react-query
   const { data: baseLineData, isLoading: getBLIsLoading } = useGetBaseLine();
   const createDietMutation = useCreateDiet();
-  const deleteDietMutation = useDeleteDiet();
   const {
     data: dTOData,
     isLoading: isDTOLoading,
@@ -58,7 +51,6 @@ const MenuSection = () => {
   } = useListDietTotalObj();
   const dietDetailData = dTOData?.[currentDietNo]?.dietDetail ?? [];
   // state
-  const [dietNoToDelete, setDietNoToDelete] = useState<string>();
   const [activeSection, setActiveSection] = useState<number[]>([]); // accordion
   const [isCreating, setIsCreating] = useState(false);
 
@@ -71,19 +63,12 @@ const MenuSection = () => {
       : 0;
   const hasNoDiet =
     !dTOData || Object.keys(dTOData).length === 0 ? true : false;
-  const onDeleteDiet = () => {
-    if (!dTOData) return;
-    dietNoToDelete &&
-      deleteDietMutation.mutate({ dietNo: dietNoToDelete, currentDietNo });
-    dispatch(closeModal({ name: "menuDeleteAlert" }));
-  };
 
   const onMenuNoSelectPress = () => {
     dispatch(
       openModal({
         name: "menuNumSelectBS",
-        modalId: "MenuSection",
-        values: { dietNo: currentDietNo },
+        values: { dietNoToNumControl: currentDietNo },
       })
     );
   };
@@ -259,9 +244,11 @@ const MenuSection = () => {
         {!hasNoDiet && (
           <DeleteBtn
             onPress={() => {
-              setDietNoToDelete(currentDietNo);
               dispatch(
-                openModal({ name: "menuDeleteAlert", modalId: "MenuSection" })
+                openModal({
+                  name: "menuDeleteAlert",
+                  values: { dietNoToDel: currentDietNo },
+                })
               );
             }}
           >
@@ -269,21 +256,6 @@ const MenuSection = () => {
           </DeleteBtn>
         )}
       </HeaderRow>
-
-      {/* 끼니 삭제 알럿 */}
-      <DAlert
-        NoOfBtn={2}
-        alertShow={
-          menuDeleteAlert.isOpen && menuDeleteAlert.modalId === "MenuSection"
-        }
-        renderContent={() => (
-          <DeleteAlertContent
-            deleteText={dTOData?.[currentDietNo]?.dietSeq ?? ""}
-          />
-        )}
-        onConfirm={() => onDeleteDiet()}
-        onCancel={() => dispatch(closeModal({ name: "menuDeleteAlert" }))}
-      />
 
       <Accordion
         activeSections={activeSection}
@@ -294,16 +266,6 @@ const MenuSection = () => {
         }
         renderContent={(section) => section.content}
         onChange={updateSections}
-      />
-
-      {/* 끼니 수량 조절용 BottomSheet */}
-      <DBottomSheet
-        visible={
-          menuNumSelectBS.isOpen && menuNumSelectBS.modalId === "MenuSection"
-        }
-        closeModal={() => dispatch(closeModal({ name: "menuNumSelectBS" }))}
-        renderContent={() => <MenuNumSelectContent />}
-        onCancel={() => dispatch(closeModal({ name: "menuNumSelectBS" }))}
       />
     </Container>
   );

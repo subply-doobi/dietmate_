@@ -18,7 +18,7 @@ import { SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 
 import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import DAlert from "@/shared/ui/DAlert";
-import DeleteAlertContent from "../common/alert/DeleteAlertContent";
+import DeleteAlertContent from "../modal/alert/DeleteAlertContent";
 import DTooltip from "@/shared/ui/DTooltip";
 import { useRouter } from "expo-router";
 
@@ -31,9 +31,6 @@ interface IFoodList {
 const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
   // redux
   const dispatch = useAppDispatch();
-  const productDeleteAlert = useAppSelector(
-    (state) => state.modal.modal.productDeleteAlert
-  );
 
   // navigation
   const router = useRouter();
@@ -44,17 +41,6 @@ const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
   const deleteMutation = useDeleteDietDetail();
 
   // etc
-  const onDelete = () => {
-    const productNoToDel = productDeleteAlert.values?.productNoToDel;
-    dTOData &&
-      productNoToDel &&
-      deleteMutation.mutate({
-        dietNo: dietNo,
-        productNo: productNoToDel,
-      });
-    dispatch(closeModal({ name: "productDeleteAlert" }));
-  };
-
   const addToSelected = (productNo: string) => {
     const newArr = selectedFoods[dietNo]
       ? [...selectedFoods[dietNo], productNo]
@@ -152,8 +138,7 @@ const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
                     dispatch(
                       openModal({
                         name: "productDeleteAlert",
-                        values: { productNoToDel: food.productNo },
-                        modalId: `FoodList_${dietNo}`, // 끼니별로 알럿이 있어서 modalId를 파일명_dietNo로 구분
+                        values: { productNoToDelArr: [food.productNo] },
                       })
                     );
                   }}
@@ -185,18 +170,6 @@ const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
           </FoodBox>
         );
       })}
-      <DAlert
-        alertShow={
-          // 끼니별로 알럿이 있어서 modalId를 파일명_dietNo로 구분
-          productDeleteAlert.isOpen &&
-          productDeleteAlert.modalId === `FoodList_${dietNo}`
-        }
-        confirmLabel="삭제"
-        onConfirm={onDelete}
-        onCancel={() => dispatch(closeModal({ name: "productDeleteAlert" }))}
-        NoOfBtn={2}
-        renderContent={() => <DeleteAlertContent deleteText={"해당식품을"} />}
-      />
     </Container>
   );
 };

@@ -1,174 +1,117 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface IModal {
-  isOpen: boolean;
-  modalId?: string;
-  values?: {
-    [key: string]: string | number | boolean | null;
+export type IModalName =
+  // alert
+  // 끼니 추가삭제, 식품 삭제
+  | "menuDeleteAlert"
+  | "menuCreateAlert"
+  | "menuCreateNAAlert"
+  | "productDeleteAlert"
+
+  // 자동구성
+  | "autoMenuLoadingAlert"
+  | "autoMenuErrorAlert"
+  | "autoMenuOverPriceAlert"
+
+  // 튜토리얼
+  | "tutorialCompleteAlert"
+  | "tutorialFoodLimitAlert"
+  | "tutorialRestartAlert"
+
+  // 정보
+  | "myBonusGuideAlert"
+  | "targetCalorieGuideAlert"
+
+  // 결제
+  | "payFailAlert" // 결제 실패
+  | "payUrlAlert" // 결제 url 오류 (해당 앱url 실행 불가)
+
+  // 기타
+  | "appUpdateAlert" // 앱업데이트
+  | "requestErrorAlert" // 요청오류
+  | "friendCdAlert" // 친구코드 오류
+  | "accountWithdrawalAlert" // 계정삭제
+  | "addressDeleteAlert" // 주소삭제
+  | "noProductAlert" // 상품없음
+  | "changeTargetAlert" // 체크리스트 완료 후 목표 설정
+  | "noStockAlert" // 구매직전 재고 없음
+  | "orderEmptyAlert" // 주문내역 없음
+
+  // transparentScreen
+  | "tutorialTPSStart" // 튜토리얼 시작
+  | "tutorialTPSAddMenu"
+  | "tutorialTPSAddFood"
+  | "tutorialTPSSelectFood"
+  | "tutorialTPSAutoRemain"
+  | "tutorialTPSChangeFood"
+  | "tutorialTPSAutoMenu"
+
+  // bottomSheet
+  | "filterBS"
+  | "sortBS"
+  | "menuNumSelectBS";
+
+export interface IModalValues {
+  // alert
+  requestErrorAlert: { code?: number | null; msg?: string };
+  menuDeleteAlert: { dietNoToDel?: string };
+  productDeleteAlert: {
+    productNoToDelArr?: string[];
+    checkAllClicked?: boolean;
   };
+  addressDeleteAlert: { addressNoToDel?: string; nextAddrIdx?: number };
+  noProductAlert: { screen?: string };
+  payFailAlert: { payFailMsg?: string };
+  targetCalorieGuideAlert: { menuPerDay?: number };
+  // transparentScreen
+  tutorialTPSStart: { tutorialStartCTABtnPy?: number; insetTop?: number };
+  // bottomSheet
+  menuNumSelectBS: { dietNoToNumControl?: string };
 }
 
-interface IModals {
-  // alert
-  appUpdateAlert: IModal;
-  requestErrorAlert: IModal & {
-    values?: { code?: number | null; msg: string };
-  };
-  menuDeleteAlert: IModal & { values?: { menuNo?: string } };
-  menuCreateAlert: IModal;
-  menuCreateNAAlert: IModal;
-  productDeleteAlert: IModal & { values?: { productNoToDel?: string } };
-  accountWithdrawalAlert: IModal;
-  addressDeleteAlert: IModal;
-  noProductAlert: IModal;
-  changeTargetAlert: IModal;
-  menuIsCreatingAlert: IModal;
-  noStockAlert: IModal;
-  myBonusGuideAlert: IModal;
-  tutorialRestartAlert: IModal;
-  payFailAlert: IModal & { values?: { payFailMsg?: string } };
-  orderEmptyAlert: IModal;
-  recommendCodeAlert: IModal;
-  tutorialFoodLimitAlert: IModal;
-  targetCalorieGuideAlert: IModal;
-  autoMenuOverPriceAlert: IModal;
-  payUrlAlert: IModal;
-  // transparentScreen
-  tutorialTPS: IModal;
-  // bottomSheet
-  filterBS: IModal;
-  sortBS: IModal;
-  menuNumSelectBS: IModal & { values?: { dietNo?: string } };
-}
-export type IModalState = { modal: IModals } & { modalSeq: string[] };
+export type IModalValue = IModalValues[keyof IModalValues];
+
+export type IModalState = { values: IModalValues } & { modalSeq: IModalName[] };
 
 const initialState: IModalState = {
-  modal: {
+  values: {
     // Alert
-    appUpdateAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
     requestErrorAlert: {
-      isOpen: false,
-      modalId: undefined,
-      values: {
-        code: null,
-        msg: "",
-      },
+      code: null,
+      msg: "",
     },
     menuDeleteAlert: {
-      isOpen: false,
-      modalId: undefined,
-      values: {
-        menuNo: "",
-      },
-    },
-    menuCreateAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    menuCreateNAAlert: {
-      isOpen: false,
-      modalId: undefined,
+      dietNoToDel: "",
     },
     productDeleteAlert: {
-      isOpen: false,
-      modalId: undefined,
-      values: {
-        productNoToDel: "",
-      },
-    },
-    accountWithdrawalAlert: {
-      isOpen: false,
-      modalId: undefined,
+      productNoToDelArr: [],
+      checkAllClicked: false,
     },
     addressDeleteAlert: {
-      isOpen: false,
-      modalId: undefined,
+      addressNoToDel: "",
+      nextAddrIdx: 0,
     },
     noProductAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    changeTargetAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    menuIsCreatingAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    noStockAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    myBonusGuideAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    tutorialRestartAlert: {
-      isOpen: false,
-      modalId: undefined,
+      screen: "",
     },
     payFailAlert: {
-      isOpen: false,
-      modalId: undefined,
-      values: {
-        payFailMsg: "",
-      },
-    },
-    orderEmptyAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    recommendCodeAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    tutorialFoodLimitAlert: {
-      isOpen: false,
-      modalId: undefined,
+      payFailMsg: "",
     },
     targetCalorieGuideAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    autoMenuOverPriceAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    payUrlAlert: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    // TransparentScreen
-    tutorialTPS: {
-      isOpen: false,
-      modalId: undefined,
+      menuPerDay: 3,
     },
     // BottomSheet
-    filterBS: {
-      isOpen: false,
-      modalId: undefined,
-    },
-    sortBS: {
-      isOpen: false,
-      modalId: undefined,
-    },
     menuNumSelectBS: {
-      isOpen: false,
-      modalId: undefined,
-      values: {
-        dietNo: "",
-      },
+      dietNoToNumControl: "",
+    },
+    // tutorialTPS
+    tutorialTPSStart: {
+      tutorialStartCTABtnPy: 0,
+      insetTop: 0,
     },
   },
   modalSeq: [],
 };
-
-type IModalName = keyof IModals;
-type IAlertValue = IModals[keyof IModals]["values"];
 
 export const modalSlice = createSlice({
   name: "modal",
@@ -178,26 +121,17 @@ export const modalSlice = createSlice({
       state,
       action: PayloadAction<{
         name: IModalName;
-        modalId?: string;
-        values?: IAlertValue;
+        values?: IModalValue;
       }>
     ) => {
-      // add to modalSeq
+      // add to modalSeq (open modal)
       if (!state.modalSeq.includes(action.payload.name))
         state.modalSeq.push(action.payload.name);
 
-      // close every modal except lastModal
-      if (state.modalSeq.length > 1) {
-        for (let i = 0; i < state.modalSeq.length - 1; i++) {
-          const modalName = state.modalSeq[i] as IModalName;
-          state.modal[modalName].isOpen = false;
-        }
+      if (action.payload.values) {
+        const modalNm = action.payload.name as keyof IModalValues;
+        state.values[modalNm] = action.payload.values;
       }
-
-      // open modal
-      state.modal[action.payload.name].isOpen = true;
-      state.modal[action.payload.name].values = action.payload.values;
-      state.modal[action.payload.name].modalId = action.payload.modalId;
     },
 
     closeModal: (state, action: PayloadAction<{ name: IModalName }>) => {
@@ -207,22 +141,20 @@ export const modalSlice = createSlice({
       );
 
       // close modal
-      state.modal[action.payload.name].isOpen = false;
-      state.modal[action.payload.name].values =
-        initialState.modal[action.payload.name].values;
-      state.modal[action.payload.name].modalId = undefined;
+      const modalNm = action.payload.name as keyof IModalValues;
+      state.values[modalNm] = initialState.values[modalNm];
+    },
 
-      // show prev modal if exists
-      if (state.modalSeq.length === 0) return;
-      const prevModalName = state.modalSeq[
-        state.modalSeq.length - 1
-      ] as IModalName;
-      if (!state.modal[prevModalName].isOpen) {
-        state.modal[prevModalName].isOpen = true;
-      }
+    closeAllTutorialModal: (state) => {
+      // close all tutorial modal
+      state.modalSeq = state.modalSeq.filter(
+        (modalName) => !modalName.includes("tutorial")
+      );
+      state.values = initialState.values;
     },
   },
 });
 
-export const { openModal, closeModal } = modalSlice.actions;
+export const { openModal, closeModal, closeAllTutorialModal } =
+  modalSlice.actions;
 export default modalSlice.reducer;

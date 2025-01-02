@@ -19,9 +19,6 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 const MyBonus = () => {
   // redux
   const dispatch = useAppDispatch();
-  const myBonusGuideAlert = useAppSelector(
-    (state) => state.modal.modal.myBonusGuideAlert
-  );
 
   // react-query
   const { data: suggestUserData } = useGetSuggestUser();
@@ -57,25 +54,6 @@ const MyBonus = () => {
           onPress={() => link(INQUIRY_URL)}
         />
       </Card>
-      <DAlert
-        showTopCancel={true}
-        style={{}}
-        alertShow={myBonusGuideAlert.isOpen}
-        onConfirm={() => dispatch(closeModal({ name: "myBonusGuideAlert" }))}
-        onCancel={() => dispatch(closeModal({ name: "myBonusGuideAlert" }))}
-        renderContent={() => (
-          <AlertContent>
-            <Notice>
-              {`내 코드를 등록한 친구가 30,000원 이상 주문시
-5,000원 페이백 이벤트를 진행중입니다
-
-이번 달 주문 횟수가 있다면
-고객센터에서 보너스 신청문의를 해주세요`}
-            </Notice>
-          </AlertContent>
-        )}
-        NoOfBtn={0}
-      />
     </Container>
   );
 };
@@ -106,14 +84,4 @@ const Desc = styled(TextMain)`
   font-size: 16px;
   line-height: 20px;
   margin-left: 4px;
-`;
-
-const AlertContent = styled.View`
-  width: 100%;
-  padding: 40px 16px 40px 16px;
-`;
-
-const Notice = styled(TextMain)`
-  font-size: 12px;
-  line-height: 16px;
 `;

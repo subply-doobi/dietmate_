@@ -11,12 +11,13 @@ import { link } from "@/shared/utils/linking";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { getRecommendedNutr } from "@/shared/utils/screens/userInput/targetByUserInfo";
 
-interface ICalGuideAlertContent {
-  menuPerDay: number;
-}
-const CalGuideAlertContent = ({ menuPerDay }: ICalGuideAlertContent) => {
+const CalGuideAlertContent = () => {
   // redux
   const userInputState = useAppSelector((state) => state.userInput);
+  const menuPerDay =
+    useAppSelector(
+      (state) => state.modal.values.targetCalorieGuideAlert.menuPerDay
+    ) || 3;
   const dietPurposeCd = userInputState.dietPurposeCd;
   // react-query
   const { data: seqCodeData } = useListCode("SP008"); // SP008 : 운동빈도 (sportsSeqCd)

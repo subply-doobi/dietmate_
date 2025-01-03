@@ -19,14 +19,9 @@ import colors from "@/shared/colors";
 import { regroupByBuyDateAndDietNo } from "@/shared/utils/dataTransform";
 import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useListProduct } from "@/shared/api/queries/product";
-import { updateNotShowAgainList } from "@/shared/utils/asyncStorage";
 import { flatOrderMenuWithQty } from "@/shared/utils/screens/checklist/menuFlat";
-import { DEFAULT_BOTTOM_TAB_HEIGHT, SCREENWIDTH } from "@/shared/constants";
-import {
-  closeAllTutorialModal,
-  closeModal,
-  openModal,
-} from "@/features/reduxSlices/modalSlice";
+import { DEFAULT_BOTTOM_TAB_HEIGHT } from "@/shared/constants";
+import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { queryClient } from "@/shared/store/reactQueryStore";
 import { PRODUCTS } from "@/shared/api/keys";
 import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";

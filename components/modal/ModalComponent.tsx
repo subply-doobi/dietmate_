@@ -6,19 +6,12 @@ import React, { useMemo } from "react";
 import DBottomSheet from "../common/bottomsheet/DBottomSheet";
 
 const ModalComponent = () => {
-  const modalSeq = useAppSelector((state) => state.modal.modalSeq);
-  const { tutorialProgress, isTutorialMode } = useAppSelector(
-    (state) => state.common
-  );
-  console.log("ModalComponent: isTutorialMode: ", isTutorialMode);
-  console.log("ModalComponent: tutorialProgress: ", tutorialProgress);
-  console.log("ModalComponent: modalSeq: ", modalSeq);
-
   const {
     currentModalNm,
     numOfBtn,
     showTopCancel,
     contentDelay,
+    style,
     onConfirm,
     onCancel,
     confirmLabel,
@@ -53,6 +46,7 @@ const ModalComponent = () => {
       {/* TutorialTPS */}
       <DTPScreen
         visible={currentModalNm.includes("TPS")}
+        style={style}
         contentDelay={0}
         renderContent={renderTPSContent || (() => <></>)}
       />

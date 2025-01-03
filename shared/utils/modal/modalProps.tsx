@@ -51,7 +51,7 @@ import {
   useCreateSuggestUser,
   useUpdateSuggestUser,
 } from "@/shared/api/queries/suggest";
-import { Platform, ViewStyle } from "react-native";
+import { ViewStyle } from "react-native";
 import CalGuideAlertContent from "@/components/modal/alert/CalGuideAlertContent";
 import DTooltip from "@/shared/ui/DTooltip";
 import CtaButton from "@/shared/ui/CtaButton";
@@ -96,7 +96,10 @@ interface IModalProps {
 export const useModalProps = () => {
   // redux
   const dispatch = useAppDispatch();
-  const isAppLoaded = useAppSelector((state) => state.common.isAppLoaded);
+  const { headerHeight, bottomTabBarHeight, insetTop } = useAppSelector(
+    (state) => state.common.inset
+  );
+
   const friendCd = useAppSelector((state) => state.userInput.friendCd);
   const { currentDietNo, isTutorialMode, tutorialProgress, autoMenuStatus } =
     useAppSelector((state) => state.common);
@@ -111,8 +114,6 @@ export const useModalProps = () => {
 
   // navigation
   const router = useRouter();
-  const headerHeight = 44;
-  const bottomTabBarHeight = 52;
 
   // useState
   const [isCreating, setIsCreating] = useState(false);
@@ -205,10 +206,6 @@ export const useModalProps = () => {
   // useRef
   const flatListRef = useRef<FlatList<IProductData> | null>(null);
   const scrollY = useRef(new Animated.Value(0)).current;
-
-  // etc
-  const statusBarHeight = useSafeAreaInsets().top;
-  const insetTop = Platform.OS === "ios" ? 0 : statusBarHeight;
 
   // actions
   const commonClose = useCallback((name: IModalName) => {
@@ -829,6 +826,7 @@ export const useModalProps = () => {
             )}
           </>
         ),
+        style: { paddingHorizontal: 16 },
       } as IModalProps["tutorialTPSAddMenu"];
 
       const tutorialTPSAddFood = {
@@ -865,6 +863,7 @@ export const useModalProps = () => {
             />
           </>
         ),
+        style: { paddingHorizontal: 16 },
       } as IModalProps["tutorialTPSAddFood"];
 
       const tutorialTPSSelectFood = {
@@ -981,6 +980,7 @@ export const useModalProps = () => {
           />
         </>
       ),
+      style: { paddingHorizontal: 16 },
     } as IModalProps["tutorialTPSAutoRemain"];
 
     const tutorialTPSChangeFood = {
@@ -1059,6 +1059,7 @@ export const useModalProps = () => {
           </ChangeBtn>
         </>
       ),
+      style: { paddingHorizontal: 16 },
     } as IModalProps["tutorialTPSChangeFood"];
 
     return { tutorialTPSAutoRemain, tutorialTPSChangeFood };
@@ -1107,6 +1108,7 @@ export const useModalProps = () => {
           />
         </>
       ),
+      style: { paddingHorizontal: 16 },
     } as IModalProps["tutorialTPSAutoMenu"];
     return { tutorialTPSAutoMenu };
   }, []);
@@ -1195,6 +1197,7 @@ export const useModalProps = () => {
   let onConfirm = undefined;
   let renderAlertContent = undefined;
   let renderBSContent = undefined;
+  let style = undefined;
   let renderTPSContent = undefined;
 
   if (currentModalNm === "") {
@@ -1226,6 +1229,7 @@ export const useModalProps = () => {
   } else {
     contentDelay = modalProps[currentModalNm]?.contentDelay || 0;
     renderTPSContent = modalProps[currentModalNm]?.renderContent;
+    style = modalProps[currentModalNm]?.style;
   }
 
   return {
@@ -1235,6 +1239,7 @@ export const useModalProps = () => {
     contentDelay,
     confirmLabel,
     contentHeightBS,
+    style,
     onCancel,
     onConfirm,
     renderAlertContent,

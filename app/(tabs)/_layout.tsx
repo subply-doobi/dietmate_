@@ -1,6 +1,11 @@
 import { Tabs, useRouter } from "expo-router";
 import React, { useMemo } from "react";
-import { Platform, TouchableOpacity } from "react-native";
+import {
+  Platform,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Icon } from "@/shared/ui/styledComps";
 import { icons } from "@/shared/iconSource";
@@ -31,9 +36,11 @@ export default function TabLayout() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarLabelPosition: "beside-icon",
-        tabBarButton: (props) => (
-          <TouchableOpacity {...props} activeOpacity={0.5} />
-        ),
+        tabBarButton: (
+          props: React.JSX.IntrinsicAttributes &
+            TouchableOpacityProps &
+            React.RefAttributes<View>
+        ) => <TouchableOpacity {...props} activeOpacity={0.5} />,
         tabBarStyle: Platform.select({
           ios: {
             // Use a transparent background on iOS to show the blur effect

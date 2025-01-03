@@ -23,6 +23,7 @@ import { useListProduct } from "@/shared/api/queries/product";
 import { getMenuAcContent } from "@/shared/utils/menuAccordion";
 import {
   setCurrentDiet,
+  setInsets,
   setMenuAcActive,
   setTotalFoodList,
 } from "@/features/reduxSlices/commonSlice";
@@ -81,9 +82,6 @@ const Diet = () => {
       enabled: false,
     }
   );
-
-  // useState
-  const [forceModalQuit, setForceModalQuit] = useState(false);
 
   // useRef
   const scrollRef = useRef<ScrollView>(null);
@@ -181,22 +179,7 @@ const Diet = () => {
     }
   }, [tutorialProgress]);
 
-  useEffect(() => {
-    if (!isFocused) {
-      setForceModalQuit(true);
-      return;
-    }
-
-    setForceModalQuit(false);
-  }, [isFocused]);
-
-  // ███    ███  ██████  ██████   █████  ██
-  // ████  ████ ██    ██ ██   ██ ██   ██ ██
-  // ██ ████ ██ ██    ██ ██   ██ ███████ ██
-  // ██  ██  ██ ██    ██ ██   ██ ██   ██ ██
-  // ██      ██  ██████  ██████  ██   ██ ███████
-
-  // DTP state
+  // DTP tutorial
   useEffect(() => {
     if (!isFocused) return;
 
@@ -214,8 +197,10 @@ const Diet = () => {
     }
   }, [tutorialProgress, isFocused]);
 
-  const statusBarHeight = useSafeAreaInsets().top;
-  const insetTop = Platform.OS === "ios" ? 0 : statusBarHeight;
+  useEffect(() => {
+    if (!isFocused) return;
+    dispatch(setInsets({ headerHeight, bottomTabBarHeight }));
+  }, [headerHeight, bottomTabBarHeight]);
 
   // render
   return (

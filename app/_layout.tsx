@@ -8,7 +8,6 @@ import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import { getHeaderTitle } from "@react-navigation/elements";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import colors from "@/shared/colors";
@@ -23,7 +22,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/shared/store/reactQueryStore";
 import { initializeKakaoSDK } from "@react-native-kakao/core";
 import AppLoading from "@/components/appLoading/AppLoading";
-import ErrorAlert from "@/components/common/error/ErrorAlert";
+import ModalComponent from "@/components/modal/ModalComponent";
 
 // Kakao SDK 초기화
 initializeKakaoSDK("5065665acbfa07f0dd876a374e66e618");
@@ -43,11 +42,12 @@ export default function RootLayout() {
     // redux
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        {/* <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        > */}
         <StatusBar style="auto" />
+
+        {/* Loading */}
         <AppLoading />
+
+        {/* Screens */}
         <Stack
           screenOptions={{
             headerShown: false,
@@ -210,8 +210,14 @@ export default function RootLayout() {
 
           <Stack.Screen name="+not-found" />
         </Stack>
-        <ErrorAlert />
+
+        {/* Modal */}
+        <ModalComponent />
+
         {/* </ThemeProvider> */}
+        {/* <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        > */}
       </QueryClientProvider>
     </Provider>
   );

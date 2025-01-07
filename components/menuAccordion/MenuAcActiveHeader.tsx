@@ -6,7 +6,7 @@ import styled from "styled-components/native";
 // doobi
 import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
+import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
 
 import { IBaseLineData } from "@/shared/api/types/baseLine";
 import { useDeleteDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
@@ -27,21 +27,12 @@ const MenuAcActiveHeader = ({ bLData, dietNo }: IMenuAcActiveHeader) => {
   const { totalFoodList, currentDietNo } = useAppSelector(
     (state) => state.common
   );
-  const menuDeleteAlert = useAppSelector(
-    (state) => state.modal.modal.menuDeleteAlert
-  );
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
   const dDData = dTOData?.[dietNo]?.dietDetail ?? [];
   const dietSeq = dTOData?.[dietNo]?.dietSeq ?? "";
   const deleteDietMutation = useDeleteDiet();
-
-  // fn
-  const onDietDelete = () => {
-    deleteDietMutation.mutate({ dietNo, currentDietNo });
-    dispatch(closeModal({ name: "menuDeleteAlert" }));
-  };
 
   // etc
   const priceSum = sumUpPrice(dDData);
@@ -67,26 +58,13 @@ const MenuAcActiveHeader = ({ bLData, dietNo }: IMenuAcActiveHeader) => {
           dispatch(
             openModal({
               name: "menuDeleteAlert",
-              modalId: `MenuAcActiveHeader_${dietNo}`,
+              values: { dietNoToDel: dietNo },
             })
           )
         }
       >
         <Icon source={icons.cancelRound_24} />
       </DeleteBtn>
-
-      <DAlert
-        alertShow={
-          menuDeleteAlert.isOpen &&
-          menuDeleteAlert.modalId === `MenuAcActiveHeader_${dietNo}`
-        }
-        onCancel={() => dispatch(closeModal({ name: "menuDeleteAlert" }))}
-        onConfirm={() => onDietDelete()}
-        NoOfBtn={2}
-        renderContent={() => (
-          <CommonAlertContent text={`${dietSeq}\n삭제할까요`} />
-        )}
-      />
     </Box>
   );
 };

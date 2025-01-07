@@ -19,35 +19,27 @@ import colors from "@/shared/colors";
 import { regroupByBuyDateAndDietNo } from "@/shared/utils/dataTransform";
 import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useListProduct } from "@/shared/api/queries/product";
-import { updateNotShowAgainList } from "@/shared/utils/asyncStorage";
 import { flatOrderMenuWithQty } from "@/shared/utils/screens/checklist/menuFlat";
-import { DEFAULT_BOTTOM_TAB_HEIGHT, SCREENWIDTH } from "@/shared/constants";
+import { DEFAULT_BOTTOM_TAB_HEIGHT } from "@/shared/constants";
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { queryClient } from "@/shared/store/reactQueryStore";
 import { PRODUCTS } from "@/shared/api/keys";
 import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
 
 import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
-import CtaButton from "@/shared/ui/CtaButton";
 import {
   setCurrentDiet,
   setTotalFoodList,
-  setTutorialEnd,
-  setTutorialProgress,
 } from "@/features/reduxSlices/commonSlice";
 
 import CurrentDietCard from "@/components/screens/home/CurrentDietCard";
 import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
 import LastOrderCard from "@/components/screens/home/LastOrderCard";
 import Profile from "@/components/screens/home/Profile";
-import DTPScreen from "@/shared/ui/DTPScreen";
-import DTooltip from "@/shared/ui/DTooltip";
-import DSmallBtn from "@/shared/ui/DSmallBtn";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
 const NewHome = () => {
   // navigation
-  const router = useRouter();
   const isFocused = useIsFocused();
 
   // redux
@@ -58,8 +50,7 @@ const NewHome = () => {
     isTutorialMode,
     tutorialProgress,
   } = useAppSelector((state) => state.common);
-
-  const tutorialTPS = useAppSelector((state) => state.modal.modal.tutorialTPS);
+  const modalSeq = useAppSelector((state) => state.modal.modalSeq);
 
   // useRef (튜토리얼 식단 구성하기 버튼 위치)
   const scrollRef = useRef<ScrollView | null>(null);
@@ -93,9 +84,6 @@ const NewHome = () => {
     const isOrderEmpty = orderGroupedDataFlatten.length === 0;
     return { orderGroupedDataFlatten, isOrderEmpty };
   }, [orderData]);
-
-  // useState
-  const [tutorialCtaBtnPy, setTutorialCtaBtnPy] = useState(0);
 
   // useMemo
   const { menuNum, productNum, priceTotal, totalShippingPrice } =
@@ -148,24 +136,32 @@ const NewHome = () => {
     if (!isFocused) return;
     if (!dTOData) return;
     if (!isTutorialMode || tutorialProgress !== "Start") {
-      tutorialTPS.isOpen && dispatch(closeModal({ name: "tutorialTPS" }));
+      modalSeq.includes("tutorialTPSStart") &&
+        dispatch(closeModal({ name: "tutorialTPSStart" }));
       return;
     }
-    const timeoutId = setTimeout(() => {
-      ctaBtnRef?.current?.measure((fx, fy, width, height, px, py) => {
-        scrollRef?.current?.scrollTo({ y: 0, animated: true });
-        setTutorialCtaBtnPy(py);
-      });
-    }, 300);
-
     // 끼니 있는 경우는 모두 삭제
     const deleteAllMenuAndStartTutorial = async () => {
       await deleteDietAllMutation.mutateAsync();
     };
-    setTimeout(
-      () => dispatch(openModal({ name: "tutorialTPS", modalId: "NewHome" })),
-      200
-    );
+
+    const timeoutId = setTimeout(() => {
+      ctaBtnRef?.current?.measure((fx, fy, width, height, px, py) => {
+        const insetTop = Platform.OS === "android" ? statusBarHeight : 0;
+
+        dispatch(
+          openModal({
+            name: "tutorialTPSStart",
+            values: {
+              tutorialStartCTABtnPy: py,
+              insetTop,
+            },
+          })
+        );
+        scrollRef?.current?.scrollTo({ y: 0, animated: true });
+      });
+    }, 300);
+
     if (Object.keys(dTOData).length !== 0) deleteAllMenuAndStartTutorial();
     return () => clearTimeout(timeoutId);
   }, [tutorialProgress, dTOData, menuNum, isFocused]);
@@ -228,49 +224,6 @@ const NewHome = () => {
         />
 
         <HorizontalSpace height={40} />
-
-        {/* 튜토리얼 */}
-        <DTPScreen
-          contentDelay={500}
-          visible={tutorialTPS.isOpen && tutorialTPS.modalId === "NewHome"}
-          renderContent={() => (
-            <>
-              <DSmallBtn
-                btnText="튜토리얼 건너뛰기"
-                style={{
-                  position: "absolute",
-                  bottom: 40,
-                  right: 16,
-                  backgroundColor: colors.blackOpacity70,
-                }}
-                onPress={() => {
-                  dispatch(setTutorialEnd());
-                  updateNotShowAgainList({ key: "tutorial", value: true });
-                }}
-              />
-              <DTooltip
-                tooltipShow={true}
-                boxTop={tutorialCtaBtnPy - insetTop - 36}
-                text="식단구성을 시작해봐요!"
-                boxLeft={32}
-              />
-              <CtaButton
-                onPress={() => {
-                  dispatch(setTutorialProgress("AddMenu"));
-                  dispatch(closeModal({ name: "tutorialTPS" }));
-                  // navigate("BottomTabNav", { screen: "Diet" });
-                  router.push("/(tabs)/Diet");
-                }}
-                btnStyle="active"
-                btnText={ctaBtnText}
-                style={{
-                  width: SCREENWIDTH - 32 - 32,
-                  marginTop: tutorialCtaBtnPy - insetTop,
-                }}
-              />
-            </>
-          )}
-        />
       </ScrollView>
     </Container>
   );

@@ -9,6 +9,8 @@ import { HorizontalSpace, TextMain, TextSub } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import MenuNumSelect from "@/components/common/cart/MenuNumSelect";
+import { useEffect } from "react";
+import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 
 interface ICreateDietAlert {
   numOfCreateDiet: number;
@@ -22,6 +24,14 @@ const CreateDietAlert = ({
 }: ICreateDietAlert) => {
   // react-query
   const { data: dTOData } = useListDietTotalObj();
+  console.log("CreateDietAlert: numOfCreateDiet", numOfCreateDiet);
+
+  // useEffect
+  useEffect(() => {
+    if (!dTOData) return;
+    const { menuNum } = sumUpDietFromDTOData(dTOData);
+    menuNum < 5 ? setNumOfCreateDiet(5 - menuNum) : setNumOfCreateDiet(1);
+  }, []);
 
   const NumOfMenu = dTOData ? Object.keys(dTOData).length : 0;
   const desc = `총 5개 끼니를 구성하는 것을 추천해요 \n${

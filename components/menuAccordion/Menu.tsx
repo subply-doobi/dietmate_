@@ -8,7 +8,7 @@ import styled from "styled-components/native";
 import { icons } from "@/shared/iconSource";
 import { BtnSmall, BtnSmallText, Row, TextMain } from "@/shared/ui/styledComps";
 import DAlert from "@/shared/ui/DAlert";
-import DeleteAlertContent from "../common/alert/DeleteAlertContent";
+import DeleteAlertContent from "../modal/alert/DeleteAlertContent";
 import FoodList from "./FoodList";
 
 // react-query
@@ -29,28 +29,25 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
 
   // redux
   const dispatch = useAppDispatch();
-  const productDeleteAlert = useAppSelector(
-    (state) => state.modal.modal.productDeleteAlert
-  );
+  const {
+    modalSeq,
+    values: {
+      productDeleteAlert: { productNoToDelArr },
+    },
+  } = useAppSelector((state) => state.modal);
 
   // react-query
   const deleteDietDetailMutation = useDeleteDietDetail();
 
   // useState
-  const [checkAllClicked, setCheckAllClicked] = useState(false);
   const [selectedFoods, setSelectedFoods] = useState<{
     [key: string]: string[];
   }>({});
 
   // etc
   const isDietEmpty = dietDetailData.length === 0;
-
-  useEffect(() => {
-    const numOfFoodInCurrentDiet = isDietEmpty ? 0 : dietDetailData.length;
-    selectedFoods[dietNo]?.length !== numOfFoodInCurrentDiet
-      ? setCheckAllClicked(false)
-      : setCheckAllClicked(true);
-  }, [selectedFoods, dietDetailData, dietNo]);
+  const isCheckedAll =
+    !isDietEmpty && selectedFoods[dietNo]?.length === dietDetailData.length;
 
   // 전체선택 - 삭제 start
   const checkAll = () => {
@@ -64,24 +61,15 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
     setSelectedFoods({ [dietNo]: [] });
   };
 
-  const deleteSelected = async () => {
-    setCheckAllClicked(false);
-    // setDeleteModalShow(false);
-    dispatch(closeModal({ name: "productDeleteAlert" }));
-    const deleteMutations = selectedFoods[dietNo]?.map((productNo) => {
-      console.log("delete: ", productNo);
-      deleteDietDetailMutation.mutateAsync({
-        dietNo,
-        productNo,
-      });
-    });
-
-    await Promise.all(deleteMutations)
-      .then(() => {
-        unCheckAll();
-      })
-      .catch((e) => console.log("삭제 실패", e));
-  };
+  useEffect(() => {
+    const isProductDeleteAlertOpen = modalSeq.includes("productDeleteAlert");
+    if (isProductDeleteAlertOpen) {
+      return;
+    }
+    productNoToDelArr?.length === 0 &&
+      selectedFoods[dietNo]?.length > 0 &&
+      setSelectedFoods({ [dietNo]: [] });
+  }, [productNoToDelArr]);
 
   return (
     <Container>
@@ -91,11 +79,10 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
           <SelectAllBox>
             <SelectAllCheckbox
               onPress={() => {
-                checkAllClicked ? unCheckAll() : checkAll();
-                setCheckAllClicked((clicked) => !clicked);
+                isCheckedAll ? unCheckAll() : checkAll();
               }}
             >
-              {checkAllClicked ? (
+              {isCheckedAll ? (
                 <CheckboxImage source={icons.checkboxCheckedGreen_24} />
               ) : (
                 <CheckboxImage source={icons.checkbox_24} />
@@ -105,16 +92,16 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
             <SelectAllText>전체 선택</SelectAllText>
           </SelectAllBox>
           <BtnSmall
-            onPress={() =>
-              selectedFoods[dietNo]?.length >= 1
-                ? dispatch(
-                    openModal({
-                      name: "productDeleteAlert",
-                      modalId: `Menu${pathName}_${dietNo}`,
-                    })
-                  )
-                : {}
-            }
+            onPress={() => {
+              selectedFoods[dietNo]?.length >= 1 &&
+                dispatch(
+                  openModal({
+                    name: "productDeleteAlert",
+                    values: { productNoToDelArr: selectedFoods[dietNo] },
+                  })
+                );
+              setSelectedFoods({ [dietNo]: [] });
+            }}
           >
             <BtnSmallText isActivated={true}>선택 삭제</BtnSmallText>
           </BtnSmall>
@@ -129,19 +116,6 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
           dietNo={dietNo}
         />
       )}
-
-      {/* 삭제 알럿 */}
-      <DAlert
-        alertShow={
-          productDeleteAlert.isOpen &&
-          productDeleteAlert.modalId === `Menu${pathName}_${dietNo}`
-        }
-        NoOfBtn={2}
-        confirmLabel="삭제"
-        onConfirm={deleteSelected}
-        onCancel={() => dispatch(closeModal({ name: "productDeleteAlert" }))}
-        renderContent={() => <DeleteAlertContent deleteText="선택된 식품을" />}
-      />
     </Container>
   );
 };

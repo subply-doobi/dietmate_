@@ -134,7 +134,7 @@ const AccordionCtaBtns = ({
   };
 
   const setOneAutoMenu = async () => {
-    dispatch(closeModal({ name: "tutorialTPS" }));
+    dispatch(closeModal({ name: "tutorialTPSAutoRemain" }));
     if (!bLData || totalFoodList?.length === 0) {
       dispatch(setAutoMenuStatus(ERROR_STATUS));
       return;
@@ -188,9 +188,9 @@ const AccordionCtaBtns = ({
             btnText="+"
             style={{ width: 48, height: 48, borderWidth: 1 }}
             onPress={() => {
-              dispatch(closeModal({ name: "tutorialTPS" }));
+              dispatch(closeModal({ name: "tutorialTPSAddFood" }));
               isTutorialMode && dispatch(setTutorialProgress("SelectFood"));
-              router.push({ pathname: "ManualAdd" });
+              router.push({ pathname: "/ManualAdd" });
             }}
           />
         ) : (

@@ -29,6 +29,11 @@ type ITutorialProgress =
   | "Complete";
 
 export interface ICommonState {
+  inset: {
+    headerHeight: number;
+    bottomTabBarHeight: number;
+    insetTop: number;
+  };
   currentDietNo: string;
   totalFoodList: IProductData[];
   totalFoodListIsLoaded: boolean;
@@ -47,6 +52,11 @@ export interface ICommonState {
 }
 
 const initialState: ICommonState = {
+  inset: {
+    headerHeight: 91,
+    bottomTabBarHeight: 49,
+    insetTop: 0,
+  },
   currentDietNo: "",
   totalFoodList: [],
   totalFoodListIsLoaded: false,
@@ -74,6 +84,16 @@ export const commonSlice = createSlice({
   name: "common",
   initialState,
   reducers: {
+    setInsets: (
+      state,
+      action: PayloadAction<{
+        headerHeight?: number;
+        bottomTabBarHeight?: number;
+        insetTop?: number;
+      }>
+    ) => {
+      state.inset = { ...state.inset, ...action.payload };
+    },
     setCurrentDiet: (state, action: PayloadAction<string>) => {
       state.currentDietNo = action.payload;
       state.progressTooltipShow = true;
@@ -140,6 +160,7 @@ export const commonSlice = createSlice({
 });
 
 export const {
+  setInsets,
   setCurrentDiet,
   setTotalFoodList,
   setMenuAcActive,

@@ -1,24 +1,25 @@
 // RN, expo
-import { useEffect, useState } from "react";
+import React from "react";
+import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 
 // doobi
 import { version as appVersion } from "@/package.json";
 import { useGetLatestVersion } from "@/shared/api/queries/version";
 import { getNotShowAgainList } from "@/shared/utils/asyncStorage";
-import { setTutorialStart } from "@/features/reduxSlices/commonSlice";
-import { APP_STORE_URL, IS_ANDROID, PLAY_STORE_URL } from "@/shared/constants";
-import { link } from "@/shared/utils/linking";
-import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "../common/alert/CommonAlertContent";
+import {
+  setInsets,
+  setTutorialStart,
+} from "@/features/reduxSlices/commonSlice";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { validateToken } from "@/shared/api/queries/token";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
-import { useNavigation } from "@react-navigation/native";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 import { checkIsUpdateNeeded } from "@/shared/utils/versionCheck";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { navigateByUserInfo } from "@/shared/utils/screens/login/navigateByUserInfo";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Platform } from "react-native";
 
 const loadSplash = new Promise((resolve) =>
   setTimeout(() => {
@@ -29,14 +30,10 @@ const loadSplash = new Promise((resolve) =>
 const AppLoading = () => {
   // router
   const router = useRouter();
+  const statusBarHeight = useSafeAreaInsets().top;
 
   // redux
   const dispatch = useAppDispatch();
-  const appUpdateAlert = useAppSelector(
-    (state) => state.modal.modal.appUpdateAlert
-  );
-
-  const navigation = useNavigation();
 
   // react-query
   const { refetch: refetchBaseLine } = useGetBaseLine({ enabled: false });
@@ -46,6 +43,7 @@ const AppLoading = () => {
   // useEffect 앱 로딩
   // 1. 스플래시 노출 2.앱 버전 확인 3. 자동로그인 4. 튜토리얼 모드 확인 5. 스플래시 숨김
   useEffect(() => {
+    // 앱 업데이트 확인
     const checkIsUpToDate = async () => {
       const latestVersion = (await refetchLatestVersion()).data;
       if (!latestVersion) return false;
@@ -62,6 +60,7 @@ const AppLoading = () => {
       return false;
     };
 
+    // 토근 유효하다면 자동로그인
     const autoLogin = async (isAppUpToDate: boolean) => {
       const { isValidated } = await validateToken();
       if (!isValidated) return;
@@ -88,27 +87,14 @@ const AppLoading = () => {
     });
   }, []);
 
-  // etc
-  const visitStore = () => {
-    IS_ANDROID ? link(PLAY_STORE_URL) : link(APP_STORE_URL);
-    dispatch(closeModal({ name: "appUpdateAlert" }));
-  };
+  // insets 설정
+  useEffect(() => {
+    const insetTop = Platform.OS === "ios" ? 0 : statusBarHeight;
+    if (insetTop === 0) return;
+    dispatch(setInsets({ insetTop }));
+  }, [statusBarHeight]);
 
-  return (
-    <DAlert
-      alertShow={appUpdateAlert.isOpen}
-      onConfirm={() => visitStore()}
-      onCancel={() => dispatch(closeModal({ name: "appUpdateAlert" }))}
-      NoOfBtn={2}
-      confirmLabel="업데이트"
-      renderContent={() => (
-        <CommonAlertContent
-          text="앱 업데이트가 필요합니다"
-          subText={`현재버전: ${appVersion}\n최신버전: ${latestAppVersion}`}
-        />
-      )}
-    />
-  );
+  return <></>;
 };
 
 export default AppLoading;

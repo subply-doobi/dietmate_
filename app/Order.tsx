@@ -9,13 +9,14 @@ import {
 
 // 3rd
 import Accordion from "react-native-collapsible/Accordion";
+import { useRouter } from "expo-router";
 
 // doobi
 import { useCreateOrder } from "@/shared/api/queries/order";
 import { useListAddress } from "@/shared/api/queries/address";
 import { useGetUser } from "@/shared/api/queries/user";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
-import { closeModal } from "@/features/reduxSlices/modalSlice";
 import {
   setCustomData,
   setPayParams,
@@ -27,14 +28,9 @@ import { tfDTOToDDA } from "@/shared/utils/dataTransform";
 import colors from "@/shared/colors";
 import { BOTTOM_INDICATOR_IOS, SCREENWIDTH } from "@/shared/constants";
 import { PAY_METHOD } from "@/shared/utils/screens/order/payConsts";
-
-import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
 import BusinessInfo from "@/components/common/businessInfo/BusinessInfo";
 import CtaButton from "@/shared/ui/CtaButton";
-import DAlert from "@/shared/ui/DAlert";
 import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useRouter } from "expo-router";
 
 const Order = () => {
   //navigation
@@ -47,9 +43,6 @@ const Order = () => {
   );
   const { buyerName, buyerTel, entranceType, entranceNote, paymentMethod, pg } =
     useAppSelector((state) => state.userInput);
-  const payFailAlert = useAppSelector(
-    (state) => state.modal.modal.payFailAlert
-  );
 
   // useState
   const [activeSections, setActiveSections] = useState<number[]>([]);
@@ -201,20 +194,6 @@ const Order = () => {
         }}
         onPress={async () => onHandleOrder()}
         btnText={ctaBtnText}
-      />
-
-      {/* 결제실패알럿 */}
-      <DAlert
-        alertShow={payFailAlert.isOpen}
-        NoOfBtn={1}
-        onCancel={() => dispatch(closeModal({ name: "payFailAlert" }))}
-        onConfirm={() => dispatch(closeModal({ name: "payFailAlert" }))}
-        renderContent={() => (
-          <CommonAlertContent
-            text="결제실패"
-            subText={payFailAlert.values?.payFailMsg}
-          />
-        )}
       />
     </Container>
   );

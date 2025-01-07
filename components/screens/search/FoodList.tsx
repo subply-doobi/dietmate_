@@ -9,7 +9,7 @@ import styled from "styled-components/native";
 // doobi
 import { Col, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
+import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
 
 import { icons } from "@/shared/iconSource";
 import colors from "@/shared/colors";
@@ -29,6 +29,7 @@ import {
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useDeleteProductMark } from "@/shared/api/queries/product";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 
 interface IFoodList {
   item: IProductData;
@@ -44,12 +45,6 @@ const FoodList = ({ item, screen = "Search" }: IFoodList) => {
   const { currentDietNo, isTutorialMode, tutorialProgress } = useAppSelector(
     (state) => state.common
   );
-
-  // state
-  // 튜토리얼에서 Search의 식품 리스트를 dTPScreen위에 띄우는데
-  // redux modal state를 사용하면 모달 때문에 계속 식품이 리렌더링되는 문제있음
-  // 이 알럿만 useState로 관리
-  const [foodLimitAlertShow, setFoodLimitAlertShow] = useState(false);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
@@ -188,7 +183,7 @@ const FoodList = ({ item, screen = "Search" }: IFoodList) => {
               tutorialProgress === "SelectFood" &&
               currentNumOfFoods >= 1
             ) {
-              setFoodLimitAlertShow(true);
+              dispatch(openModal({ name: "tutorialFoodLimitAlert" }));
               return;
             }
             addCartAni.start(onAdd);
@@ -252,21 +247,6 @@ const FoodList = ({ item, screen = "Search" }: IFoodList) => {
           />
         </AniAddedMark>
       </Box>
-
-      {/* 튜토리얼 */}
-      <DAlert
-        alertShow={foodLimitAlertShow}
-        NoOfBtn={1}
-        confirmLabel="확인"
-        onConfirm={() => setFoodLimitAlertShow(false)}
-        onCancel={() => setFoodLimitAlertShow(false)}
-        renderContent={() => (
-          <CommonAlertContent
-            text={"지금은 식품을\n하나만 추가할게요"}
-            subText={"튜토리얼이 끝나면\n자유롭게 식품을 추가할 수 있어요"}
-          />
-        )}
-      />
     </Container>
   );
 };

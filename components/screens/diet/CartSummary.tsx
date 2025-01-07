@@ -128,7 +128,7 @@ const CartSummary = () => {
                       dispatch(
                         openModal({
                           name: "menuNumSelectBS",
-                          values: { dietNo: e.dietNo },
+                          values: { dietNoToNumControl: e.dietNo },
                         })
                       );
                     }}
@@ -150,7 +150,7 @@ const CartSummary = () => {
       </Row>
       <Row style={{ marginTop: 2, justifyContent: "space-between" }}>
         <SummmaryTextSub>배송비 합계</SummmaryTextSub>
-        <SummaryValueSub>{commaToNum(totalShippingPrice)}원</SummaryValueSub>
+        <SummaryValueSub>{commaToNum(totalShippingPrice)} 원</SummaryValueSub>
       </Row>
     </TotalSummaryContainer>
   );

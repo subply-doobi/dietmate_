@@ -27,7 +27,7 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 
 import colors from "@/shared/colors";
 import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
+import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
 import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
 
 const FOOD_ERROR_RANGE = {
@@ -42,9 +42,6 @@ const Change = () => {
   const dispatch = useAppDispatch();
   const { isTutorialMode, tutorialProgress } = useAppSelector(
     (state) => state.common
-  );
-  const noProductAlert = useAppSelector(
-    (state) => state.modal.modal.noProductAlert
   );
 
   // navigation
@@ -137,7 +134,9 @@ const Change = () => {
       );
       if (!data) return;
       if (data && data.length === 0) {
-        dispatch(openModal({ name: "noProductAlert", modalId: "Change" }));
+        dispatch(
+          openModal({ name: "noProductAlert", values: { screen: "Change" } })
+        );
         return;
       }
       setFlatlistData(data);
@@ -191,14 +190,6 @@ const Change = () => {
     }
   };
 
-  const onAlertConfirm = () => {
-    dispatch(closeModal({ name: "noProductAlert" }));
-    if (isTutorialMode && tutorialProgress === "ChangeFood") {
-      dispatch(setTutorialProgress("AutoMenu"));
-      router.back();
-    }
-  };
-
   // headerTitle 설정
   useEffect(() => {
     isTutorialMode &&
@@ -244,23 +235,6 @@ const Change = () => {
           bottom: insetBottom + 8,
         }}
         onPress={onCTABtnPressed}
-      />
-      {/* 알럿창 */}
-      <DAlert
-        alertShow={noProductAlert.isOpen && noProductAlert.modalId === "Change"}
-        onConfirm={onAlertConfirm}
-        onCancel={() => dispatch(closeModal({ name: "noProductAlert" }))}
-        renderContent={() =>
-          isTutorialMode && tutorialProgress === "ChangeFood" ? (
-            <CommonAlertContent
-              text="해당 식품과 비슷한 상품이 없어요"
-              subText="지금은 다음으로 넘어갈게요!"
-            />
-          ) : (
-            <CommonAlertContent text="해당 식품과 비슷한 상품이 없어요" />
-          )
-        }
-        NoOfBtn={1}
       />
     </Container>
   );

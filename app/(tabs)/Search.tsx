@@ -6,19 +6,10 @@ import { ActivityIndicator, Animated, FlatList, Platform } from "react-native";
 import styled from "styled-components/native";
 
 // doobi
-import FilterModalContent from "@/components/screens/search/FilterModalContent";
 import MenuSection from "@/components/common/menuSection/MenuSection";
-import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/common/alert/CommonAlertContent";
-import SortModalContent from "@/components/screens/search/SortModalContent";
-import DTPScreen from "@/shared/ui/DTPScreen";
-import DBottomSheet from "@/components/common/bottomsheet/DBottomSheet";
 import FlatlistHeaderComponent from "@/components/screens/search/FlatlistHeaderComponent";
 import HomeFoodListAndBtn from "@/components/screens/search/HomeFoodListAndBtn";
-import DTooltip from "@/shared/ui/DTooltip";
-import NutrientsProgress from "@/components/common/nutrient/NutrientsProgress";
 import colors from "@/shared/colors";
-import { Col } from "@/shared/ui/styledComps";
 
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
@@ -44,12 +35,6 @@ const Search = () => {
   const { currentDietNo, isTutorialMode, tutorialProgress } = useAppSelector(
     (state) => state.common
   );
-  const noProductAlert = useAppSelector(
-    (state) => state.modal.modal.noProductAlert
-  );
-  const tutorialTPS = useAppSelector((state) => state.modal.modal.tutorialTPS);
-  const filterBS = useAppSelector((state) => state.modal.modal.filterBS);
-  const sortBS = useAppSelector((state) => state.modal.modal.sortBS);
   const { applied: appliedSortFilter } = useAppSelector(
     (state) => state.sortFilter
   );
@@ -136,34 +121,6 @@ const Search = () => {
           )}
         </ContentContainer>
       )}
-
-      {/* 정렬, 필터 모달 */}
-      <DBottomSheet
-        visible={filterBS.isOpen}
-        closeModal={() => dispatch(closeModal({ name: "filterBS" }))}
-        renderContent={() => <FilterModalContent />}
-        filterHeight={514}
-      />
-      <DBottomSheet
-        visible={sortBS.isOpen}
-        closeModal={() => dispatch(closeModal({ name: "sortBS" }))}
-        renderContent={() => <SortModalContent />}
-        onCancel={() => {}}
-      />
-
-      {/* 알럿창 */}
-      <DAlert
-        alertShow={
-          noProductAlert.isOpen &&
-          noProductAlert.modalId === "HomeFoodListAndBtn"
-        }
-        onConfirm={() => dispatch(closeModal({ name: "noProductAlert" }))}
-        onCancel={() => dispatch(closeModal({ name: "noProductAlert" }))}
-        renderContent={() => (
-          <CommonAlertContent text="해당 필터에 적용되는 상품이 없어요" />
-        )}
-        NoOfBtn={1}
-      />
     </Container>
   );
 };

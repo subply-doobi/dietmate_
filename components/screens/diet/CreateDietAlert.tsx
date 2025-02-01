@@ -24,7 +24,6 @@ const CreateDietAlert = ({
 }: ICreateDietAlert) => {
   // react-query
   const { data: dTOData } = useListDietTotalObj();
-  console.log("CreateDietAlert: numOfCreateDiet", numOfCreateDiet);
 
   // useEffect
   useEffect(() => {

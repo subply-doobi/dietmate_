@@ -31,7 +31,7 @@ const OrderHistoryDetail = () => {
     orderDetailData,
     totalPrice as string
   );
-  console.log("OrderhistoryDetail acContent", acContent);
+
   // useEffect
   useEffect(() => {
     orderDetailData &&

@@ -150,7 +150,7 @@ export default function RootLayout() {
             options={{
               headerShown: true,
               headerRight: () => (
-                <InquireBtn onPress={() => link(INQUIRY_URL)}>
+                <InquireBtn onPressIn={() => link(INQUIRY_URL)}>
                   <BtnSmallText>문의</BtnSmallText>
                 </InquireBtn>
               ),

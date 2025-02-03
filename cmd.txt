@@ -13,11 +13,9 @@
 
 - build (android emulator + device)
   eas build --profile development --platform android
-  (eas build --profile development --platform android --environment development)
 
 - build (ios simulator)
   eas build --profile development-simulator --platform ios
-  (eas build --profile development-simulator --platform ios --environment development)
 
 - build (ios device) (developer mode setting needed)
   eas device:create
@@ -25,3 +23,9 @@
 
 - build (distribution)
   eas build --platform all
+
+- environment variables
+  eas env:pull
+
+- update
+  

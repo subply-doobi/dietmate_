@@ -6,7 +6,6 @@ import { useRouter } from "expo-router";
 // 3rd
 // import {useIsFocused, useNavigation} from '@react-navigation/native';
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import Accordion from "react-native-collapsible/Accordion";
 import { useIsFocused } from "@react-navigation/native";

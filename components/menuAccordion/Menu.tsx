@@ -7,8 +7,6 @@ import styled from "styled-components/native";
 // doobi
 import { icons } from "@/shared/iconSource";
 import { BtnSmall, BtnSmallText, Row, TextMain } from "@/shared/ui/styledComps";
-import DAlert from "@/shared/ui/DAlert";
-import DeleteAlertContent from "../modal/alert/DeleteAlertContent";
 import FoodList from "./FoodList";
 
 // react-query
@@ -35,9 +33,6 @@ const Menu = ({ dietNo, dietDetailData }: IMenu) => {
       productDeleteAlert: { productNoToDelArr },
     },
   } = useAppSelector((state) => state.modal);
-
-  // react-query
-  const deleteDietDetailMutation = useDeleteDietDetail();
 
   // useState
   const [selectedFoods, setSelectedFoods] = useState<{

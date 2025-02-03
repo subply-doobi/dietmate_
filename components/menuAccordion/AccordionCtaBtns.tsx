@@ -169,7 +169,7 @@ const AccordionCtaBtns = ({
         ? await addMenu(recommendedMenu)
         : await overwriteMenu(recommendedMenu);
       dispatch(setAutoMenuStatus(SUCCESS_STATUS));
-      dispatch(setTutorialProgress("ChangeFood"));
+      isTutorialMode && dispatch(setTutorialProgress("ChangeFood"));
     } catch (e) {
       console.log("식품추가 중 오류 발생: ", e);
       dispatch(setAutoMenuStatus(ERROR_STATUS));

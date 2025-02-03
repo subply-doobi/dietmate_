@@ -6,6 +6,8 @@ import React, { useMemo } from "react";
 import DBottomSheet from "../common/bottomsheet/DBottomSheet";
 
 const ModalComponent = () => {
+  // redux
+  const { isTutorialMode } = useAppSelector((state) => state.common);
   const {
     currentModalNm,
     numOfBtn,
@@ -45,7 +47,7 @@ const ModalComponent = () => {
 
       {/* TutorialTPS */}
       <DTPScreen
-        visible={currentModalNm.includes("TPS")}
+        visible={isTutorialMode && currentModalNm.includes("TPS")}
         style={style}
         contentDelay={0}
         renderContent={renderTPSContent || (() => <></>)}

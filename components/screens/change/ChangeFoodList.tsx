@@ -4,7 +4,7 @@ import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { IProductData } from "@/shared/api/types/product";
 import { commaToNum } from "@/shared/utils/sumUp";
-import { SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
+import { ENV, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 import { useNavigation } from "@react-navigation/native";
 import { icons } from "@/shared/iconSource";
 import { useRouter } from "expo-router";
@@ -42,7 +42,7 @@ const ChangeFoodList = ({
         >
           <ThumbnailImage
             source={{
-              uri: `${process.env.EXPO_PUBLIC_BASE_URL}${food.mainAttUrl}`,
+              uri: `${ENV.BASE_URL}${food.mainAttUrl}`,
             }}
             resizeMode="center"
           />

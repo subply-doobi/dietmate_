@@ -12,6 +12,7 @@ import colors from "@/shared/colors";
 import { commaToNum } from "@/shared/utils/sumUp";
 import { regroupDDataBySeller } from "@/shared/utils/dataTransform";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
+import { ENV } from "@/shared/constants";
 
 const FoodToOrder = () => {
   // redux
@@ -71,7 +72,7 @@ const FoodsInOneDiet = ({ dietNo }: FoodInOneDietProps) => {
               <Row key={product.productNo} style={{ marginTop: 16 }}>
                 <FoodThumbnail
                   source={{
-                    uri: `${process.env.EXPO_PUBLIC_BASE_URL}${product.mainAttUrl}`,
+                    uri: `${ENV.BASE_URL}${product.mainAttUrl}`,
                   }}
                 />
                 <Col style={{ flex: 1, marginLeft: 8 }}>

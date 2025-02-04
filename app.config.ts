@@ -37,6 +37,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: "dietmate",
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
+  updates: {
+    url: "https://u.expo.dev/3961e206-831a-4f33-b8a6-f72e46a5aab0",
+  },
+  runtimeVersion: {
+    policy: "sdkVersion",
+  },
   ios: {
     supportsTablet: true,
     usesAppleSignIn: true,
@@ -104,5 +110,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     eas: {
       projectId: "3961e206-831a-4f33-b8a6-f72e46a5aab0",
     },
+    API_KEY_IAMPORT: process.env.API_KEY_IAMPORT,
+    API_SECRET_IAMPORT: process.env.API_SECRET_IAMPORT,
+    CHANNEL_KEY_KAKAOPAY: process.env.CHANNEL_KEY_KAKAOPAY,
+    CHANNEL_KEY_SMARTRO_V2: process.env.CHANNEL_KEY_SMARTRO_V2,
+    EXPO_PUBLIC_APP_SCHEME_IAMPORT: process.env.EXPO_PUBLIC_APP_SCHEME_IAMPORT,
+    EXPO_PUBLIC_AXIOS_TIMEOUT: process.env.EXPO_PUBLIC_AXIOS_TIMEOUT,
+    EXPO_PUBLIC_BASE_URL: process.env.EXPO_PUBLIC_BASE_URL,
+    EXPO_PUBLIC_REDIRECT_URL_IAMPORT:
+      process.env.EXPO_PUBLIC_REDIRECT_URL_IAMPORT,
+    EXPO_PUBLIC_STORE_ID_IAMPORT: process.env.EXPO_PUBLIC_STORE_ID_IAMPORT,
   },
 });

@@ -11,6 +11,7 @@ import { setTutorialStart } from "../../features/reduxSlices/commonSlice";
 
 import { openModal } from "../../features/reduxSlices/modalSlice";
 import { router } from "expo-router";
+import { ENV } from "../constants";
 
 // 에러 -> 에러코드
 // null -> 네트워크 없음
@@ -20,8 +21,7 @@ const convertErrorToCode = async (error: unknown) => {
   if (!isAxiosError(error)) return 520;
   if (
     error.message === "Network Error" ||
-    error.message ===
-      `timeout of ${process.env.EXPO_PUBLIC_AXIOS_TIMEOUT}ms exceeded`
+    error.message === `timeout of ${ENV.AXIOS_TIMEOUT}ms exceeded`
   ) {
     const isOnline = (await NetInfo.fetch()).isConnected;
     return isOnline ? 999 : null;

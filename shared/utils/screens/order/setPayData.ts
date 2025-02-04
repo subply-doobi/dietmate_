@@ -2,6 +2,7 @@ import { IAddressData } from "@/shared/api/types/address";
 import { IDietDetailAllData } from "@/shared/api/types/diet";
 import { IUserData } from "@/shared/api/types/user";
 import { channelKey, IPG } from "./payConsts";
+import { ENV } from "@/shared/constants";
 
 type IPayMethod =
   | "CARD"
@@ -193,7 +194,7 @@ export const setPayParams = ({
   payParams_doobi: IDoobiPayParams;
 } => {
   const payParams_iamport: IIamportPayParams = {
-    storeId: process.env.EXPO_PUBLIC_STORE_ID_IAMPORT as string,
+    storeId: ENV.STORE_ID_IAMPORT as string,
     paymentId: `paymentU${userData.userId}D${Date.now()}`,
     orderName: `${menuNum}개 끼니 (식품 ${productNum}개)`,
     totalAmount: priceTotal + shippingPrice,
@@ -258,7 +259,7 @@ export const setPayParams = ({
         " | " +
         listAddressData?.[selectedAddrIdx]?.addr2 || "",
     buyerZipCode: listAddressData?.[selectedAddrIdx]?.zipCode || "",
-    appScheme: process.env.EXPO_PUBLIC_APP_SCHEME_IAMPORT as string,
+    appScheme: ENV.APP_SCHEME_IAMPORT as string,
     customerUid: "customer_" + Date.now(),
     customData: `${customData.entranceType} | ${customData.entranceNote} | ${shippingPrice}`,
   };

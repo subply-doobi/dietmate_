@@ -26,7 +26,7 @@
 
 # build : ios simulator
   eas build --profile ios-simulator --platform ios
-
+                  
 # build : preview 
   eas build --profile preview --platform all
 
@@ -35,9 +35,14 @@
 
 # sync environment variables from eas
   eas env:pull
+  eas env:pull --environment preview
 
 # build version
   eas build:version:get
 
+# eas update (.env file vs same as build env) 
+  eas update
+  eas update --environment preview
+  eas update --environment production
 
 -------------------------------------------

@@ -3,9 +3,10 @@ import { GET_VERSION } from "../urls";
 import { IQueryOptions } from "../types/common";
 import { useQuery } from "@tanstack/react-query";
 import { VERSION } from "../keys";
+import { ENV } from "@/shared/constants";
 
 const requestConfig = {
-  timeout: Number(process.env.EXPO_PUBLIC_AXIOS_TIMEOUT),
+  timeout: Number(ENV.AXIOS_TIMEOUT),
 };
 
 const queryFn = async () => {

@@ -14,6 +14,7 @@ import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
 import { icons } from "@/shared/iconSource";
 import colors from "@/shared/colors";
 import {
+  ENV,
   NUTR_ERROR_RANGE,
   SERVICE_PRICE_PER_PRODUCT,
 } from "@/shared/constants";
@@ -166,7 +167,7 @@ const FoodList = ({ item, screen = "Search" }: IFoodList) => {
         >
           <Thumbnail
             source={{
-              uri: `${process.env.EXPO_PUBLIC_BASE_URL}${item?.mainAttUrl}`,
+              uri: `${ENV.BASE_URL}${item?.mainAttUrl}`,
             }}
             resizeMode="contain"
           />

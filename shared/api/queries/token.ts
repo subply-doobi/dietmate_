@@ -4,9 +4,10 @@ import { IReIssueTokenData } from "../types/token";
 import { queryFn } from "../requestFn";
 
 import { GET_TOKEN, GET_AUTH, RE_ISSUE_TOKEN, GET_GUEST } from "../urls";
+import { ENV } from "@/shared/constants";
 
 const requestConfig = {
-  timeout: Number(process.env.EXPO_PUBLIC_AXIOS_TIMEOUT),
+  timeout: Number(ENV.AXIOS_TIMEOUT),
 };
 
 export const getDoobiToken = async (kakaoAccessToken: string | null) => {

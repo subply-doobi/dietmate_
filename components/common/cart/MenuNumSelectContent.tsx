@@ -24,6 +24,7 @@ import MenuNumSelect from "../../common/cart/MenuNumSelect";
 import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
 import colors from "@/shared/colors";
 import {
+  ENV,
   SCREENHEIGHT,
   SCREENWIDTH,
   SERVICE_PRICE_PER_PRODUCT,
@@ -104,7 +105,7 @@ const MenuNumSelectContent = () => {
               >
                 <ThumbnailImg
                   source={{
-                    uri: `${process.env.EXPO_PUBLIC_BASE_URL}${food.mainAttUrl}`,
+                    uri: `${ENV.BASE_URL}${food.mainAttUrl}`,
                   }}
                 />
                 <Col

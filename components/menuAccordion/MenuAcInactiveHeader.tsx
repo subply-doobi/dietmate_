@@ -24,6 +24,7 @@ import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import MenuNumSelect from "../common/cart/MenuNumSelect";
+import { ENV } from "@/shared/constants";
 
 interface IMenuAcInactiveHeader {
   controllable?: boolean;
@@ -166,7 +167,7 @@ const MenuAcInactiveHeader = ({
                   <Thumbnail
                     key={p.productNo}
                     source={{
-                      uri: `${process.env.EXPO_PUBLIC_BASE_URL}${p.mainAttUrl}`,
+                      uri: `${ENV.BASE_URL}${p.mainAttUrl}`,
                     }}
                   />
                 ))

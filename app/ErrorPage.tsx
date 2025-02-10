@@ -13,6 +13,9 @@ import {
 } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { useLocalSearchParams } from "expo-router";
+import { Alert, ScrollView } from "react-native";
+import { useEffect } from "react";
+import { ENV } from "@/shared/constants";
 
 // 1. app splash 에서 버전 확인할 때 서버오류
 // 2. 로그인시 서버오류
@@ -28,17 +31,30 @@ const ErrorPage = () => {
   const subText =
     errorCode === null ? "잠시 후 다시 시도해주세요" : `code: ${errorCode}`;
 
+  const ENVString = JSON.stringify(ENV, null, 2);
+  useEffect(() => {
+    Alert.alert("Env Var check", JSON.stringify(ENVString, null, 2), [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      { text: "OK" },
+    ]);
+  }, []);
   return (
     <Container style={{ alignItems: "center", justifyContent: "center" }}>
-      <Col style={{ alignItems: "center" }}>
-        <Icon source={icons.networkError_80} size={64} />
-        <ErrorText>{msg}</ErrorText>
-        <Sub>{subText}</Sub>
-        <RestartBtn onPress={() => RNRestart.restart()}>
-          <Icon source={icons.initialize_24} />
-          <RestartText>재시작</RestartText>
-        </RestartBtn>
-      </Col>
+      <ScrollView>
+        <Col style={{ alignItems: "center" }}>
+          <Icon source={icons.networkError_80} size={64} />
+          <ErrorText>{msg}</ErrorText>
+          <Sub>{subText}</Sub>
+          <Sub>{ENVString}</Sub>
+          <RestartBtn onPress={() => RNRestart.restart()}>
+            <Icon source={icons.initialize_24} />
+            <RestartText>재시작</RestartText>
+          </RestartBtn>
+        </Col>
+      </ScrollView>
     </Container>
   );
 };

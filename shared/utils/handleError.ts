@@ -12,6 +12,7 @@ import { setTutorialStart } from "../../features/reduxSlices/commonSlice";
 import { openModal } from "../../features/reduxSlices/modalSlice";
 import { router } from "expo-router";
 import { ENV } from "../constants";
+import { Alert } from "react-native";
 
 // 에러 -> 에러코드
 // null -> 네트워크 없음
@@ -130,7 +131,7 @@ export const runErrAlertActionByCode = (
 // 에러 핸들러
 export const handleError = async (error: Error) => {
   console.log("handleError: ", error);
-  const errorCode = await convertErrorToCode(error);
-  console.log("errorCode: ", errorCode, typeof errorCode);
-  runErrorActionByCode(errorCode);
+  // const errorCode = await convertErrorToCode(error);
+  // console.log("errorCode: ", errorCode, typeof errorCode);
+  // runErrorActionByCode(errorCode);
 };

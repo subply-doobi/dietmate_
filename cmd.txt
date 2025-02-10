@@ -42,7 +42,7 @@
 
 # eas update (.env file vs same as build env) 
   eas update
-  eas update --environment preview
-  eas update --environment production
+  eas update --environment preview --channel preview
+  eas update --environment production --channel production
 
 -------------------------------------------

@@ -40,9 +40,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   updates: {
     url: "https://u.expo.dev/3961e206-831a-4f33-b8a6-f72e46a5aab0",
   },
-  runtimeVersion: {
-    policy: "sdkVersion",
-  },
+  runtimeVersion: "1.1.0",
   ios: {
     supportsTablet: true,
     usesAppleSignIn: true,
@@ -83,6 +81,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           extraMavenRepos: [
             "https://devrepo.kakao.com/nexus/content/groups/public/",
           ],
+          usesCleartextTraffic: true,
+        },
+        ios: {
+          infoPlist: {
+            NSAppTransportSecurity: { NSAllowsArbitraryLoads: true },
+          },
         },
       },
     ],

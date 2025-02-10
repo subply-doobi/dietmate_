@@ -2,6 +2,7 @@ import axios from "axios";
 import { getStoredToken } from "../utils/asyncStorage";
 import { IDietDetailAllData, IDietTotalObjData } from "./types/diet";
 import { LIST_DIET_DETAIL_ALL } from "./urls";
+import { ENV } from "../constants";
 
 export const queryFn = async <T>(
   url: string,
@@ -11,7 +12,7 @@ export const queryFn = async <T>(
   const token = forReIssue ? refreshToken : accessToken;
   const requestConfig = {
     headers: { authorization: `Bearer ${token}` },
-    timeout: Number(process.env.EXPO_PUBLIC_AXIOS_TIMEOUT),
+    timeout: Number(ENV.AXIOS_TIMEOUT),
   };
   const res = await axios.get(url, requestConfig);
   return res.data;
@@ -28,7 +29,7 @@ export const mutationFn = async <T>(
     method,
     headers: { authorization: `Bearer ${accessToken}` },
     data: requestBody,
-    timeout: Number(process.env.EXPO_PUBLIC_AXIOS_TIMEOUT),
+    timeout: Number(ENV.AXIOS_TIMEOUT),
   };
   return axios(requestConfig).then((res) => res.data);
 };
@@ -37,7 +38,7 @@ export const queryFnDDADataByDietNo = async (): Promise<IDietTotalObjData> => {
   const { accessToken } = await getStoredToken();
   const requestConfig = {
     headers: { authorization: `Bearer ${accessToken}` },
-    timeout: Number(process.env.EXPO_PUBLIC_AXIOS_TIMEOUT),
+    timeout: Number(ENV.AXIOS_TIMEOUT),
   };
   const res = (
     await axios.get<IDietDetailAllData>(LIST_DIET_DETAIL_ALL, requestConfig)

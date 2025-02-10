@@ -1,6 +1,7 @@
 import styled from "styled-components/native";
 import { IOrderedProduct } from "../../../shared/api/types/order";
 import { Col, Row, TextMain, TextSub } from "../../../shared/ui/styledComps";
+import { ENV } from "@/shared/constants";
 
 interface IFoodList {
   menu: IOrderedProduct[];
@@ -12,7 +13,7 @@ const FoodList = ({ menu }: IFoodList) => {
         <Row key={food.productNo}>
           <ThumbnailImage
             source={{
-              uri: `${process.env.EXPO_PUBLIC_BASE_URL}${food.mainAttUrl}`,
+              uri: `${ENV.BASE_URL}${food.mainAttUrl}`,
             }}
           />
           <Col style={{ marginLeft: 8 }}>

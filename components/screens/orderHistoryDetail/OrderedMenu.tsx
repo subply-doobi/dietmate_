@@ -11,6 +11,7 @@ import {
 import colors from "../../../shared/colors";
 import Nutr from "./Nutr";
 import { commaToNum, sumUpPrice } from "../../../shared/utils/sumUp";
+import { ENV } from "@/shared/constants";
 
 interface IOrderedMenu {
   orderDetailData: Readonly<IOrderedProduct[][]>;
@@ -35,7 +36,7 @@ const OrderedMenu = ({ orderDetailData }: IOrderedMenu) => {
               <FoodBox key={`${f.dietNo}_${f.productNo}`}>
                 <FoodImg
                   source={{
-                    uri: `${process.env.EXPO_PUBLIC_BASE_URL}${f.mainAttUrl}`,
+                    uri: `${ENV.BASE_URL}${f.mainAttUrl}`,
                   }}
                 />
                 <InfoBox>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { IQueryOptions } from "../types/common";
 import { useQuery } from "@tanstack/react-query";
+import { ENV } from "@/shared/constants";
 
 // Define the fetch function
 const fetchPaymentStatus = async (merchant_uid: string) => {
@@ -11,8 +12,8 @@ const fetchPaymentStatus = async (merchant_uid: string) => {
   }>(
     "https://api.iamport.kr/users/getToken",
     {
-      imp_key: process.env.EXPO_PUBLIC_API_KEY_IAMPORT,
-      imp_secret: process.env.EXPO_PUBLIC_API_SECRET_IAMPORT,
+      imp_key: ENV.API_KEY_IAMPORT,
+      imp_secret: ENV.API_SECRET_IAMPORT,
     },
     {
       headers: {

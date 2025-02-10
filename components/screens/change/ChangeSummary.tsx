@@ -4,6 +4,7 @@ import styled from "styled-components/native";
 import { icons } from "@/shared/iconSource";
 import { commaToNum } from "@/shared/utils/sumUp";
 import colors from "@/shared/colors";
+import { ENV } from "@/shared/constants";
 
 interface IChangeSummary {
   foodToChange: IProductData;
@@ -57,7 +58,7 @@ const ChangeSummary = ({ foodToChange, selectedProduct }: IChangeSummary) => {
         <Box>
           <Thumbnail
             source={{
-              uri: `${process.env.EXPO_PUBLIC_BASE_URL}${foodToChange.mainAttUrl}`,
+              uri: `${ENV.BASE_URL}${foodToChange.mainAttUrl}`,
             }}
             resizeMode="cover"
           />
@@ -84,7 +85,7 @@ const ChangeSummary = ({ foodToChange, selectedProduct }: IChangeSummary) => {
           <Box>
             <Thumbnail
               source={{
-                uri: `${process.env.EXPO_PUBLIC_BASE_URL}${selectedProduct.mainAttUrl}`,
+                uri: `${ENV.BASE_URL}${selectedProduct.mainAttUrl}`,
               }}
               resizeMode="cover"
             />

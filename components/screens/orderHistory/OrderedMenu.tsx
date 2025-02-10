@@ -10,6 +10,7 @@ import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
 import { commaToNum, sumUpNutrients } from "@/shared/utils/sumUp";
 import { Row, Col, VerticalLine, TextMain } from "@/shared/ui/styledComps";
+import { ENV } from "@/shared/constants";
 
 const OrderedMenu = ({ order }: { order: IOrderedProduct[][] }) => {
   return (
@@ -33,7 +34,7 @@ const OrderedMenu = ({ order }: { order: IOrderedProduct[][] }) => {
                 <ThumbnailImage
                   key={productIdx}
                   source={{
-                    uri: `${process.env.EXPO_PUBLIC_BASE_URL}${product.mainAttUrl}`,
+                    uri: `${ENV.BASE_URL}${product.mainAttUrl}`,
                   }}
                 />
               ))}

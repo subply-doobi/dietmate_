@@ -14,7 +14,7 @@ import { icons } from "@/shared/iconSource";
 import colors from "@/shared/colors";
 import { commaToNum } from "@/shared/utils/sumUp";
 import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
-import { SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
+import { ENV, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 
 import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import DAlert from "@/shared/ui/DAlert";
@@ -83,7 +83,7 @@ const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
               >
                 <ThumbnailImage
                   source={{
-                    uri: `${process.env.EXPO_PUBLIC_BASE_URL}${food.mainAttUrl}`,
+                    uri: `${ENV.BASE_URL}${food.mainAttUrl}`,
                   }}
                   resizeMode="center"
                 />

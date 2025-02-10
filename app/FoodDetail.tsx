@@ -29,7 +29,11 @@ import {
   useDeleteDietDetail,
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
-import { SCREENWIDTH, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
+import {
+  ENV,
+  SCREENWIDTH,
+  SERVICE_PRICE_PER_PRODUCT,
+} from "@/shared/constants";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import {
   useCreateProductMark,
@@ -194,7 +198,7 @@ const FoodDetail = () => {
           {/* 식품 썸네일 */}
           <FoodImageContainer
             source={{
-              uri: `${process.env.EXPO_PUBLIC_BASE_URL}${productData.mainAttUrl}`,
+              uri: `${ENV.BASE_URL}${productData.mainAttUrl}`,
             }}
             style={{ resizeMode: "contain" }}
           />

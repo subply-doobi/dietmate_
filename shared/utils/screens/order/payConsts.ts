@@ -1,4 +1,5 @@
 import colors from "@/shared/colors";
+import { ENV } from "@/shared/constants";
 import { icons } from "@/shared/iconSource";
 
 // Define the PAY_METHOD object with inferred types
@@ -14,8 +15,8 @@ export type IPayMethod =
 export const channelKey: {
   [key in IPG]: string;
 } = {
-  kakaopay: process.env.EXPO_PUBLIC_CHANNEL_KEY_KAKAOPAY as string,
-  smartro_v2: process.env.EXPO_PUBLIC_CHANNEL_KEY_SMARTRO_V2 as string,
+  kakaopay: ENV.CHANNEL_KEY_KAKAOPAY as string,
+  smartro_v2: ENV.CHANNEL_KEY_SMARTRO_V2 as string,
 };
 
 export const PAY_METHOD = [

@@ -1,5 +1,34 @@
 import { Dimensions, Platform } from "react-native";
 import { ISortFilter } from "../features/reduxSlices/sortFilterSlice";
+import Constants from "expo-constants";
+
+// env constants
+const extra = Constants.expoConfig?.extra;
+// sensitive
+const API_KEY_IAMPORT = extra?.API_KEY_IAMPORT ?? "";
+const API_SECRET_IAMPORT = extra?.API_SECRET_IAMPORT ?? "";
+const CHANNEL_KEY_KAKAOPAY = extra?.CHANNEL_KEY_KAKAOPAY ?? "";
+const CHANNEL_KEY_SMARTRO_V2 = extra?.CHANNEL_KEY_SMARTRO_V2 ?? "";
+// public
+const APP_SCHEME_IAMPORT =
+  extra?.EXPO_PUBLIC_APP_SCHEME_IAMPORT ?? "dietmate://payV2";
+const AXIOS_TIMEOUT = extra?.EXPO_PUBLIC_AXIOS_TIMEOUT ?? 2000;
+// const BASE_URL = extra?.EXPO_PUBLIC_BASE_URL ?? "";
+const BASE_URL = "http://54.180.29.212:8080"; // 서버 주소 변경되는 경우 종종 있는데 expo에서 업데이트하면 rebuild 필요해서 하드코딩
+const REDIRECT_URL_IAMPORT =
+  extra?.EXPO_PUBLIC_REDIRECT_URL_IAMPORT ?? "dietmate://payV2";
+const STORE_ID_IAMPORT = extra?.EXPO_PUBLIC_STORE_ID_IAMPORT ?? "";
+export const ENV = {
+  API_KEY_IAMPORT,
+  API_SECRET_IAMPORT,
+  CHANNEL_KEY_KAKAOPAY,
+  CHANNEL_KEY_SMARTRO_V2,
+  APP_SCHEME_IAMPORT,
+  AXIOS_TIMEOUT,
+  BASE_URL,
+  REDIRECT_URL_IAMPORT,
+  STORE_ID_IAMPORT,
+};
 
 // RN constants
 export const { width, height } = Dimensions.get("screen");

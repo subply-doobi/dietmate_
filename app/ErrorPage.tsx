@@ -13,9 +13,6 @@ import {
 } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { useLocalSearchParams } from "expo-router";
-import { Alert, ScrollView } from "react-native";
-import { useEffect } from "react";
-import { ENV } from "@/shared/constants";
 
 // 1. app splash 에서 버전 확인할 때 서버오류
 // 2. 로그인시 서버오류

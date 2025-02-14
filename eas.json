@@ -8,7 +8,6 @@
       "developmentClient": true,
       "distribution": "internal",
       "environment": "development",
-      "env": {},
       "channel": "development"
     },
     "ios-simulator": {
@@ -22,13 +21,11 @@
       "autoIncrement": true,
       "distribution": "internal",
       "environment": "preview",
-      "env": {},
       "channel": "preview"
     },
     "production": {
       "autoIncrement": true,
       "environment": "production",
-      "env": {},
       "channel": "production"
     }
   },

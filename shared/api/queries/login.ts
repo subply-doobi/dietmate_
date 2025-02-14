@@ -40,18 +40,20 @@ export const useLoginByType = (options?: IQueryOptions) => {
     onError: (error: Error) => {
       // console.log("useLoginByType error: error.name: ", error.name);
       // console.log("useLoginByType error: error.message: ", error.message);
-      Alert.alert("useLoginByType", `${error.name}: ${error.message}`);
       const isKakaoError = error.message === "user cancelled.";
       if (isKakaoError) return;
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [
-      //     {
-      //       name: "ErrorPage",
-      //       params: { errorCode: 404, msg: "로그인에 실패했어요" },
-      //     },
-      //   ],
-      // });
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "ErrorPage",
+            params: {
+              errorCode: 404,
+              msg: "로그인에 실패했어요\n문제가 지속되면 문의 바랍니다",
+            },
+          },
+        ],
+      });
     },
   });
   return mutation;

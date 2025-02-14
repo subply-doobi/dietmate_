@@ -5,25 +5,22 @@ export const checkIsUpdateNeeded = ({
   appVersion: string;
   latestVersion: string;
 }) => {
-  const versionArray = (version: string) => version.split('.').map(Number);
+  const versionArray = (version: string) => version.split(".").map(Number);
 
   const clientVersionArray = versionArray(appVersion);
   const latestVersionArray = versionArray(latestVersion);
   const messages = [
-    'Major Version Outdated',
-    'Minor Version Outdated',
-    'Patch Version Outdated',
+    "Major Version Outdated",
+    "Minor Version Outdated",
+    "Patch Version Outdated",
   ];
 
-  // cases :
-  // 1. major version outdated => update needed
-  // 2. major version same, minor version outdated => update not needed
-  // 3. major version same, minor version same, patch version outdated => update needed
+  // update needed except for patch version oudated
   for (let i = 0; i < clientVersionArray.length; i++) {
     if (clientVersionArray[i] < latestVersionArray[i]) {
-      return {isUpdateNeeded: i !== 1, message: messages[i]};
+      return { isUpdateNeeded: i !== 2, message: messages[i] };
     }
   }
 
-  return {isUpdateNeeded: false, message: ''};
+  return { isUpdateNeeded: false, message: "" };
 };

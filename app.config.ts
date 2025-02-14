@@ -93,7 +93,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "@react-native-kakao/core",
       {
-        nativeAppKey: process.env.KAKAO_NATIVE_APP_KEY,
+        nativeAppKey:
+          process.env.KAKAO_NATIVE_APP_KEY ??
+          "7c46d101c5b4b12cf4a26ab9e5d6c11a",
         android: {
           authCodeHandlerActivity: true,
         },
@@ -114,6 +116,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     eas: {
       projectId: "3961e206-831a-4f33-b8a6-f72e46a5aab0",
     },
+    APP_VARIANT: process.env.APP_VARIANT,
     API_KEY_IAMPORT: process.env.API_KEY_IAMPORT,
     API_SECRET_IAMPORT: process.env.API_SECRET_IAMPORT,
     CHANNEL_KEY_KAKAOPAY: process.env.CHANNEL_KEY_KAKAOPAY,
@@ -124,5 +127,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     EXPO_PUBLIC_REDIRECT_URL_IAMPORT:
       process.env.EXPO_PUBLIC_REDIRECT_URL_IAMPORT,
     EXPO_PUBLIC_STORE_ID_IAMPORT: process.env.EXPO_PUBLIC_STORE_ID_IAMPORT,
+    KAKAO_NATIVE_APP_KEY: process.env.KAKAO_NATIVE_APP_KEY,
   },
 });

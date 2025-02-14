@@ -19,10 +19,7 @@ import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { navigateByUserInfo } from "@/shared/utils/screens/login/navigateByUserInfo";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Alert, Platform } from "react-native";
-import { ENV } from "@/shared/constants";
-import axios from "axios";
-import { GET_VERSION } from "@/shared/api/urls";
+import { Platform } from "react-native";
 
 const loadSplash = new Promise((resolve) =>
   setTimeout(() => {
@@ -50,21 +47,15 @@ const AppLoading = () => {
     const checkIsUpToDate = async () => {
       const latestVersion = (await refetchLatestVersion()).data;
 
-      // temp getVersion request
-      await axios
-        .get(GET_VERSION, { timeout: 2000 })
-        .then((res) => Alert.alert("GET_VERSION res", JSON.stringify(res.data)))
-        .catch((err) => Alert.alert("GET_VERSION err", JSON.stringify(err)));
-
       if (!latestVersion) return false;
 
       const { isUpdateNeeded, message } = checkIsUpdateNeeded({
         appVersion: appVersion,
         latestVersion: latestVersion,
       });
-      console.log("ENV: ", ENV.BASE_URL, ENV.API_SECRET_IAMPORT);
-      console.log("appVersion:", appVersion, "latestVersion:", latestVersion);
-      console.log("message:", message);
+      // console.log("ENV: ", ENV.BASE_URL, ENV.API_SECRET_IAMPORT);
+      // console.log("appVersion:", appVersion, "latestVersion:", latestVersion);
+      // console.log("message:", message);
 
       if (!isUpdateNeeded) return true;
       dispatch(openModal({ name: "appUpdateAlert" }));

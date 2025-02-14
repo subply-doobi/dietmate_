@@ -4,6 +4,7 @@ import { getDoobiToken, getGuestToken } from "./token";
 import { storeToken } from "../../utils/asyncStorage";
 import { useNavigation } from "@react-navigation/native";
 import { login } from "@react-native-kakao/user";
+import { Alert } from "react-native";
 
 export type ILoginType = "kakao" | "guest";
 
@@ -37,19 +38,20 @@ export const useLoginByType = (options?: IQueryOptions) => {
   const mutation = useMutation({
     mutationFn: ({ type }: { type: ILoginType }) => loginMutation(type),
     onError: (error: Error) => {
-      console.log("useLoginByType error: error.name: ", error.name);
-      console.log("useLoginByType error: error.message: ", error.message);
+      // console.log("useLoginByType error: error.name: ", error.name);
+      // console.log("useLoginByType error: error.message: ", error.message);
+      Alert.alert("useLoginByType", `${error.name}: ${error.message}`);
       const isKakaoError = error.message === "user cancelled.";
       if (isKakaoError) return;
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "ErrorPage",
-            params: { errorCode: 404, msg: "로그인에 실패했어요" },
-          },
-        ],
-      });
+      // navigation.reset({
+      //   index: 0,
+      //   routes: [
+      //     {
+      //       name: "ErrorPage",
+      //       params: { errorCode: 404, msg: "로그인에 실패했어요" },
+      //     },
+      //   ],
+      // });
     },
   });
   return mutation;

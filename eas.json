@@ -8,13 +8,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "environment": "development",
-      "env": {
-        "APP_VARIANT": "development",
-        "API_KEY_IAMPORT": "API_KEY_IAMPORT",
-        "API_SECRET_IAMPORT": "API_SECRET_IAMPORT",
-        "CHANNEL_KEY_KAKAOPAY": "CHANNEL_KEY_KAKAOPAY",
-        "CHANNEL_KEY_SMARTRO_V2": "CHANNEL_KEY_SMARTRO_V2"
-      },
+      "env": {},
       "channel": "development"
     },
     "ios-simulator": {
@@ -28,25 +22,13 @@
       "autoIncrement": true,
       "distribution": "internal",
       "environment": "preview",
-      "env": {
-        "APP_VARIANT": "preview",
-        "API_KEY_IAMPORT": "API_KEY_IAMPORT",
-        "API_SECRET_IAMPORT": "API_SECRET_IAMPORT",
-        "CHANNEL_KEY_KAKAOPAY": "CHANNEL_KEY_KAKAOPAY",
-        "CHANNEL_KEY_SMARTRO_V2": "CHANNEL_KEY_SMARTRO_V2"
-      },
+      "env": {},
       "channel": "preview"
     },
     "production": {
       "autoIncrement": true,
       "environment": "production",
-      "env": {
-        "APP_VARIANT": "production",
-        "API_KEY_IAMPORT": "API_KEY_IAMPORT",
-        "API_SECRET_IAMPORT": "API_SECRET_IAMPORT",
-        "CHANNEL_KEY_KAKAOPAY": "CHANNEL_KEY_KAKAOPAY",
-        "CHANNEL_KEY_SMARTRO_V2": "CHANNEL_KEY_SMARTRO_V2"
-      },
+      "env": {},
       "channel": "production"
     }
   },

@@ -10,9 +10,17 @@ import { useGetGuestYn } from "@/shared/api/queries/guest";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import colors from "@/shared/colors";
 import { ILoginType, useLoginByType } from "@/shared/api/queries/login";
-import { IS_IOS, SCREENWIDTH } from "@/shared/constants";
+import { ENV, IS_ANDROID, IS_IOS, SCREENWIDTH } from "@/shared/constants";
 import AppleLogin from "@/components/screens/login/AppleLogin";
-import { BtnCTA, BtnText, Container } from "@/shared/ui/styledComps";
+import {
+  BtnCTA,
+  BtnText,
+  Col,
+  Container,
+  TextMain,
+} from "@/shared/ui/styledComps";
+import { useEffect, useState } from "react";
+import { getKeyHashAndroid } from "@react-native-kakao/core";
 
 const Login = () => {
   // navigation
@@ -36,8 +44,27 @@ const Login = () => {
     const newBLData = await refetchBaseLine().then((res) => res.data);
     navigateByUserInfo(newBLData, router);
   };
+
+  // android key hash test
+  const [keyHash, setKeyHash] = useState<string>("");
+  useEffect(() => {
+    if (!IS_ANDROID) return;
+    const getKeyHash = async () => {
+      const hash = await getKeyHashAndroid();
+      setKeyHash(hash ?? "");
+    };
+    getKeyHash();
+  }, []);
+
   return (
     <Container>
+      {ENV.APP_VARIANT !== "production" && (
+        <Col style={{ marginTop: 40, alignSelf: "center" }}>
+          <TestTxt selectable={true}>
+            {ENV.APP_VARIANT} | keyHash: {keyHash}
+          </TestTxt>
+        </Col>
+      )}
       <BtnBox>
         <BtnKakaoLogin btnStyle="kakao" onPress={() => signIn("kakao")}>
           <BtnTextKakao>카카오 로그인</BtnTextKakao>
@@ -65,6 +92,11 @@ const Login = () => {
 };
 
 export default Login;
+
+const TestTxt = styled(TextMain)`
+  font-size: 14px;
+  text-align: center;
+`;
 
 const BtnBox = styled.View`
   width: 100%;

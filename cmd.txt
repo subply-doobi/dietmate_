@@ -3,6 +3,9 @@
 # remove derived data
   rm -rf ~/Library/Developer/Xcode/DerivedData
 
+# SHA1 -> base64
+  echo {SHA1} | xxd -r -p | openssl base64
+
 
 ------------------ git --------------------
 
@@ -44,5 +47,9 @@
   eas update
   eas update --environment preview --channel preview
   eas update --environment production --channel production
+
+# eas submit
+  eas submit --profile production --platform ios
+  eas submit --profile production --platform android
 
 -------------------------------------------

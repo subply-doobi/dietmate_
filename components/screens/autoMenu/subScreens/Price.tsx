@@ -19,6 +19,7 @@ const Price = ({ priceSliderValue, setPriceSliderValue }: IPrice) => {
         setSliderValue={setPriceSliderValue}
         minimumValue={6000}
         maximumValue={12000}
+        value2LowerLimit={8000}
         step={1000}
         sliderWidth={SCREENWIDTH - 80}
       />

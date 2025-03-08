@@ -12,6 +12,7 @@ interface IDSlider {
   minimumValue: number;
   maximumValue: number;
   step: number;
+  value2LowerLimit?: number;
   sliderWidth?: number;
   text?: string;
 }
@@ -23,6 +24,7 @@ const DSlider = ({
   minimumValue,
   maximumValue,
   step,
+  value2LowerLimit,
   sliderWidth,
   text,
 }: IDSlider) => {
@@ -32,9 +34,19 @@ const DSlider = ({
       <SliderContainer style={{ width }}>
         <Slider
           value={sliderValue}
-          onValueChange={(value) =>
-            Array.isArray(value) && setSliderValue(value)
-          }
+          onValueChange={(value) => {
+            if (!Array.isArray(value)) {
+              return;
+            }
+
+            if (!value2LowerLimit || value[1] >= value2LowerLimit) {
+              setSliderValue(value);
+              return;
+            }
+            const newValue = [...value];
+            newValue[1] = value2LowerLimit;
+            setSliderValue(newValue);
+          }}
           onSlidingComplete={onSlidingComplete}
           minimumValue={minimumValue}
           maximumValue={maximumValue}

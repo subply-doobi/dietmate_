@@ -47,6 +47,8 @@
   eas update
   eas update --environment preview --channel preview
   eas update --environment production --channel production
+  eas update --environment preview --branch 1-1-0
+  eas update --environment production --branch prod-1-1-0
 
 # eas submit
   eas submit --profile production --platform ios

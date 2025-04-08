@@ -219,12 +219,12 @@ const TMIBox = styled.View`
 
 const BaseText = styled(TextMain)`
   font-size: 12px;
-  line-height: 16px;
+  line-height: 20px;
 `;
 const BoldText = styled(TextMain)`
   font-size: 12px;
   font-weight: bold;
-  line-height: 16px;
+  line-height: 18px;
 `;
 
 const LinkText = styled.Text`

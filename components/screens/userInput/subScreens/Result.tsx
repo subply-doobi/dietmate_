@@ -208,6 +208,7 @@ const LeftBar = styled.View`
 
 const NutrText = styled(TextMain)`
   font-size: 16px;
+  line-height: 20px;
 `;
 
 const TMIBox = styled.View`
@@ -218,15 +219,18 @@ const TMIBox = styled.View`
 
 const BaseText = styled(TextMain)`
   font-size: 12px;
+  line-height: 16px;
 `;
 const BoldText = styled(TextMain)`
   font-size: 12px;
   font-weight: bold;
+  line-height: 16px;
 `;
 
 const LinkText = styled.Text`
   font-size: 12px;
   font-style: italic;
+  line-height: 16px;
   color: ${colors.textLink};
   text-decoration-line: underline;
 `;

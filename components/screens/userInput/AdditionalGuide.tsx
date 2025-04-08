@@ -33,4 +33,5 @@ const AdditionalGuideBox = styled.View`
 const AdditionalGuideText = styled(TextMain)`
   font-size: 16px;
   margin-top: 8px;
+  line-height: 20px;
 `;

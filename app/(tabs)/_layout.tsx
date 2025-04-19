@@ -10,7 +10,6 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Icon } from "@/shared/ui/styledComps";
 import { icons } from "@/shared/iconSource";
 import colors from "@/shared/colors";
-import BackArrow from "@/shared/ui/BackArrow";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { tfDTOToDDA } from "@/shared/utils/dataTransform";
 import styled from "styled-components/native";

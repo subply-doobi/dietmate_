@@ -2,7 +2,6 @@
 //RN, 3rd
 import { useEffect, useMemo } from "react";
 import { View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import styled from "styled-components/native";
 
 //doobi util, redux, etc
@@ -23,6 +22,24 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
+import { IDietTotalObjData } from "@/shared/api/types/diet";
+
+const getIncludingDietNoArr = (
+  dTOData: IDietTotalObjData | undefined,
+  seller: string
+) => {
+  if (!dTOData) return [];
+
+  return Object.keys(dTOData)
+    .filter((dietNo) => dTOData[dietNo].dietDetail.length > 0)
+    .filter((dietNo) =>
+      dTOData[dietNo].dietDetail.some((food) => food.platformNm === seller)
+    )
+    .map((dietNo) => ({
+      dietNo,
+      dietSeq: dTOData[dietNo].dietDetail[0].dietSeq,
+    }));
+};
 
 const CartSummary = () => {
   // navigation
@@ -92,14 +109,7 @@ const CartSummary = () => {
         //식품사별 가격, 배송비 합계
         const { price: sellerPrice, shippingText } = shippingPriceObj[seller];
         // 어느끼니에 속하는지 확인
-        let includingDietNoArr: { dietNo: string; dietSeq: string }[] = [];
-        for (let food of regroupedBySeller[seller]) {
-          includingDietNoArr.every((arr) => arr.dietNo !== food.dietNo) &&
-            includingDietNoArr.push({
-              dietNo: food.dietNo,
-              dietSeq: food.dietSeq,
-            });
-        }
+        const includingDietNoArr = getIncludingDietNoArr(dTOData, seller);
 
         return (
           <View key={index}>

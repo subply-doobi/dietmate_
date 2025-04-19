@@ -93,7 +93,7 @@ const PaymentMethod = () => {
       </Row>
 
       <GuideText>
-        다른 결제수단은 <BoldText>정식출시</BoldText>를 조금만 기다려주세요
+        계좌이체 등 다른 결제수단은 <BoldText>정식출시</BoldText>를 기다려주세요
       </GuideText>
     </AccordionContentContainer>
   );

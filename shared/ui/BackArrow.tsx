@@ -1,4 +1,4 @@
-import { Alert, TouchableOpacity } from "react-native";
+import { Alert, TouchableOpacity, TouchableOpacityProps } from "react-native";
 import styled from "styled-components/native";
 
 import { icons } from "../iconSource";
@@ -14,7 +14,7 @@ const BackArrow = ({
   style,
 }: {
   goBackFn?: Function;
-  style?: { marginLeft?: number };
+  style?: TouchableOpacityProps["style"];
 }) => {
   const router = useRouter();
   return (
@@ -22,7 +22,15 @@ const BackArrow = ({
       onPressIn={() => {
         goBackFn ? goBackFn() : router.back();
       }}
-      style={{ ...style }}
+      style={[
+        {
+          width: 36,
+          height: 36,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        style,
+      ]}
     >
       <Back source={icons.back_24} />
     </TouchableOpacity>

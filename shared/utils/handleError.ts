@@ -131,7 +131,7 @@ export const runErrAlertActionByCode = (
 // 에러 핸들러
 export const handleError = async (error: Error) => {
   console.log("handleError: ", error);
-  // const errorCode = await convertErrorToCode(error);
-  // console.log("errorCode: ", errorCode, typeof errorCode);
-  // runErrorActionByCode(errorCode);
+  const errorCode = await convertErrorToCode(error);
+  console.log("errorCode: ", errorCode, typeof errorCode);
+  runErrorActionByCode(errorCode);
 };

@@ -552,7 +552,7 @@ export const useModalProps = () => {
   }, [latestAppVersion]);
 
   const { requestErrorAlert } = useMemo(() => {
-    console.log("modalProps: requestErrorAlert memo");
+    // console.log("modalProps: requestErrorAlert memo");
     const requestErrorAlert = {
       numOfBtn: 1,
       contentDelay: 0,

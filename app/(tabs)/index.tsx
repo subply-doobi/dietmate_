@@ -1,7 +1,6 @@
 // RN
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Platform, ScrollView, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
 
 // 3rd
 import { useIsFocused } from "@react-navigation/native";
@@ -37,6 +36,8 @@ import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
 import LastOrderCard from "@/components/screens/home/LastOrderCard";
 import Profile from "@/components/screens/home/Profile";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import CtaButton from "@/shared/ui/CtaButton";
+import { useTestErrQuery } from "@/shared/api/queries/test";
 
 const NewHome = () => {
   // navigation
@@ -57,6 +58,7 @@ const NewHome = () => {
   const ctaBtnRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
 
   // react-query
+  const { data: testErrData, refetch: throwErr } = useTestErrQuery();
   const { data: baseLineData } = useGetBaseLine();
   const { data: dTOData } = useListDietTotalObj();
   const deleteDietAllMutation = useDeleteDietAll();
@@ -196,6 +198,13 @@ const NewHome = () => {
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
+        {/* firing error button */}
+        {/* <CtaButton
+          btnStyle="kakao"
+          btnText="fire error"
+          onPress={() => throwErr()}
+        /> */}
+
         {/* 상단 프로필 */}
         <Profile />
 

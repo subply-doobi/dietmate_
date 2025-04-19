@@ -149,18 +149,20 @@ const getShippingPriceObjBySeller = (reGroupedBySeller: IRegroupedBySeller) => {
       reGroupedBySeller[seller][0].freeShippingPrice,
       10
     );
-    shippingPriceObj[seller].shippingPrice = parseInt(
-      reGroupedBySeller[seller][0].shippingPrice,
-      10
-    );
-    shippingPriceObj[seller].shippingText =
+
+    const isFree =
       shippingPriceObj[seller].price >=
-      shippingPriceObj[seller].freeShippingPrice
-        ? "무료"
-        : `${commaToNum(shippingPriceObj[seller].shippingPrice)} (${commaToNum(
-            shippingPriceObj[seller].freeShippingPrice -
-              shippingPriceObj[seller].price
-          )}원 더 구매 시 무료)`;
+      shippingPriceObj[seller].freeShippingPrice;
+
+    shippingPriceObj[seller].shippingPrice = isFree
+      ? 0
+      : parseInt(reGroupedBySeller[seller][0].shippingPrice, 10);
+    shippingPriceObj[seller].shippingText = isFree
+      ? "무료"
+      : `${commaToNum(shippingPriceObj[seller].shippingPrice)} (${commaToNum(
+          shippingPriceObj[seller].freeShippingPrice -
+            shippingPriceObj[seller].price
+        )}원 더 구매 시 무료)`;
   }
 
   return shippingPriceObj;

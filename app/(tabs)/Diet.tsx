@@ -172,7 +172,7 @@ const Diet = () => {
               animated: true,
             });
           }),
-        1500
+        500
       );
       return;
     }

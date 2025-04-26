@@ -904,7 +904,7 @@ export const useModalProps = () => {
       } as IModalProps["tutorialTPSSelectFood"];
 
       return { tutorialTPSAddMenu, tutorialTPSAddFood, tutorialTPSSelectFood };
-    }, [dTOData, dDData]);
+    }, [dTOData, dDData, tutorialProgress]);
 
   const { tutorialTPSAutoRemain, tutorialTPSChangeFood } = useMemo(() => {
     // console.log("modalProps: tutorialTPSAutoRemain memo");
@@ -1068,7 +1068,7 @@ export const useModalProps = () => {
   const { tutorialTPSAutoMenu } = useMemo(() => {
     // console.log("modalProps: tutorialTPSAutoMenu memo");
     const tutorialTPSAutoMenu = {
-      contentDelay: 2000,
+      contentDelay: 1000,
       renderContent: () => (
         <>
           <DSmallBtn

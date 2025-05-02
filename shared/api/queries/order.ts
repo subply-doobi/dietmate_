@@ -13,6 +13,7 @@ import {
   DELETE_ORDER,
 } from "../urls";
 import { IOrderCreate, IOrderData, IOrderDetailData } from "../types/order";
+import { IQueryOptions } from "../types/common";
 
 export const useCreateOrder = () => {
   const mutation = useMutation({
@@ -49,10 +50,12 @@ export const useUpdateOrder = () => {
   return mutation;
 };
 
-export const useListOrder = () => {
+export const useListOrder = (options?: IQueryOptions) => {
+  const enabled = options?.enabled ?? true;
   return useQuery<IOrderData>({
     queryKey: [ORDER],
     queryFn: () => queryFn(`${LIST_ORDER}`),
+    enabled,
   });
 };
 export const useListOrderDetail = (orderNo: string) => {

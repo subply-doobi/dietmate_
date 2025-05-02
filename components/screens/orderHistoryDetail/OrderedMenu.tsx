@@ -11,7 +11,7 @@ import {
 import colors from "../../../shared/colors";
 import Nutr from "./Nutr";
 import { commaToNum, sumUpPrice } from "../../../shared/utils/sumUp";
-import { ENV } from "@/shared/constants";
+import { ENV, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 
 interface IOrderedMenu {
   orderDetailData: Readonly<IOrderedProduct[][]>;
@@ -54,7 +54,12 @@ const OrderedMenu = ({ orderDetailData }: IOrderedMenu) => {
                       지 <NutrVal>{`${commaToNum(parseInt(f.fat))}g`}</NutrVal>
                     </NutrText>
                   </NutrBox>
-                  <Price>{commaToNum(f.price)}원</Price>
+                  <Price>
+                    {commaToNum(
+                      parseInt(f.price, 10) + SERVICE_PRICE_PER_PRODUCT
+                    )}
+                    원
+                  </Price>
                 </InfoBox>
               </FoodBox>
             ))}

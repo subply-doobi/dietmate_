@@ -138,6 +138,14 @@ export default function RootLayout() {
             options={{
               headerShown: true,
               headerTitle: "구매내역",
+              headerLeft: () => (
+                <BackArrow
+                  goBackFn={() => {
+                    router.canDismiss() && router.dismissAll();
+                    router.replace({ pathname: "/(tabs)/Mypage" });
+                  }}
+                />
+              ),
             }}
           />
           <Stack.Screen

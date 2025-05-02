@@ -11,10 +11,7 @@ import {
 // doobi
 import { useUpdateDiet } from "@/shared/api/queries/diet";
 import { useDeleteOrder, useUpdateOrder } from "@/shared/api/queries/order";
-import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
-import { Container } from "@/shared/ui/styledComps";
-import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 import { setCurrentDiet } from "@/features/reduxSlices/commonSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useLocalSearchParams, useRouter } from "expo-router";

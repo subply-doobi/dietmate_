@@ -28,9 +28,9 @@ const WOFrequency = ({
   // 툴팁 텍스트
   const seqTooltipText = seqCode
     ? seqCode.findIndex((item) => item.cd === sportsSeqCd.value) < 3
-      ? "두비는 주 3회 이상 운동을 권장합니다"
+      ? "근의공식은 주 3회 이상 운동을 권장합니다"
       : seqCode?.findIndex((item) => item.cd === sportsSeqCd.value) === 7
-      ? "두비는 헬창을 응원합니다"
+      ? "근의공식은 헬창을 응원합니다"
       : ""
     : "";
 

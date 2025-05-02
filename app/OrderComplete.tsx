@@ -16,7 +16,7 @@ const OrderComplete = () => {
 
   const goToOrderHistory = () => {
     router.canDismiss() && router.dismissAll();
-    router.push({ pathname: "/OrderHistory" });
+    router.replace({ pathname: "/OrderHistory" });
   };
   const goToHome = () => {
     router.canDismiss() && router.dismissAll();

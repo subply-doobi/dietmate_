@@ -49,7 +49,7 @@ export const PAGES: IPages = [
     name: "Select",
     title: "현재 구성중인\n끼니가 있어요",
     subTitle:
-      "자동구성 할 끼니를 선택해주세요\n선택된 끼니의 식품들은 초기화됩니다",
+      "자동으로 구성할 끼니를 선택해주세요\n선택된 끼니의 식품들은 초기화됩니다",
     btnColor: colors.main,
     getNextPage: () => "Category",
     checkIsActive: ({ selectedDietNo }: IPageCheckIsActive) =>

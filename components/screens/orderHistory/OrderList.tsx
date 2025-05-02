@@ -3,8 +3,6 @@ import { useEffect } from "react";
 
 // 3rd
 import styled from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
 
 // doobi
 import { SCREENWIDTH } from "@/shared/constants";
@@ -12,7 +10,7 @@ import colors from "@/shared/colors";
 import { commaToNum } from "@/shared/utils/sumUp";
 import { useListOrder } from "@/shared/api/queries/order";
 import { regroupByBuyDateAndDietNo } from "@/shared/utils/dataTransform";
-import { openModal } from "@/features/reduxSlices/modalSlice";
+import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import OrderedMenu from "./OrderedMenu";
 import {
   Col,
@@ -22,10 +20,12 @@ import {
   TextMain,
 } from "@/shared/ui/styledComps";
 import { useRouter } from "expo-router";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
 const OrderList = () => {
   // redux
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const modalSeq = useAppSelector((state) => state.modal.modalSeq);
   const { data: orderData } = useListOrder();
 
   // navigation
@@ -37,7 +37,14 @@ const OrderList = () => {
   // useEffect
   // 주문정보 비어있는지 확인
   useEffect(() => {
-    orderData?.length === 0 && dispatch(openModal({ name: "orderEmptyAlert" }));
+    if (!orderData) return;
+    if (orderData.length === 0) {
+      dispatch(openModal({ name: "orderEmptyAlert" }));
+      return;
+    }
+    modalSeq.includes("orderEmptyAlert") &&
+      orderData.length > 0 &&
+      dispatch(closeModal({ name: "orderEmptyAlert" }));
   }, [orderData]);
 
   return (

@@ -128,12 +128,51 @@ const Diet = () => {
     getAddDietStatusFrDTData(dTOData);
 
   // fn
+  const getHasFoodInMenuArray = (menuIdx: number): boolean[] => {
+    if (!dTOData) return [];
+    return Object.keys(dTOData)
+      .map((dietNo) => dTOData[dietNo].dietDetail.length > 0)
+      .slice(0, menuIdx);
+  };
+
+  const calculateTargetY = (hasFoodInMenuArr: boolean[]): number => {
+    let targetY = 40;
+    const commonY = 16 + 16 + 24 + 20;
+
+    hasFoodInMenuArr.forEach((hasFoodInMenu) => {
+      targetY += hasFoodInMenu
+        ? commonY + 56 + 8 // When the menu has food
+        : commonY + 18 + 4; // When the menu is empty
+    });
+
+    return targetY;
+  };
+
+  const calculateScrollTarget = (menuIdx: number): number => {
+    if (!dTOData) return 0;
+    if (menuIdx === 0) return 32;
+
+    const hasFoodInMenuArr = getHasFoodInMenuArray(menuIdx);
+    return calculateTargetY(hasFoodInMenuArr);
+  };
+
+  const scrollToCurrentMenu = (menuIdx: number) => {
+    const targetY = calculateScrollTarget(menuIdx);
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({
+        y: targetY,
+        animated: true,
+      });
+    }, 300);
+  };
+
   const updateSections = (activeSections: number[]) => {
     dispatch(setMenuAcActive(activeSections));
     if (!dTOData || activeSections.length === 0) return;
     const currentIdx = activeSections[0];
     const currentDietNo = Object.keys(dTOData)[currentIdx];
     currentDietNo && dispatch(setCurrentDiet(currentDietNo));
+    scrollToCurrentMenu(currentIdx);
   };
 
   const onAddMenuPressed = () => {

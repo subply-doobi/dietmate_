@@ -147,7 +147,7 @@ export const PAGES = [
     checkIsActive: (u: IUserInputState) =>
       u.bmrKnown.isValid && u.amrKnown.isValid,
     render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Amr userInputState={u} />
+      <Amr userInputState={u} scrollRef={scrollRef} />
     ),
   },
   {
@@ -180,7 +180,7 @@ export const PAGES = [
     getNextPage: (u: IUserInputState) => "TargetRatio",
     checkIsActive: (u: IUserInputState) => u.calorie.isValid,
     render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <TargetCalorie userInputState={u} />
+      <TargetCalorie userInputState={u} scrollRef={scrollRef} />
     ),
   },
   {

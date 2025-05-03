@@ -3,7 +3,7 @@ import {
   IUserInputState,
   setValue,
 } from "@/features/reduxSlices/userInputSlice";
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import {
   Col,
   HorizontalSpace,
@@ -18,6 +18,7 @@ import SquareInput from "@/shared/ui/SquareInput";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { getRecommendedNutr } from "@/shared/utils/screens/userInput/targetByUserInfo";
+import { ScrollView } from "react-native";
 
 const menuPerDayItem = [1, 2, 3, 4];
 const calorieOptionItem: {
@@ -31,11 +32,11 @@ const calorieOptionItem: {
   { label: "칼로리를 직접 설정할게요", value: "manual", multiplier: 0 },
 ];
 
-const TargetCalorie = ({
-  userInputState,
-}: {
+interface ITargetCalorie {
   userInputState: IUserInputState;
-}) => {
+  scrollRef: RefObject<ScrollView>;
+}
+const TargetCalorie = ({ userInputState, scrollRef }: ITargetCalorie) => {
   // redux
   const dispatch = useAppDispatch();
 
@@ -137,6 +138,11 @@ const TargetCalorie = ({
         keyboardType="numeric"
         maxLength={4}
         placeholder={`한 끼 목표 칼로리 (권장 : ${caloriePerMenu}kcal)`}
+        onFocus={() =>
+          setTimeout(() => {
+            scrollRef?.current?.scrollToEnd({ animated: true });
+          }, 150)
+        }
       />
     </Container>
   );

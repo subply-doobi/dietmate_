@@ -1,5 +1,5 @@
 // RN, expo
-import { useRef } from "react";
+import { RefObject, useRef } from "react";
 
 // 3rd
 import styled from "styled-components/native";
@@ -31,6 +31,7 @@ import {
   TextSub,
 } from "@/shared/ui/styledComps";
 import SquareInput from "@/shared/ui/SquareInput";
+import { ScrollView } from "react-native";
 
 const AcHeader = ({
   isActive,
@@ -88,7 +89,11 @@ const AcNutrBox = ({
   );
 };
 
-const AcManualInputs = () => {
+const AcManualInputs = ({
+  scrollRef,
+}: {
+  scrollRef: RefObject<ScrollView>;
+}) => {
   // react-query
   const { data: baseLineData } = useGetBaseLine();
 
@@ -111,6 +116,25 @@ const AcManualInputs = () => {
 
   const { totalCalorie, carbRatio, proteinRatio, fatRatio } =
     calculateManualCalorie(carb.value, protein.value, fat.value);
+
+  const scrollByManualStep = (step: number) => {
+    // guideTextMargin 48 + 64 title: 32 subTitle: 24 gap: 16
+    // acHeader height: 52 gap: 20
+    // SquareInput label: 18 input: 48 errMsg: 11 gap: 24
+    const guideTextPart = 48 + 64 + 32 * 2 + 16 + 24 * 2;
+    const acHeaderPart = (52 + 20) * 4;
+    const manualContentTopOffset = 24 + 18 + 24;
+    const squareInputPart = (18 + 48 + 11 + 4) * step;
+    const targetY =
+      guideTextPart + acHeaderPart + manualContentTopOffset + squareInputPart;
+    setTimeout(() => {
+      scrollRef?.current?.scrollTo({
+        y: targetY,
+        animated: true,
+      });
+    }, 150);
+  };
+
   return (
     <Col style={{ width: SCREENWIDTH - 48, alignSelf: "center" }}>
       {baseLineData && Object.keys(baseLineData).length !== 0 && (
@@ -134,6 +158,7 @@ const AcManualInputs = () => {
         maxLength={3}
         placeholder={`탄수화물 양을 입력해주세요 (권장: ${carbAuto}g)`}
         onSubmitEditing={() => inputRef.current[0]?.focus()}
+        onFocus={() => scrollByManualStep(0)}
       />
       <SquareInput
         isActive={!!protein.value}
@@ -149,6 +174,7 @@ const AcManualInputs = () => {
           inputRef ? (inputRef.current[0] = el) : null;
         }}
         onSubmitEditing={() => inputRef.current[1]?.focus()}
+        onFocus={() => scrollByManualStep(1)}
       />
       <SquareInput
         isActive={!!fat.value}
@@ -163,6 +189,7 @@ const AcManualInputs = () => {
         ref={(el) => {
           inputRef ? (inputRef.current[1] = el) : null;
         }}
+        onFocus={() => scrollByManualStep(2)}
       />
       <HorizontalSpace height={40} />
       <NutrBox
@@ -189,12 +216,13 @@ const AcManualInputs = () => {
 
 export const getRatioAcContent = (
   ratioCodeData: ICodeData,
-  calorie: string
+  calorie: string,
+  scrollRef: React.RefObject<ScrollView>
 ) => {
   const manualContent = {
     activeHeader: <AcHeader isActive={true} title="영양성분 직접 설정" />,
     inactiveHeader: <AcHeader isActive={false} title="영양성분 직접 설정" />,
-    content: <AcManualInputs />,
+    content: <AcManualInputs scrollRef={scrollRef} />,
   };
   const ratioContent = ratioCodeData.map((item) => {
     const { carb, protein, fat } = calculateCaloriesToNutr(item.cd, calorie);

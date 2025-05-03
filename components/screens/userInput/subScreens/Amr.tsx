@@ -1,5 +1,5 @@
 // RN
-import { useRef } from "react";
+import { RefObject, useRef } from "react";
 
 // 3rd
 import styled from "styled-components/native";
@@ -12,8 +12,13 @@ import {
 import { Col } from "@/shared/ui/styledComps";
 import SquareInput from "@/shared/ui/SquareInput";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { ScrollView } from "react-native";
 
-const Amr = ({ userInputState }: { userInputState: IUserInputState }) => {
+interface IAmr {
+  userInputState: IUserInputState;
+  scrollRef: RefObject<ScrollView>;
+}
+const Amr = ({ userInputState, scrollRef }: IAmr) => {
   // redux
   const dispatch = useAppDispatch();
   const { amrKnown, bmrKnown } = useAppSelector((state) => state.userInput);
@@ -36,6 +41,7 @@ const Amr = ({ userInputState }: { userInputState: IUserInputState }) => {
           maxLength={4}
           placeholder="기초대사량을 입력해주세요 (선택사항)"
           onSubmitEditing={() => inputRef.current[0]?.focus()}
+          onFocus={() => scrollRef?.current?.scrollToEnd({ animated: true })}
         />
         <SquareInput
           isActive={!!amrKnown.value}
@@ -52,6 +58,11 @@ const Amr = ({ userInputState }: { userInputState: IUserInputState }) => {
           ref={(el) => {
             inputRef ? (inputRef.current[0] = el) : null;
           }}
+          onFocus={() =>
+            setTimeout(() => {
+              scrollRef?.current?.scrollToEnd({ animated: true });
+            }, 150)
+          }
         />
       </Col>
     </Container>

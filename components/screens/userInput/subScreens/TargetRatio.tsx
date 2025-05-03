@@ -32,7 +32,7 @@ const TargetRatio = ({ userInputState, scrollRef }: ITargetRatio) => {
   // useMemo
   const ratioAcContent = useMemo(() => {
     if (!ratioCodeData) return [];
-    return getRatioAcContent(ratioCodeData, calorie.value);
+    return getRatioAcContent(ratioCodeData, calorie.value, scrollRef);
   }, [ratioCodeData, calorie.value]);
 
   const updateSections = (actives: Array<number>) => {

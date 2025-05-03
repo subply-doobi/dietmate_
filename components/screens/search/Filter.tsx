@@ -40,7 +40,7 @@ const Filter = ({ setSearchBarFocus }: IFilter) => {
   return (
     <Row style={{ justifyContent: "space-between" }}>
       <Row style={{ columnGap: 8 }}>
-        <RemainNutrFilterBtn
+        {/* <RemainNutrFilterBtn
           onPress={() =>
             dispatch(
               setFilterByRemainNutr({ baseLineData, dietDetailData: dDData })
@@ -50,7 +50,7 @@ const Filter = ({ setSearchBarFocus }: IFilter) => {
           <FilterBtnText style={{ color: "white" }}>
             남은영양 이하
           </FilterBtnText>
-        </RemainNutrFilterBtn>
+        </RemainNutrFilterBtn> */}
         {FILTER_LIST.map((f, i) => {
           const isFiltered = checkisFiltered(applied.filter, f.id);
           return (
@@ -96,12 +96,12 @@ const FilterBtn = styled.TouchableOpacity<{ isActivated: boolean }>`
   background-color: ${colors.white};
 `;
 
-const RemainNutrFilterBtn = styled.TouchableOpacity`
-  height: 32px;
-  padding: 6px 8px 6px 8px;
-  border-radius: 5px;
-  background-color: ${colors.black};
-`;
+// const RemainNutrFilterBtn = styled.TouchableOpacity`
+//   height: 32px;
+//   padding: 6px 8px 6px 8px;
+//   border-radius: 5px;
+//   background-color: ${colors.black};
+// `;
 
 const FilterBtnText = styled(TextMain)<{ isActivated?: boolean }>`
   font-size: 14px;

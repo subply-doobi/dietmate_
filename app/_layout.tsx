@@ -28,16 +28,15 @@ export default function RootLayout() {
   // navigation
   const router = useRouter();
 
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
   // const [loaded] = useFonts({
   //   SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   // });
-
   return (
     // redux
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <StatusBar style="auto" />
+        <StatusBar style="dark" />
 
         {/* Loading */}
         <AppLoading />

@@ -1,4 +1,4 @@
-import {REGEX_PHONE} from '../constants';
+import { REGEX_PHONE } from "../constants";
 
 interface IValidateInput {
   [key: string]: (v: string) => {
@@ -11,135 +11,135 @@ export const validateInput: IValidateInput = {
     if (!v)
       return {
         isValid: false,
-        errMsg: '성별을 선택해주세요',
+        errMsg: "성별을 선택해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   age: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '나이를 입력해주세요',
+        errMsg: "나이를 입력해주세요",
       };
-    if (Number(v) < 10 || Number(v) > 100)
+    if (Number(v) < 10 || Number(v) > 120)
       return {
         isValid: false,
-        errMsg: '10~100세 안으로 입력해주세요',
+        errMsg: "10~120세 안으로 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   height: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '신장을 입력해주세요',
+        errMsg: "신장을 입력해주세요",
       };
     if (Number(v) < 120 || Number(v) > 230)
       return {
         isValid: false,
-        errMsg: '120~230cm 안으로 입력해주세요',
+        errMsg: "120~230cm 안으로 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   weight: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '몸무게를 입력해주세요',
+        errMsg: "몸무게를 입력해주세요",
       };
-    if (Number(v) < 30 || Number(v) > 130)
+    if (Number(v) < 30 || Number(v) > 200)
       return {
         isValid: false,
-        errMsg: '30~130kg 안으로 입력해주세요',
+        errMsg: "30~200kg 안으로 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   dietPurposeCd: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '식단의 목적을 선택해주세요',
+        errMsg: "식단의 목적을 선택해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   bmrKnown: (v: string) => {
-    if (v === '')
+    if (v === "")
       return {
         isValid: true,
-        errMsg: '',
+        errMsg: "",
       };
     if (Number(v) < 500 || Number(v) > 2500)
       return {
         isValid: false,
-        errMsg: '정확한 기초대사량을 입력해주세요',
+        errMsg: "정확한 기초대사량을 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   amrKnown: (v: string) => {
-    if (v === '')
+    if (v === "")
       return {
         isValid: true,
-        errMsg: '',
+        errMsg: "",
       };
     if (Number(v) < 0 || Number(v) > 2000)
       return {
         isValid: false,
-        errMsg: '정확한 운동 칼로리를 입력해주세요',
+        errMsg: "정확한 운동 칼로리를 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   sportsSeqCd: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '운동 빈도를 선택해주세요',
+        errMsg: "운동 빈도를 선택해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   sportsTimeCd: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '운동 시간을 선택해주세요',
+        errMsg: "운동 시간을 선택해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   sportsStrengthCd: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '운동 강도를 선택해주세요',
+        errMsg: "운동 강도를 선택해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   // ThirdInput
@@ -147,23 +147,23 @@ export const validateInput: IValidateInput = {
     if (!v)
       return {
         isValid: false,
-        errMsg: '한 끼 목표 칼로리를 입력해주세요',
+        errMsg: "한 끼 목표 칼로리를 입력해주세요",
       };
     if (Number(v) < 300 || Number(v) > 1400)
       return {
         isValid: false,
-        errMsg: '300~1400 kcal 사이로 입력해주세요',
+        errMsg: "300~1400 kcal 사이로 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   carb: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '한 끼 목표 탄수화물을 입력해주세요',
+        errMsg: "한 끼 목표 탄수화물을 입력해주세요",
       };
     if (Number(v) < 10 || Number(v) > 375)
       return {
@@ -172,14 +172,14 @@ export const validateInput: IValidateInput = {
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   protein: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '한 끼 목표 단백질을 입력해주세요',
+        errMsg: "한 끼 목표 단백질을 입력해주세요",
       };
     if (Number(v) < 10 || Number(v) > 200)
       return {
@@ -188,14 +188,14 @@ export const validateInput: IValidateInput = {
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   fat: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '한 끼 목표 지방을 입력해주세요',
+        errMsg: "한 끼 목표 지방을 입력해주세요",
       };
     if (Number(v) < 5 || Number(v) > 100)
       return {
@@ -204,7 +204,7 @@ export const validateInput: IValidateInput = {
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
 
@@ -213,23 +213,23 @@ export const validateInput: IValidateInput = {
     if (!v)
       return {
         isValid: false,
-        errMsg: '한 끼 목표 칼로리를 입력해주세요',
+        errMsg: "한 끼 목표 칼로리를 입력해주세요",
       };
     if (Number(v) < 300 || Number(v) > 1400)
       return {
         isValid: false,
-        errMsg: '300~1400 kcal 사이로 입력해주세요',
+        errMsg: "300~1400 kcal 사이로 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   carbChange: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '한 끼 목표 탄수화물을 입력해주세요',
+        errMsg: "한 끼 목표 탄수화물을 입력해주세요",
       };
     if (Number(v) < 10 || Number(v) > 375)
       return {
@@ -238,14 +238,14 @@ export const validateInput: IValidateInput = {
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   proteinChange: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '한 끼 목표 단백질을 입력해주세요',
+        errMsg: "한 끼 목표 단백질을 입력해주세요",
       };
     if (Number(v) < 10 || Number(v) > 375)
       return {
@@ -254,14 +254,14 @@ export const validateInput: IValidateInput = {
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   fatChange: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '한 끼 목표 지방을 입력해주세요',
+        errMsg: "한 끼 목표 지방을 입력해주세요",
       };
     if (Number(v) < 5 || Number(v) > 100)
       return {
@@ -270,23 +270,23 @@ export const validateInput: IValidateInput = {
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   weightChange: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '몸무게를 입력해주세요',
+        errMsg: "몸무게를 입력해주세요",
       };
     if (Number(v) < 30 || Number(v) > 130)
       return {
         isValid: false,
-        errMsg: '30~130kg 안으로 입력해주세요',
+        errMsg: "30~130kg 안으로 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
 
@@ -295,38 +295,38 @@ export const validateInput: IValidateInput = {
     if (!v)
       return {
         isValid: false,
-        errMsg: '이름을 입력해주세요',
+        errMsg: "이름을 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   buyerTel: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '휴대폰 번호를 입력해주세요',
+        errMsg: "휴대폰 번호를 입력해주세요",
       };
     if (!REGEX_PHONE.test(v))
       return {
         isValid: false,
-        errMsg: '올바른 휴대폰 번호를 입력해주세요',
+        errMsg: "올바른 휴대폰 번호를 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
   addr2: (v: string) => {
     if (!v)
       return {
         isValid: false,
-        errMsg: '상세주소를 입력해주세요',
+        errMsg: "상세주소를 입력해주세요",
       };
     return {
       isValid: true,
-      errMsg: '',
+      errMsg: "",
     };
   },
 };

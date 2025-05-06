@@ -5,20 +5,15 @@ import styled from "styled-components/native";
 import { Col } from "@/shared/ui/styledComps";
 import { useListCode } from "@/shared/api/queries/code";
 import ToggleButton from "@/shared/ui/ToggleButton";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
-const WOIntensity = ({
-  userInputState,
-}: {
-  userInputState: IUserInputState;
-}) => {
+const WOIntensity = () => {
   // redux
   const dispatch = useAppDispatch();
-  const { sportsStrengthCd } = useAppSelector((state) => state.userInput);
+  const sportsStrengthCd = useAppSelector(
+    (state) => state.userInput.sportsStrengthCd
+  );
 
   // react-query
   const { data: strengthCode } = useListCode("SP010"); // SP010 : 운동강도 (sportsStrengthCd)

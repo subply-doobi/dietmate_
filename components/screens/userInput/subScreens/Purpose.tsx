@@ -7,16 +7,15 @@ import styled from "styled-components/native";
 import { useListCode } from "@/shared/api/queries/code";
 import { Col } from "@/shared/ui/styledComps";
 import ToggleButton from "@/shared/ui/ToggleButton";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
-const Purpose = ({ userInputState }: { userInputState: IUserInputState }) => {
+const Purpose = () => {
   // redux
   const dispatch = useAppDispatch();
-  const { dietPurposeCd } = userInputState;
+  const dietPurposeCd = useAppSelector(
+    (state) => state.userInput.dietPurposeCd
+  );
 
   // react-query
   const { data: dPCodeData } = useListCode("SP002"); // SP002 : 식단의 목적

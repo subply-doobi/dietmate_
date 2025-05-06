@@ -53,9 +53,7 @@ export const PAGES = [
     subTitle: "입력된 정보로 목표 칼로리를 계산해드려요",
     getNextPage: (u: IUserInputState) => "CalculationOptions",
     checkIsActive: (u: IUserInputState) => true,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Start userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Start />,
   },
   {
     header: "0/12",
@@ -65,7 +63,7 @@ export const PAGES = [
       '"자세하게"는 운동량도 고려하고\n영양성분 비율도 직접 선택할 수 있어요',
     getNextPage: (u: IUserInputState) => "None",
     checkIsActive: (u: IUserInputState) => true,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => null,
+    render: (scrollRef: RefObject<ScrollView>) => null,
   },
   {
     header: "1/12",
@@ -74,9 +72,7 @@ export const PAGES = [
     subTitle: "성별에 따라\n열량소모가 달라져요",
     getNextPage: (u: IUserInputState) => "Age",
     checkIsActive: (u: IUserInputState) => u.gender.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Gender userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Gender />,
   },
   {
     header: "2/12",
@@ -85,9 +81,7 @@ export const PAGES = [
     subTitle: "한 두 살 차이가\n크게 영향을 미치지는 않아요",
     getNextPage: (u: IUserInputState) => "Height",
     checkIsActive: (u: IUserInputState) => u.age.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Age userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Age />,
   },
   {
     header: "3/12",
@@ -96,9 +90,7 @@ export const PAGES = [
     subTitle: "키가 크면 열량 소모가 커집니다\n몸을 크게 만드는데는 불리하겠죠",
     getNextPage: (u: IUserInputState) => "Weight",
     checkIsActive: (u: IUserInputState) => u.height.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Height userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Height />,
   },
   {
     header: "4/12",
@@ -108,9 +100,7 @@ export const PAGES = [
       "체중이 높을수록 열량 소모가 커져요\n체중 감량을 위해 덜 먹어야겠죠?",
     getNextPage: (u: IUserInputState) => "Purpose",
     checkIsActive: (u: IUserInputState) => u.weight.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Weight userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Weight />,
   },
   {
     header: "5/12",
@@ -119,9 +109,7 @@ export const PAGES = [
     subTitle: "어렵지 않아요\n체중감소는 덜먹고, 체중증가는 더 먹고!",
     getNextPage: (u: IUserInputState) => "WOFrequency",
     checkIsActive: (u: IUserInputState) => u.dietPurposeCd.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Purpose userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Purpose />,
   },
   {
     header: "6/12",
@@ -131,9 +119,7 @@ export const PAGES = [
     getNextPage: (u: IUserInputState) =>
       u.sportsSeqCd.value === SPORTS_SEQ_CD[0].cd ? "TargetCalorie" : "Amr",
     checkIsActive: (u: IUserInputState) => u.sportsSeqCd.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <WOFrequency userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <WOFrequency />,
   },
   {
     header: "7/12",
@@ -146,9 +132,7 @@ export const PAGES = [
         : "WODuration",
     checkIsActive: (u: IUserInputState) =>
       u.bmrKnown.isValid && u.amrKnown.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Amr userInputState={u} scrollRef={scrollRef} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Amr scrollRef={scrollRef} />,
   },
   {
     header: "8/12",
@@ -157,9 +141,7 @@ export const PAGES = [
     subTitle: "운동을 많이, 오래 할수록\n먹을 수 있는 양이 많아지겠죠?",
     getNextPage: (u: IUserInputState) => "WOIntensity",
     checkIsActive: (u: IUserInputState) => u.sportsTimeCd.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <WODuration userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <WODuration />,
   },
   {
     header: "9/12",
@@ -168,9 +150,7 @@ export const PAGES = [
     subTitle: "운동을 많이, 오래 할수록\n먹을 수 있는 양이 많아지겠죠?",
     getNextPage: (u: IUserInputState) => "TargetCalorie",
     checkIsActive: (u: IUserInputState) => u.sportsStrengthCd.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <WOIntensity userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <WOIntensity />,
   },
   {
     header: "10/12",
@@ -179,8 +159,8 @@ export const PAGES = [
     subTitle: "평소 섭취하는 끼니에 따라\n목표섭취량을 계산해드릴게요",
     getNextPage: (u: IUserInputState) => "TargetRatio",
     checkIsActive: (u: IUserInputState) => u.calorie.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <TargetCalorie userInputState={u} scrollRef={scrollRef} />
+    render: (scrollRef: RefObject<ScrollView>) => (
+      <TargetCalorie scrollRef={scrollRef} />
     ),
   },
   {
@@ -199,8 +179,8 @@ export const PAGES = [
 
       return true;
     },
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <TargetRatio userInputState={u} scrollRef={scrollRef} />
+    render: (scrollRef: RefObject<ScrollView>) => (
+      <TargetRatio scrollRef={scrollRef} />
     ),
   },
   {
@@ -210,9 +190,7 @@ export const PAGES = [
     subTitle: "목표섭취량은 홈화면 목표변경에서\n언제든지 변경이 가능합니다",
     getNextPage: (u: IUserInputState) => "None",
     checkIsActive: (u: IUserInputState) => true,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Result userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Result />,
   },
   // 간단하게 계산하기
   {
@@ -222,9 +200,7 @@ export const PAGES = [
     subTitle: "성별에 따라\n열량소모가 달라져요",
     getNextPage: (u: IUserInputState) => "AgeSimple",
     checkIsActive: (u: IUserInputState) => u.gender.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Gender userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Gender />,
   },
   {
     header: "2/6",
@@ -233,9 +209,7 @@ export const PAGES = [
     subTitle: "한 두 살 차이가\n크게 영향을 미치지는 않아요",
     getNextPage: (u: IUserInputState) => "HeightSimple",
     checkIsActive: (u: IUserInputState) => u.age.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Age userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Age />,
   },
   {
     header: "3/6",
@@ -244,9 +218,7 @@ export const PAGES = [
     subTitle: "키가 크면 열량 소모가 커집니다\n몸을 크게 만드는데는 불리하겠죠",
     getNextPage: (u: IUserInputState) => "WeightSimple",
     checkIsActive: (u: IUserInputState) => u.height.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Height userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Height />,
   },
   {
     header: "4/6",
@@ -256,9 +228,7 @@ export const PAGES = [
       "체중이 높을수록 열량 소모가 커져요\n체중 감량을 위해 덜 먹어야겠죠?",
     getNextPage: (u: IUserInputState) => "PurposeSimple",
     checkIsActive: (u: IUserInputState) => u.weight.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Weight userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Weight />,
   },
   {
     header: "5/6",
@@ -267,9 +237,7 @@ export const PAGES = [
     subTitle: "어렵지 않아요\n체중감소는 덜먹고, 체중증가는 더 먹고!",
     getNextPage: (u: IUserInputState) => "ResultSimple",
     checkIsActive: (u: IUserInputState) => u.dietPurposeCd.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <Purpose userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <Purpose />,
   },
   {
     header: "6/6",
@@ -278,9 +246,7 @@ export const PAGES = [
     subTitle: "목표섭취량은 홈화면 목표변경에서\n언제든지 변경이 가능합니다",
     getNextPage: (u: IUserInputState) => "None",
     checkIsActive: (u: IUserInputState) => true,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <ResultSimple userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <ResultSimple />,
   },
 
   // 몸무게, 목표섭취량 변경
@@ -291,9 +257,7 @@ export const PAGES = [
     subTitle: "체형, 체중이나 목적이 변한다면\n목표섭취량도 다시 설정해야해요",
     getNextPage: (u: IUserInputState) => "ChangeCalorie",
     checkIsActive: (u: IUserInputState) => u.weight.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <ChangeWeight userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <ChangeWeight />,
   },
   {
     header: "2/4",
@@ -302,8 +266,8 @@ export const PAGES = [
     subTitle: "체형, 체중이나 목적이 변한다면\n목표섭취량도 다시 설정해야해요",
     getNextPage: (u: IUserInputState) => "ChangeRatio",
     checkIsActive: (u: IUserInputState) => u.calorie.isValid,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <ChangeCalorie userInputState={u} scrollRef={scrollRef} />
+    render: (scrollRef: RefObject<ScrollView>) => (
+      <ChangeCalorie scrollRef={scrollRef} />
     ),
   },
   {
@@ -322,8 +286,8 @@ export const PAGES = [
 
       return true;
     },
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <TargetRatio userInputState={u} scrollRef={scrollRef} />
+    render: (scrollRef: RefObject<ScrollView>) => (
+      <TargetRatio scrollRef={scrollRef} />
     ),
   },
   {
@@ -333,8 +297,6 @@ export const PAGES = [
     subTitle: "체형, 체중이나 목적이 변한다면\n목표섭취량도 다시 설정해야해요",
     getNextPage: (u: IUserInputState) => "None",
     checkIsActive: (u: IUserInputState) => true,
-    render: (u: IUserInputState, scrollRef: RefObject<ScrollView>) => (
-      <ChangeResult userInputState={u} />
-    ),
+    render: (scrollRef: RefObject<ScrollView>) => <ChangeResult />,
   },
 ];

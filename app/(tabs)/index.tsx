@@ -58,7 +58,7 @@ const NewHome = () => {
   const ctaBtnRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
 
   // react-query
-  const { data: testErrData, refetch: throwErr } = useTestErrQuery();
+  // const { data: testErrData, refetch: throwErr } = useTestErrQuery();
   const { data: baseLineData } = useGetBaseLine();
   const { data: dTOData } = useListDietTotalObj();
   const deleteDietAllMutation = useDeleteDietAll();

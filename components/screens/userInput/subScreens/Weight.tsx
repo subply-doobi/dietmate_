@@ -7,20 +7,15 @@ import styled from "styled-components/native";
 
 // doobi
 import SquareInput from "@/shared/ui/SquareInput";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
-import { useRef, useEffect, useCallback } from "react";
-import { useFocusEffect, useNavigation } from "expo-router";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
+import { useRef, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
+import { useAppSelector } from "@/shared/hooks/reduxHooks";
 
-const Weight = ({ userInputState }: { userInputState: IUserInputState }) => {
-  // navigation
-  const { isFocused } = useNavigation();
-
+const Weight = () => {
   // redux
   const dispatch = useDispatch();
-  const { weight } = userInputState;
+  const weight = useAppSelector((state) => state.userInput.weight);
 
   // useRef
   const weightRef = useRef<TextInput | null>(null);

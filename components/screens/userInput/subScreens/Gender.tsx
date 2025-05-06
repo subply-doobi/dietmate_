@@ -5,21 +5,18 @@ import styled from "styled-components/native";
 
 // doobi
 import { Row } from "@/shared/ui/styledComps";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import ToggleButton from "@/shared/ui/ToggleButton";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
 const genderBtnItem = [
   { label: "남성", value: "M" },
   { label: "여성", value: "F" },
 ];
-const Gender = ({ userInputState }: { userInputState: IUserInputState }) => {
+const Gender = () => {
   // redux
   const dispatch = useAppDispatch();
-  const { gender } = userInputState;
+  const gender = useAppSelector((state) => state.userInput.gender);
   return (
     <Container>
       <Row

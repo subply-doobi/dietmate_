@@ -7,24 +7,21 @@ import styled from "styled-components/native";
 import Accordion from "react-native-collapsible/Accordion";
 
 // doobi
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import { useListCode } from "@/shared/api/queries/code";
 import { HorizontalSpace } from "@/shared/ui/styledComps";
 import { calculateCaloriesToNutr } from "@/shared/utils/targetCalculation";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { getRatioAcContent } from "@/shared/utils/screens/userInput/ratioAccordion";
 
 interface ITargetRatio {
-  userInputState: IUserInputState;
   scrollRef: RefObject<ScrollView>;
 }
-const TargetRatio = ({ userInputState, scrollRef }: ITargetRatio) => {
+const TargetRatio = ({ scrollRef }: ITargetRatio) => {
   // redux
   const dispatch = useAppDispatch();
-  const { calorie, targetOption, carb, protein, fat } = userInputState;
+  const calorie = useAppSelector((state) => state.userInput.calorie);
+  const targetOption = useAppSelector((state) => state.userInput.targetOption);
 
   // react-query
   const { data: ratioCodeData } = useListCode("SP005"); // SP005 : 탄단지비율

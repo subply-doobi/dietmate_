@@ -1,34 +1,24 @@
 // RN
 import { TextInput } from "react-native";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 
 // 3rd
 import styled from "styled-components/native";
 
 // doobi
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import SquareInput from "@/shared/ui/SquareInput";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import { useFocusEffect, useNavigation } from "expo-router";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { useFocusEffect } from "expo-router";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
-const ChangeWeight = ({
-  userInputState,
-}: {
-  userInputState: IUserInputState;
-}) => {
+const ChangeWeight = () => {
   // react-qurey
   const { data: baseLineData } = useGetBaseLine();
 
-  // navigation
-  const { isFocused } = useNavigation();
-
   // redux
   const dispatch = useAppDispatch();
-  const { weight } = userInputState;
+  const weight = useAppSelector((state) => state.userInput.weight);
 
   // useRef
   const weightRef = useRef<TextInput | null>(null);

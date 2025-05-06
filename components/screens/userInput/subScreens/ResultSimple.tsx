@@ -9,10 +9,7 @@ import { useListCode } from "@/shared/api/queries/code";
 import { Col, Row, TextMain } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import { calculateManualCalorie } from "@/shared/utils/targetCalculation";
 import { ShadowView } from "@/shared/ui/styledComps";
 import {
@@ -21,16 +18,13 @@ import {
 } from "@/shared/constants";
 import { link } from "@/shared/utils/linking";
 import AdditionalGuide from "../AdditionalGuide";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { getRecommendedNutr } from "@/shared/utils/screens/userInput/targetByUserInfo";
 
-const ResultSimple = ({
-  userInputState,
-}: {
-  userInputState: IUserInputState;
-}) => {
+const ResultSimple = () => {
   // redux
   const dispatch = useAppDispatch();
+  const userInputState = useAppSelector((state) => state.userInput);
 
   // react-query
   const { data: seqCodeData } = useListCode("SP008"); // SP008 : 운동빈도 (sportsSeqCd)
@@ -40,7 +34,6 @@ const ResultSimple = ({
   // input state
   const {
     weight,
-    ratio,
     calorie,
     carb,
     protein,

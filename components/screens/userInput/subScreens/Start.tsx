@@ -5,10 +5,9 @@ import styled from "styled-components/native";
 import LottieView from "lottie-react-native";
 
 // doobi
-import { IUserInputState } from "@/features/reduxSlices/userInputSlice";
 import { SCREENHEIGHT, SCREENWIDTH } from "@/shared/constants";
 
-const Start = ({ userInputState }: { userInputState: IUserInputState }) => {
+const Start = () => {
   return (
     <Container>
       <LottieView

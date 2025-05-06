@@ -1,5 +1,5 @@
 // RN, expo
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 import { TextInput } from "react-native";
 
 // 3rd
@@ -7,20 +7,14 @@ import styled from "styled-components/native";
 
 // doobi
 import SquareInput from "@/shared/ui/SquareInput";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
-import { useFocusEffect, useNavigation } from "expo-router";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
+import { useFocusEffect } from "expo-router";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
-const Age = ({ userInputState }: { userInputState: IUserInputState }) => {
-  // navigation
-  const { isFocused } = useNavigation();
-
+const Age = () => {
   // redux
   const dispatch = useAppDispatch();
-  const { age } = userInputState;
+  const age = useAppSelector((state) => state.userInput.age);
 
   // useRef
   const ageRef = useRef<TextInput | null>(null);

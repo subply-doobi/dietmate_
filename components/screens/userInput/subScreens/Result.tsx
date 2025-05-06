@@ -8,7 +8,6 @@ import { useListCode } from "@/shared/api/queries/code";
 import { Col, Row, TextMain } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
-import { IUserInputState } from "@/features/reduxSlices/userInputSlice";
 import { calculateManualCalorie } from "@/shared/utils/targetCalculation";
 import { ShadowView } from "@/shared/ui/styledComps";
 import {
@@ -18,17 +17,18 @@ import {
 import { link } from "@/shared/utils/linking";
 import AdditionalGuide from "../AdditionalGuide";
 import { getRecommendedNutr } from "@/shared/utils/screens/userInput/targetByUserInfo";
+import { useAppSelector } from "@/shared/hooks/reduxHooks";
 
-const Result = ({ userInputState }: { userInputState: IUserInputState }) => {
+const Result = () => {
   // react-query
   const { data: seqCodeData } = useListCode("SP008"); // SP008 : 운동빈도 (sportsSeqCd)
   const { data: timeCodeData } = useListCode("SP009"); // SP009 : 운동시간 (sportsTimeCd)
   const { data: strengthCodeData } = useListCode("SP010"); // SP010 : 운동강도 (sportsStrengthCd)
 
   // input state
+  const userInputState = useAppSelector((state) => state.userInput);
   const {
     weight,
-    ratio,
     calorie,
     carb,
     protein,

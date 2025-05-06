@@ -6,21 +6,14 @@ import { Col } from "@/shared/ui/styledComps";
 import { useListCode } from "@/shared/api/queries/code";
 import ToggleButton from "@/shared/ui/ToggleButton";
 import { SCREENWIDTH } from "@/shared/constants";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import DTooltip from "@/shared/ui/DTooltip";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
-const WOFrequency = ({
-  userInputState,
-}: {
-  userInputState: IUserInputState;
-}) => {
+const WOFrequency = () => {
   // redux
   const dispatch = useAppDispatch();
-  const { sportsSeqCd } = userInputState;
+  const sportsSeqCd = useAppSelector((state) => state.userInput.sportsSeqCd);
 
   // react-query
   const { data: seqCode } = useListCode("SP008"); // SP008 : 운동빈도 (sportsSeqCd)

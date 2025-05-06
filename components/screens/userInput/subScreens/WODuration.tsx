@@ -5,10 +5,7 @@ import styled from "styled-components/native";
 import { useListCode } from "@/shared/api/queries/code";
 import ToggleButton from "@/shared/ui/ToggleButton";
 import { SCREENWIDTH } from "@/shared/constants";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import { Col } from "@/shared/ui/styledComps";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
@@ -20,14 +17,10 @@ const cdToLabel: { [key: string]: string } = {
   SP009005: "120분~",
 };
 
-const WODuration = ({
-  userInputState,
-}: {
-  userInputState: IUserInputState;
-}) => {
+const WODuration = () => {
   // redux
   const dispatch = useAppDispatch();
-  const { sportsTimeCd } = useAppSelector((state) => state.userInput);
+  const sportsTimeCd = useAppSelector((state) => state.userInput.sportsTimeCd);
 
   // react-query
   const { data: timeCode } = useListCode("SP009"); // SP009 : 운동시간 (sportsTimeCd)

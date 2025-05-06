@@ -5,24 +5,20 @@ import { RefObject, useRef } from "react";
 import styled from "styled-components/native";
 
 // doobi
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import { Col } from "@/shared/ui/styledComps";
 import SquareInput from "@/shared/ui/SquareInput";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { ScrollView } from "react-native";
 
 interface IAmr {
-  userInputState: IUserInputState;
   scrollRef: RefObject<ScrollView>;
 }
-const Amr = ({ userInputState, scrollRef }: IAmr) => {
+const Amr = ({ scrollRef }: IAmr) => {
   // redux
   const dispatch = useAppDispatch();
-  const { amrKnown, bmrKnown } = useAppSelector((state) => state.userInput);
-
+  const amrKnown = useAppSelector((state) => state.userInput.amrKnown);
+  const bmrKnown = useAppSelector((state) => state.userInput.bmrKnown);
   // useRef
   const inputRef = useRef([]);
 

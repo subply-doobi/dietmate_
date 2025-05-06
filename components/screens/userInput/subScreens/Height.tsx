@@ -1,27 +1,20 @@
 // RN, expo
-import { useFocusEffect, useNavigation } from "expo-router";
+import { useFocusEffect } from "expo-router";
 
 // 3rd
 import styled from "styled-components/native";
 
 // doobi
 import SquareInput from "@/shared/ui/SquareInput";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
-import { useCallback, useEffect, useRef } from "react";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
+import { useCallback, useRef } from "react";
 import { TextInput } from "react-native";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
-const Height = ({ userInputState }: { userInputState: IUserInputState }) => {
-  // navigation
-  const { isFocused } = useNavigation();
-
+const Height = () => {
   // redux
   const dispatch = useAppDispatch();
-  const { height } = userInputState;
-
+  const height = useAppSelector((state) => state.userInput.height);
   // useRef
   const heightRef = useRef<TextInput | null>(null);
 

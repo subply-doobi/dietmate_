@@ -7,20 +7,16 @@ import styled from "styled-components/native";
 
 // doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import { icons } from "@/shared/iconSource";
 import AdditionalGuide from "../AdditionalGuide";
 import SquareInput from "@/shared/ui/SquareInput";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
 interface IChangeCalorie {
-  userInputState: IUserInputState;
   scrollRef: RefObject<ScrollView>;
 }
-const ChangeCalorie = ({ userInputState, scrollRef }: IChangeCalorie) => {
+const ChangeCalorie = ({ scrollRef }: IChangeCalorie) => {
   // redux
   const dispatch = useAppDispatch();
 
@@ -28,7 +24,8 @@ const ChangeCalorie = ({ userInputState, scrollRef }: IChangeCalorie) => {
   const { data: baseLineData } = useGetBaseLine();
 
   // input state
-  const { weight, calorie } = userInputState;
+  const weight = useAppSelector((state) => state.userInput.weight);
+  const calorie = useAppSelector((state) => state.userInput.calorie);
   const weightDiff = Number(baseLineData?.weight) - Number(weight.value);
 
   const weightText =

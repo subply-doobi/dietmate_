@@ -1,8 +1,5 @@
 import styled from "styled-components/native";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import { RefObject, useEffect, useState } from "react";
 import {
   Col,
@@ -16,7 +13,7 @@ import { icons } from "@/shared/iconSource";
 import { useListCode } from "@/shared/api/queries/code";
 import SquareInput from "@/shared/ui/SquareInput";
 import { openModal } from "@/features/reduxSlices/modalSlice";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { getRecommendedNutr } from "@/shared/utils/screens/userInput/targetByUserInfo";
 import { ScrollView } from "react-native";
 
@@ -33,12 +30,12 @@ const calorieOptionItem: {
 ];
 
 interface ITargetCalorie {
-  userInputState: IUserInputState;
   scrollRef: RefObject<ScrollView>;
 }
-const TargetCalorie = ({ userInputState, scrollRef }: ITargetCalorie) => {
+const TargetCalorie = ({ scrollRef }: ITargetCalorie) => {
   // redux
   const dispatch = useAppDispatch();
+  const userInputState = useAppSelector((state) => state.userInput);
 
   // react-query
   const { data: seqCodeData } = useListCode("SP008"); // SP008 : 운동빈도 (sportsSeqCd)

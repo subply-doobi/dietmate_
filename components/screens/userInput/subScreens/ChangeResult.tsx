@@ -6,21 +6,21 @@ import styled from "styled-components/native";
 
 // doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import { IUserInputState } from "@/features/reduxSlices/userInputSlice";
 import colors from "@/shared/colors";
-import { Col, Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import { Col, Icon, TextMain, TextSub } from "@/shared/ui/styledComps";
 import { icons } from "@/shared/iconSource";
+import { useAppSelector } from "@/shared/hooks/reduxHooks";
 
-const ChangeResult = ({
-  userInputState,
-}: {
-  userInputState: IUserInputState;
-}) => {
+const ChangeResult = () => {
   // react-query
   const { data: baseLineData } = useGetBaseLine();
 
   // userInput state
-  const { weight, calorie, carb, protein, fat } = userInputState;
+  const weight = useAppSelector((state) => state.userInput.weight);
+  const calorie = useAppSelector((state) => state.userInput.calorie);
+  const carb = useAppSelector((state) => state.userInput.carb);
+  const protein = useAppSelector((state) => state.userInput.protein);
+  const fat = useAppSelector((state) => state.userInput.fat);
 
   const changeContent = useMemo(() => {
     if (!baseLineData) return [];
@@ -94,7 +94,7 @@ const ChangeResult = ({
         color: colors.fat,
       },
     ];
-  }, [baseLineData, userInputState]);
+  }, [baseLineData, weight, calorie, carb, protein, fat]);
 
   return (
     <Container>

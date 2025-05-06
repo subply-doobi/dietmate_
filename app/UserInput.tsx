@@ -173,7 +173,7 @@ const UserInput = () => {
         />
 
         {/* 각 페이지 내용 */}
-        {getPageItem(currentPage).render(userInputState, scrollRef)}
+        {getPageItem(currentPage).render(scrollRef)}
       </ScrollView>
 
       {/* CTA버튼 */}

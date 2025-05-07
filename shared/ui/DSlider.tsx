@@ -7,7 +7,7 @@ import { TextMain } from "./styledComps";
 
 interface IDSlider {
   sliderValue: number[];
-  setSliderValue: React.Dispatch<SetStateAction<number[]>>;
+  setSliderValue: (value: number[]) => void;
   onSlidingComplete?: (value: number | Array<number>) => void;
   minimumValue: number;
   maximumValue: number;

@@ -245,9 +245,9 @@ const Diet = () => {
     <Container
       style={{
         backgroundColor: colors.backgroundLight2,
+        paddingTop: 0,
         paddingLeft: 0,
         paddingRight: 0,
-        paddingBottom: Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0,
       }}
     >
       <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>

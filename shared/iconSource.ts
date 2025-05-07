@@ -28,32 +28,22 @@ export const icons = {
 
   // change
   changeRound_24: require(`./assets/icons/24_change_round.png`),
+  changeRoundWhite_24: require(`./assets/icons/24_change_round_white.png`),
   changeLine_24: require(`./assets/icons/24_change_line.png`),
+
+  // delete
+  deleteRoundWhite_24: require(`./assets/icons/24_delete_round_white.png`),
 
   // check
   checkbox_24: require(`./assets/icons/24_checkbox.png`),
-  checkboxCheckedGreen_24: require(
-    `./assets/icons/24_checkbox_checked_green.png`,
-  ),
-  checkboxCheckedMain_24: require(
-    `./assets/icons/24_checkbox_checked_main.png`,
-  ),
-  checkboxCheckedWhite_24: require(
-    `./assets/icons/24_checkbox_checked_white.png`,
-  ),
-  checkboxCheckedGrey_24: require(
-    `./assets/icons/24_checkbox_checked_grey.png`,
-  ),
+  checkboxCheckedGreen_24: require(`./assets/icons/24_checkbox_checked_green.png`),
+  checkboxCheckedMain_24: require(`./assets/icons/24_checkbox_checked_main.png`),
+  checkboxCheckedWhite_24: require(`./assets/icons/24_checkbox_checked_white.png`),
+  checkboxCheckedGrey_24: require(`./assets/icons/24_checkbox_checked_grey.png`),
   checkRoundEmpty_24: require(`./assets/icons/24_check_round_empty.png`),
-  checkRoundCheckedGrey_24: require(
-    `./assets/icons/24_check_round_checked_grey.png`,
-  ),
-  checkRoundCheckedGreen_24: require(
-    `./assets/icons/24_check_round_checked_green.png`,
-  ),
-  checkRoundCheckedMain_24: require(
-    `./assets/icons/24_check_round_checked_main.png`,
-  ),
+  checkRoundCheckedGrey_24: require(`./assets/icons/24_check_round_checked_grey.png`),
+  checkRoundCheckedGreen_24: require(`./assets/icons/24_check_round_checked_green.png`),
+  checkRoundCheckedMain_24: require(`./assets/icons/24_check_round_checked_main.png`),
 
   // sort
   sort_24: require(`./assets/icons/24_sort.png`),
@@ -61,6 +51,8 @@ export const icons = {
   sortDescending_24: require(`./assets/icons/24_sort_descending.png`),
 
   // bottomTabIcon
+  formula_36: require(`./assets/icons/36_formula.png`),
+  formulaActive_36: require(`./assets/icons/36_formula_active.png`),
   cart_36: require(`./assets/icons/36_cart.png`),
   cartActive_36: require(`./assets/icons/36_cart_active.png`),
   search_36: require(`./assets/icons/36_search.png`),
@@ -71,6 +63,7 @@ export const icons = {
   mypage_36: require(`./assets/icons/36_mypage.png`),
 
   // etc
+  infoRoundWhite_24: require(`./assets/icons/24_info_round_white.png`),
   edit_24: require(`./assets/icons/24_edit.png`),
   initialize_24: require(`./assets/icons/24_initialize.png`),
   question_24: require(`./assets/icons/24_question.png`),

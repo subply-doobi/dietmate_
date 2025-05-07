@@ -11,9 +11,9 @@ import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import {
   useCreateDietDetail,
   useDeleteDietDetail,
+  useListDietTotalObj,
 } from "@/shared/api/queries/diet";
-import { IDietTotalObjData } from "@/shared/api/types/diet";
-import { useNavigation, useRoute } from "@react-navigation/native";
+
 import { IProductData } from "@/shared/api/types/product";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import {
@@ -22,27 +22,12 @@ import {
 } from "@/features/reduxSlices/commonSlice";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { openModal } from "@/features/reduxSlices/modalSlice";
-import { IAutoMenuSubPages } from "@/shared/utils/screens/autoMenu/contentByPages";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useAsync } from "@/shared/utils/screens/diet/cartCustomHooks";
 import { useRouter } from "expo-router";
+import Error from "./Error";
 
-interface IProcessing {
-  dTOData: IDietTotalObjData;
-  selectedDietNo: string[];
-  selectedCategory: boolean[];
-  wantedCompany: string;
-  priceSliderValue: number[];
-  setProgress: React.Dispatch<React.SetStateAction<IAutoMenuSubPages[]>>;
-}
-const Processing = ({
-  dTOData,
-  selectedDietNo,
-  selectedCategory,
-  wantedCompany,
-  priceSliderValue,
-  setProgress,
-}: IProcessing) => {
+const Processing = () => {
   // navigaton
   const router = useRouter();
 
@@ -50,9 +35,12 @@ const Processing = ({
   const dispatch = useAppDispatch();
   const { totalFoodList, foodGroupForAutoMenu, medianCalorie, isTutorialMode } =
     useAppSelector((state) => state.common);
+  const { selectedDietNo, selectedCategory, wantedCompany, priceSliderValue } =
+    useAppSelector((state) => state.autoMenu);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
+  const { data: dTOData } = useListDietTotalObj();
   const deleteDietDetailMutation = useDeleteDietDetail();
   const createDietDetailMutation = useCreateDietDetail();
 
@@ -117,13 +105,8 @@ const Processing = ({
   });
 
   useEffect(() => {
-    if (!bLData || !dTOData) return;
-    if (isError) {
-      setProgress((v) => [...v, "Error"]);
-      return;
-    }
     execute();
-  }, [isError]);
+  }, []);
 
   // overwriteDiet (한끼니 자동구성 재시도, 전체 자동구성)
   useEffect(() => {
@@ -242,6 +225,9 @@ const Processing = ({
     addMenu();
   }, [isSuccess]);
 
+  if (isError) {
+    return <Error />;
+  }
   return (
     <Col style={{ justifyContent: "center", marginTop: 64 }}>
       <ActivityIndicator size={"large"} color={colors.main} />

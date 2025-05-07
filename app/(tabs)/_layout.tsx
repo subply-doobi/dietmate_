@@ -49,7 +49,7 @@ export default function TabLayout() {
         }),
       }}
     >
-      {/* NewHome - Search - Mypage - Diet */}
+      {/* NewHome - formula - Search - Cart */}
       <Tabs.Screen
         name="index"
         options={{
@@ -63,31 +63,24 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Search"
+        name="Formula"
         options={{
-          title: "Search",
+          title: "Formula",
           tabBarIcon: ({ focused }) => (
             <Icon
-              source={focused ? icons.searchActive_36 : icons.search_36}
+              source={focused ? icons.formulaActive_36 : icons.formula_36}
               size={36}
             />
           ),
         }}
       />
       <Tabs.Screen
-        name="Mypage"
+        name="Search"
         options={{
-          headerShown: true,
-          headerTitle: "마이페이지",
-          headerTitleAlign: "left",
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: "bold",
-            color: colors.textMain,
-          },
+          title: "Search",
           tabBarIcon: ({ focused }) => (
             <Icon
-              source={focused ? icons.mypageActive_36 : icons.mypage_36}
+              source={focused ? icons.searchActive_36 : icons.search_36}
               size={36}
             />
           ),

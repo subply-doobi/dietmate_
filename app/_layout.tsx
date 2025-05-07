@@ -89,6 +89,20 @@ export default function RootLayout() {
             options={{ headerShown: true, headerTitle: "식품변경" }}
           />
 
+          <Stack.Screen
+            name="Mypage"
+            options={{
+              headerShown: true,
+              headerTitle: "마이페이지",
+              headerTitleAlign: "left",
+              headerTitleStyle: {
+                fontSize: 18,
+                fontWeight: "bold",
+                color: colors.textMain,
+              },
+            }}
+          />
+
           {/* 좋아요 식품 */}
           <Stack.Screen
             name="Likes"

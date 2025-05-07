@@ -5,6 +5,7 @@ import {
   HorizontalSpace,
   TextMain,
   TextSub,
+  Col,
 } from "@/shared/ui/styledComps";
 import NutrTarget from "./NutrTarget";
 import styled from "styled-components/native";
@@ -21,13 +22,20 @@ const Profile = () => {
 
   return (
     <ProfileBox>
-      <Row style={{ paddingHorizontal: 16 }}>
-        <Nickname>{baseLineData?.nickNm}</Nickname>
-        <Nickname style={{ fontWeight: "normal" }}>님</Nickname>
+      <Row style={{ paddingHorizontal: 16, columnGap: 8 }}>
+        <Col style={{ flex: 1 }}>
+          <Row>
+            <Nickname>{baseLineData?.nickNm}</Nickname>
+            <Nickname style={{ fontWeight: "normal" }}>님</Nickname>
+          </Row>
+          <SubText style={{ marginTop: 2 }}>
+            근의공식이 즐거운 식단실천을 응원합니다
+          </SubText>
+        </Col>
+        <MypageBtn onPress={() => router.push("/Mypage")}>
+          <Icon source={icons.mypage_36} size={36} />
+        </MypageBtn>
       </Row>
-      <SubText style={{ paddingHorizontal: 16, marginTop: 2 }}>
-        근의공식이 즐거운 식단실천을 응원합니다
-      </SubText>
       <HighlightBox>
         <MainText>한 끼 목표 영양</MainText>
         <TargetChangeBtn
@@ -64,6 +72,13 @@ const Nickname = styled(TextMain)`
   font-size: 20px;
   font-weight: bold;
   line-height: 24px;
+`;
+
+const MypageBtn = styled.TouchableOpacity`
+  width: 36px;
+  height: 36px;
+  justify-content: center;
+  align-items: center;
 `;
 
 const SubText = styled(TextSub)`

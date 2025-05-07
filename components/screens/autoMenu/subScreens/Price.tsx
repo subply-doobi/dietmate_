@@ -4,19 +4,22 @@ import styled from "styled-components/native";
 import { TextMain } from "@/shared/ui/styledComps";
 import { SCREENWIDTH } from "@/shared/constants";
 import DSlider from "@/shared/ui/DSlider";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { setPriceSliderValue } from "@/features/reduxSlices/autoMenuSlice";
 
-interface IPrice {
-  priceSliderValue: number[];
-  setPriceSliderValue: React.Dispatch<SetStateAction<number[]>>;
-}
-const Price = ({ priceSliderValue, setPriceSliderValue }: IPrice) => {
+const Price = () => {
+  // redux
+  const dispatch = useAppDispatch();
+  const priceSliderValue = useAppSelector(
+    (state) => state.autoMenu.priceSliderValue
+  );
   return (
     <View>
       {/* 한 끼 가격 슬라이더 */}
       <OptionTitle>한 끼 가격</OptionTitle>
       <DSlider
         sliderValue={priceSliderValue}
-        setSliderValue={setPriceSliderValue}
+        setSliderValue={(v) => dispatch(setPriceSliderValue(v))}
         minimumValue={6000}
         maximumValue={12000}
         value2LowerLimit={8000}

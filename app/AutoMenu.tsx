@@ -22,7 +22,7 @@ import { Container } from "@/shared/ui/styledComps";
 import BackArrow from "@/shared/ui/BackArrow";
 import GuideTitle from "@/shared/ui/GuideTitle";
 import CtaButton from "@/shared/ui/CtaButton";
-import { useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import {
   useFocusEffect,
   useLocalSearchParams,
@@ -30,12 +30,16 @@ import {
   useRouter,
 } from "expo-router";
 import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
+import { setSelectedDietNo } from "@/features/reduxSlices/autoMenuSlice";
 
 const AutoMenu = () => {
   // redux
+  const dispatch = useAppDispatch();
   const { isTutorialMode, tutorialProgress } = useAppSelector(
     (RootState) => RootState.common
   );
+  const { selectedDietNo, selectedCategory, wantedCompany, priceSliderValue } =
+    useAppSelector((RootState) => RootState.autoMenu);
 
   // navigation
   const router = useRouter();
@@ -48,12 +52,12 @@ const AutoMenu = () => {
   const [progress, setProgress] = useState<IAutoMenuSubPages[]>(["Select"]);
   const [pageloaded, setPageloaded] = useState<boolean>(false);
   // 각 페이지에서 autoMenu에 필요한 state
-  const [selectedDietNo, setSelectedDietNo] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<boolean[]>([]);
-  const [wantedCompany, setWantedCompany] = useState<string>("");
-  const [priceSliderValue, setPriceSliderValue] = useState<number[]>([
-    6000, 12000,
-  ]);
+  // const [selectedDietNo, setSelectedDietNo] = useState<string[]>([]);
+  // const [selectedCategory, setSelectedCategory] = useState<boolean[]>([]);
+  // const [wantedCompany, setWantedCompany] = useState<string>("");
+  // const [priceSliderValue, setPriceSliderValue] = useState<number[]>([
+  //   6000, 12000,
+  // ]);
 
   // etc
   const currentPage =
@@ -93,7 +97,7 @@ const AutoMenu = () => {
       (dietNo) => dTOData[dietNo].dietDetail.length
     );
     if (menuLengthList.every((m: number) => m === 0)) {
-      setSelectedDietNo(dietNoArr.map((dietNo) => dietNo));
+      dispatch(setSelectedDietNo(dietNoArr.map((dietNo) => dietNo)));
       setProgress(["Category"]);
     }
     setPageloaded(true);
@@ -173,18 +177,7 @@ const AutoMenu = () => {
             style={{ marginTop: 64 }}
           />
         ) : (
-          PAGES.find((p) => p.name === currentPage)?.render({
-            dTOData,
-            setProgress,
-            selectedCategory,
-            setSelectedCategory,
-            selectedDietNo,
-            setSelectedDietNo,
-            wantedCompany,
-            setWantedCompany,
-            priceSliderValue,
-            setPriceSliderValue,
-          })
+          PAGES.find((p) => p.name === currentPage)?.render()
         )}
       </ScrollView>
 

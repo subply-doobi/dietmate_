@@ -3,18 +3,22 @@ import { SetStateAction, useEffect } from "react";
 import styled from "styled-components/native";
 
 import MenuAcInactiveHeader from "@/components/menuAccordion/MenuAcInactiveHeader";
-import { IDietTotalObjData } from "@/shared/api/types/diet";
 import { Col } from "@/shared/ui/styledComps";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { setSelectedDietNo } from "@/features/reduxSlices/autoMenuSlice";
 
-interface ISelect {
-  dTOData: IDietTotalObjData;
-  selectedDietNo: string[];
-  setSelectedDietNo: React.Dispatch<SetStateAction<string[]>>;
-}
-const Select = ({ dTOData, selectedDietNo, setSelectedDietNo }: ISelect) => {
+const Select = () => {
+  // redux
+  const dispatch = useAppDispatch();
+  const selectedDietNo = useAppSelector(
+    (state) => state.autoMenu.selectedDietNo
+  );
+
   // react-query
   const { data: bLData } = useGetBaseLine();
+  const { data: dTOData } = useListDietTotalObj();
 
   // useEffect
   // 첫 렌더링 시 비어있는 끼니 자동으로 선택
@@ -25,16 +29,19 @@ const Select = ({ dTOData, selectedDietNo, setSelectedDietNo }: ISelect) => {
     for (let dietNo of dietNoArr) {
       dTOData[dietNo]?.dietDetail.length === 0 && emptyDietNoList.push(dietNo);
     }
-    setSelectedDietNo((v) => [...emptyDietNoList]);
+    dispatch(setSelectedDietNo([...emptyDietNoList]));
   }, []);
 
   // etc
   const onPress = (dietNo: string) => {
     if (selectedDietNo.includes(dietNo)) {
-      setSelectedDietNo((v) => v.filter((value, i) => value !== dietNo));
+      dispatch(
+        setSelectedDietNo(selectedDietNo.filter((value, i) => value !== dietNo))
+      );
       return;
     }
-    setSelectedDietNo((v) => [...v, dietNo]);
+
+    dispatch(setSelectedDietNo([...selectedDietNo, dietNo]));
   };
 
   return (

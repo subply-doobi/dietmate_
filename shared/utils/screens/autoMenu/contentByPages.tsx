@@ -14,7 +14,8 @@ export type IAutoMenuSubPages =
   | "Company"
   | "Price"
   | "Processing"
-  | "Error";
+  | "Error"
+  | "None";
 interface IPageRender {
   dTOData: IDietTotalObjData;
   setProgress: React.Dispatch<React.SetStateAction<IAutoMenuSubPages[]>>;
@@ -41,7 +42,7 @@ type IPages = {
   btnColor: string;
   getNextPage: () => IAutoMenuSubPages;
   checkIsActive: (props: IPageCheckIsActive) => boolean;
-  render: (props: IPageRender) => JSX.Element;
+  render: () => JSX.Element;
 }[];
 export const PAGES: IPages = [
   {
@@ -54,13 +55,7 @@ export const PAGES: IPages = [
     getNextPage: () => "Category",
     checkIsActive: ({ selectedDietNo }: IPageCheckIsActive) =>
       selectedDietNo?.length === 0 ? false : true,
-    render: ({ dTOData, selectedDietNo, setSelectedDietNo }: IPageRender) => (
-      <Select
-        dTOData={dTOData}
-        selectedDietNo={selectedDietNo}
-        setSelectedDietNo={setSelectedDietNo}
-      />
-    ),
+    render: () => <Select />,
   },
   {
     id: 1,
@@ -73,12 +68,7 @@ export const PAGES: IPages = [
       selectedCategory && selectedCategory.filter((v) => v).length < 3
         ? false
         : true,
-    render: ({ selectedCategory, setSelectedCategory }: IPageRender) => (
-      <Category
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-      />
-    ),
+    render: () => <Category />,
   },
   {
     id: 2,
@@ -88,12 +78,7 @@ export const PAGES: IPages = [
     btnColor: colors.main,
     getNextPage: () => "Price",
     checkIsActive: () => true,
-    render: ({ wantedCompany, setWantedCompany }: IPageRender) => (
-      <Company
-        wantedCompany={wantedCompany}
-        setWantedCompany={setWantedCompany}
-      />
-    ),
+    render: () => <Company />,
   },
   {
     id: 3,
@@ -103,12 +88,7 @@ export const PAGES: IPages = [
     btnColor: colors.main,
     getNextPage: () => "Processing",
     checkIsActive: () => true,
-    render: ({ priceSliderValue, setPriceSliderValue }: IPageRender) => (
-      <Price
-        priceSliderValue={priceSliderValue}
-        setPriceSliderValue={setPriceSliderValue}
-      />
-    ),
+    render: () => <Price />,
   },
   {
     id: 4,
@@ -118,35 +98,6 @@ export const PAGES: IPages = [
     btnColor: colors.main,
     getNextPage: () => "Error",
     checkIsActive: () => true,
-    render: ({
-      dTOData,
-      selectedDietNo,
-      selectedCategory,
-      wantedCompany,
-      priceSliderValue,
-      setProgress,
-    }: IPageRender) => (
-      <Processing
-        dTOData={dTOData}
-        selectedDietNo={selectedDietNo}
-        selectedCategory={selectedCategory}
-        wantedCompany={wantedCompany}
-        priceSliderValue={priceSliderValue}
-        setProgress={setProgress}
-      />
-    ),
-  },
-  {
-    id: 5,
-    name: "Error",
-    title: "오류가 발생했어요\n재시도 버튼을 눌러주세요",
-    subTitle:
-      "계속 문제가 발생한다면 처음으로 이동해\n옵션을 변경해보거나 고객센터로 문의바랍니다",
-    btnColor: colors.main,
-    getNextPage: () => "None",
-    checkIsActive: () => true,
-    render: ({ setProgress }: IPageRender) => (
-      <Error setProgress={setProgress} />
-    ),
+    render: () => <Processing />,
   },
 ];

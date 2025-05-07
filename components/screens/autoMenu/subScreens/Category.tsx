@@ -4,20 +4,26 @@ import { TextMain } from "@/shared/ui/styledComps";
 import { SCREENWIDTH } from "@/shared/constants";
 import { useListCategory } from "@/shared/api/queries/category";
 import { icons } from "@/shared/iconSource";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { setSelectedCategory } from "@/features/reduxSlices/autoMenuSlice";
 
-interface ICategory {
-  selectedCategory: boolean[];
-  setSelectedCategory: React.Dispatch<React.SetStateAction<boolean[]>>;
-}
-const Category = ({ selectedCategory, setSelectedCategory }: ICategory) => {
+const Category = () => {
+  // redux
+  const dispatch = useAppDispatch();
+  const selectedCategory = useAppSelector(
+    (state) => state.autoMenu.selectedCategory
+  );
+
   // react-query
   const { data: categoryData } = useListCategory();
 
   // useEffect
   useEffect(() => {
     categoryData &&
-      setSelectedCategory(
-        Array.from({ length: categoryData?.length }, () => true)
+      dispatch(
+        setSelectedCategory(
+          Array.from({ length: categoryData?.length }, () => true)
+        )
       );
   }, [categoryData]);
   return (
@@ -26,11 +32,9 @@ const Category = ({ selectedCategory, setSelectedCategory }: ICategory) => {
         <CheckboxBtn
           key={btn.categoryCd}
           onPress={() => {
-            setSelectedCategory((v) => {
-              const modV = [...v];
-              modV[idx] = modV[idx] ? false : true;
-              return modV;
-            });
+            const modV = [...selectedCategory];
+            modV[idx] = modV[idx] ? false : true;
+            dispatch(setSelectedCategory(modV));
           }}
         >
           {selectedCategory[idx] ? (

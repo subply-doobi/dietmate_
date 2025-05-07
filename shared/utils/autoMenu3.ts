@@ -487,19 +487,19 @@ export const makeAutoMenu3 = ({
 
       /////////////////////////////////////// ---- LOG ---- ////////////////////////////////////
       // console.log(
-      //   `-------------------- perfectMenuWithES : ${perfectMenuWithES.length} --------------------`,
+      //   `-------------------- perfectMenuWithES : ${perfectMenuWithES.length} --------------------`
       // );
       // logResult(perfectMenuWithES);
       // console.log(
-      //   `-------------------- betterMenuWithES : ${betterMenuWithES.length} --------------------`,
+      //   `-------------------- betterMenuWithES : ${betterMenuWithES.length} --------------------`
       // );
       // logResult(betterMenuWithES);
       // console.log(
-      //   `-------------------- goodMenuWithES : ${goodMenuWithES.length} --------------------`,
+      //   `-------------------- goodMenuWithES : ${goodMenuWithES.length} --------------------`
       // );
       // logResult(goodMenuWithES);
       // console.log(
-      //   `-------------------- menuWithES : ${menuWithES.length} --------------------`,
+      //   `-------------------- menuWithES : ${menuWithES.length} --------------------`
       // );
       // logResult(menuWithES);
       //////////////////////////////////////////////////////////////////////////////////////////

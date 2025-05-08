@@ -1,4 +1,7 @@
 export const icons = {
+  // appIcon
+  appIcon: require(`./assets/appIcon/appIcon.png`),
+
   // arrow
   arrowDown_20: require(`./assets/icons/20_arrow_down.png`),
   arrowLeft_20: require(`./assets/icons/20_arrow_left.png`),

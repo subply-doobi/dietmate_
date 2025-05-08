@@ -1,74 +1,68 @@
-import colors from "@/shared/colors";
+// RN, expo
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useState, useCallback } from "react";
+import { BackHandler } from "react-native";
+
+// 3rd
+import styled from "styled-components/native";
+import * as Progress from "react-native-progress";
+
+// doobi
 import { SCREENWIDTH } from "@/shared/constants";
+import colors from "@/shared/colors";
 import BackArrow from "@/shared/ui/BackArrow";
-import CtaButton from "@/shared/ui/CtaButton";
 import GuideTitle from "@/shared/ui/GuideTitle";
-import { Col, Container } from "@/shared/ui/styledComps";
+import { Container } from "@/shared/ui/styledComps";
 import {
   getPageItem,
   IFormulaPageNm,
 } from "@/shared/utils/screens/formula/contentByPages";
-import { useFocusEffect, useNavigation, useRouter } from "expo-router";
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { ScrollView, BackHandler } from "react-native";
-import styled from "styled-components/native";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
 const Formula = () => {
   // navigation
   const router = useRouter();
-  const { setOptions } = useNavigation();
+
+  // redux
+  const dispatch = useAppDispatch();
+  const selectedCategory = useAppSelector(
+    (state) => state.autoMenu.selectedCategory
+  );
+  const selectedDietNo = useAppSelector(
+    (state) => state.autoMenu.selectedDietNo
+  );
 
   // useState
-  const [progress, setProgress] = useState<IFormulaPageNm[]>(["Start"]);
+  const [progress, setProgress] = useState<IFormulaPageNm[]>([
+    "SelectNumOfMenu",
+  ]);
 
-  // useRef
-  const scrollRef = useRef<ScrollView | null>(null);
+  // react-query
+  const { data: dTOData } = useListDietTotalObj();
 
   // etc
   const currentPage = progress[progress.length - 1];
-  const goNext = (nextPage: IFormulaPageNm) => {
-    setProgress((v) => [...v, nextPage]);
-  };
+  const pageTitle = getPageItem(currentPage)?.title || "";
+  const pageSubTitle = getPageItem(currentPage)?.subTitle || "";
   const goPrev = () => {
-    setProgress((v) => v.slice(0, v.length - 1));
+    progress.length <= 1
+      ? router.back()
+      : setProgress((v) => v.slice(0, v.length - 1));
   };
-  const goStart = () => {
-    setProgress(["Start"]);
-  };
-
-  const onCtaPress = () => {
-    goNext(getPageItem(currentPage).getNextPage());
-  };
-
-  // Cta 버튼 설정
-  const btnStyle = getPageItem(currentPage).checkIsActive()
-    ? "active"
-    : "inactive";
-
-  const btnText = "다음";
-
-  const numerator = parseInt(getPageItem(currentPage).header.split("/")[0]);
-  const denominator = parseInt(getPageItem(currentPage).header.split("/")[1]);
 
   // useEffect
-  // headerTitle 설정
-  useEffect(() => {
-    setOptions({
-      headerTitle:
-        currentPage === "Start" ? "" : `${getPageItem(currentPage).header}`,
-      headerLeft: () => (
-        <BackArrow
-          goBackFn={() => (currentPage === "Start" ? router.back() : goPrev())}
-        />
-      ),
-    });
-  }, [progress]);
+  useFocusEffect(
+    useCallback(() => {
+      setProgress(["SelectNumOfMenu"]);
+    }, [dTOData])
+  );
 
   // android back button
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        if (currentPage === "Start") return false;
+        if (currentPage === "SelectNumOfMenu") return false;
 
         goPrev();
         return true;
@@ -85,9 +79,10 @@ const Formula = () => {
 
   return (
     <Container style={{ backgroundColor: colors.white }}>
+      <BackArrow style={{ marginLeft: -8 }} goBackFn={() => goPrev()} />
       <ProgressBox>
         <Progress.Bar
-          progress={numerator / denominator}
+          progress={getPageItem(currentPage)?.progress || 0}
           width={null}
           height={4}
           color={colors.main}
@@ -95,37 +90,20 @@ const Formula = () => {
           borderWidth={0}
         />
       </ProgressBox>
-      <ScrollView
-        ref={scrollRef}
-        contentContainerStyle={{
-          paddingBottom: 200,
-        }}
-        scrollEnabled={currentPage === "Start" ? false : true}
-        showsVerticalScrollIndicator={false}
-      >
+
+      {pageTitle && (
         <GuideTitle
           style={{
             marginTop: 48,
             marginBottom: 64,
           }}
-          title={getPageItem(currentPage).title}
-          subTitle={getPageItem(currentPage).subTitle}
+          title={pageTitle}
+          subTitle={pageSubTitle}
         />
+      )}
 
-        {/* 각 페이지 내용 */}
-        {getPageItem(currentPage).render(scrollRef)}
-      </ScrollView>
-
-      {/* CTA버튼 */}
-      <KeyboardAvoidingView behavior={"padding"} keyboardVerticalOffset={96}>
-        <Col style={{ rowGap: 12 }}>
-          <CtaButton
-            btnStyle={btnStyle}
-            btnText={btnText}
-            onPress={() => onCtaPress()}
-          />
-        </Col>
-      </KeyboardAvoidingView>
+      {/* 각 페이지 내용 */}
+      {getPageItem(currentPage)?.render(setProgress)}
     </Container>
   );
 };

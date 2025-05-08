@@ -1,5 +1,5 @@
 // RN, expo
-import React, { useEffect, useMemo } from "react";
+import React, { SetStateAction, useEffect, useMemo } from "react";
 import { ActivityIndicator } from "react-native";
 
 // 3rd
@@ -24,12 +24,22 @@ import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useAsync } from "@/shared/utils/screens/diet/cartCustomHooks";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import Error from "./Error";
+import { getPathWithConventionsCollapsed } from "expo-router/build/fork/getPathFromState-forks";
+import { IAutoMenuSubPageNm } from "@/shared/utils/screens/autoMenu/contentByPages";
+import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
 
-const Processing = () => {
+const Processing = ({
+  setProgress,
+}: {
+  setProgress: React.Dispatch<
+    SetStateAction<string[] | IAutoMenuSubPageNm[] | IFormulaPageNm[]>
+  >;
+}) => {
   // navigaton
   const router = useRouter();
+  const pathname = usePathname();
 
   // redux
   const dispatch = useAppDispatch();
@@ -53,6 +63,7 @@ const Processing = () => {
   }, [selectedCategory]);
 
   // etc
+  const isFormulaPage = pathname.includes("/Formula");
   const nutrStatus = getNutrStatus({
     totalFoodList,
     bLData,
@@ -165,7 +176,7 @@ const Processing = () => {
       }
       dispatch(setMenuAcActive([]));
       dispatch(setTutorialProgress("Complete"));
-      router.back();
+      isFormulaPage ? setProgress(["Formula"]) : router.back();
       if (!autoMenuResult?.resultSummaryObj) return;
       const { isBudgetExceeded } = autoMenuResult.resultSummaryObj;
       !isTutorialMode &&
@@ -214,7 +225,7 @@ const Processing = () => {
       }
       dispatch(setMenuAcActive([]));
       dispatch(setTutorialProgress("Complete"));
-      router.back();
+      isFormulaPage ? setProgress(["Formula"]) : router.back();
       if (!autoMenuResult?.resultSummaryObj) return;
       const { isBudgetExceeded } = autoMenuResult.resultSummaryObj;
       !isTutorialMode &&

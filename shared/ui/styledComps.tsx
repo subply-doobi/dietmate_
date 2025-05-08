@@ -7,7 +7,7 @@ import {
   IS_IOS,
   SCREENWIDTH,
 } from "../constants";
-import { Platform, ViewProps } from "react-native";
+import { Platform, View, ViewProps } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const NotoSansLight = styled.Text`
@@ -80,11 +80,6 @@ export const TextSub = styled.Text`
   font-weight: 300;
 `;
 
-const PaddingView = styled.View`
-  flex: 1;
-  padding: 0px 16px 0px 16px;
-  background-color: ${colors.white};
-`;
 export const Container = ({ children, ...props }: ViewProps) => {
   const insets = useSafeAreaInsets();
   const statusBarHeight = insets.top;
@@ -92,10 +87,11 @@ export const Container = ({ children, ...props }: ViewProps) => {
   const insetBottom = Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0;
 
   return (
-    <PaddingView
+    <View
       style={[
         {
           flex: 1,
+          backgroundColor: colors.white,
           paddingTop: insetTop,
           paddingBottom: insetBottom,
           paddingHorizontal: 16,
@@ -104,7 +100,7 @@ export const Container = ({ children, ...props }: ViewProps) => {
       ]}
     >
       {children}
-    </PaddingView>
+    </View>
   );
 };
 

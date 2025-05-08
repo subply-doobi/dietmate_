@@ -1,4 +1,4 @@
-import { Tabs, useRouter } from "expo-router";
+import { Tabs } from "expo-router";
 import React, { useMemo } from "react";
 import {
   Platform,
@@ -16,8 +16,6 @@ import styled from "styled-components/native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
-  const router = useRouter();
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();

@@ -23,7 +23,6 @@ import {
   UPDATE_DIET_DETAIL,
 } from "../urls";
 import { handleError } from "../../utils/handleError";
-import { RootState } from "../../../app/store/reduxStore";
 
 // PUT //
 export const useCreateDiet = (options?: IMutationOptions) => {

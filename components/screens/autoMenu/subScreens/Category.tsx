@@ -1,13 +1,20 @@
-import { useEffect } from "react";
+import { SetStateAction, useEffect } from "react";
 import styled from "styled-components/native";
 import { TextMain } from "@/shared/ui/styledComps";
-import { SCREENWIDTH } from "@/shared/constants";
+import { BOTTOM_INDICATOR_IOS, SCREENWIDTH } from "@/shared/constants";
 import { useListCategory } from "@/shared/api/queries/category";
 import { icons } from "@/shared/iconSource";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setSelectedCategory } from "@/features/reduxSlices/autoMenuSlice";
+import { Platform } from "react-native";
+import CtaButton from "@/shared/ui/CtaButton";
+import { usePathname } from "expo-router";
 
-const Category = () => {
+const Category = ({
+  setProgress,
+}: {
+  setProgress: React.Dispatch<SetStateAction<string[]>>;
+}) => {
   // redux
   const dispatch = useAppDispatch();
   const selectedCategory = useAppSelector(
@@ -26,30 +33,50 @@ const Category = () => {
         )
       );
   }, [categoryData]);
+
+  // etc
+  const isCTAActive =
+    selectedCategory && selectedCategory.filter((v) => v).length < 3
+      ? false
+      : true;
+  const insetBottom = Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS : 0;
+
   return (
-    <CategoryBox>
-      {categoryData?.map((btn, idx) => (
-        <CheckboxBtn
-          key={btn.categoryCd}
-          onPress={() => {
-            const modV = [...selectedCategory];
-            modV[idx] = modV[idx] ? false : true;
-            dispatch(setSelectedCategory(modV));
-          }}
-        >
-          {selectedCategory[idx] ? (
-            <CheckboxImage source={icons.checkboxCheckedGreen_24} />
-          ) : (
-            <CheckboxImage source={icons.checkbox_24} />
-          )}
-          <CategoryText>{btn.categoryCdNm}</CategoryText>
-        </CheckboxBtn>
-      ))}
-    </CategoryBox>
+    <Container>
+      <CategoryBox>
+        {categoryData?.map((btn, idx) => (
+          <CheckboxBtn
+            key={btn.categoryCd}
+            onPress={() => {
+              const modV = [...selectedCategory];
+              modV[idx] = modV[idx] ? false : true;
+              dispatch(setSelectedCategory(modV));
+            }}
+          >
+            {selectedCategory[idx] ? (
+              <CheckboxImage source={icons.checkboxCheckedGreen_24} />
+            ) : (
+              <CheckboxImage source={icons.checkbox_24} />
+            )}
+            <CategoryText>{btn.categoryCdNm}</CategoryText>
+          </CheckboxBtn>
+        ))}
+      </CategoryBox>
+      <CtaButton
+        btnStyle={isCTAActive ? "active" : "inactive"}
+        style={{ position: "absolute", bottom: insetBottom + 8 }}
+        btnText="다음"
+        onPress={() => setProgress((v) => [...v, "AMCompany"])}
+      />
+    </Container>
   );
 };
 
 export default Category;
+
+const Container = styled.View`
+  flex: 1;
+`;
 
 const CategoryBox = styled.View`
   width: 100%;

@@ -36,8 +36,6 @@ import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
 import LastOrderCard from "@/components/screens/home/LastOrderCard";
 import Profile from "@/components/screens/home/Profile";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import CtaButton from "@/shared/ui/CtaButton";
-import { useTestErrQuery } from "@/shared/api/queries/test";
 
 const NewHome = () => {
   // navigation

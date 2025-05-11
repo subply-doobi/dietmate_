@@ -1,26 +1,21 @@
+import { setCurrentFMCIdx } from "@/features/reduxSlices/commonSlice";
 import {
   useCreateDietCnt,
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
 import { IDietTotalObjData } from "@/shared/api/types/diet";
 import colors from "@/shared/colors";
+import { MENU_NUM_LABEL } from "@/shared/constants";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import CtaButton from "@/shared/ui/CtaButton";
-import { Container, Icon, Row, TextMain } from "@/shared/ui/styledComps";
+import { Icon, Row, TextMain } from "@/shared/ui/styledComps";
 import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
 import { SetStateAction, useEffect, useState } from "react";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import styled from "styled-components/native";
 
-const PICKER_DATA_ARR = [
-  "한 근",
-  "두 근",
-  "세 근",
-  "네 근",
-  "다섯 근",
-  "여섯 근",
-  "일곱 근",
-];
+const PICKER_DATA_ARR = [...MENU_NUM_LABEL];
 
 const checkEveryMenuEmpty = (dTOData: IDietTotalObjData) => {
   const dietNoArr = Object.keys(dTOData);
@@ -38,6 +33,9 @@ const SelectNumOfMenu = ({
 }: {
   setProgress: React.Dispatch<SetStateAction<string[] | IFormulaPageNm[]>>;
 }) => {
+  // redux
+  const dispatch = useAppDispatch();
+
   // useState
   const [numOfMenu, setNumOfMenu] = useState(5);
 
@@ -60,8 +58,6 @@ const SelectNumOfMenu = ({
     }
 
     setProgress(["Formula"]);
-
-    Object.keys(dTOData).length > 0 && setProgress(["SelectMethod"]);
   }, [dTOData]);
 
   // etc
@@ -70,16 +66,11 @@ const SelectNumOfMenu = ({
       dietCnt: String(numOfMenu),
     });
     setProgress(["SelectMethod"]);
+    dispatch(setCurrentFMCIdx(0));
   };
 
   return (
-    <Container
-      style={{
-        paddingHorizontal: 0,
-        paddingTop: 0,
-        alignItems: "center",
-      }}
-    >
+    <Container>
       <PickerBox>
         <ScrollPicker
           dataSource={PICKER_DATA_ARR}
@@ -112,6 +103,13 @@ const SelectNumOfMenu = ({
 };
 
 export default SelectNumOfMenu;
+
+const Container = styled.View`
+  flex: 1;
+  padding-left: 16px;
+  padding-right: 16px;
+  align-items: center;
+`;
 
 const PickerItem = styled(TextMain)<{ isSelected: boolean }>`
   font-size: ${({ isSelected }) => (isSelected ? 24 : 18)}px;

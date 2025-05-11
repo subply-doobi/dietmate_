@@ -18,7 +18,6 @@ import colors from "@/shared/colors";
 import { Container } from "@/shared/ui/styledComps";
 import BackArrow from "@/shared/ui/BackArrow";
 import GuideTitle from "@/shared/ui/GuideTitle";
-import CtaButton from "@/shared/ui/CtaButton";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";

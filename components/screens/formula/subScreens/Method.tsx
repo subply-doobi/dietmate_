@@ -5,7 +5,8 @@ import { SetStateAction } from "react";
 import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
 import { useRouter } from "expo-router";
 import { ScrollView } from "react-native";
-import colors from "@/shared/colors";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 const Method = ({
   setProgress,
@@ -14,6 +15,10 @@ const Method = ({
 }) => {
   // navigation
   const router = useRouter();
+
+  // react-query
+  const { data: dTOData } = useListDietTotalObj();
+  const numOfMenu = Object.keys(dTOData || {}).length;
 
   // etc
   const METHOD_BTN = [
@@ -25,7 +30,7 @@ const Method = ({
       onPress: () => router.push("/Search"),
     },
     {
-      text: "자동으로 다섯 근 공식만들기",
+      text: `자동으로 ${MENU_NUM_LABEL[numOfMenu - 1] || ""} 공식만들기`,
       subText:
         "극도로 귀찮으신 분들을 위해 근의공식이\n자동으로 칼탄단지를 모두 맞춘 공식을 만들어드릴게요",
       iconSource: undefined,
@@ -41,10 +46,7 @@ const Method = ({
   ];
   return (
     <Container>
-      <ScrollView
-        style={{ width: "100%" }}
-        contentContainerStyle={{ paddingRight: 2 }}
-      >
+      <ScrollView style={{ width: "100%" }}>
         <BtnBox>
           {METHOD_BTN.map((item, index) => (
             <SelectBtn
@@ -66,6 +68,8 @@ export default Method;
 
 const Container = styled.View`
   flex: 1;
+  padding-left: 16px;
+  padding-right: 16px;
 `;
 
 const BtnBox = styled.View`

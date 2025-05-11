@@ -30,39 +30,32 @@ const CtaButton = forwardRef((p: ICtaButton, ref) => {
     btnText,
     btnContent,
     bottomFloat,
+    style,
     ...props
   } = p;
 
-  return shadow ? (
-    <ShadowView style={{ width: "100%", borderRadius: 5 }}>
-      <BtnCTA
-        ref={ref}
-        btnStyle={btnStyle}
-        disabled={btnStyle === "inactive" ? true : false}
-        bottomFloat={bottomFloat}
-        {...props}
-      >
-        <Row>
-          {btnContent && btnContent()}
-          <BtnText btnStyle={btnStyle} style={btnTextStyle}>
-            {btnText}
-          </BtnText>
-        </Row>
-      </BtnCTA>
-    </ShadowView>
-  ) : (
+  const shadowStyle = shadow
+    ? {
+        boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.12)",
+      }
+    : {};
+
+  return (
     <BtnCTA
       ref={ref}
       btnStyle={btnStyle}
       disabled={btnStyle === "inactive" ? true : false}
       bottomFloat={bottomFloat}
+      style={[style, { ...shadowStyle }]}
       {...props}
     >
-      <Row>
+      <Row style={{ columnGap: 4 }}>
         {btnContent && btnContent()}
-        <BtnText btnStyle={btnStyle} style={btnTextStyle}>
-          {btnText}
-        </BtnText>
+        {btnText && (
+          <BtnText btnStyle={btnStyle} style={btnTextStyle}>
+            {btnText}
+          </BtnText>
+        )}
       </Row>
     </BtnCTA>
   );

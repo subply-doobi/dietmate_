@@ -37,7 +37,6 @@ const Order = () => {
   const router = useRouter();
 
   // redux
-  const dispatch = useAppDispatch();
   const { foodToOrder, selectedAddrIdx, shippingPrice } = useAppSelector(
     (state) => state.order
   );

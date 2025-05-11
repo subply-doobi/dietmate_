@@ -44,6 +44,7 @@ export const FOOD_LIST_ITEM_HEIGHT = 152;
 export const HOME_FILTER_HEADER_HEIGHT = 120;
 export const DEFAULT_BOTTOM_TAB_HEIGHT = 83;
 export const BOTTOM_INDICATOR_IOS = 16;
+export const FORMULA_CAROUSEL_HEIGHT = 390;
 
 // service constants
 export const SERVICE_PRICE_PER_PRODUCT = 300;
@@ -57,6 +58,35 @@ export const KOREAN_NUTRITION_REFERENCE_URL =
 export const PLAY_STORE_URL = "market://details?id=com.subply.dietmate";
 export const APP_STORE_URL =
   "itms-apps://itunes.apple.com/us/app//id6472628268";
+export const MENU_NUM_LABEL = [
+  "한 근",
+  "두 근",
+  "세 근",
+  "네 근",
+  "다섯 근",
+  "여섯 근",
+  "일곱 근",
+];
+
+// autoMenu constants
+export const AM_SELECTED_CATEGORY_IDX = [0, 1, 2, 3, 4, 5];
+export const AM_PRICE_TARGET = [0, 12000];
+export const AM_MENU_NUM = 1;
+export const AM_INITIAL_STATUS = {
+  isLoading: true,
+  isSuccess: false,
+  isError: false,
+};
+export const AM_SUCCESS_STATUS = {
+  isLoading: false,
+  isSuccess: true,
+  isError: false,
+};
+export const AM_ERROR_STATUS = {
+  isLoading: false,
+  isSuccess: false,
+  isError: true,
+};
 
 // tutorial sortFilter
 export const tutorialSortFilter: ISortFilter = {

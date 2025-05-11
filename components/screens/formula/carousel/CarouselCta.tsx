@@ -1,29 +1,12 @@
-// RN, expo
-import { ViewProps } from "react-native";
-import { useRouter } from "expo-router";
-
-// 3rd
-import styled from "styled-components/native";
-
-// doobi
-import { IProductData } from "@/shared/api/types/product";
-import { IDietDetailData } from "@/shared/api/types/diet";
+import { setAutoMenuStatus } from "@/features/reduxSlices/commonSlice";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import {
   useCreateDietDetail,
   useDeleteDietDetail,
 } from "@/shared/api/queries/diet";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { getNutrStatus } from "@/shared/utils/sumUp";
-import {
-  setAutoMenuStatus,
-  setTutorialProgress,
-} from "@/features/reduxSlices/commonSlice";
-import { closeModal } from "@/features/reduxSlices/modalSlice";
-import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
-
-import { Col, Row } from "@/shared/ui/styledComps";
-import CtaButton from "@/shared/ui/CtaButton";
+import { IDietDetailData } from "@/shared/api/types/diet";
+import { IProductData } from "@/shared/api/types/product";
+import colors from "@/shared/colors";
 import {
   AM_ERROR_STATUS,
   AM_INITIAL_STATUS,
@@ -32,55 +15,44 @@ import {
   AM_MENU_NUM,
   AM_SUCCESS_STATUS,
 } from "@/shared/constants";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { icons } from "@/shared/iconSource";
+import CtaButton from "@/shared/ui/CtaButton";
+import { Icon } from "@/shared/ui/styledComps";
+import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
+import { getNutrStatus } from "@/shared/utils/sumUp";
+import styled from "styled-components/native";
 
-interface IAccordionCtaBtns extends ViewProps {
-  dDData: IDietDetailData;
-  dietNo: string;
-  onlyAuto?: boolean;
-  onlyAdd?: boolean;
+interface ICarouselCta {
+  selectedFoods: string[];
+  setSelectedFoods: React.Dispatch<React.SetStateAction<string[]>>;
+  carouselMenu: IDietDetailData;
+  carouselDietNo: string;
 }
-const AccordionCtaBtns = ({
-  dDData,
-  dietNo,
-  onlyAdd,
-  onlyAuto,
-  ...props
-}: IAccordionCtaBtns) => {
-  // navigation
-  const router = useRouter();
-
+const CarouselCta = ({
+  selectedFoods,
+  setSelectedFoods,
+  carouselMenu,
+  carouselDietNo,
+}: ICarouselCta) => {
   // redux
   const dispatch = useAppDispatch();
-  const {
-    totalFoodList,
-    isTutorialMode,
-    tutorialProgress,
-    foodGroupForAutoMenu,
-    medianCalorie,
-  } = useAppSelector((state) => state.common);
+  const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
+  const foodGroupForAutoMenu = useAppSelector(
+    (state) => state.common.foodGroupForAutoMenu
+  );
+  const medianCalorie = useAppSelector((state) => state.common.medianCalorie);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
   const createDietDetailMutation = useCreateDietDetail();
   const deleteDietDetailMutation = useDeleteDietDetail();
 
-  // etc
-  const nutrStatus = getNutrStatus({ totalFoodList, bLData, dDData });
-  const btnText =
-    nutrStatus === "satisfied" || nutrStatus === "exceed"
-      ? "자동구성 재시도"
-      : nutrStatus === "notEnough"
-      ? "남은 영양만큼 자동구성"
-      : "자동구성";
-
-  const autoMenuType = btnText === "자동구성 재시도" ? "overwrite" : "add";
-  const autoBtnStyle =
-    nutrStatus === "empty"
-      ? "border"
-      : nutrStatus === "notEnough"
-      ? "borderActive"
-      : "border";
-  const addBtnStyle = nutrStatus === "empty" ? "borderActive" : "border";
+  const nutrStatus = getNutrStatus({
+    totalFoodList,
+    bLData,
+    dDData: carouselMenu,
+  });
 
   // fn
   const addMenu = async (data: IProductData[][]) => {
@@ -89,7 +61,7 @@ const AccordionCtaBtns = ({
     data?.forEach((menu, idx) => {
       menu.forEach((product) => {
         productToAddList.push({
-          dietNo,
+          dietNo: carouselDietNo,
           food: product,
         });
       });
@@ -110,7 +82,7 @@ const AccordionCtaBtns = ({
   const overwriteMenu = async (data: IProductData[][]) => {
     // selectedMenu 에 대한 각 productNo
     let productToDeleteList: { dietNo: string; productNo: string }[] = [];
-    dDData.forEach(
+    carouselMenu.forEach(
       (p) =>
         p.productNo &&
         productToDeleteList.push({
@@ -136,7 +108,6 @@ const AccordionCtaBtns = ({
   };
 
   const setOneAutoMenu = async () => {
-    dispatch(closeModal({ name: "tutorialTPSAutoRemain" }));
     if (!bLData || totalFoodList?.length === 0) {
       dispatch(setAutoMenuStatus(AM_ERROR_STATUS));
       return;
@@ -151,12 +122,12 @@ const AccordionCtaBtns = ({
         {
           medianCalorie,
           foodGroupForAutoMenu,
-          initialMenu: autoMenuType === "add" && dDData ? dDData : [],
+          initialMenu: autoMenuType === "add" ? carouselMenu : [],
           baseLine: bLData,
           selectedCategoryIdx: AM_SELECTED_CATEGORY_IDX,
           priceTarget: AM_PRICE_TARGET,
           wantedPlatform: "",
-          menuNum: AM_MENU_NUM,
+          menuNum: 1,
         }
       );
       recommendedMenu = tempRM;
@@ -171,7 +142,6 @@ const AccordionCtaBtns = ({
         ? await addMenu(recommendedMenu)
         : await overwriteMenu(recommendedMenu);
       dispatch(setAutoMenuStatus(AM_SUCCESS_STATUS));
-      isTutorialMode && dispatch(setTutorialProgress("ChangeFood"));
     } catch (e) {
       console.log("식품추가 중 오류 발생: ", e);
       dispatch(setAutoMenuStatus(AM_ERROR_STATUS));
@@ -179,47 +149,49 @@ const AccordionCtaBtns = ({
     }
   };
 
+  // etc
+  const isMenuFull = nutrStatus === "satisfied" || nutrStatus === "exceed";
+  const autoMenuBtnStyle = "border";
+  const autoMenuType = isMenuFull ? "overwrite" : "add";
+  const addBtnStyle = isMenuFull ? "border" : "borderActive";
+  const addBtnText = "식품 추가";
+  const addBtnIconSource = isMenuFull
+    ? icons.plusSquare_24
+    : icons.plusSquareActive_24;
+
   return (
-    <Col {...props}>
-      <Row style={{ justifyContent: "space-between", columnGap: 8 }}>
-        {!onlyAuto ? (
-          <CtaButton
-            shadow={false}
-            btnStyle={addBtnStyle}
-            // btnContent={() => <Icon source={icons.plus_24} />}
-            btnText="+"
-            style={{ width: 48, height: 48, borderWidth: 1 }}
-            onPress={() => {
-              dispatch(closeModal({ name: "tutorialTPSAddFood" }));
-              isTutorialMode && dispatch(setTutorialProgress("SelectFood"));
-              router.push({ pathname: "/ManualAdd" });
-            }}
-          />
-        ) : (
-          <Dummy />
-        )}
-        {!onlyAdd && (
-          <CtaButton
-            shadow={false}
-            btnStyle={autoBtnStyle}
-            btnTextStyle={{ fontSize: 14 }}
-            btnText={btnText}
-            style={{
-              flex: 1,
-              height: 48,
-              borderWidth: 1,
-            }}
-            onPress={() => setOneAutoMenu()}
-          />
-        )}
-      </Row>
-    </Col>
+    <BtnBox>
+      {/* AutoMenu btn */}
+      <CtaButton
+        btnStyle={autoMenuBtnStyle}
+        shadow={true}
+        style={{ width: 48, height: 48 }}
+        btnContent={() => <Icon source={icons.dice_36} size={36} />}
+      />
+
+      {/* Add btn */}
+      <CtaButton
+        btnStyle={addBtnStyle}
+        shadow={true}
+        style={{ flex: 1, height: 48 }}
+        btnText={addBtnText}
+        btnTextStyle={{ fontSize: 14 }}
+        btnContent={() =>
+          !isMenuFull && <Icon source={addBtnIconSource} size={18} />
+        }
+      />
+    </BtnBox>
   );
 };
 
-export default AccordionCtaBtns;
+export default CarouselCta;
 
-const Dummy = styled.View`
-  width: 48px;
+const BtnBox = styled.View`
+  width: 100%;
   height: 48px;
+  padding: 0 16px;
+  flex-direction: row;
+  justify-content: space-between;
+  column-gap: 4px;
+  align-items: center;
 `;

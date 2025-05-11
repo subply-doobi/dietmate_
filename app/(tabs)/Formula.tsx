@@ -38,9 +38,6 @@ const Formula = () => {
     "SelectNumOfMenu",
   ]);
 
-  // react-query
-  const { data: dTOData } = useListDietTotalObj();
-
   // etc
   const currentPage = progress[progress.length - 1];
   const pageTitle = getPageItem(currentPage)?.title || "";
@@ -55,7 +52,7 @@ const Formula = () => {
   useFocusEffect(
     useCallback(() => {
       setProgress(["SelectNumOfMenu"]);
-    }, [dTOData])
+    }, [])
   );
 
   // android back button
@@ -78,8 +75,8 @@ const Formula = () => {
   );
 
   return (
-    <Container style={{ backgroundColor: colors.white }}>
-      <BackArrow style={{ marginLeft: -8 }} goBackFn={() => goPrev()} />
+    <Container style={{ backgroundColor: colors.white, paddingHorizontal: 0 }}>
+      <BackArrow style={{ marginLeft: 8 }} goBackFn={() => goPrev()} />
       <ProgressBox>
         <Progress.Bar
           progress={getPageItem(currentPage)?.progress || 0}
@@ -96,6 +93,7 @@ const Formula = () => {
           style={{
             marginTop: 48,
             marginBottom: 64,
+            marginLeft: 18,
           }}
           title={pageTitle}
           subTitle={pageSubTitle}
@@ -112,10 +110,6 @@ export default Formula;
 
 const ProgressBox = styled.View`
   width: ${SCREENWIDTH - 32}px;
+  align-self: center;
   height: 4px;
-`;
-
-const KeyboardAvoidingView = styled.KeyboardAvoidingView`
-  margin-top: -120px;
-  bottom: 24px;
 `;

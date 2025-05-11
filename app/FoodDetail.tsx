@@ -181,7 +181,7 @@ const FoodDetail = () => {
         alignItems: "center",
       }}
     >
-      <ActivityIndicator size={"large"} />
+      {/* <ActivityIndicator size={"large"} /> */}
     </Container>
   ) : (
     <Container>

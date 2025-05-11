@@ -8,6 +8,7 @@ import Price from "@/components/screens/autoMenu/subScreens/Price";
 import Processing from "@/components/screens/autoMenu/subScreens/Processing";
 import SelectNumOfMenu from "@/components/screens/formula/subScreens/SelectNumOfMenu";
 import Method from "@/components/screens/formula/subScreens/Method";
+import Formula from "@/components/screens/formula/subScreens/Formula";
 
 export type IFormulaPageNm =
   | string
@@ -102,7 +103,7 @@ export const PAGES: IPages = [
     progress: 7 / 10,
     header: "공식",
     name: "Formula",
-    render: (setProgress) => <></>,
+    render: (setProgress) => <Formula setProgress={setProgress} />,
   },
 ];
 

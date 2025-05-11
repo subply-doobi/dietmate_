@@ -108,4 +108,6 @@ const MenuSelectBtn = styled.TouchableOpacity``;
 
 const Container = styled.View`
   flex: 1;
+  padding-left: 16px;
+  padding-right: 16px;
 `;

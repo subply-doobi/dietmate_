@@ -29,6 +29,7 @@ const Company = ({
             dispatch(setWantedCompany(v));
           }}
           items={platformDDItems}
+          style={{ width: "90%", alignSelf: "center" }}
         />
       </Box>
       <CtaButton
@@ -45,5 +46,8 @@ export default Company;
 
 const Container = styled.View`
   flex: 1;
+  padding-left: 16px;
+  padding-right: 16px;
 `;
+
 const Box = styled.View``;

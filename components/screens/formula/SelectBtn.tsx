@@ -41,7 +41,7 @@ const SelectBtn = ({
 export default SelectBtn;
 
 const Btn = styled.TouchableOpacity`
-  width: 100%;
+  width: 99%;
   border-radius: 8px;
   padding: 24px 16px;
   justify-content: center;

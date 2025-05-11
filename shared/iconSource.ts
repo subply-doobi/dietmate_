@@ -82,6 +82,8 @@ export const icons = {
   menu_24: require(`./assets/icons/24_menu.png`),
   userRound_24: require(`./assets/icons/24_user_round.png`),
   networkError_80: require(`./assets/icons/80_network_error.png`),
+  more_24: require(`./assets/icons/24_more.png`),
+  dice_36: require(`./assets/icons/36_dice.png`),
 
   // mypage btns
   question_mypage_24: require(`./assets/icons/24_mypage_question.png`),

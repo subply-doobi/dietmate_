@@ -325,12 +325,13 @@ export const useModalProps = () => {
       onConfirm: async () => {
         const productNoToDelArr =
           modalState.values?.productDeleteAlert.productNoToDelArr;
+        const dietNoToProductDel =
+          modalState.values?.productDeleteAlert.dietNoToProductDel || "";
 
         if (dTOData && productNoToDelArr) {
           const deleteMutations = productNoToDelArr.map((productNo) => {
-            // console.log("delete: ", productNo);
             deleteDietDetailMutation.mutateAsync({
-              dietNo: currentDietNo,
+              dietNo: dietNoToProductDel || currentDietNo,
               productNo,
             });
           });

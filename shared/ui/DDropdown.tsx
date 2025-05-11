@@ -4,6 +4,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 
 import colors from "../../shared/colors";
 import { Col, InputHeaderText } from "../../shared/ui/styledComps";
+import { ViewStyle } from "react-native";
 
 interface CategoryObject {
   label: string;
@@ -15,11 +16,12 @@ interface IDDropdown {
   setValue: (value: string) => void;
   items: Array<CategoryObject> | undefined;
   scrollRef?: any;
+  style?: ViewStyle;
 }
 
 const DDropdown = (props: IDDropdown) => {
   const [open, setOpen] = useState(false);
-  const { placeholder, value, setValue, items, scrollRef } = props;
+  const { placeholder, value, setValue, items, scrollRef, style } = props;
 
   // Wrapper function for DropDownPicker's setValue
   const handleSetValue = (callback: React.SetStateAction<string>) => {
@@ -34,7 +36,7 @@ const DDropdown = (props: IDDropdown) => {
   };
 
   return (
-    <Col style={{ width: "100%" }}>
+    <Col style={[{ width: "100%" }, { ...style }]}>
       <DropdownHeader isActive={true}>{placeholder}</DropdownHeader>
       <DropDownPicker<string>
         style={{

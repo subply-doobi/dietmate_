@@ -1,6 +1,6 @@
 // RN, expo
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { BackHandler } from "react-native";
 
 // 3rd
@@ -17,26 +17,18 @@ import {
   getPageItem,
   IFormulaPageNm,
 } from "@/shared/utils/screens/formula/contentByPages";
-import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
+import { useRoute } from "@react-navigation/native";
 
 const Formula = () => {
   // navigation
   const router = useRouter();
+  const route = useRoute();
 
   // redux
   const dispatch = useAppDispatch();
-  const selectedCategory = useAppSelector(
-    (state) => state.autoMenu.selectedCategory
-  );
-  const selectedDietNo = useAppSelector(
-    (state) => state.autoMenu.selectedDietNo
-  );
-
-  // useState
-  const [progress, setProgress] = useState<IFormulaPageNm[]>([
-    "SelectNumOfMenu",
-  ]);
+  const progress = useAppSelector((state) => state.common.formulaProgress);
 
   // etc
   const currentPage = progress[progress.length - 1];
@@ -45,15 +37,15 @@ const Formula = () => {
   const goPrev = () => {
     progress.length <= 1
       ? router.back()
-      : setProgress((v) => v.slice(0, v.length - 1));
+      : // setProgress((v) => v.slice(0, v.length - 1));
+        dispatch(setFormulaProgress(progress.slice(0, progress.length - 1)));
   };
 
   // useEffect
-  useFocusEffect(
-    useCallback(() => {
-      setProgress(["SelectNumOfMenu"]);
-    }, [])
-  );
+  useEffect(() => {
+    console.log("Formula useEffect");
+    dispatch(setFormulaProgress(["SelectNumOfMenu"]));
+  }, []);
 
   // android back button
   useFocusEffect(
@@ -101,7 +93,7 @@ const Formula = () => {
       )}
 
       {/* 각 페이지 내용 */}
-      {getPageItem(currentPage)?.render(setProgress)}
+      {getPageItem(currentPage)?.render()}
     </Container>
   );
 };

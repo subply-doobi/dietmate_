@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect } from "react";
+import { useEffect } from "react";
 import styled from "styled-components/native";
 import { TextMain } from "@/shared/ui/styledComps";
 import { BOTTOM_INDICATOR_IOS, SCREENWIDTH } from "@/shared/constants";
@@ -8,18 +8,15 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setSelectedCategory } from "@/features/reduxSlices/autoMenuSlice";
 import { Platform } from "react-native";
 import CtaButton from "@/shared/ui/CtaButton";
-import { usePathname } from "expo-router";
+import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
 
-const Category = ({
-  setProgress,
-}: {
-  setProgress: React.Dispatch<SetStateAction<string[]>>;
-}) => {
+const Category = () => {
   // redux
   const dispatch = useAppDispatch();
   const selectedCategory = useAppSelector(
     (state) => state.autoMenu.selectedCategory
   );
+  const progress = useAppSelector((state) => state.common.formulaProgress);
 
   // react-query
   const { data: categoryData } = useListCategory();
@@ -66,7 +63,9 @@ const Category = ({
         btnStyle={isCTAActive ? "active" : "inactive"}
         style={{ position: "absolute", bottom: insetBottom + 8 }}
         btnText="다음"
-        onPress={() => setProgress((v) => [...v, "AMCompany"])}
+        onPress={() =>
+          dispatch(setFormulaProgress(progress.concat("AMCompany")))
+        }
       />
     </Container>
   );

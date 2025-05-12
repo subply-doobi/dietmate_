@@ -94,6 +94,17 @@ export const getNutrStatus = ({
   return "exceed";
 };
 
+export const checkEveryMenuEmpty = (dTOData: IDietTotalObjData) => {
+  const dietNoArr = Object.keys(dTOData);
+  const menuLengthList = dietNoArr.map(
+    (dietNo) => dTOData[dietNo].dietDetail.length
+  );
+  if (menuLengthList.every((m: number) => m === 0)) {
+    return true;
+  }
+  return false;
+};
+
 export const sumUpPriceOfSeller = (
   dietDetailAllData: IDietDetailAllData | undefined,
   seller: string

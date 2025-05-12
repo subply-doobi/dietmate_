@@ -1,24 +1,38 @@
 import styled from "styled-components/native";
 import SelectBtn from "../SelectBtn";
 import { icons } from "@/shared/iconSource";
-import { SetStateAction } from "react";
-import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
 import { useRouter } from "expo-router";
 import { ScrollView } from "react-native";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { MENU_NUM_LABEL } from "@/shared/constants";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
+import { useEffect } from "react";
+import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
 
-const Method = ({
-  setProgress,
-}: {
-  setProgress: React.Dispatch<SetStateAction<string[] | IFormulaPageNm[]>>;
-}) => {
+const Method = () => {
+  // redux
+  const dispatch = useAppDispatch();
+  const progress = useAppSelector((state) => state.common.formulaProgress);
+
   // navigation
   const router = useRouter();
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
   const numOfMenu = Object.keys(dTOData || {}).length;
+
+  useEffect(() => {
+    if (!dTOData) return;
+    if (numOfMenu === 0) {
+      dispatch(setFormulaProgress(["SelectNumOfMenu"]));
+      return;
+    }
+    const isEveryMenuEmpty = checkEveryMenuEmpty(dTOData);
+    if (!isEveryMenuEmpty) {
+      dispatch(setFormulaProgress(["Formula"]));
+    }
+  }, [dTOData]);
 
   // etc
   const METHOD_BTN = [
@@ -32,16 +46,16 @@ const Method = ({
     {
       text: `자동으로 ${MENU_NUM_LABEL[numOfMenu - 1] || ""} 공식만들기`,
       subText:
-        "극도로 귀찮으신 분들을 위해 근의공식이\n자동으로 칼탄단지를 모두 맞춘 공식을 만들어드릴게요",
+        "극도로 귀찮으신 분들을 위해 근의공식이\n자동으로 목표영양을 모두 맞춘 공식을 만들게요",
       iconSource: undefined,
-      onPress: () => setProgress((v) => [...v, "AMSelect"]),
+      onPress: () => dispatch(setFormulaProgress(progress.concat("AMSelect"))),
     },
     {
-      text: "한 근씩 직접 공식만들기 (추천)",
+      text: "한 근씩 공식만들기 (추천)",
       subText:
-        "한 근씩 직접 식품을 추가하면서\n영양성분을 맞출 수 있도록 근의공식이 도와드릴게요",
+        "한 근씩 식품을 추가하면서 \n목표영양을 채우도록 근의공식이 도와줄게요",
       iconSource: icons.appIcon,
-      onPress: () => setProgress((v) => [...v, "Formula"]),
+      onPress: () => dispatch(setFormulaProgress(progress.concat("Formula"))),
     },
   ];
   return (
@@ -56,6 +70,7 @@ const Method = ({
               iconSource={item.iconSource}
               leftBar={index === 2}
               onPress={item.onPress}
+              iconDirection="right"
             />
           ))}
         </BtnBox>

@@ -19,6 +19,7 @@ import { initializeKakaoSDK } from "@react-native-kakao/core";
 import AppLoading from "@/components/appLoading/AppLoading";
 import ModalComponent from "@/components/modal/ModalComponent";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 // Kakao SDK 초기화
 initializeKakaoSDK("5065665acbfa07f0dd876a374e66e618");
@@ -74,10 +75,13 @@ export default function RootLayout() {
             {/* 홈 - 마이페이지 - 좋아요 - 장바구니 */}
             <Stack.Screen name="(tabs)" />
 
-            {/* 자동구성 가이드 */}
+            {/* Formula More */}
             <Stack.Screen
-              name="AutoMenu"
-              options={{ headerShown: true, headerTitle: "" }}
+              name="FormulaMore"
+              options={{
+                headerShown: true,
+                headerTitle: "",
+              }}
             />
 
             <Stack.Screen
@@ -230,6 +234,7 @@ export default function RootLayout() {
         > */}
         </QueryClientProvider>
       </Provider>
+      <Toast />
     </GestureHandlerRootView>
   );
 }

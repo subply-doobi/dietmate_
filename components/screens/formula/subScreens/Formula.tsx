@@ -1,5 +1,5 @@
 // RN, expo
-import { SetStateAction, useRef } from "react";
+import { SetStateAction, useEffect, useRef } from "react";
 import { ActivityIndicator, Dimensions } from "react-native";
 
 // 3rd
@@ -19,33 +19,21 @@ import { FORMULA_CAROUSEL_HEIGHT } from "@/shared/constants";
 import { icons } from "@/shared/iconSource";
 import { IDietTotalObjData } from "@/shared/api/types/diet";
 import CarouselContent from "../carousel/CarouselContent";
-import { setCurrentFMCIdx } from "@/features/reduxSlices/commonSlice";
+import {
+  setCurrentFMCIdx,
+  setFormulaProgress,
+} from "@/features/reduxSlices/commonSlice";
 import PaginationDot from "../carousel/PaginationDot";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
+import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
 
 const width = Dimensions.get("window").width;
 
-const findFirstTargetIdx = (dTOData?: IDietTotalObjData) => {
-  if (!dTOData) return 0;
-  const dietNoArr = Object.keys(dTOData);
-  const menuLengthList = dietNoArr.map(
-    (dietNo) => dTOData[dietNo].dietDetail.length
-  );
-  const firstTargetIdx = menuLengthList.findIndex((m: number) => m === 0);
-  if (firstTargetIdx === -1) {
-    return menuLengthList.length - 1;
-  }
-  return firstTargetIdx;
-};
-
-const Formula = ({
-  setProgress,
-}: {
-  setProgress: React.Dispatch<SetStateAction<string[] | IFormulaPageNm[]>>;
-}) => {
+const Formula = () => {
   // navigation
+  const router = useRouter();
   const isFocused = useIsFocused();
 
   // redux
@@ -65,8 +53,6 @@ const Formula = ({
   const carouselRef = useRef<ICarouselInstance>(null);
   const paginationValue = useSharedValue<number>(0);
 
-  // useState
-
   // useEffect
   useFocusEffect(() => {
     carouselRef.current?.scrollTo({
@@ -74,6 +60,15 @@ const Formula = ({
       animated: true,
     });
   });
+
+  useEffect(() => {
+    if (!dTOData) return;
+    const isNoMenu = Object.keys(dTOData || {}).length === 0;
+    if (isNoMenu) {
+      dispatch(setFormulaProgress(["SelectNumOfMenu"]));
+      return;
+    }
+  }, [dTOData]);
 
   // etc
   const onPressPagination = (index: number) => {
@@ -129,7 +124,7 @@ const Formula = ({
             }}
             onPress={onPressPagination}
           />
-          <MoreBtn onPress={() => console.log("more!!")}>
+          <MoreBtn onPress={() => router.push("/FormulaMore")}>
             <Icon source={icons.more_24} size={24} />
           </MoreBtn>
         </Row>
@@ -137,8 +132,8 @@ const Formula = ({
           mode="parallax"
           modeConfig={{
             parallaxScrollingScale: 1,
-            parallaxAdjacentItemScale: 0.9,
-            parallaxScrollingOffset: 65,
+            parallaxAdjacentItemScale: 0.85,
+            parallaxScrollingOffset: 76,
           }}
           onConfigurePanGesture={(gestureChain) =>
             gestureChain.activeOffsetX([-20, 20])
@@ -155,7 +150,6 @@ const Formula = ({
           renderItem={({ index }) => (
             <CarouselContent
               key={index}
-              setProgress={setProgress}
               carouselRef={carouselRef}
               carouselIdx={index}
             />

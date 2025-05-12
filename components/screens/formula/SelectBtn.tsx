@@ -8,15 +8,18 @@ interface ISelectBtn extends TouchableOpacityProps {
   subText?: string;
   leftBar?: boolean;
   iconSource?: ImageSourcePropType;
+  iconDirection?: "left" | "right";
 }
 const SelectBtn = ({
   text,
   subText,
   leftBar,
   iconSource,
+  iconDirection = "left",
   ...props
 }: ISelectBtn) => {
   const style = props.style || {};
+  const isIconLeft = iconDirection === "left";
   return (
     <Btn
       {...props}
@@ -28,8 +31,9 @@ const SelectBtn = ({
       ]}
     >
       <Row style={{ columnGap: 8 }}>
+        {iconSource && isIconLeft && <Icon source={iconSource} size={32} />}
         <BtnText>{text}</BtnText>
-        {iconSource && <Icon source={iconSource} size={32} />}
+        {iconSource && !isIconLeft && <Icon source={iconSource} size={32} />}
       </Row>
 
       {subText && <BtnSubText>{subText}</BtnSubText>}

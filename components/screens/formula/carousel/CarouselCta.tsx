@@ -1,4 +1,11 @@
-import { setAutoMenuStatus } from "@/features/reduxSlices/commonSlice";
+// RN, expo
+import { ActivityIndicator } from "react-native";
+
+// 3rd
+import styled from "styled-components/native";
+import Toast from "react-native-toast-message";
+
+// doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import {
   useCreateDietDetail,
@@ -18,22 +25,20 @@ import {
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import CtaButton from "@/shared/ui/CtaButton";
-import { Icon } from "@/shared/ui/styledComps";
+import { Col, Icon, TextMain } from "@/shared/ui/styledComps";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { getNutrStatus } from "@/shared/utils/sumUp";
-import styled from "styled-components/native";
+import { setGlobalLoading } from "@/features/reduxSlices/commonSlice";
 
 interface ICarouselCta {
-  selectedFoods: string[];
-  setSelectedFoods: React.Dispatch<React.SetStateAction<string[]>>;
   carouselMenu: IDietDetailData;
   carouselDietNo: string;
+  carouselIdx: number;
 }
 const CarouselCta = ({
-  selectedFoods,
-  setSelectedFoods,
   carouselMenu,
   carouselDietNo,
+  carouselIdx,
 }: ICarouselCta) => {
   // redux
   const dispatch = useAppDispatch();
@@ -42,6 +47,8 @@ const CarouselCta = ({
     (state) => state.common.foodGroupForAutoMenu
   );
   const medianCalorie = useAppSelector((state) => state.common.medianCalorie);
+  const globalLoading = useAppSelector((state) => state.common.globalLoading);
+  const currentFMCIdx = useAppSelector((state) => state.common.currentFMCIdx);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -109,20 +116,23 @@ const CarouselCta = ({
 
   const setOneAutoMenu = async () => {
     if (!bLData || totalFoodList?.length === 0) {
-      dispatch(setAutoMenuStatus(AM_ERROR_STATUS));
       return;
     }
 
-    dispatch(setAutoMenuStatus(AM_INITIAL_STATUS));
+    dispatch(setGlobalLoading(true));
     let recommendedMenu: IProductData[][] = [];
 
     // 자동구성
     try {
+      setTimeout(() => {
+        dispatch(setGlobalLoading(false));
+      }, 1500);
       const { recommendedMenu: tempRM, resultSummaryObj } = await makeAutoMenu3(
         {
           medianCalorie,
           foodGroupForAutoMenu,
-          initialMenu: autoMenuType === "add" ? carouselMenu : [],
+          initialMenu: [],
+          // initialMenu: autoMenuType === "add" ? carouselMenu : [],
           baseLine: bLData,
           selectedCategoryIdx: AM_SELECTED_CATEGORY_IDX,
           priceTarget: AM_PRICE_TARGET,
@@ -132,27 +142,26 @@ const CarouselCta = ({
       );
       recommendedMenu = tempRM;
     } catch (e) {
-      dispatch(setAutoMenuStatus(AM_ERROR_STATUS));
       console.log("자동구성 중 오류 발생: ", e);
       return;
     }
     // 자동구성된 메뉴 추가
     try {
-      autoMenuType === "add"
-        ? await addMenu(recommendedMenu)
-        : await overwriteMenu(recommendedMenu);
-      dispatch(setAutoMenuStatus(AM_SUCCESS_STATUS));
+      // autoMenuType === "add"
+      //   ? await addMenu(recommendedMenu)
+      //   : await overwriteMenu(recommendedMenu);
+      overwriteMenu(recommendedMenu);
     } catch (e) {
       console.log("식품추가 중 오류 발생: ", e);
-      dispatch(setAutoMenuStatus(AM_ERROR_STATUS));
       return;
     }
   };
 
   // etc
   const isMenuFull = nutrStatus === "satisfied" || nutrStatus === "exceed";
+  const isCurrent = currentFMCIdx === carouselIdx;
   const autoMenuBtnStyle = "border";
-  const autoMenuType = isMenuFull ? "overwrite" : "add";
+  // const autoMenuType = isMenuFull ? "overwrite" : "add";
   const addBtnStyle = isMenuFull ? "border" : "borderActive";
   const addBtnText = "식품 추가";
   const addBtnIconSource = isMenuFull
@@ -160,29 +169,51 @@ const CarouselCta = ({
     : icons.plusSquareActive_24;
 
   return (
-    <BtnBox>
-      {/* AutoMenu btn */}
-      <CtaButton
-        btnStyle={autoMenuBtnStyle}
-        shadow={true}
-        style={{ width: 48, height: 48 }}
-        btnContent={() => <Icon source={icons.dice_36} size={36} />}
-      />
+    <>
+      <BtnBox>
+        {/* AutoMenu btn */}
+        <CtaButton
+          btnStyle={autoMenuBtnStyle}
+          shadow={true}
+          style={{ width: 48, height: 48 }}
+          btnContent={() => <Icon source={icons.dice_36} size={36} />}
+          onPress={() => setOneAutoMenu()}
+        />
 
-      {/* Add btn */}
-      <CtaButton
-        btnStyle={addBtnStyle}
-        shadow={true}
-        style={{ flex: 1, height: 48 }}
-        btnText={addBtnText}
-        btnTextStyle={{ fontSize: 14 }}
-        btnContent={() =>
-          !isMenuFull && <Icon source={addBtnIconSource} size={18} />
-        }
-      />
-    </BtnBox>
+        {/* Add btn */}
+        <CtaButton
+          btnStyle={addBtnStyle}
+          shadow={true}
+          disabled={isMenuFull}
+          style={{ flex: 1, height: 48 }}
+          btnText={addBtnText}
+          btnTextStyle={{
+            fontSize: 14,
+            color: isMenuFull ? colors.inactive : colors.textSub,
+          }}
+          btnContent={() =>
+            !isMenuFull && <Icon source={addBtnIconSource} size={18} />
+          }
+        />
+      </BtnBox>
+      {globalLoading && isCurrent && (
+        <OpacityView>
+          <Col style={{ rowGap: 4 }}>
+            <LoadingText>잠시만 기다려주세요</LoadingText>
+            <LoadingSubText>동작하지 않으면 문의 바랍니다</LoadingSubText>
+          </Col>
+          <ActivityIndicator
+            size={"small"}
+            color={colors.white}
+            style={{ marginTop: 24 }}
+          />
+        </OpacityView>
+      )}
+    </>
   );
 };
+
+/* <LoadingAlertContent /> */
 
 export default CarouselCta;
 
@@ -194,4 +225,31 @@ const BtnBox = styled.View`
   justify-content: space-between;
   column-gap: 4px;
   align-items: center;
+`;
+
+const OpacityView = styled.View`
+  background-color: ${colors.blackOpacity70};
+  position: absolute;
+  border-radius: 0 0 5px 5px;
+  top: 102px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+  align-items: center;
+`;
+
+const LoadingText = styled(TextMain)`
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 20px;
+  color: ${colors.white};
+  text-align: center;
+`;
+
+const LoadingSubText = styled(TextMain)`
+  font-size: 14px;
+  line-height: 18px;
+  color: ${colors.inactive};
+  text-align: center;
 `;

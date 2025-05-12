@@ -176,7 +176,7 @@ export const useDeleteDiet = () => {
   const mutation = useMutation({
     mutationFn: ({
       dietNo,
-      currentDietNo,
+      currentDietNo, // onSuccess에서 사용
     }: {
       dietNo: string;
       currentDietNo: string;

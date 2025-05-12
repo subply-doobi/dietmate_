@@ -5,6 +5,7 @@ export type IModalName =
   // alert
   // 끼니 추가삭제, 식품 삭제
   | "menuDeleteAlert"
+  | "menuDeleteAllAlert"
   | "menuCreateAlert"
   | "menuCreateNAAlert"
   | "productDeleteAlert"

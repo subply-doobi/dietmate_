@@ -1,5 +1,5 @@
 // RN
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Platform, ScrollView, TouchableOpacity } from "react-native";
 
 // 3rd

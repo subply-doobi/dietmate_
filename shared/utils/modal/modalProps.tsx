@@ -21,12 +21,14 @@ import DeleteAlertContent from "@/components/modal/alert/DeleteAlertContent";
 import {
   useCreateDietCnt,
   useDeleteDiet,
+  useDeleteDietAll,
   useDeleteDietDetail,
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
 import CreateDietAlert from "@/components/screens/diet/CreateDietAlert";
 import {
   setCurrentDiet,
+  setFormulaProgress,
   setMenuAcActive,
   setTutorialEnd,
   setTutorialProgress,
@@ -127,6 +129,7 @@ export const useModalProps = () => {
     enabled: false,
   });
   const deleteDietMutation = useDeleteDiet();
+  const deleteDietAllMutation = useDeleteDietAll();
   const createDietCntMutation = useCreateDietCnt();
   const deleteDietDetailMutation = useDeleteDietDetail();
   const deleteUser = useDeleteUser();
@@ -260,6 +263,25 @@ export const useModalProps = () => {
       menuDeleteAlert,
     };
   }, [dTOData, dietNoToDelete]);
+
+  const { menuDeleteAllAlert } = useMemo(() => {
+    // console.log("modalProps: menuDeleteAllAlert memo");
+    const menuDeleteAllAlert = {
+      numOfBtn: 2,
+      contentDelay: 0,
+      confirmLabel: "삭제",
+      onConfirm: () => {
+        if (!dTOData) return;
+        deleteDietAllMutation.mutate();
+        dispatch(setFormulaProgress(["SelectNumOfMenu"]));
+        router.back();
+        commonClose("menuDeleteAllAlert");
+      },
+      onCancel: () => commonClose("menuDeleteAllAlert"),
+      renderContent: () => <DeleteAlertContent deleteText={"모든 끼니를"} />,
+    } as IModalProps["menuDeleteAllAlert"];
+    return { menuDeleteAllAlert };
+  }, [dTOData]);
 
   const { menuCreateAlert } = useMemo(() => {
     // console.log("modalProps: menuCreateAlert memo");
@@ -1141,6 +1163,7 @@ export const useModalProps = () => {
     // alert
     // 끼니 추가삭제, 식품 삭제
     menuDeleteAlert,
+    menuDeleteAllAlert,
     menuCreateAlert,
     menuCreateNAAlert,
     productDeleteAlert,

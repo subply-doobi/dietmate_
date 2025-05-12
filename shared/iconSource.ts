@@ -23,6 +23,7 @@ export const icons = {
   plusGrey_24: require(`./assets/icons/24_plus_grey.png`),
   plusRound_24: require(`./assets/icons/24_plus_round.png`),
   plusRoundSmall_24: require(`./assets/icons/24_plus_round_small.png`),
+  plusRoundBlack_32: require(`./assets/icons/32_plus_round_black.png`),
   plusSquare_24: require(`./assets/icons/24_plus_square.png`),
   plusSquareActive_24: require(`./assets/icons/24_plus_square_active.png`),
   down_8: require(`./assets/icons/8_down.png`),
@@ -36,6 +37,7 @@ export const icons = {
 
   // delete
   deleteRoundWhite_24: require(`./assets/icons/24_delete_round_white.png`),
+  deleteRoundBlack_32: require(`./assets/icons/32_delete_round_black.png`),
 
   // check
   checkbox_24: require(`./assets/icons/24_checkbox.png`),
@@ -84,6 +86,7 @@ export const icons = {
   networkError_80: require(`./assets/icons/80_network_error.png`),
   more_24: require(`./assets/icons/24_more.png`),
   dice_36: require(`./assets/icons/36_dice.png`),
+  calculateBlack_32: require(`./assets/icons/32_calculate_black.png`),
 
   // mypage btns
   question_mypage_24: require(`./assets/icons/24_mypage_question.png`),

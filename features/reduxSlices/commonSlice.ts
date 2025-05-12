@@ -7,6 +7,7 @@ import {
   separateFoods,
 } from "../../shared/utils/dataTransform";
 import { getMedianCalorie } from "../../shared/utils/sumUp";
+import { IAutoMenuSubPageNm } from "@/shared/utils/screens/autoMenu/contentByPages";
 
 const initialCategory = {
   lunchBox: [],
@@ -28,14 +29,20 @@ type ITutorialProgress =
   | "AutoMenu"
   | "Complete";
 
+type IFormulaProgress = Array<
+  "SelectNumOfMenu" | "SelectMethod" | "Formula" | IAutoMenuSubPageNm
+>;
+
 export interface ICommonState {
   inset: {
     headerHeight: number;
     bottomTabBarHeight: number;
     insetTop: number;
   };
+  globalLoading: boolean;
   currentDietNo: string;
   currentFMCIdx: number;
+  formulaProgress: IFormulaProgress;
   totalFoodList: IProductData[];
   totalFoodListIsLoaded: boolean;
   foodGroupForAutoMenu: IFoodGroupForAutoMenu;
@@ -58,8 +65,10 @@ const initialState: ICommonState = {
     bottomTabBarHeight: 49,
     insetTop: 0,
   },
+  globalLoading: false,
   currentDietNo: "",
   currentFMCIdx: 0,
+  formulaProgress: [],
   totalFoodList: [],
   totalFoodListIsLoaded: false,
   foodGroupForAutoMenu: {
@@ -96,6 +105,9 @@ export const commonSlice = createSlice({
     ) => {
       state.inset = { ...state.inset, ...action.payload };
     },
+    setGlobalLoading: (state, action: PayloadAction<boolean>) => {
+      state.globalLoading = action.payload;
+    },
     setCurrentDiet: (state, action: PayloadAction<string>) => {
       state.currentDietNo = action.payload;
       state.progressTooltipShow = true;
@@ -103,6 +115,9 @@ export const commonSlice = createSlice({
     },
     setCurrentFMCIdx: (state, action: PayloadAction<number>) => {
       state.currentFMCIdx = action.payload;
+    },
+    setFormulaProgress: (state, action: PayloadAction<IFormulaProgress>) => {
+      state.formulaProgress = action.payload;
     },
     setTotalFoodList: (state, action: PayloadAction<IProductData[]>) => {
       state.totalFoodList = action.payload;
@@ -166,8 +181,10 @@ export const commonSlice = createSlice({
 
 export const {
   setInsets,
+  setGlobalLoading,
   setCurrentDiet,
   setCurrentFMCIdx,
+  setFormulaProgress,
   setTotalFoodList,
   setMenuAcActive,
   setIsTutorialMode,

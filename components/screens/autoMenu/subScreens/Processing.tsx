@@ -17,6 +17,7 @@ import {
 import { IProductData } from "@/shared/api/types/product";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import {
+  setFormulaProgress,
   setMenuAcActive,
   setTutorialProgress,
 } from "@/features/reduxSlices/commonSlice";
@@ -30,13 +31,7 @@ import { getPathWithConventionsCollapsed } from "expo-router/build/fork/getPathF
 import { IAutoMenuSubPageNm } from "@/shared/utils/screens/autoMenu/contentByPages";
 import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
 
-const Processing = ({
-  setProgress,
-}: {
-  setProgress: React.Dispatch<
-    SetStateAction<string[] | IAutoMenuSubPageNm[] | IFormulaPageNm[]>
-  >;
-}) => {
+const Processing = () => {
   // navigaton
   const router = useRouter();
   const pathname = usePathname();
@@ -176,7 +171,7 @@ const Processing = ({
       }
       dispatch(setMenuAcActive([]));
       dispatch(setTutorialProgress("Complete"));
-      isFormulaPage ? setProgress(["Formula"]) : router.back();
+      isFormulaPage ? dispatch(setFormulaProgress(["Formula"])) : router.back();
       if (!autoMenuResult?.resultSummaryObj) return;
       const { isBudgetExceeded } = autoMenuResult.resultSummaryObj;
       !isTutorialMode &&
@@ -225,7 +220,7 @@ const Processing = ({
       }
       dispatch(setMenuAcActive([]));
       dispatch(setTutorialProgress("Complete"));
-      isFormulaPage ? setProgress(["Formula"]) : router.back();
+      isFormulaPage ? dispatch(setFormulaProgress(["Formula"])) : router.back();
       if (!autoMenuResult?.resultSummaryObj) return;
       const { isBudgetExceeded } = autoMenuResult.resultSummaryObj;
       !isTutorialMode &&

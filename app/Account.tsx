@@ -15,10 +15,9 @@ import { queryClient } from "@/shared/store/reactQueryStore";
 import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
 
 import { TextMain, Col } from "@/shared/ui/styledComps";
-import DAlert from "@/shared/ui/DAlert";
 import ListBtns from "@/shared/ui/ListBtns";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useNavigation, useRouter } from "expo-router";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { useNavigation } from "expo-router";
 
 const WithdrawalContent = ({ deleteText }: { deleteText: string }) => {
   return (

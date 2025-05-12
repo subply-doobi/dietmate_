@@ -1,4 +1,7 @@
-import { setCurrentFMCIdx } from "@/features/reduxSlices/commonSlice";
+import {
+  setCurrentFMCIdx,
+  setFormulaProgress,
+} from "@/features/reduxSlices/commonSlice";
 import {
   useCreateDietCnt,
   useListDietTotalObj,
@@ -10,29 +13,14 @@ import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import CtaButton from "@/shared/ui/CtaButton";
 import { Icon, Row, TextMain } from "@/shared/ui/styledComps";
-import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
-import { SetStateAction, useEffect, useState } from "react";
+import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
+import { useEffect, useState } from "react";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import styled from "styled-components/native";
 
 const PICKER_DATA_ARR = [...MENU_NUM_LABEL];
 
-const checkEveryMenuEmpty = (dTOData: IDietTotalObjData) => {
-  const dietNoArr = Object.keys(dTOData);
-  const menuLengthList = dietNoArr.map(
-    (dietNo) => dTOData[dietNo].dietDetail.length
-  );
-  if (menuLengthList.every((m: number) => m === 0)) {
-    return true;
-  }
-  return false;
-};
-
-const SelectNumOfMenu = ({
-  setProgress,
-}: {
-  setProgress: React.Dispatch<SetStateAction<string[] | IFormulaPageNm[]>>;
-}) => {
+const SelectNumOfMenu = () => {
   // redux
   const dispatch = useAppDispatch();
 
@@ -53,11 +41,10 @@ const SelectNumOfMenu = ({
     }
     const isEveryMenuEmpty = checkEveryMenuEmpty(dTOData);
     if (isEveryMenuEmpty) {
-      setProgress(["SelectMethod"]);
+      dispatch(setFormulaProgress(["SelectMethod"]));
       return;
     }
-
-    setProgress(["Formula"]);
+    dispatch(setFormulaProgress(["Formula"]));
   }, [dTOData]);
 
   // etc
@@ -65,7 +52,6 @@ const SelectNumOfMenu = ({
     await createDietCntMutation.mutateAsync({
       dietCnt: String(numOfMenu),
     });
-    setProgress(["SelectMethod"]);
     dispatch(setCurrentFMCIdx(0));
   };
 

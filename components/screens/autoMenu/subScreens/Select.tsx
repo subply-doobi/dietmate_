@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect } from "react";
+import { useEffect } from "react";
 
 import styled from "styled-components/native";
 
@@ -9,20 +9,17 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setSelectedDietNo } from "@/features/reduxSlices/autoMenuSlice";
 import { Platform, ScrollView } from "react-native";
-import colors from "@/shared/colors";
 import CtaButton from "@/shared/ui/CtaButton";
 import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
+import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
 
-const Select = ({
-  setProgress,
-}: {
-  setProgress: React.Dispatch<SetStateAction<string[]>>;
-}) => {
+const Select = () => {
   // redux
   const dispatch = useAppDispatch();
   const selectedDietNo = useAppSelector(
     (state) => state.autoMenu.selectedDietNo
   );
+  const progress = useAppSelector((state) => state.common.formulaProgress);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -49,11 +46,10 @@ const Select = ({
     );
     if (menuLengthList.every((m: number) => m === 0)) {
       dispatch(setSelectedDietNo(dietNoArr.map((dietNo) => dietNo)));
-      setProgress((v) => {
-        const deletedAMSelect = v.filter((item) => item !== "AMSelect");
-        const newProgress = [...deletedAMSelect, "AMCategory"];
-        return newProgress;
-      });
+      const newProgress = progress
+        .filter((item) => item !== "AMSelect")
+        .concat("AMCategory");
+      dispatch(setFormulaProgress(newProgress));
       return;
     }
   }, []);
@@ -96,7 +92,9 @@ const Select = ({
         btnStyle={selectedDietNo?.length === 0 ? "inactive" : "active"}
         style={{ position: "absolute", bottom: insetBottom + 8 }}
         btnText="다음"
-        onPress={() => setProgress((v) => [...v, "AMCategory"])}
+        onPress={() =>
+          dispatch(setFormulaProgress(progress.concat("AMCategory")))
+        }
       />
     </Container>
   );

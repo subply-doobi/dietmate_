@@ -1,5 +1,4 @@
-import { View, Text, Platform } from "react-native";
-import React, { SetStateAction } from "react";
+import { Platform } from "react-native";
 import styled from "styled-components/native";
 import { TextMain } from "@/shared/ui/styledComps";
 import { BOTTOM_INDICATOR_IOS, SCREENWIDTH } from "@/shared/constants";
@@ -7,17 +6,15 @@ import DSlider from "@/shared/ui/DSlider";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setPriceSliderValue } from "@/features/reduxSlices/autoMenuSlice";
 import CtaButton from "@/shared/ui/CtaButton";
+import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
 
-const Price = ({
-  setProgress,
-}: {
-  setProgress: React.Dispatch<SetStateAction<string[]>>;
-}) => {
+const Price = () => {
   // redux
   const dispatch = useAppDispatch();
   const priceSliderValue = useAppSelector(
     (state) => state.autoMenu.priceSliderValue
   );
+  const progress = useAppSelector((state) => state.common.formulaProgress);
   const insetBottom = Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS : 0;
   return (
     <Container>
@@ -36,7 +33,9 @@ const Price = ({
         btnStyle={"active"}
         style={{ position: "absolute", bottom: insetBottom + 8 }}
         btnText="다음"
-        onPress={() => setProgress((v) => [...v, "AMProcessing"])}
+        onPress={() =>
+          dispatch(setFormulaProgress(progress.concat("AMProcessing")))
+        }
       />
     </Container>
   );

@@ -3,7 +3,7 @@ import { IProductData } from "../api/types/product";
 import { NUTR_ERROR_RANGE, SERVICE_PRICE_PER_PRODUCT } from "../constants";
 import { IFoodGroupForAutoMenu } from "./dataTransform";
 
-const TRY_NUM = 100;
+const TRY_NUM = 200;
 const CATEGORY_LIMIT = [1, 1, 2, 2, 1, 1]; // [lunchBox, chicken, salad, snack, chip, drink]
 
 const shuffle = (arr: any) => {

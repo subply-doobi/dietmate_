@@ -6,12 +6,16 @@ import commonReducer from "../../features/reduxSlices/commonSlice";
 import orderReducer from "../../features/reduxSlices/orderSlice";
 import modalReducer from "../../features/reduxSlices/modalSlice";
 import autoMenuReducer from "../../features/reduxSlices/autoMenuSlice";
+import filteredProductReducer from "../../features/reduxSlices/filteredPSlice";
+import formulaReducer from "../../features/reduxSlices/formulaSlice";
 
 export const store = configureStore({
   reducer: {
     userInput: userInputReducer,
-    sortFilter: sortFilterReducer,
     common: commonReducer,
+    formula: formulaReducer,
+    sortFilter: sortFilterReducer,
+    filteredProduct: filteredProductReducer,
     autoMenu: autoMenuReducer,
     order: orderReducer,
     modal: modalReducer,

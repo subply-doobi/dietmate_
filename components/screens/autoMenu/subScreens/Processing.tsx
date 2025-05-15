@@ -17,7 +17,6 @@ import {
 import { IProductData } from "@/shared/api/types/product";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import {
-  setFormulaProgress,
   setMenuAcActive,
   setTutorialProgress,
 } from "@/features/reduxSlices/commonSlice";
@@ -30,6 +29,7 @@ import Error from "./Error";
 import { getPathWithConventionsCollapsed } from "expo-router/build/fork/getPathFromState-forks";
 import { IAutoMenuSubPageNm } from "@/shared/utils/screens/autoMenu/contentByPages";
 import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 const Processing = () => {
   // navigaton

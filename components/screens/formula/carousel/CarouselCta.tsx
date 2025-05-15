@@ -29,6 +29,7 @@ import { Col, Icon, TextMain } from "@/shared/ui/styledComps";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { setGlobalLoading } from "@/features/reduxSlices/commonSlice";
+import { useRouter } from "expo-router";
 
 interface ICarouselCta {
   carouselMenu: IDietDetailData;
@@ -40,6 +41,9 @@ const CarouselCta = ({
   carouselDietNo,
   carouselIdx,
 }: ICarouselCta) => {
+  // navigation
+  const router = useRouter();
+
   // redux
   const dispatch = useAppDispatch();
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
@@ -48,7 +52,7 @@ const CarouselCta = ({
   );
   const medianCalorie = useAppSelector((state) => state.common.medianCalorie);
   const globalLoading = useAppSelector((state) => state.common.globalLoading);
-  const currentFMCIdx = useAppSelector((state) => state.common.currentFMCIdx);
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -157,6 +161,13 @@ const CarouselCta = ({
     }
   };
 
+  const onCtaPress = () => {
+    router.push({
+      pathname: "/AutoAdd",
+      params: { menu: JSON.stringify(carouselMenu) },
+    });
+  };
+
   // etc
   const isMenuFull = nutrStatus === "satisfied" || nutrStatus === "exceed";
   const isCurrent = currentFMCIdx === carouselIdx;
@@ -194,13 +205,14 @@ const CarouselCta = ({
           btnContent={() =>
             !isMenuFull && <Icon source={addBtnIconSource} size={18} />
           }
+          onPress={onCtaPress}
         />
       </BtnBox>
       {globalLoading && isCurrent && (
         <OpacityView>
           <Col style={{ rowGap: 4 }}>
             <LoadingText>잠시만 기다려주세요</LoadingText>
-            <LoadingSubText>동작하지 않으면 문의 바랍니다</LoadingSubText>
+            <LoadingSubText>자동으로 영양성분 채우는 중...</LoadingSubText>
           </Col>
           <ActivityIndicator
             size={"small"}

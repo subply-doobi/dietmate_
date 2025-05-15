@@ -37,8 +37,10 @@ export default {
    * 70% #000000B3, 75% #000000BF, 80% #000000CC, 85% #000000D9,
    * 90% #000000E6, 95% #000000F2, 100% #000000FF
    */
+  whiteOpacity30: "#FFFFFF4D",
+  whiteOpacity70: "#FFFFFFB3",
+  blackOpacity30: "#0000004D",
   blackOpacity50: "#00000080",
   blackOpacity70: "#000000B3",
   blackOpacity80: "#000000CC",
-  whiteOpacity70: "#FFFFFFB3",
 };

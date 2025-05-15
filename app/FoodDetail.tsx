@@ -51,6 +51,7 @@ import {
   ITableItem,
   makeTableData,
 } from "@/shared/utils/screens/foodDetail/makeNutrTable";
+import { addToRecentProduct } from "@/shared/utils/asyncStorage";
 
 interface IShowPart {
   clicked: string;
@@ -105,7 +106,7 @@ const FoodDetail = () => {
     (p) => p.productNo === params.productNo
   );
 
-  // 식품마다 headerTitle바꾸기
+  // 식품마다 headerTitle바꾸기 + 최근 본 식품에 추가(지금은 asyncStorage)
   // TBD : route.params.item 타입 관련 해결 및 만약 null값일 시 에러처리
   useEffect(() => {
     const waitPage = async () => {
@@ -139,6 +140,7 @@ const FoodDetail = () => {
           );
         },
       });
+      !!initialData && addToRecentProduct(initialData.productNo);
     };
     waitPage();
     initializePage();

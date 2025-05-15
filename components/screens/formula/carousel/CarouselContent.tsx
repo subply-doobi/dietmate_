@@ -26,7 +26,7 @@ interface ICarouselContent {
 const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
   // redux
   const currentDietNo = useAppSelector((state) => state.common.currentDietNo);
-  const currentFMCIdx = useAppSelector((state) => state.common.currentFMCIdx);
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();

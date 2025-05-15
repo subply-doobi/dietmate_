@@ -1,12 +1,11 @@
 import {
   setCurrentFMCIdx,
   setFormulaProgress,
-} from "@/features/reduxSlices/commonSlice";
+} from "@/features/reduxSlices/formulaSlice";
 import {
   useCreateDietCnt,
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
-import { IDietTotalObjData } from "@/shared/api/types/diet";
 import colors from "@/shared/colors";
 import { MENU_NUM_LABEL } from "@/shared/constants";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";

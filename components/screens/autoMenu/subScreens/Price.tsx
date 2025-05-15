@@ -6,7 +6,7 @@ import DSlider from "@/shared/ui/DSlider";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setPriceSliderValue } from "@/features/reduxSlices/autoMenuSlice";
 import CtaButton from "@/shared/ui/CtaButton";
-import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 const Price = () => {
   // redux
@@ -14,7 +14,7 @@ const Price = () => {
   const priceSliderValue = useAppSelector(
     (state) => state.autoMenu.priceSliderValue
   );
-  const progress = useAppSelector((state) => state.common.formulaProgress);
+  const progress = useAppSelector((state) => state.formula.formulaProgress);
   const insetBottom = Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS : 0;
   return (
     <Container>

@@ -47,6 +47,7 @@ export const BOTTOM_INDICATOR_IOS = 16;
 export const FORMULA_CAROUSEL_HEIGHT = 390;
 
 // service constants
+export const MAX_NUM_OF_RECENT_PRODUCT = 10;
 export const SERVICE_PRICE_PER_PRODUCT = 300;
 export const PRIVACY_POLICY_URL =
   "https://sites.google.com/view/dietmate-pvpolicy/";

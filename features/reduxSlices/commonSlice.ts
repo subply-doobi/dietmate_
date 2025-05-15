@@ -7,7 +7,6 @@ import {
   separateFoods,
 } from "../../shared/utils/dataTransform";
 import { getMedianCalorie } from "../../shared/utils/sumUp";
-import { IAutoMenuSubPageNm } from "@/shared/utils/screens/autoMenu/contentByPages";
 
 const initialCategory = {
   lunchBox: [],
@@ -29,10 +28,6 @@ type ITutorialProgress =
   | "AutoMenu"
   | "Complete";
 
-type IFormulaProgress = Array<
-  "SelectNumOfMenu" | "SelectMethod" | "Formula" | IAutoMenuSubPageNm
->;
-
 export interface ICommonState {
   inset: {
     headerHeight: number;
@@ -41,8 +36,6 @@ export interface ICommonState {
   };
   globalLoading: boolean;
   currentDietNo: string;
-  currentFMCIdx: number;
-  formulaProgress: IFormulaProgress;
   totalFoodList: IProductData[];
   totalFoodListIsLoaded: boolean;
   foodGroupForAutoMenu: IFoodGroupForAutoMenu;
@@ -67,8 +60,6 @@ const initialState: ICommonState = {
   },
   globalLoading: false,
   currentDietNo: "",
-  currentFMCIdx: 0,
-  formulaProgress: [],
   totalFoodList: [],
   totalFoodListIsLoaded: false,
   foodGroupForAutoMenu: {
@@ -112,12 +103,6 @@ export const commonSlice = createSlice({
       state.currentDietNo = action.payload;
       state.progressTooltipShow = true;
       // queryClient.invalidateQueries([PRODUCTS]);
-    },
-    setCurrentFMCIdx: (state, action: PayloadAction<number>) => {
-      state.currentFMCIdx = action.payload;
-    },
-    setFormulaProgress: (state, action: PayloadAction<IFormulaProgress>) => {
-      state.formulaProgress = action.payload;
     },
     setTotalFoodList: (state, action: PayloadAction<IProductData[]>) => {
       state.totalFoodList = action.payload;
@@ -183,8 +168,6 @@ export const {
   setInsets,
   setGlobalLoading,
   setCurrentDiet,
-  setCurrentFMCIdx,
-  setFormulaProgress,
   setTotalFoodList,
   setMenuAcActive,
   setIsTutorialMode,

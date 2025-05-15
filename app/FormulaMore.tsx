@@ -2,13 +2,9 @@ import SelectBtn from "@/components/screens/formula/SelectBtn";
 import {
   setCurrentFMCIdx,
   setFormulaProgress,
-} from "@/features/reduxSlices/commonSlice";
+} from "@/features/reduxSlices/formulaSlice";
 import { openModal } from "@/features/reduxSlices/modalSlice";
-import {
-  useCreateDiet,
-  useDeleteDietAll,
-  useListDietTotalObj,
-} from "@/shared/api/queries/diet";
+import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import { MENU_NUM_LABEL } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
@@ -23,7 +19,7 @@ const FormulaMore = () => {
 
   // redux
   const dispatch = useAppDispatch();
-  const progress = useAppSelector((state) => state.common.formulaProgress);
+  const progress = useAppSelector((state) => state.formula.formulaProgress);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();

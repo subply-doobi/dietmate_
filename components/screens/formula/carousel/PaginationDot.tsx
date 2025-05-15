@@ -7,7 +7,7 @@ import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 
 const PaginationDot = ({ index }: { index: number }) => {
-  const currentFMCIdx = useAppSelector((state) => state.common.currentFMCIdx);
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const isActive = currentFMCIdx === index;
   const text = isActive
     ? MENU_NUM_LABEL[index].slice(0, -2)

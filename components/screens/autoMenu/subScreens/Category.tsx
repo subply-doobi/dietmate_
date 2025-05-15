@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setSelectedCategory } from "@/features/reduxSlices/autoMenuSlice";
 import { Platform } from "react-native";
 import CtaButton from "@/shared/ui/CtaButton";
-import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 const Category = () => {
   // redux
@@ -16,7 +16,7 @@ const Category = () => {
   const selectedCategory = useAppSelector(
     (state) => state.autoMenu.selectedCategory
   );
-  const progress = useAppSelector((state) => state.common.formulaProgress);
+  const progress = useAppSelector((state) => state.formula.formulaProgress);
 
   // react-query
   const { data: categoryData } = useListCategory();

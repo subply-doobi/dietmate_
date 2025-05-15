@@ -20,6 +20,8 @@ import AppLoading from "@/components/appLoading/AppLoading";
 import ModalComponent from "@/components/modal/ModalComponent";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import { toastConfig } from "@/shared/store/toastStore";
+import { setAutoAddSelectedFood } from "@/features/reduxSlices/formulaSlice";
 
 // Kakao SDK 초기화
 initializeKakaoSDK("5065665acbfa07f0dd876a374e66e618");
@@ -60,9 +62,7 @@ export default function RootLayout() {
           >
             {/* 로그인 */}
             <Stack.Screen name="index" />
-
             <Stack.Screen name="ResetToRoot" />
-
             {/* 정보입력 */}
             <Stack.Screen
               name="UserInput"
@@ -71,10 +71,8 @@ export default function RootLayout() {
                 headerTitle: "",
               }}
             />
-
             {/* 홈 - 마이페이지 - 좋아요 - 장바구니 */}
             <Stack.Screen name="(tabs)" />
-
             {/* Formula More */}
             <Stack.Screen
               name="FormulaMore"
@@ -83,17 +81,30 @@ export default function RootLayout() {
                 headerTitle: "",
               }}
             />
-
+            {/* 남은 영양 식품 추가 */}
+            <Stack.Screen
+              name="AutoAdd"
+              options={{
+                headerShown: true,
+                headerTitle: "",
+                headerLeft: () => (
+                  <BackArrow
+                    goBackFn={() => {
+                      store.dispatch(setAutoAddSelectedFood(undefined));
+                      router.back();
+                    }}
+                  />
+                ),
+              }}
+            />
             <Stack.Screen
               name="ManualAdd"
               options={{ headerShown: true, headerTitle: "식품선택" }}
             />
-
             <Stack.Screen
               name="Change"
               options={{ headerShown: true, headerTitle: "식품변경" }}
             />
-
             <Stack.Screen
               name="Mypage"
               options={{
@@ -107,7 +118,6 @@ export default function RootLayout() {
                 },
               }}
             />
-
             {/* 좋아요 식품 */}
             <Stack.Screen
               name="Likes"
@@ -116,7 +126,6 @@ export default function RootLayout() {
                 headerTitle: "찜한 상품",
               }}
             />
-
             {/* 식품상세 */}
             <Stack.Screen
               name="FoodDetail"
@@ -125,7 +134,6 @@ export default function RootLayout() {
                 headerTitle: "",
               }}
             />
-
             {/* 주문 */}
             <Stack.Screen
               name="Order"
@@ -134,7 +142,6 @@ export default function RootLayout() {
                 headerTitle: "주문 / 결제",
               }}
             />
-
             {/* 배송지 수정 */}
             <Stack.Screen
               name="AddressEdit"
@@ -143,12 +150,8 @@ export default function RootLayout() {
                 headerTitle: "배송지",
               }}
             />
-
             {/* 결제페이지 */}
             <Stack.Screen name="Payment" />
-
-            {/* history는 추후 추가 */}
-            {/* <Stack.Screen name="HistoryNav" component={HistoryNav} /> */}
 
             {/* 주문정보 */}
             <Stack.Screen
@@ -170,10 +173,8 @@ export default function RootLayout() {
                 ),
               }}
             />
-
             {/* 주문완료 */}
             <Stack.Screen name="OrderComplete" />
-
             {/* 계정 설정 */}
             <Stack.Screen
               name="Account"
@@ -182,7 +183,6 @@ export default function RootLayout() {
                 headerTitle: "계정 설정",
               }}
             />
-
             {/* 공지사항 */}
             <Stack.Screen
               name="Notice"
@@ -191,7 +191,6 @@ export default function RootLayout() {
                 headerTitle: "공지사항",
               }}
             />
-
             {/* 추천코드 */}
             <Stack.Screen
               name="RecommendCode"
@@ -200,7 +199,6 @@ export default function RootLayout() {
                 headerTitle: "추천코드",
               }}
             />
-
             {/* 내 보너스 현황 */}
             <Stack.Screen
               name="MyBonus"
@@ -209,7 +207,6 @@ export default function RootLayout() {
                 headerTitle: "내 보너스 현황",
               }}
             />
-
             {/* 체크리스트 */}
             <Stack.Screen
               name="Checklist"
@@ -218,10 +215,8 @@ export default function RootLayout() {
                 headerTitle: "",
               }}
             />
-
             {/* 에러페이지 */}
             <Stack.Screen name="ErrorPage" />
-
             <Stack.Screen name="+not-found" />
           </Stack>
 
@@ -232,9 +227,9 @@ export default function RootLayout() {
           {/* <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         > */}
+          <Toast config={toastConfig} />
         </QueryClientProvider>
       </Provider>
-      <Toast />
     </GestureHandlerRootView>
   );
 }

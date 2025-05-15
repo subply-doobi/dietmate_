@@ -6,14 +6,14 @@ import { ScrollView } from "react-native";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { MENU_NUM_LABEL } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
 import { useEffect } from "react";
 import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 const Method = () => {
   // redux
   const dispatch = useAppDispatch();
-  const progress = useAppSelector((state) => state.common.formulaProgress);
+  const progress = useAppSelector((state) => state.formula.formulaProgress);
 
   // navigation
   const router = useRouter();

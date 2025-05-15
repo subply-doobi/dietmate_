@@ -23,6 +23,7 @@ import {
   UPDATE_DIET_DETAIL,
 } from "../urls";
 import { handleError } from "../../utils/handleError";
+import { addToRecentProduct } from "@/shared/utils/asyncStorage";
 
 // PUT //
 export const useCreateDiet = (options?: IMutationOptions) => {
@@ -74,6 +75,9 @@ export const useCreateDietDetail = (options?: IMutationOptions) => {
         "put"
       ),
     onMutate: async ({ dietNo, food }) => {
+      // 최근 본 제품에 추가
+      await addToRecentProduct(food.productNo);
+
       // optimistic update
       // 1. Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)

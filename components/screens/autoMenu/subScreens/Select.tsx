@@ -11,7 +11,7 @@ import { setSelectedDietNo } from "@/features/reduxSlices/autoMenuSlice";
 import { Platform, ScrollView } from "react-native";
 import CtaButton from "@/shared/ui/CtaButton";
 import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
-import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 const Select = () => {
   // redux
@@ -19,7 +19,7 @@ const Select = () => {
   const selectedDietNo = useAppSelector(
     (state) => state.autoMenu.selectedDietNo
   );
-  const progress = useAppSelector((state) => state.common.formulaProgress);
+  const progress = useAppSelector((state) => state.formula.formulaProgress);
 
   // react-query
   const { data: bLData } = useGetBaseLine();

@@ -13,22 +13,17 @@ import colors from "@/shared/colors";
 import BackArrow from "@/shared/ui/BackArrow";
 import GuideTitle from "@/shared/ui/GuideTitle";
 import { Container } from "@/shared/ui/styledComps";
-import {
-  getPageItem,
-  IFormulaPageNm,
-} from "@/shared/utils/screens/formula/contentByPages";
+import { getPageItem } from "@/shared/utils/screens/formula/contentByPages";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
-import { useRoute } from "@react-navigation/native";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 const Formula = () => {
   // navigation
   const router = useRouter();
-  const route = useRoute();
 
   // redux
   const dispatch = useAppDispatch();
-  const progress = useAppSelector((state) => state.common.formulaProgress);
+  const progress = useAppSelector((state) => state.formula.formulaProgress);
 
   // etc
   const currentPage = progress[progress.length - 1];
@@ -43,7 +38,6 @@ const Formula = () => {
 
   // useEffect
   useEffect(() => {
-    console.log("Formula useEffect");
     dispatch(setFormulaProgress(["SelectNumOfMenu"]));
   }, []);
 

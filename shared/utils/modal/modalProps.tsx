@@ -28,7 +28,6 @@ import {
 import CreateDietAlert from "@/components/screens/diet/CreateDietAlert";
 import {
   setCurrentDiet,
-  setFormulaProgress,
   setMenuAcActive,
   setTutorialEnd,
   setTutorialProgress,
@@ -75,6 +74,7 @@ import MenuNumSelectContent from "@/components/common/cart/MenuNumSelectContent"
 import React from "react";
 import { Animated } from "react-native";
 import SortModalContent from "@/components/screens/search/SortModalContent";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 interface IModalProps {
   [key: string]: {

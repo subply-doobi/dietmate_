@@ -6,12 +6,12 @@ import { setWantedCompany } from "@/features/reduxSlices/autoMenuSlice";
 import { Platform } from "react-native";
 import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
 import CtaButton from "@/shared/ui/CtaButton";
-import { setFormulaProgress } from "@/features/reduxSlices/commonSlice";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 const Company = () => {
   // redux
   const dispatch = useAppDispatch();
-  const progress = useAppSelector((state) => state.common.formulaProgress);
+  const progress = useAppSelector((state) => state.formula.formulaProgress);
   const { platformDDItems } = useAppSelector((state) => state.common);
   const wantedCompany = useAppSelector((state) => state.autoMenu.wantedCompany);
 

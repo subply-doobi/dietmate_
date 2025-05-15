@@ -1,5 +1,5 @@
 // RN, expo
-import { SetStateAction, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ActivityIndicator, Dimensions } from "react-native";
 
 // 3rd
@@ -12,22 +12,19 @@ import Carousel, {
 
 // doobi
 import colors from "@/shared/colors";
-import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { Icon, Row } from "@/shared/ui/styledComps";
 import { FORMULA_CAROUSEL_HEIGHT } from "@/shared/constants";
 import { icons } from "@/shared/iconSource";
-import { IDietTotalObjData } from "@/shared/api/types/diet";
 import CarouselContent from "../carousel/CarouselContent";
-import {
-  setCurrentFMCIdx,
-  setFormulaProgress,
-} from "@/features/reduxSlices/commonSlice";
 import PaginationDot from "../carousel/PaginationDot";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
-import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
+import {
+  setCurrentFMCIdx,
+  setFormulaProgress,
+} from "@/features/reduxSlices/formulaSlice";
 
 const width = Dimensions.get("window").width;
 
@@ -38,12 +35,11 @@ const Formula = () => {
 
   // redux
   const dispatch = useAppDispatch();
-  const currentFMCIdx = useAppSelector((state) => state.common.currentFMCIdx);
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   // const isCarouselHided = useAppSelector(
   //   (state) => state.modal.isCarouselHided
   // );
   const modalSeq = useAppSelector((state) => state.modal.modalSeq);
-  const isCarouselHided = modalSeq.length > 0;
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
@@ -53,20 +49,15 @@ const Formula = () => {
   const carouselRef = useRef<ICarouselInstance>(null);
   const paginationValue = useSharedValue<number>(0);
 
-  // useEffect
-  useFocusEffect(() => {
-    carouselRef.current?.scrollTo({
-      index: currentFMCIdx,
-      animated: true,
-    });
-  });
-
   useEffect(() => {
     if (!dTOData) return;
     const isNoMenu = Object.keys(dTOData || {}).length === 0;
     if (isNoMenu) {
       dispatch(setFormulaProgress(["SelectNumOfMenu"]));
       return;
+    }
+    if (currentFMCIdx > menuArr.length - 1) {
+      dispatch(setCurrentFMCIdx(menuArr.length - 1));
     }
   }, [dTOData]);
 
@@ -82,7 +73,10 @@ const Formula = () => {
     });
   };
 
-  if (isCarouselHided || !isFocused) {
+  const isCarouselIdxExceed = menuArr.length - 1 < currentFMCIdx;
+  const isCarouselHided = modalSeq.length > 0;
+
+  if (!isFocused || isCarouselIdxExceed || isCarouselHided) {
     return (
       <Container style={{ justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size={"large"} color={colors.main} />
@@ -135,6 +129,7 @@ const Formula = () => {
             parallaxAdjacentItemScale: 0.85,
             parallaxScrollingOffset: 76,
           }}
+          defaultIndex={currentFMCIdx}
           onConfigurePanGesture={(gestureChain) =>
             gestureChain.activeOffsetX([-20, 20])
           }

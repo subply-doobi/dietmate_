@@ -1,23 +1,21 @@
-import { Col, HorizontalSpace } from "@/shared/ui/styledComps";
+import { Col } from "@/shared/ui/styledComps";
 import CtaButton from "@/shared/ui/CtaButton";
-import { IAutoMenuSubPages } from "@/shared/utils/screens/autoMenu/contentByPages";
+import { useRouter } from "expo-router";
+import GuideTitle from "@/shared/ui/GuideTitle";
 
-interface IError {
-  setProgress: React.Dispatch<React.SetStateAction<IAutoMenuSubPages[]>>;
-}
-const Error = ({ setProgress }: IError) => {
+const Error = () => {
+  const router = useRouter();
+
   return (
     <Col style={{ justifyContent: "center", marginTop: 64 }}>
-      <CtaButton
-        btnStyle="active"
-        btnText="자동구성 재시도"
-        onPress={() => setProgress((v) => [...v.slice(0, v.length - 1)])}
+      <GuideTitle
+        title="오류가 발생했어요\n"
+        subTitle="계속 문제가 발생한다면\n고객센터로 문의바랍니다"
       />
-      <HorizontalSpace height={24} />
       <CtaButton
         btnStyle="border"
-        btnText="처음으로"
-        onPress={() => setProgress((v) => [v[0]])}
+        btnText="뒤로가기"
+        onPress={() => router.back()}
       />
     </Col>
   );

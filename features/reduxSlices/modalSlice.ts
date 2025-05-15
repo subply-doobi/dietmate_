@@ -1,9 +1,11 @@
+import { store } from "@/shared/store/reduxStore";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type IModalName =
   // alert
   // 끼니 추가삭제, 식품 삭제
   | "menuDeleteAlert"
+  | "menuDeleteAllAlert"
   | "menuCreateAlert"
   | "menuCreateNAAlert"
   | "productDeleteAlert"
@@ -57,7 +59,7 @@ export interface IModalValues {
   menuDeleteAlert: { dietNoToDel?: string };
   productDeleteAlert: {
     productNoToDelArr?: string[];
-    checkAllClicked?: boolean;
+    dietNoToProductDel?: string;
   };
   addressDeleteAlert: { addressNoToDel?: string; nextAddrIdx?: number };
   noProductAlert: { screen?: string };
@@ -71,7 +73,9 @@ export interface IModalValues {
 
 export type IModalValue = IModalValues[keyof IModalValues];
 
-export type IModalState = { values: IModalValues } & { modalSeq: IModalName[] };
+export type IModalState = { values: IModalValues } & {
+  modalSeq: IModalName[];
+} & { isCarouselHided: boolean };
 
 const initialState: IModalState = {
   values: {
@@ -85,7 +89,7 @@ const initialState: IModalState = {
     },
     productDeleteAlert: {
       productNoToDelArr: [],
-      checkAllClicked: false,
+      dietNoToProductDel: "",
     },
     addressDeleteAlert: {
       addressNoToDel: "",
@@ -111,6 +115,7 @@ const initialState: IModalState = {
     },
   },
   modalSeq: [],
+  isCarouselHided: false,
 };
 
 export const modalSlice = createSlice({
@@ -124,6 +129,9 @@ export const modalSlice = createSlice({
         values?: IModalValue;
       }>
     ) => {
+      // preventing conflict with reacnimated carousel
+      state.isCarouselHided = true;
+
       // add to modalSeq (open modal)
       if (!state.modalSeq.includes(action.payload.name))
         state.modalSeq.push(action.payload.name);
@@ -143,6 +151,9 @@ export const modalSlice = createSlice({
       // close modal
       const modalNm = action.payload.name as keyof IModalValues;
       state.values[modalNm] = initialState.values[modalNm];
+
+      // preventing conflict with reacnimated carousel
+      state.isCarouselHided = false;
     },
 
     closeAllTutorialModal: (state) => {
@@ -151,6 +162,9 @@ export const modalSlice = createSlice({
         (modalName) => !modalName.includes("tutorial")
       );
       state.values = initialState.values;
+
+      // preventing conflict with reacnimated carousel
+      state.isCarouselHided = false;
     },
   },
 });

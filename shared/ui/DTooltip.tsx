@@ -1,9 +1,9 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 
-import {Image, ViewStyle} from 'react-native';
-import {icons} from '../iconSource';
-import colors from '../colors';
-import {TextMain} from './styledComps';
+import { Image, ViewStyle } from "react-native";
+import { icons } from "../iconSource";
+import colors from "../colors";
+import { TextMain } from "./styledComps";
 
 interface IDtooltip {
   color?: string;
@@ -47,28 +47,29 @@ const DTooltip = ({
 }: IDtooltip) => {
   const boxVerticalStyle =
     boxBottom !== undefined
-      ? {bottom: boxBottom}
+      ? { bottom: boxBottom }
       : boxTop !== undefined
-        ? {top: boxTop}
-        : {bottom: 0};
+      ? { top: boxTop }
+      : { bottom: 0 };
   const boxHorizontalStyle =
     boxLeft !== undefined
-      ? {left: boxLeft}
+      ? { left: boxLeft }
       : boxRight !== undefined
-        ? {right: boxRight}
-        : {left: 0};
+      ? { right: boxRight }
+      : { left: 0 };
   const triangleHorizontalStyle =
     triangleLeft !== undefined
-      ? {left: triangleLeft - 6}
+      ? { left: triangleLeft - 6 }
       : triangleRight !== undefined
-        ? {right: triangleRight - 6}
-        : {left: 10};
+      ? { right: triangleRight - 6 }
+      : { left: 10 };
   return tooltipShow ? (
     <Container
-      style={{...boxVerticalStyle, ...boxHorizontalStyle, ...style}}
-      onPress={() => (onPressFn ? onPressFn() : {})}>
+      style={[{ ...boxVerticalStyle, ...boxHorizontalStyle }, { ...style }]}
+      onPress={() => (onPressFn ? onPressFn() : {})}
+    >
       {reversed && triangle && (
-        <TooltipTriangleRvs style={{...triangleHorizontalStyle}} />
+        <TooltipTriangleRvs style={{ ...triangleHorizontalStyle }} />
       )}
       <TooltipBox color={color}>
         {customContent ? customContent() : <TooltipText>{text}</TooltipText>}
@@ -83,7 +84,7 @@ const DTooltip = ({
         ) : null}
       </TooltipBox>
       {!reversed && triangle && (
-        <TooltipTriangle color={color} style={{...triangleHorizontalStyle}} />
+        <TooltipTriangle color={color} style={{ ...triangleHorizontalStyle }} />
       )}
     </Container>
   ) : (
@@ -99,9 +100,10 @@ const Container = styled.Pressable`
   z-index: 1000;
 `;
 
-const TooltipBox = styled.View<{color?: string}>`
+const TooltipBox = styled.View<{ color?: string }>`
+  height: 100%;
   flex-direction: row;
-  background-color: ${({color}) => (color ? color : colors.green)};
+  background-color: ${({ color }) => (color ? color : colors.green)};
   padding: 5px;
   justify-content: center;
   align-items: flex-start;
@@ -127,7 +129,7 @@ const CheckBox = styled.Image`
   height: 14px;
 `;
 
-const TooltipTriangle = styled.View<{color?: string}>`
+const TooltipTriangle = styled.View<{ color?: string }>`
   position: absolute;
   width: 0;
   height: 0;
@@ -138,7 +140,7 @@ const TooltipTriangle = styled.View<{color?: string}>`
   /* background-color: transparent; */
   border-left-color: transparent;
   border-right-color: transparent;
-  border-top-color: ${({color}) => (color ? color : colors.green)};
+  border-top-color: ${({ color }) => (color ? color : colors.green)};
 `;
 const TooltipTriangleRvs = styled.View`
   position: absolute;

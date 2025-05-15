@@ -20,7 +20,6 @@ import {
   DEFAULT_BOTTOM_TAB_HEIGHT,
   tutorialSortFilter,
 } from "@/shared/constants";
-import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -31,7 +30,6 @@ const Search = () => {
   const headerHeight = useHeaderHeight();
 
   // redux
-  const dispatch = useAppDispatch();
   const { currentDietNo, isTutorialMode, tutorialProgress } = useAppSelector(
     (state) => state.common
   );
@@ -71,16 +69,15 @@ const Search = () => {
   };
 
   // etc
-  const currentNumOfFoods = dDData?.length || 0;
-  useEffect(() => {
-    if (isTutorialMode && tutorialProgress === "SelectFood") {
-      setTimeout(() => {
-        dispatch(openModal({ name: "tutorialTPS", modalId: "Search" }));
-      }, 200);
-    } else {
-      dispatch(closeModal({ name: "tutorialTPS" }));
-    }
-  }, [isTutorialMode, tutorialProgress]);
+  // useEffect(() => {
+  //   if (isTutorialMode && tutorialProgress === "SelectFood") {
+  //     setTimeout(() => {
+  //       dispatch(openModal({ name: "tutorialTPS", modalId: "Search" }));
+  //     }, 200);
+  //   } else {
+  //     dispatch(closeModal({ name: "tutorialTPS" }));
+  //   }
+  // }, [isTutorialMode, tutorialProgress]);
 
   // render
   if (getBaseLineIsLoading || isDTODataLoading) {
@@ -91,6 +88,7 @@ const Search = () => {
     );
   }
   const insetTop = useSafeAreaInsets().top;
+
   return (
     <Container
       style={{

@@ -1,9 +1,10 @@
-import React, {SetStateAction, useState} from 'react';
-import styled from 'styled-components/native';
-import DropDownPicker from 'react-native-dropdown-picker';
+import React, { SetStateAction, useState } from "react";
+import styled from "styled-components/native";
+import DropDownPicker from "react-native-dropdown-picker";
 
-import colors from '../../shared/colors';
-import {Col, InputHeaderText} from '../../shared/ui/styledComps';
+import colors from "../../shared/colors";
+import { Col, InputHeaderText } from "../../shared/ui/styledComps";
+import { ViewStyle } from "react-native";
 
 interface CategoryObject {
   label: string;
@@ -12,19 +13,32 @@ interface CategoryObject {
 interface IDDropdown {
   placeholder: string;
   value: string;
-  setValue: React.Dispatch<SetStateAction<string>>;
+  setValue: (value: string) => void;
   items: Array<CategoryObject> | undefined;
   scrollRef?: any;
+  style?: ViewStyle;
 }
 
 const DDropdown = (props: IDDropdown) => {
   const [open, setOpen] = useState(false);
-  const {placeholder, value, setValue, items, scrollRef} = props;
+  const { placeholder, value, setValue, items, scrollRef, style } = props;
+
+  // Wrapper function for DropDownPicker's setValue
+  const handleSetValue = (callback: React.SetStateAction<string>) => {
+    // Extract the new value from the callback
+    const newValue =
+      typeof callback === "function" ? callback(value) : callback;
+
+    console.log("DDropDown: handleSetValue: newValue", newValue);
+
+    // Dispatch Redux action or update state
+    typeof newValue === "string" && setValue(newValue);
+  };
 
   return (
-    <Col style={{width: '100%'}}>
+    <Col style={[{ width: "100%" }, { ...style }]}>
       <DropdownHeader isActive={true}>{placeholder}</DropdownHeader>
-      <DropDownPicker
+      <DropDownPicker<string>
         style={{
           borderWidth: 0,
           borderBottomWidth: 1,
@@ -33,7 +47,7 @@ const DDropdown = (props: IDDropdown) => {
           borderRadius: 0,
         }}
         dropDownContainerStyle={{
-          position: 'relative',
+          position: "relative",
           marginTop: -42,
           marginBottom: 40,
           paddingBottom: 4,
@@ -50,7 +64,7 @@ const DDropdown = (props: IDDropdown) => {
         }}
         textStyle={{
           fontSize: 16,
-          fontWeight: 'normal',
+          fontWeight: "normal",
           color: colors.textMain,
           marginLeft: -10,
         }}
@@ -58,14 +72,14 @@ const DDropdown = (props: IDDropdown) => {
         open={open}
         setOpen={() => {
           scrollRef && !open && scrollRef.current.scrollToEnd();
-          setOpen(open => !open);
+          setOpen((open) => !open);
         }}
         value={value}
-        setValue={v => setValue(v)}
         items={items || []}
         //   onChangeValue={() => {}}
         listMode="SCROLLVIEW"
         dropDownDirection="BOTTOM"
+        setValue={handleSetValue}
       />
     </Col>
   );

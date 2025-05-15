@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 // util, const
 import colors from "@/shared/colors";
-import { Col, Row } from "@/shared/ui/styledComps";
+import { Col, Row, TextMain } from "@/shared/ui/styledComps";
 import { sumUpNutrients } from "@/shared/utils/sumUp";
 
 // doobi components
@@ -37,8 +37,14 @@ interface INutrientProgress {
   title: string;
   numerator: number;
   denominator: number;
+  textColor?: string;
 }
-const ProgressBar = ({ title, numerator, denominator }: INutrientProgress) => {
+const ProgressBar = ({
+  title,
+  numerator,
+  denominator,
+  textColor,
+}: INutrientProgress) => {
   const [color, setColor] = useState(colors.main);
   const progress = numerator / denominator;
 
@@ -51,14 +57,14 @@ const ProgressBar = ({ title, numerator, denominator }: INutrientProgress) => {
         : colors.success;
     setTimeout(() => {
       setColor(indicatorColor);
-    }, 500);
+    }, 700);
   }, [numerator]);
 
   return (
     <ProgressBarContainer>
-      <ProgressBarTitle>{title}</ProgressBarTitle>
+      <ProgressBarTitle textColor={textColor}>{title}</ProgressBarTitle>
       <Progress.Bar
-        key={`${title}_${color}`}
+        // key={`${title}_${color}`}
         style={{ marginTop: 5 }}
         progress={progress}
         width={null}
@@ -66,17 +72,21 @@ const ProgressBar = ({ title, numerator, denominator }: INutrientProgress) => {
         color={color}
         unfilledColor={colors.bgBox}
         borderWidth={0}
+        animationConfig={{ duration: 300, bounceness: 10 }}
       />
-      <ProgressBarNumber>{`${numerator}/${denominator}`}</ProgressBarNumber>
+      <ProgressBarNumber
+        textColor={textColor}
+      >{`${numerator}/${denominator}`}</ProgressBarNumber>
     </ProgressBarContainer>
   );
 };
 
 const NutrientsProgress = ({
   dietDetailData,
+  textColor,
 }: {
   dietDetailData: IDietDetailData;
-  tooltipShow?: boolean;
+  textColor?: string;
 }) => {
   // react-query
   const { data: baseLineData } = useGetBaseLine();
@@ -131,6 +141,7 @@ const NutrientsProgress = ({
                 title={item.title}
                 numerator={item.nutr}
                 denominator={item.baseline}
+                textColor={textColor}
               />
             ))}
           </Row>
@@ -148,20 +159,22 @@ const ProgressBarContainer = styled.View`
   justify-content: center;
 `;
 
-const ProgressBarTitle = styled.Text`
+const ProgressBarTitle = styled(TextMain)<{ textColor?: string }>`
+  color: ${({ textColor }) => textColor || colors.textMain};
   font-size: 12px;
-  color: ${colors.textMain};
+  line-height: 16px;
   text-align: left;
 `;
-const ProgressBarNumber = styled.Text`
+const ProgressBarNumber = styled(TextMain)<{ textColor?: string }>`
+  color: ${({ textColor }) => textColor || colors.textMain};
   font-size: 12px;
+  line-height: 16px;
   margin-top: 5px;
-  color: ${colors.textMain};
   text-align: right;
 `;
 
 const Container = styled.View`
-  background-color: ${colors.white};
+  /* background-color: ${colors.white}; */
   width: 100%;
   align-items: center;
 `;

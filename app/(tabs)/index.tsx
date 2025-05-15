@@ -1,5 +1,5 @@
 // RN
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Platform, ScrollView, TouchableOpacity } from "react-native";
 
 // 3rd
@@ -36,8 +36,6 @@ import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
 import LastOrderCard from "@/components/screens/home/LastOrderCard";
 import Profile from "@/components/screens/home/Profile";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import CtaButton from "@/shared/ui/CtaButton";
-import { useTestErrQuery } from "@/shared/api/queries/test";
 
 const NewHome = () => {
   // navigation
@@ -150,7 +148,8 @@ const NewHome = () => {
     const timeoutId = setTimeout(() => {
       ctaBtnRef?.current?.measure((fx, fy, width, height, px, py) => {
         const insetTop = Platform.OS === "android" ? statusBarHeight : 0;
-
+        // paddingTop 적용시 안드로이드만 py에 padding만큼 inset이 적용됨
+        // android만 paddingTop 만큼 빼주기
         dispatch(
           openModal({
             name: "tutorialTPSStart",
@@ -178,15 +177,10 @@ const NewHome = () => {
   const ctaBtnText = isDietEmpty ? "식단 구성하기" : "식단 구매하기";
 
   const statusBarHeight = useSafeAreaInsets().top;
-  // paddingTop 적용시 안드로이드만 py에 padding만큼 inset이 적용됨
-  // android만 paddingTop 만큼 빼주기
-  const insetTop = Platform.OS === "android" ? statusBarHeight : 0;
 
   return (
     <Container
       style={{
-        paddingTop: statusBarHeight,
-        paddingBottom: Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0,
         backgroundColor: colors.backgroundLight,
         paddingLeft: 0,
         paddingRight: 0,

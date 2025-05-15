@@ -44,7 +44,7 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
   // fn
   const onCtaPressed = () => {
     if (isDietEmpty) {
-      router.push({ pathname: "/(tabs)/Diet" });
+      router.push({ pathname: "/(tabs)/Formula" });
       return;
     }
     if (!dTOData) return;

@@ -32,7 +32,6 @@ import {
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 import { usePathname, useRouter } from "expo-router";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface IHomeFoodListAndBtn extends ViewProps {
   scrollTop: any;
@@ -209,6 +208,7 @@ const HomeFoodListAndBtn = ({
             style={{
               width: SCREENWIDTH - 32,
               position: "absolute",
+              // bottom: 0,
               bottom: Platform.OS === "ios" ? insetBottom + 8 : 8,
               backgroundColor: isCTABtnDisAbled ? colors.inactive : colors.main,
             }}

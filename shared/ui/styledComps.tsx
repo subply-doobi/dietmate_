@@ -4,9 +4,11 @@ import colors from "../colors";
 import {
   BOTTOM_INDICATOR_IOS,
   DEFAULT_BOTTOM_TAB_HEIGHT,
+  IS_IOS,
   SCREENWIDTH,
 } from "../constants";
-import { Platform, ViewProps } from "react-native";
+import { Platform, View, ViewProps } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const NotoSansLight = styled.Text`
   font-family: "NotoSansKRLight";
@@ -78,13 +80,28 @@ export const TextSub = styled.Text`
   font-weight: 300;
 `;
 
-const PaddingView = styled.View`
-  flex: 1;
-  padding: 0px 16px 0px 16px;
-  background-color: ${colors.white};
-`;
 export const Container = ({ children, ...props }: ViewProps) => {
-  return <PaddingView {...props}>{children}</PaddingView>;
+  const insets = useSafeAreaInsets();
+  const statusBarHeight = insets.top;
+  const insetTop = Platform.OS === "android" ? statusBarHeight : 0;
+  const insetBottom = Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0;
+
+  return (
+    <View
+      style={[
+        {
+          flex: 1,
+          backgroundColor: colors.white,
+          paddingTop: insetTop,
+          paddingBottom: insetBottom,
+          paddingHorizontal: 16,
+        },
+        props.style,
+      ]}
+    >
+      {children}
+    </View>
+  );
 };
 
 export const AlertContentContainer = styled.View`

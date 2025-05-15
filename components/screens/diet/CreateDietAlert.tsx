@@ -11,6 +11,7 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import MenuNumSelect from "@/components/common/cart/MenuNumSelect";
 import { useEffect } from "react";
 import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 interface ICreateDietAlert {
   numOfCreateDiet: number;
@@ -52,7 +53,7 @@ const CreateDietAlert = ({
         action="setQty"
         currentQty={numOfCreateDiet}
         setQty={setNumOfCreateDiet}
-        maxQty={10 - NumOfMenu}
+        maxQty={MENU_NUM_LABEL.length - NumOfMenu}
       />
     </Container>
   );

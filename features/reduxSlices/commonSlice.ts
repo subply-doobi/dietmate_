@@ -34,6 +34,7 @@ export interface ICommonState {
     bottomTabBarHeight: number;
     insetTop: number;
   };
+  globalLoading: boolean;
   currentDietNo: string;
   totalFoodList: IProductData[];
   totalFoodListIsLoaded: boolean;
@@ -57,6 +58,7 @@ const initialState: ICommonState = {
     bottomTabBarHeight: 49,
     insetTop: 0,
   },
+  globalLoading: false,
   currentDietNo: "",
   totalFoodList: [],
   totalFoodListIsLoaded: false,
@@ -93,6 +95,9 @@ export const commonSlice = createSlice({
       }>
     ) => {
       state.inset = { ...state.inset, ...action.payload };
+    },
+    setGlobalLoading: (state, action: PayloadAction<boolean>) => {
+      state.globalLoading = action.payload;
     },
     setCurrentDiet: (state, action: PayloadAction<string>) => {
       state.currentDietNo = action.payload;
@@ -161,6 +166,7 @@ export const commonSlice = createSlice({
 
 export const {
   setInsets,
+  setGlobalLoading,
   setCurrentDiet,
   setTotalFoodList,
   setMenuAcActive,

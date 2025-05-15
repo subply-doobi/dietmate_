@@ -3,7 +3,7 @@ import { IProductData } from "../api/types/product";
 import { NUTR_ERROR_RANGE, SERVICE_PRICE_PER_PRODUCT } from "../constants";
 import { IFoodGroupForAutoMenu } from "./dataTransform";
 
-const TRY_NUM = 100;
+const TRY_NUM = 200;
 const CATEGORY_LIMIT = [1, 1, 2, 2, 1, 1]; // [lunchBox, chicken, salad, snack, chip, drink]
 
 const shuffle = (arr: any) => {
@@ -487,19 +487,19 @@ export const makeAutoMenu3 = ({
 
       /////////////////////////////////////// ---- LOG ---- ////////////////////////////////////
       // console.log(
-      //   `-------------------- perfectMenuWithES : ${perfectMenuWithES.length} --------------------`,
+      //   `-------------------- perfectMenuWithES : ${perfectMenuWithES.length} --------------------`
       // );
       // logResult(perfectMenuWithES);
       // console.log(
-      //   `-------------------- betterMenuWithES : ${betterMenuWithES.length} --------------------`,
+      //   `-------------------- betterMenuWithES : ${betterMenuWithES.length} --------------------`
       // );
       // logResult(betterMenuWithES);
       // console.log(
-      //   `-------------------- goodMenuWithES : ${goodMenuWithES.length} --------------------`,
+      //   `-------------------- goodMenuWithES : ${goodMenuWithES.length} --------------------`
       // );
       // logResult(goodMenuWithES);
       // console.log(
-      //   `-------------------- menuWithES : ${menuWithES.length} --------------------`,
+      //   `-------------------- menuWithES : ${menuWithES.length} --------------------`
       // );
       // logResult(menuWithES);
       //////////////////////////////////////////////////////////////////////////////////////////

@@ -56,13 +56,8 @@ const Diet = () => {
 
   // redux
   const dispatch = useAppDispatch();
-  const {
-    currentDietNo,
-    menuAcActive,
-    isTutorialMode,
-    tutorialProgress,
-    autoMenuStatus,
-  } = useAppSelector((state) => state.common);
+  const { currentDietNo, menuAcActive, isTutorialMode, tutorialProgress } =
+    useAppSelector((state) => state.common);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -71,7 +66,6 @@ const Diet = () => {
     isLoading: isDTOLoading,
     refetch: refetchDTOData,
   } = useListDietTotalObj();
-  const createDietCntMutation = useCreateDietCnt();
   const { refetch: refetchLPData } = useListProduct(
     {
       dietNo: currentDietNo,
@@ -245,9 +239,9 @@ const Diet = () => {
     <Container
       style={{
         backgroundColor: colors.backgroundLight2,
+        paddingTop: 0,
         paddingLeft: 0,
         paddingRight: 0,
-        paddingBottom: Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0,
       }}
     >
       <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
@@ -270,26 +264,6 @@ const Diet = () => {
           {/* 끼니추가 버튼 */}
           {dTOData && (
             <AddMenuBtn onPress={onAddMenuPressed} dTOData={dTOData} />
-          )}
-
-          {/* 여러끼니 자동구성 버튼 */}
-          <HorizontalSpace height={24} />
-          {dTOData && Object.keys(dTOData).length > 1 && (
-            <CtaButton
-              ref={autoMenuBtnRef}
-              btnStyle="active"
-              shadow={true}
-              style={{
-                width: SCREENWIDTH - 32,
-                alignSelf: "center",
-                height: 48,
-              }}
-              btnText={`전체 자동구성`}
-              onPress={() => {
-                // dispatch(closeModal({ name: "tutorialTPS" }));
-                router.push({ pathname: "/AutoMenu" });
-              }}
-            />
           )}
         </Col>
 

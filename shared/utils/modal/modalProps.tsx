@@ -21,6 +21,7 @@ import DeleteAlertContent from "@/components/modal/alert/DeleteAlertContent";
 import {
   useCreateDietCnt,
   useDeleteDiet,
+  useDeleteDietAll,
   useDeleteDietDetail,
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
@@ -73,6 +74,7 @@ import MenuNumSelectContent from "@/components/common/cart/MenuNumSelectContent"
 import React from "react";
 import { Animated } from "react-native";
 import SortModalContent from "@/components/screens/search/SortModalContent";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 interface IModalProps {
   [key: string]: {
@@ -127,6 +129,7 @@ export const useModalProps = () => {
     enabled: false,
   });
   const deleteDietMutation = useDeleteDiet();
+  const deleteDietAllMutation = useDeleteDietAll();
   const createDietCntMutation = useCreateDietCnt();
   const deleteDietDetailMutation = useDeleteDietDetail();
   const deleteUser = useDeleteUser();
@@ -261,6 +264,25 @@ export const useModalProps = () => {
     };
   }, [dTOData, dietNoToDelete]);
 
+  const { menuDeleteAllAlert } = useMemo(() => {
+    // console.log("modalProps: menuDeleteAllAlert memo");
+    const menuDeleteAllAlert = {
+      numOfBtn: 2,
+      contentDelay: 0,
+      confirmLabel: "삭제",
+      onConfirm: () => {
+        if (!dTOData) return;
+        deleteDietAllMutation.mutate();
+        dispatch(setFormulaProgress(["SelectNumOfMenu"]));
+        router.back();
+        commonClose("menuDeleteAllAlert");
+      },
+      onCancel: () => commonClose("menuDeleteAllAlert"),
+      renderContent: () => <DeleteAlertContent deleteText={"모든 끼니를"} />,
+    } as IModalProps["menuDeleteAllAlert"];
+    return { menuDeleteAllAlert };
+  }, [dTOData]);
+
   const { menuCreateAlert } = useMemo(() => {
     // console.log("modalProps: menuCreateAlert memo");
     const menuCreateAlert = {
@@ -325,12 +347,13 @@ export const useModalProps = () => {
       onConfirm: async () => {
         const productNoToDelArr =
           modalState.values?.productDeleteAlert.productNoToDelArr;
+        const dietNoToProductDel =
+          modalState.values?.productDeleteAlert.dietNoToProductDel || "";
 
         if (dTOData && productNoToDelArr) {
           const deleteMutations = productNoToDelArr.map((productNo) => {
-            // console.log("delete: ", productNo);
             deleteDietDetailMutation.mutateAsync({
-              dietNo: currentDietNo,
+              dietNo: dietNoToProductDel || currentDietNo,
               productNo,
             });
           });
@@ -1140,6 +1163,7 @@ export const useModalProps = () => {
     // alert
     // 끼니 추가삭제, 식품 삭제
     menuDeleteAlert,
+    menuDeleteAllAlert,
     menuCreateAlert,
     menuCreateNAAlert,
     productDeleteAlert,

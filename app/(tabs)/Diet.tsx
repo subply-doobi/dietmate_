@@ -97,8 +97,8 @@ const Diet = () => {
     const isDietEmpty = menuNum === 0 || priceTotal === 0;
     const orderBtnText = isDietEmpty
       ? `식단을 먼저 구성해봐요`
-      : `주문하기 (${commaToNum(priceTotal + totalShippingPrice)}원)`;
-    const orderBtnStyle = isDietEmpty ? "inactive" : "activeDark";
+      : `공식 계산하기 (${commaToNum(priceTotal + totalShippingPrice)}원)`;
+    const orderBtnStyle = isDietEmpty ? "inactive" : "active";
 
     // accordion
     const accordionContent = getMenuAcContent({

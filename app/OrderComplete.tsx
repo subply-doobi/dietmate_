@@ -60,7 +60,7 @@ const OrderComplete = () => {
           style={{ marginTop: 16 }}
           onPress={goToHome}
         >
-          <BtnText>두비랑 식단구성 더 해보기</BtnText>
+          <BtnText>근의공식 더 만들기</BtnText>
         </BtnCTA>
       </BtnBox>
     </Container>

@@ -57,7 +57,7 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
   //
 
   const menuCardTitle = isDietEmpty
-    ? "새로운 식단 구성을 기다리고 있어요"
+    ? "새로운 공식을 기다리고 있어요"
     : "구매 대기 중인 끼니가 있어요";
   return (
     <ShadowView

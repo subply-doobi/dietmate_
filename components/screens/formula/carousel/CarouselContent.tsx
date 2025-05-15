@@ -10,7 +10,7 @@ import {
   Row,
   TextMain,
 } from "@/shared/ui/styledComps";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ICarouselInstance } from "react-native-reanimated-carousel";
 import styled from "styled-components/native";
 import SelectAllRow from "./SelectAllRow";

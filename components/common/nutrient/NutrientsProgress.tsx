@@ -9,11 +9,12 @@ import { Col, Row, TextMain } from "@/shared/ui/styledComps";
 import { sumUpNutrients } from "@/shared/utils/sumUp";
 
 // doobi components
-import { NUTR_ERROR_RANGE } from "@/shared/constants";
+import { NUTR_ERROR_RANGE, NUTRIENT_PROGRESS_HEIGHT } from "@/shared/constants";
 
 // react-query
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { IDietDetailData } from "@/shared/api/types/diet";
+import { ActivityIndicator } from "react-native";
 
 const nutrLowerBoundByTitle: { [key: string]: number } = {
   "칼로리(kcal)": NUTR_ERROR_RANGE["calorie"][0],
@@ -72,7 +73,6 @@ const ProgressBar = ({
         color={color}
         unfilledColor={colors.bgBox}
         borderWidth={0}
-        animationConfig={{ duration: 300, bounceness: 10 }}
       />
       <ProgressBarNumber
         textColor={textColor}
@@ -84,9 +84,11 @@ const ProgressBar = ({
 const NutrientsProgress = ({
   dietDetailData,
   textColor,
+  isLoading = false,
 }: {
   dietDetailData: IDietDetailData;
   textColor?: string;
+  isLoading?: boolean;
 }) => {
   // react-query
   const { data: baseLineData } = useGetBaseLine();
@@ -126,27 +128,33 @@ const NutrientsProgress = ({
 
   return (
     <Container>
-      <Col style={{ width: "100%", height: 70 }}>
-        {baseLineData && Object.keys(baseLineData).length !== 0 && (
-          <Row
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              columnGap: 8,
-            }}
-          >
-            {PROGRESS_ITEM.map((item) => (
-              <ProgressBar
-                key={item.id}
-                title={item.title}
-                numerator={item.nutr}
-                denominator={item.baseline}
-                textColor={textColor}
-              />
-            ))}
-          </Row>
-        )}
-      </Col>
+      {isLoading ? (
+        <LoadingBox>
+          <ActivityIndicator size="small" color={colors.main} />
+        </LoadingBox>
+      ) : (
+        <Col style={{ width: "100%", height: NUTRIENT_PROGRESS_HEIGHT }}>
+          {baseLineData && Object.keys(baseLineData).length !== 0 && (
+            <Row
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                columnGap: 8,
+              }}
+            >
+              {PROGRESS_ITEM.map((item) => (
+                <ProgressBar
+                  key={item.id}
+                  title={item.title}
+                  numerator={item.nutr}
+                  denominator={item.baseline}
+                  textColor={textColor}
+                />
+              ))}
+            </Row>
+          )}
+        </Col>
+      )}
     </Container>
   );
 };
@@ -155,8 +163,15 @@ export default NutrientsProgress;
 
 const ProgressBarContainer = styled.View`
   flex: 1;
-  height: 70px;
+  height: ${NUTRIENT_PROGRESS_HEIGHT}px;
   justify-content: center;
+`;
+
+const LoadingBox = styled.View`
+  width: 100%;
+  height: ${NUTRIENT_PROGRESS_HEIGHT}px;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ProgressBarTitle = styled(TextMain)<{ textColor?: string }>`

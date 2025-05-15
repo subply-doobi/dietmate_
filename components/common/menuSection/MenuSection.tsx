@@ -12,7 +12,7 @@ import Accordion from "react-native-collapsible/Accordion";
 // doobi util, constant etc
 import { icons } from "@/shared/iconSource";
 import colors from "@/shared/colors";
-import { SCREENHEIGHT } from "@/shared/constants";
+import { NUTRIENT_PROGRESS_HEIGHT, SCREENHEIGHT } from "@/shared/constants";
 import { HorizontalSpace, Icon, Row, TextMain } from "@/shared/ui/styledComps";
 
 // doobi Components
@@ -280,7 +280,7 @@ const AddMenuText = styled(TextMain)`
 
 const IndicatorBox = styled.TouchableOpacity`
   width: 100%;
-  height: 70px;
+  height: ${NUTRIENT_PROGRESS_HEIGHT};
   background-color: ${colors.white};
 
   justify-content: center;

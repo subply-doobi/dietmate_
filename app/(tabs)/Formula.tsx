@@ -1,6 +1,6 @@
 // RN, expo
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { BackHandler } from "react-native";
 
 // 3rd
@@ -8,7 +8,6 @@ import styled from "styled-components/native";
 import * as Progress from "react-native-progress";
 
 // doobi
-import { SCREENWIDTH } from "@/shared/constants";
 import colors from "@/shared/colors";
 import BackArrow from "@/shared/ui/BackArrow";
 import GuideTitle from "@/shared/ui/GuideTitle";
@@ -16,6 +15,9 @@ import { Container } from "@/shared/ui/styledComps";
 import { getPageItem } from "@/shared/utils/screens/formula/contentByPages";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { useGetBaseLine } from "@/shared/api/queries/baseLine";
+import { getNutrStatus } from "@/shared/utils/sumUp";
 
 const Formula = () => {
   // navigation
@@ -23,7 +25,12 @@ const Formula = () => {
 
   // redux
   const dispatch = useAppDispatch();
+  const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
   const progress = useAppSelector((state) => state.formula.formulaProgress);
+
+  // react-query
+  const { data: bLData } = useGetBaseLine();
+  const { data: dTOData } = useListDietTotalObj();
 
   // etc
   const currentPage = progress[progress.length - 1];
@@ -34,6 +41,39 @@ const Formula = () => {
       ? router.back()
       : // setProgress((v) => v.slice(0, v.length - 1));
         dispatch(setFormulaProgress(progress.slice(0, progress.length - 1)));
+  };
+
+  // useMemo
+  const formulaProgressValue = useMemo(() => {
+    if (!dTOData) return 0;
+    const isSuccessArr = Object.values(dTOData).map((item) => {
+      const isSuccess =
+        getNutrStatus({
+          totalFoodList,
+          dDData: item.dietDetail,
+          bLData: bLData,
+        }) === "satisfied";
+      return isSuccess;
+    });
+    const isSuccessCount = isSuccessArr.filter((item) => item).length;
+    const ratio = isSuccessCount / isSuccessArr.length;
+
+    const formulaProgressValue = (5 + ratio * 5) / 10;
+
+    return formulaProgressValue;
+  }, [dTOData]);
+
+  const progressValue: {
+    [key: string]: number;
+  } = {
+    SelectNumOfMenu: 1 / 10,
+    SelectMethod: 2 / 10,
+    AMSelect: 3 / 10,
+    AMCategory: 3.5 / 10,
+    AMCompany: 4 / 10,
+    AMPrice: 5 / 10,
+    AMProcessing: 5 / 10,
+    Formula: formulaProgressValue,
   };
 
   // useEffect
@@ -65,7 +105,7 @@ const Formula = () => {
       <BackArrow style={{ marginLeft: 8 }} goBackFn={() => goPrev()} />
       <ProgressBox>
         <Progress.Bar
-          progress={getPageItem(currentPage)?.progress || 0}
+          progress={progressValue[currentPage] || 0}
           width={null}
           height={4}
           color={colors.main}
@@ -95,7 +135,7 @@ const Formula = () => {
 export default Formula;
 
 const ProgressBox = styled.View`
-  width: ${SCREENWIDTH - 32}px;
-  align-self: center;
+  background-color: ${colors.backgroundLight2};
+  padding: 0 16px;
   height: 4px;
 `;

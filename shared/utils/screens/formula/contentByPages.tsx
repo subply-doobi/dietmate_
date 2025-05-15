@@ -93,7 +93,7 @@ export const PAGES: IPages = [
 
   // 근 별 공식 전체 페이지
   {
-    progress: 7 / 10,
+    progress: 9 / 10,
     header: "공식",
     name: "Formula",
     render: () => <Formula />,

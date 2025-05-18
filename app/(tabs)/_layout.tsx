@@ -102,7 +102,7 @@ export default function TabLayout() {
           ),
           tabBarShowLabel: false,
           headerShown: true,
-          headerTitle: "식단구성",
+          headerTitle: "공식확인",
           headerTitleAlign: "center",
           headerTitleStyle: {
             fontSize: 18,

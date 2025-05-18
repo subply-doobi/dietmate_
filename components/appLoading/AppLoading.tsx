@@ -80,8 +80,8 @@ const AppLoading = () => {
       await autoLogin(isUpToDate);
 
       // 튜토리얼 모드 확인
-      // const isTutorialMode = !(await getNotShowAgainList()).tutorial;
-      const isTutorialMode = false;
+      const isTutorialMode = !(await getNotShowAgainList()).tutorial;
+      // const isTutorialMode = false;
       isTutorialMode && dispatch(setTutorialStart());
     };
 

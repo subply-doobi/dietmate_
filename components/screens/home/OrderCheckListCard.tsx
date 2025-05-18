@@ -108,7 +108,7 @@ const OrderChecklistCard = ({
                 >
                   <LeftBar />
                   <CheckListTitle>
-                    {parseDate(order[0]?.[0]?.buyDate)} 주문
+                    {parseDate(order[0]?.[0]?.buyDate)?.slice(3)} 공식
                   </CheckListTitle>
                   <Row>
                     <CheckListSubTitle>{percentage}% 완료</CheckListSubTitle>

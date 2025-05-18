@@ -1,5 +1,15 @@
+// react, expo
+import { useEffect, useState } from "react";
+import { ActivityIndicator } from "react-native";
+
+// 3rd
+import styled from "styled-components/native";
+import { useRouter } from "expo-router";
+import Toast from "react-native-toast-message";
+
+// doobi
+
 import { setAutoAddSelectedFood } from "@/features/reduxSlices/formulaSlice";
-import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import {
   useCreateDietDetail,
   useListDietTotalObj,
@@ -8,12 +18,10 @@ import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
-import { useRouter } from "expo-router";
-import Toast from "react-native-toast-message";
-import styled from "styled-components/native";
 import Foodlist from "./Foodlist";
 import NutrientsProgress from "../common/nutrient/NutrientsProgress";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
+import { NUTRIENT_PROGRESS_HEIGHT } from "@/shared/constants";
 
 const ProductSelectToast = () => {
   // redux
@@ -22,6 +30,9 @@ const ProductSelectToast = () => {
     (state) => state.formula.autoAddSelectedFood
   );
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
+
+  // useState
+  const [isLoading, setIsLoading] = useState(true);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
@@ -36,6 +47,18 @@ const ProductSelectToast = () => {
   const expectedMenu = selectedFood
     ? currentMenu.concat(selectedFood as IDietDetailProductData)
     : currentMenu;
+
+  // useEffect
+  useEffect(() => {
+    if (!selectedFood) {
+      setIsLoading(true);
+      return;
+    }
+    // selectedFood 없을 때 추가된 경우 delay loading 후 progressBar 보여주기
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+  }, [selectedFood]);
 
   // fn
   const onPressInfo = () => {
@@ -75,6 +98,7 @@ const ProductSelectToast = () => {
       <NutrientsProgress
         dietDetailData={expectedMenu}
         textColor={colors.whiteOpacity70}
+        isLoading={isLoading}
       />
       <Foodlist foods={currentMenu} />
       <CtaRow>

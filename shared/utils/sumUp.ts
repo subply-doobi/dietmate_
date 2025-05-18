@@ -38,7 +38,7 @@ export const getNutrStatus = ({
   totalFoodList: IProductData[];
   bLData: IBaseLineData | undefined;
   dDData: IDietDetailData | undefined;
-}) => {
+}): "error" | "empty" | "notEnough" | "satisfied" | "exceed" => {
   // error
   if (!bLData || !dDData || totalFoodList.length === 0) return "error";
 

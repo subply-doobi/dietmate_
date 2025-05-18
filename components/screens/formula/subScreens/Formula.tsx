@@ -1,5 +1,5 @@
 // RN, expo
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ActivityIndicator, Dimensions } from "react-native";
 
 // 3rd
@@ -13,8 +13,8 @@ import Carousel, {
 // doobi
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { Icon, Row } from "@/shared/ui/styledComps";
-import { FORMULA_CAROUSEL_HEIGHT } from "@/shared/constants";
+import { Col, Icon, Row } from "@/shared/ui/styledComps";
+import { FORMULA_CAROUSEL_HEIGHT, SCREENWIDTH } from "@/shared/constants";
 import { icons } from "@/shared/iconSource";
 import CarouselContent from "../carousel/CarouselContent";
 import PaginationDot from "../carousel/PaginationDot";
@@ -25,6 +25,10 @@ import {
   setCurrentFMCIdx,
   setFormulaProgress,
 } from "@/features/reduxSlices/formulaSlice";
+import CtaButton from "@/shared/ui/CtaButton";
+import { getNutrStatus } from "@/shared/utils/sumUp";
+import { useGetBaseLine } from "@/shared/api/queries/baseLine";
+import Toast from "react-native-toast-message";
 
 const width = Dimensions.get("window").width;
 
@@ -36,14 +40,33 @@ const Formula = () => {
   // redux
   const dispatch = useAppDispatch();
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
+  const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
+
   // const isCarouselHided = useAppSelector(
   //   (state) => state.modal.isCarouselHided
   // );
   const modalSeq = useAppSelector((state) => state.modal.modalSeq);
 
   // react-query
+  const { data: bLData } = useGetBaseLine();
   const { data: dTOData } = useListDietTotalObj();
   const menuArr = Object.keys(dTOData || {});
+
+  // useMemo
+  const isAllSuccess = useMemo(() => {
+    if (!dTOData) return;
+    const isSuccessArr = Object.values(dTOData).map((item) => {
+      const { dietDetail } = item;
+      const isSuccess = getNutrStatus({
+        bLData: bLData,
+        dDData: dietDetail,
+        totalFoodList: totalFoodList,
+      });
+      return isSuccess;
+    });
+    const isAllSuccess = isSuccessArr.every((item) => item === "satisfied");
+    return isAllSuccess;
+  }, [dTOData]);
 
   // useRef
   const carouselRef = useRef<ICarouselInstance>(null);
@@ -76,6 +99,22 @@ const Formula = () => {
   const isCarouselIdxExceed = menuArr.length - 1 < currentFMCIdx;
   const isCarouselHided = modalSeq.length > 0;
 
+  useEffect(() => {
+    if (!dTOData) return;
+    if (!isAllSuccess) return;
+    if (Object.keys(dTOData).length === 0) {
+      Toast.hide();
+      return;
+    }
+    Toast.show({
+      type: "success",
+      text1: "공식의 모든 근이 완성되었어요!",
+      text2: "장바구니에서 내 공식을 확인해보세요",
+      position: "bottom",
+      visibilityTime: 2500,
+    });
+  }, [isAllSuccess]);
+
   if (!isFocused || isCarouselIdxExceed || isCarouselHided) {
     return (
       <Container style={{ justifyContent: "center", alignItems: "center" }}>
@@ -87,7 +126,7 @@ const Formula = () => {
       <Container>
         <Row
           style={{
-            marginTop: 24,
+            marginTop: -32,
             alignSelf: "center",
             columnGap: 8,
             justifyContent: "center",
@@ -101,15 +140,15 @@ const Formula = () => {
               width: 40,
               height: 26,
               borderRadius: 6,
-              borderWidth: 1,
-              borderColor: colors.lineLight,
-              backgroundColor: colors.white,
+              // borderWidth: 1,
+              // borderColor: colors.lineLight,
+              // backgroundColor: colors.white,
               alignSelf: "flex-end",
             }}
             activeDotStyle={{
               width: 48,
               height: 32,
-              borderRadius: 8,
+              // borderRadius: 8,
               backgroundColor: colors.white,
             }}
             renderItem={(_, index) => <PaginationDot index={index} />}
@@ -150,6 +189,20 @@ const Formula = () => {
             />
           )}
         />
+        {isAllSuccess && (
+          <CtaButton
+            btnStyle="active"
+            btnText="공식 만들기 완료 "
+            style={{
+              position: "absolute",
+              bottom: 8,
+              right: 16,
+              left: 16,
+              width: SCREENWIDTH - 32,
+            }}
+            onPress={() => router.push("/(tabs)/Diet")}
+          />
+        )}
       </Container>
     );
   }
@@ -160,6 +213,7 @@ export default Formula;
 const Container = styled.View`
   flex: 1;
   background-color: ${colors.backgroundLight2};
+  justify-content: center;
 `;
 
 const MoreBtn = styled.TouchableOpacity`

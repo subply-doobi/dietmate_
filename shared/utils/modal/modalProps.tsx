@@ -165,7 +165,7 @@ export const useModalProps = () => {
           (dietNo) => dTOData[dietNo].dietDetail.length === 0
         )) ||
       false;
-    const ctaBtnText = isDietEmpty ? "식단 구성하기" : "식단 구매하기";
+    const ctaBtnText = isDietEmpty ? "공식 만들기" : "공식 계산하기";
     const dDData = dTOData?.[currentDietNo]?.dietDetail ?? [];
     const currentNumOfFoods = dDData?.length || 0;
 
@@ -771,19 +771,6 @@ export const useModalProps = () => {
       contentDelay: 500,
       renderContent: () => (
         <>
-          <DSmallBtn
-            btnText="튜토리얼 건너뛰기"
-            style={{
-              position: "absolute",
-              bottom: 40,
-              right: 16,
-              backgroundColor: colors.blackOpacity70,
-            }}
-            onPress={() => {
-              dispatch(setTutorialEnd());
-              updateNotShowAgainList({ key: "tutorial", value: true });
-            }}
-          />
           <DTooltip
             tooltipShow={true}
             boxTop={
@@ -791,14 +778,16 @@ export const useModalProps = () => {
               insetTop -
               36
             }
-            text="식단구성을 시작해봐요!"
+            text="내 목표량에 완벽한 근의공식을 만들어봐요!"
             boxLeft={32}
           />
           <CtaButton
             onPress={() => {
-              dispatch(setTutorialProgress("AddMenu"));
+              // dispatch(setTutorialProgress("AddMenu"));
               dispatch(closeModal({ name: "tutorialTPSStart" }));
-              router.push("/(tabs)/Diet");
+              dispatch(setTutorialEnd());
+              updateNotShowAgainList({ key: "tutorial", value: true });
+              router.push("/(tabs)/Formula");
             }}
             btnStyle="active"
             btnText={ctaBtnText}
@@ -813,7 +802,11 @@ export const useModalProps = () => {
       ),
     } as IModalProps["tutorialTPSStart"];
     return { tutorialTPSStart };
-  }, [ctaBtnText, modalState.values.tutorialTPSStart.tutorialStartCTABtnPy]);
+  }, [
+    ctaBtnText,
+    modalState.values.tutorialTPSStart.tutorialStartCTABtnPy,
+    isTutorialMode,
+  ]);
 
   const { tutorialTPSAddMenu, tutorialTPSAddFood, tutorialTPSSelectFood } =
     useMemo(() => {

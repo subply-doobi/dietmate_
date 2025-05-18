@@ -174,7 +174,7 @@ const NewHome = () => {
         (dietNo) => dTOData[dietNo].dietDetail.length === 0
       )) ||
     false;
-  const ctaBtnText = isDietEmpty ? "식단 구성하기" : "식단 구매하기";
+  const ctaBtnText = isDietEmpty ? "공식 만들기" : "공식 계산하기";
 
   const statusBarHeight = useSafeAreaInsets().top;
 

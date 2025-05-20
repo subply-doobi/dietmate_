@@ -1,4 +1,5 @@
 import { ConfigContext, ExpoConfig } from "expo/config";
+import { version as packageVersion } from "./package.json";
 
 const IS_DEV = process.env.APP_VARIANT === "development";
 const IS_PREVIEW = process.env.APP_VARIANT === "preview";
@@ -27,11 +28,16 @@ const getAppName = () => {
   return "근의공식";
 };
 
+const getVersion = () => {
+  const [major, minor] = packageVersion.split(".");
+  return `${major}.${minor}.0`;
+};
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   name: getAppName(),
   owner: "subply",
   slug: "dietmate",
-  version: "1.1.2",
+  version: getVersion(),
   orientation: "portrait",
   icon: "./shared/assets/appIcon/appIcon.png",
   scheme: "dietmate",
@@ -40,7 +46,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   updates: {
     url: "https://u.expo.dev/3961e206-831a-4f33-b8a6-f72e46a5aab0",
   },
-  runtimeVersion: "1.1.0",
+  runtimeVersion: getVersion(),
   ios: {
     supportsTablet: true,
     usesAppleSignIn: true,

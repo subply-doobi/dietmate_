@@ -24,7 +24,7 @@ import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import MenuNumSelect from "../common/cart/MenuNumSelect";
-import { ENV } from "@/shared/constants";
+import { ENV, MENU_NUM_LABEL } from "@/shared/constants";
 
 interface IMenuAcInactiveHeader {
   controllable?: boolean;
@@ -52,8 +52,8 @@ const MenuAcInactiveHeader = ({
   // react-query
   const { data: dTOData, isFetching: isDTOFetching } = useListDietTotalObj();
   const dDData = dTOData?.[dietNo]?.dietDetail ?? [];
-  const dietSeq = dTOData?.[dietNo]?.dietSeq ?? "";
-  const deleteDietMutation = useDeleteDiet();
+  const idx =
+    Object.keys(dTOData || {}).findIndex((key) => key === dietNo) || 0;
 
   // fn
   const onMenuNoSelectPress = () => {
@@ -133,7 +133,7 @@ const MenuAcInactiveHeader = ({
             marginLeft: 2,
           }}
         >
-          <Title>{dietSeq}</Title>
+          <Title>{MENU_NUM_LABEL[idx]}</Title>
           <SubTitle>{priceText}</SubTitle>
         </Row>
 

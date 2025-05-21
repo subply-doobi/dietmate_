@@ -20,6 +20,7 @@ import {
 import { commaToNum } from "@/shared/utils/sumUp";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 interface ICurrentDietCard {
   isDietEmpty: boolean;
@@ -58,7 +59,7 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
 
   const menuCardTitle = isDietEmpty
     ? "새로운 공식을 기다리고 있어요"
-    : "구매 대기 중인 끼니가 있어요";
+    : "계산할 공식이 있어요";
   return (
     <ShadowView
       style={{
@@ -83,7 +84,7 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
               <TargetChangeBtn
                 onPress={() => router.push({ pathname: "/(tabs)/Diet" })}
               >
-                <SubText>끼니상세</SubText>
+                <SubText>공식상세</SubText>
                 <Icon size={20} source={icons.arrowRight_20} />
               </TargetChangeBtn>
             )}
@@ -92,7 +93,7 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
             <Col style={{ marginTop: 24 }}>
               <Row>
                 <Icon source={icons.menu_24} />
-                <CardDesc>{menuNum}개 끼니</CardDesc>
+                <CardDesc>"{MENU_NUM_LABEL[menuNum - 1]}" 공식</CardDesc>
               </Row>
               <Row style={{ marginTop: 8 }}>
                 <Icon source={icons.card_24} />

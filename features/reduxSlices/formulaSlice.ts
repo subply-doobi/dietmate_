@@ -1,10 +1,8 @@
 import { IProductData } from "@/shared/api/types/product";
-import { IAutoMenuSubPageNm } from "@/shared/utils/screens/autoMenu/contentByPages";
+import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type IFormulaProgress = Array<
-  "SelectNumOfMenu" | "SelectMethod" | "Formula" | IAutoMenuSubPageNm
->;
+type IFormulaProgress = Array<IFormulaPageNm>;
 
 export interface IFormulaState {
   currentFMCIdx: number;

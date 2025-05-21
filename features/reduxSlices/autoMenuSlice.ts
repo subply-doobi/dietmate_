@@ -1,4 +1,3 @@
-import { IAutoMenuSubPageNm } from "@/shared/utils/screens/autoMenu/contentByPages";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AutoMenuState {

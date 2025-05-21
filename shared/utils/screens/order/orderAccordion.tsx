@@ -16,6 +16,7 @@ import Address from "@/components/screens/order/Address";
 import FoodToOrder from "@/components/screens/order/FoodToOrder";
 import Orderer from "@/components/screens/order/Orderer";
 import PaymentMethod from "@/components/screens/order/PaymentMethod";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 interface IGetOrderAccordionContent {
   menuNum: number;
@@ -55,7 +56,7 @@ export const getOrderAccordionContent = ({
           activeHeader: (
             <AccordionHeader>
               <Col style={{ flex: 1 }}>
-                <AccordionHeaderTitle>주문식품</AccordionHeaderTitle>
+                <AccordionHeaderTitle>공식</AccordionHeaderTitle>
               </Col>
               <UpDownArrow source={icons.arrowUp_20} />
             </AccordionHeader>
@@ -63,11 +64,11 @@ export const getOrderAccordionContent = ({
           inActiveHeader: (
             <AccordionHeader>
               <Col style={{ flex: 1 }}>
-                <AccordionHeaderTitle>주문식품</AccordionHeaderTitle>
+                <AccordionHeaderTitle>공식</AccordionHeaderTitle>
                 <HeaderSubTitleBox>
                   <Row>
                     <HeaderSubTitle style={{ flex: 1 }}>
-                      총 끼니 {menuNum}개 ({productNum}개 식품)
+                      {MENU_NUM_LABEL[menuNum - 1]} ({productNum}개 식품)
                     </HeaderSubTitle>
                   </Row>
                 </HeaderSubTitleBox>

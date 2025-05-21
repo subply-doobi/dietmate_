@@ -280,7 +280,7 @@ const AddMenuText = styled(TextMain)`
 
 const IndicatorBox = styled.TouchableOpacity`
   width: 100%;
-  height: ${NUTRIENT_PROGRESS_HEIGHT};
+  height: ${NUTRIENT_PROGRESS_HEIGHT}px;
   background-color: ${colors.white};
 
   justify-content: center;

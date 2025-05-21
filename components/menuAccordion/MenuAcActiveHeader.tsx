@@ -5,17 +5,16 @@ import styled from "styled-components/native";
 
 // doobi
 import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
-import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
 
 import { IBaseLineData } from "@/shared/api/types/baseLine";
-import { useDeleteDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { getNutrStatus, sumUpPrice, commaToNum } from "@/shared/utils/sumUp";
 import { icons } from "@/shared/iconSource";
 
 import colors from "@/shared/colors";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 interface IMenuAcActiveHeader {
   dietNo: string;
@@ -24,15 +23,13 @@ interface IMenuAcActiveHeader {
 const MenuAcActiveHeader = ({ bLData, dietNo }: IMenuAcActiveHeader) => {
   // redux
   const dispatch = useAppDispatch();
-  const { totalFoodList, currentDietNo } = useAppSelector(
-    (state) => state.common
-  );
+  const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
   const dDData = dTOData?.[dietNo]?.dietDetail ?? [];
-  const dietSeq = dTOData?.[dietNo]?.dietSeq ?? "";
-  const deleteDietMutation = useDeleteDiet();
+  const idx =
+    Object.keys(dTOData || {}).findIndex((key) => key === dietNo) || 0;
 
   // etc
   const priceSum = sumUpPrice(dDData);
@@ -45,7 +42,7 @@ const MenuAcActiveHeader = ({ bLData, dietNo }: IMenuAcActiveHeader) => {
   return (
     <Box>
       <Row>
-        <Title>{dTOData?.[dietNo]?.dietSeq ?? ""}</Title>
+        <Title>{MENU_NUM_LABEL[idx]}</Title>
         {/* {(nutrStatus === 'satisfied' || nutrStatus === 'exceed') && (
           <Icon style={{marginLeft: 4}} size={20} source={iconSource} />
         )} */}

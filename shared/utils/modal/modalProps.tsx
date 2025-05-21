@@ -6,6 +6,7 @@ import {
 import {
   APP_STORE_URL,
   IS_ANDROID,
+  MENU_NUM_LABEL,
   PLAY_STORE_URL,
   SCREENWIDTH,
 } from "@/shared/constants";
@@ -148,6 +149,7 @@ export const useModalProps = () => {
     totalShippingPrice,
     addDietStatus,
     addDietNAText,
+    addDietNASubtext,
     ctaBtnText,
     dDData,
     currentNumOfFoods,
@@ -155,8 +157,11 @@ export const useModalProps = () => {
     // 총 끼니 수, 상품 수, 금액 계산
     const { menuNum, productNum, priceTotal, totalShippingPrice } =
       sumUpDietFromDTOData(dTOData);
-    const { status: addDietStatus, text: addDietNAText } =
-      getAddDietStatusFrDTData(dTOData);
+    const {
+      status: addDietStatus,
+      text: addDietNAText,
+      subText: addDietNASubtext,
+    } = getAddDietStatusFrDTData(dTOData);
 
     const isDietEmpty =
       menuNum === 0 ||
@@ -176,6 +181,7 @@ export const useModalProps = () => {
       totalShippingPrice,
       addDietStatus,
       addDietNAText,
+      addDietNASubtext,
       ctaBtnText,
       dDData,
       currentNumOfFoods,
@@ -255,7 +261,9 @@ export const useModalProps = () => {
       onCancel: () => commonClose("menuDeleteAlert"),
       renderContent: () => (
         <DeleteAlertContent
-          deleteText={dTOData?.[dietNoToDelete as string]?.dietSeq ?? ""}
+          deleteText={`"${
+            MENU_NUM_LABEL[Object.keys(dTOData || {}).indexOf(dietNoToDelete)]
+          }"을`}
         />
       ),
     } as IModalProps["menuDeleteAlert"];
@@ -278,7 +286,7 @@ export const useModalProps = () => {
         commonClose("menuDeleteAllAlert");
       },
       onCancel: () => commonClose("menuDeleteAllAlert"),
-      renderContent: () => <DeleteAlertContent deleteText={"모든 끼니를"} />,
+      renderContent: () => <DeleteAlertContent deleteText={"모든 근을"} />,
     } as IModalProps["menuDeleteAllAlert"];
     return { menuDeleteAllAlert };
   }, [dTOData]);
@@ -333,7 +341,9 @@ export const useModalProps = () => {
         commonClose("menuCreateNAAlert");
       },
       onCancel: () => commonClose("menuCreateNAAlert"),
-      renderContent: () => <CommonAlertContent text={addDietNAText} />,
+      renderContent: () => (
+        <CommonAlertContent text={addDietNAText} subText={addDietNASubtext} />
+      ),
     } as IModalProps["menuCreateNAAlert"];
     return { menuCreateNAAlert };
   }, [addDietNAText]);
@@ -472,7 +482,7 @@ export const useModalProps = () => {
       renderContent: () => (
         <CommonAlertContent
           text="튜토리얼을 다시 진행할까요?"
-          subText="구성한 끼니가 있다면 삭제됩니다"
+          subText="구성한 근은 공식에서 삭제됩니다"
         />
       ),
     } as IModalProps["tutorialRestartAlert"];
@@ -741,7 +751,7 @@ export const useModalProps = () => {
       renderContent: () => (
         <CommonAlertContent
           text={"재고없는 식품이 있어요"}
-          subText={"끼니를 확인하고\n식품을 교체해주세요"}
+          subText={"공식을 확인하고\n식품을 교체해주세요"}
         />
       ),
     } as IModalProps["noStockAlert"];
@@ -830,7 +840,7 @@ export const useModalProps = () => {
             />
             <DTooltip
               tooltipShow={true}
-              text="끼니를 먼저 추가해볼까요?"
+              text="근을 먼저 추가해볼까요?"
               boxTop={headerHeight - insetTop}
             />
             {dTOData && (

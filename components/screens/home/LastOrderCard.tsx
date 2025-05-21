@@ -17,6 +17,7 @@ import { commaToNum } from "@/shared/utils/sumUp";
 import LastOrderNutr from "./LastOrderNutr";
 import { IFlattedOrderedProduct } from "@/shared/utils/screens/checklist/menuFlat";
 import { useRouter } from "expo-router";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 interface ILastOrderCard {
   isOrderEmpty: boolean;
@@ -62,7 +63,9 @@ const LastOrderCard = ({
           </Row>
           <Row style={{ marginTop: 8 }}>
             <Icon source={icons.menu_24} />
-            <CardDesc>{orderGroupedDataFlatten[0].length}개 끼니</CardDesc>
+            <CardDesc>
+              "{MENU_NUM_LABEL[orderGroupedDataFlatten[0].length - 1]}" 공식
+            </CardDesc>
           </Row>
           <Row style={{ marginTop: 8 }}>
             <Icon source={icons.card_24} />

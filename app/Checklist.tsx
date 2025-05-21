@@ -93,7 +93,7 @@ const Checklist = () => {
         <Card>
           <Row style={{ alignSelf: "center" }}>
             <CardTitle>
-              끼니 ({numerator}/{denominator})
+              근 ({numerator}/{denominator})
             </CardTitle>
             {percentage === 100 ? (
               <Icon

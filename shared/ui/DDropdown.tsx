@@ -29,8 +29,6 @@ const DDropdown = (props: IDDropdown) => {
     const newValue =
       typeof callback === "function" ? callback(value) : callback;
 
-    console.log("DDropDown: handleSetValue: newValue", newValue);
-
     // Dispatch Redux action or update state
     typeof newValue === "string" && setValue(newValue);
   };

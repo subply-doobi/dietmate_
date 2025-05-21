@@ -8,6 +8,7 @@ import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
 import DAccordionHeader from "@/shared/ui/DAccordionHeader";
 import { Text } from "react-native";
 import OrderedMenu from "@/components/screens/orderHistoryDetail/OrderedMenu";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 export const getHistoryDetailAcContent = (
   orderDetailData: IOrderedProduct[][],
@@ -41,8 +42,8 @@ export const getHistoryDetailAcContent = (
     //   content: <></>,
     // },
     {
-      title: "주문식품",
-      subTitle: `총 ${menuNum}끼니 (식품${foodNum}개)`,
+      title: "공식",
+      subTitle: `${MENU_NUM_LABEL[menuNum - 1]} (식품${foodNum}개)`,
       headerContent: null,
       content: <OrderedMenu orderDetailData={orderDetailData} />,
     },

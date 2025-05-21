@@ -22,10 +22,15 @@ export const getAddDietStatusFrDTData = (
     status === "noData"
       ? "데이터가 없습니다."
       : status === "limit"
-      ? `끼니는 최대 ${MENU_NUM_LABEL.length}개까지만\n추가할 수 있습니다.`
+      ? `${
+          MENU_NUM_LABEL[MENU_NUM_LABEL.length - 1]
+        } 까지만\n추가할 수 있습니다.`
       : status === "empty"
-      ? "비어있는 끼니를 구성하고\n이용해보세요"
-      : "추가 가능한\n끼니입니다.";
+      ? "비어있는 근에 식품을 추가하고\n이용해보세요"
+      : "추가 가능한\n근입니다.";
 
-  return { status, text };
+  const subText =
+    status === "limit" ? "냉장고 부피 이슈가 발생할 수 있어요" : "";
+
+  return { status, text, subText };
 };

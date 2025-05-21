@@ -427,7 +427,7 @@ export const makeAutoMenu3 = ({
         });
 
       if (initRemainNutr.calorie < NUTR_ERROR_RANGE.calorie[0])
-        return reject("끼니 칼로리가 이미 초과되었어요");
+        return reject("칼로리가 이미 초과되었어요");
 
       // TRY_NUM 만큼 끼니 만들 것
       // 3. tryNum 만큼 반복

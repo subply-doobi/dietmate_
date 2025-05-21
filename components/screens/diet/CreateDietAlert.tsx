@@ -34,8 +34,10 @@ const CreateDietAlert = ({
   }, []);
 
   const NumOfMenu = dTOData ? Object.keys(dTOData).length : 0;
-  const desc = `총 5개 끼니를 구성하는 것을 추천해요 \n${
-    NumOfMenu !== 0 ? `(현재 ${NumOfMenu}개의 끼니가 있어요)` : ""
+  const desc = `총 다섯 근 공식을 추천해요 \n${
+    NumOfMenu !== 0
+      ? `(현재 "${MENU_NUM_LABEL[NumOfMenu - 1]}"이 공식에 있어요)`
+      : ""
   }`;
   if (isCreating)
     return (
@@ -46,7 +48,7 @@ const CreateDietAlert = ({
 
   return (
     <Container>
-      <Title>{"추가할 끼니 수량을\n선택해주세요"}</Title>
+      <Title>{"추가할 근 수를\n선택해주세요"}</Title>
       <Desc>{desc}</Desc>
       <HorizontalSpace height={24} />
       <MenuNumSelect

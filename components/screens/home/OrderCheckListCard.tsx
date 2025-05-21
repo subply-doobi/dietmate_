@@ -59,7 +59,7 @@ const OrderChecklistCard = ({
   // 현재 식단 상태, 주문 상태에 따른 카드 제목 및 버튼 텍스트
 
   const checklistCardTitle = isOrderEmpty
-    ? "아직 주문한 끼니가 없어요"
+    ? "아직 계산한 공식이 없어요"
     : "식사하실 때 체크해보세요";
 
   return (

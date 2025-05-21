@@ -1,6 +1,3 @@
-import colors from "@/shared/colors";
-import { SetStateAction } from "react";
-import { IAutoMenuSubPageNm } from "../autoMenu/contentByPages";
 import Select from "@/components/screens/autoMenu/subScreens/Select";
 import Category from "@/components/screens/autoMenu/subScreens/Category";
 import Company from "@/components/screens/autoMenu/subScreens/Company";
@@ -12,10 +9,16 @@ import Formula from "@/components/screens/formula/subScreens/Formula";
 
 export type IFormulaPageNm =
   | string
+  | "AMSelect"
+  | "AMCategory"
+  | "AMCompany"
+  | "AMPrice"
+  | "AMProcessing"
+  | "AMError"
+  | "None"
   | "SelectNumOfMenu"
   | "SelectMethod"
-  | "Formula"
-  | IAutoMenuSubPageNm;
+  | "Formula";
 
 type IPages = {
   header: string;

@@ -26,9 +26,6 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useAsync } from "@/shared/utils/screens/diet/cartCustomHooks";
 import { usePathname, useRouter } from "expo-router";
 import Error from "./Error";
-import { getPathWithConventionsCollapsed } from "expo-router/build/fork/getPathFromState-forks";
-import { IAutoMenuSubPageNm } from "@/shared/utils/screens/autoMenu/contentByPages";
-import { IFormulaPageNm } from "@/shared/utils/screens/formula/contentByPages";
 import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 
 const Processing = () => {

@@ -1,23 +1,24 @@
-import styled from 'styled-components/native';
-import {icons} from '../../../shared/iconSource';
+import styled from "styled-components/native";
+import { icons } from "../../../shared/iconSource";
 import {
   Col,
   ShadowView,
   Icon,
   HorizontalSpace,
   TextMain,
-} from '../../../shared/ui/styledComps';
-import {IFlattedOrderedProduct} from '../util/menuFlat';
-import FoodList from './FoodList';
-import colors from '../../../shared/colors';
-import {updateTotalCheckList} from '../../../shared/utils/asyncStorage';
+} from "../../../shared/ui/styledComps";
+import FoodList from "./FoodList";
+import colors from "../../../shared/colors";
+import { updateTotalCheckList } from "../../../shared/utils/asyncStorage";
+import { IFlattedOrderedProduct } from "@/shared/utils/screens/checklist/menuFlat";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 interface IMenuBox {
   order: IFlattedOrderedProduct[][];
   checklist: string[];
   setChecklist: React.Dispatch<React.SetStateAction<string[]>>;
 }
-const MenuBox = ({order, checklist, setChecklist}: IMenuBox) => {
+const MenuBox = ({ order, checklist, setChecklist }: IMenuBox) => {
   // fn
   const onListBoxPressed = async ({
     orderNo,
@@ -26,11 +27,11 @@ const MenuBox = ({order, checklist, setChecklist}: IMenuBox) => {
     orderNo: string;
     menuNoAndQtyIdx: string;
   }) => {
-    setChecklist(prev => {
+    setChecklist((prev) => {
       const newCheckList = prev.includes(menuNoAndQtyIdx)
-        ? prev.filter(v => v !== menuNoAndQtyIdx)
+        ? prev.filter((v) => v !== menuNoAndQtyIdx)
         : [...prev, menuNoAndQtyIdx];
-      updateTotalCheckList({orderNo, menuNoAndQtyIdx}); // asyncStorage update
+      updateTotalCheckList({ orderNo, menuNoAndQtyIdx }); // asyncStorage update
       return newCheckList;
     });
   };
@@ -42,22 +43,23 @@ const MenuBox = ({order, checklist, setChecklist}: IMenuBox) => {
         const menuNoAndQtyIdx = `${menu[0].dietNo}/${menu[0].qtyIdx}`;
         return (
           <Col key={idx}>
-            <ShadowView style={{borderRadius: 5}}>
+            <ShadowView style={{ borderRadius: 5 }}>
               <CheckListBox
                 onPress={async () =>
                   onListBoxPressed({
                     orderNo,
                     menuNoAndQtyIdx,
                   })
-                }>
+                }
+              >
                 <LeftBar />
                 <CheckListTitle>
-                  {menu[0].dietSeq}{' '}
+                  {MENU_NUM_LABEL[idx]}{" "}
                   {menu[0].qtyIdx > 0 && `(${menu[0].qtyIdx + 1})`}
                 </CheckListTitle>
                 <Icon
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     right: 16,
                     top: 24,
                     zIndex: 2,
@@ -74,7 +76,7 @@ const MenuBox = ({order, checklist, setChecklist}: IMenuBox) => {
               </CheckListBox>
             </ShadowView>
             {order.length - 1 !== idx && (
-              <HorizontalSpace style={{height: 24}} />
+              <HorizontalSpace style={{ height: 24 }} />
             )}
           </Col>
         );
@@ -92,7 +94,7 @@ const CheckListBox = styled.TouchableOpacity`
   padding: 24px 16px 32px 16px;
 `;
 
-const LeftBar = styled.View<{screen?: 'Home' | 'Diet' | string}>`
+const LeftBar = styled.View<{ screen?: "Home" | "Diet" | string }>`
   position: absolute;
   top: 0;
   bottom: 0;

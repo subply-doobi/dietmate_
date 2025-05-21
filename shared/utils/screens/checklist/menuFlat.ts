@@ -1,4 +1,3 @@
-import { IDietDetailData, IDietTotalObjData } from "../../../api/types/diet";
 import { IOrderedProduct } from "../../../api/types/order";
 
 export interface IFlattedOrderedProduct extends IOrderedProduct {

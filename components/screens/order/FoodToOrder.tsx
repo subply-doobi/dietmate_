@@ -12,7 +12,7 @@ import colors from "@/shared/colors";
 import { commaToNum } from "@/shared/utils/sumUp";
 import { regroupDDataBySeller } from "@/shared/utils/dataTransform";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
-import { ENV } from "@/shared/constants";
+import { ENV, MENU_NUM_LABEL } from "@/shared/constants";
 
 const FoodToOrder = () => {
   // redux
@@ -41,6 +41,8 @@ interface FoodInOneDietProps {
 const FoodsInOneDiet = ({ dietNo }: FoodInOneDietProps) => {
   //redux
   const { foodToOrder } = useAppSelector((state) => state.order);
+
+  const idx = Object.keys(foodToOrder).findIndex((key) => key === dietNo);
   const dDData = foodToOrder?.[dietNo]?.dietDetail ?? [];
   const dDDataBySeller = regroupDDataBySeller(dDData);
   const platformNmArr = Object.keys(dDDataBySeller);
@@ -53,9 +55,7 @@ const FoodsInOneDiet = ({ dietNo }: FoodInOneDietProps) => {
     <Col>
       {foodToOrder && (
         <View>
-          <MenuTitle>{`${foodToOrder?.[dietNo]?.dietSeq ?? ""}  ( x${
-            foodToOrder[dietNo].dietDetail[0]?.qty
-          }개 )`}</MenuTitle>
+          <MenuTitle>{`${MENU_NUM_LABEL[idx]} ( x${foodToOrder[dietNo].dietDetail[0]?.qty} )`}</MenuTitle>
           <HorizontalLine
             style={{ marginTop: 8, backgroundColor: colors.line }}
           />

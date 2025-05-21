@@ -15,7 +15,12 @@ import { icons } from "@/shared/iconSource";
 import { commaToNum, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 
 //doobi Component
-import { HorizontalLine, TextMain, TextSub } from "@/shared/ui/styledComps";
+import {
+  HorizontalLine,
+  Row,
+  TextMain,
+  TextSub,
+} from "@/shared/ui/styledComps";
 
 // react-query
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
@@ -23,21 +28,23 @@ import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
 import { IDietTotalObjData } from "@/shared/api/types/diet";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 const getIncludingDietNoArr = (
   dTOData: IDietTotalObjData | undefined,
   seller: string
 ) => {
   if (!dTOData) return [];
+  const dietNoArr = Object.keys(dTOData);
 
-  return Object.keys(dTOData)
+  return dietNoArr
     .filter((dietNo) => dTOData[dietNo].dietDetail.length > 0)
     .filter((dietNo) =>
       dTOData[dietNo].dietDetail.some((food) => food.platformNm === seller)
     )
     .map((dietNo) => ({
       dietNo,
-      dietSeq: dTOData[dietNo].dietDetail[0].dietSeq,
+      idx: dietNoArr.indexOf(dietNo),
     }));
 };
 
@@ -96,9 +103,11 @@ const CartSummary = () => {
     //장바구니 하단에 보여지는 총 끼니 수, 상품 수, 금액
     <TotalSummaryContainer>
       <Row style={{ marginTop: 40, justifyContent: "space-between" }}>
-        <SummaryText>총 끼니 ({menuNum} 개)</SummaryText>
+        <SummaryText>
+          {MENU_NUM_LABEL[menuNum - 1]} 공식을 만들고 있어요
+        </SummaryText>
         <SummaryValue>
-          끼니 당{" "}
+          근 당{" "}
           {menuNum === 0 ? 0 : commaToNum(Math.floor(priceTotal / menuNum))} 원
         </SummaryValue>
       </Row>
@@ -122,13 +131,19 @@ const CartSummary = () => {
             <SummaryText style={{ marginTop: 12 }}>
               식품: {commaToNum(sellerPrice)}원
             </SummaryText>
-            <TextSub style={{ marginTop: 2 }}>
+            <SummmaryTextSub style={{ marginTop: 2 }}>
               배송비:
               {shippingText}
-            </TextSub>
+            </SummmaryTextSub>
 
             {/* 끼니 버튼 렌더링 컴포넌트 */}
-            <Row style={{ marginTop: 16 }}>
+            <Row
+              style={{
+                marginTop: 16,
+                flexWrap: "wrap",
+                gap: 8,
+              }}
+            >
               {includingDietNoArr.map((e) => {
                 //dietItem.dietSeq가 중복일 경우 하나만 가져오기
                 return (
@@ -143,10 +158,13 @@ const CartSummary = () => {
                       );
                     }}
                   >
-                    <TextMain>{e.dietSeq}</TextMain>
+                    <SummaryText>{MENU_NUM_LABEL[e.idx]}</SummaryText>
                   </SmallButton>
                 );
               })}
+              <SummmaryTextSub style={{ marginLeft: 2 }}>
+                에 "{seller}" 식품이 포함되어 있어요
+              </SummmaryTextSub>
             </Row>
           </View>
         );
@@ -175,10 +193,12 @@ const TotalSummaryContainer = styled.View`
 
 const SummaryText = styled(TextMain)`
   font-size: 14px;
+  line-height: 20px;
 `;
 
 const SummmaryTextSub = styled(TextSub)`
   font-size: 14px;
+  line-height: 20px;
 `;
 
 const SummaryValue = styled(TextMain)`
@@ -202,7 +222,6 @@ const SmallButton = styled.TouchableOpacity`
   border: 1px solid ${colors.lineLight};
   justify-content: center;
   align-items: center;
-  margin-right: 12px;
 `;
 
 const SearchImage = styled.Image`
@@ -220,8 +239,4 @@ const SearchBtn = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-`;
-
-const Row = styled.View`
-  flex-direction: row;
 `;

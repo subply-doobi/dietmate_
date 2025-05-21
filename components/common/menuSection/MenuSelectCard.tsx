@@ -5,17 +5,17 @@ import {
   setCurrentDiet,
   setMenuAcActive,
 } from "@/features/reduxSlices/commonSlice";
-import { Col, Row } from "@/shared/ui/styledComps";
+import { Col, Icon, Row } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { getAddDietStatusFrDTData } from "@/shared/utils/getDietAddStatus";
-import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "../../modal/alert/CommonAlertContent";
 
 import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { MENU_NUM_LABEL } from "@/shared/constants";
+import { icons } from "@/shared/iconSource";
 
 interface IMenuSelectCard {
   isCreating: boolean;
@@ -82,9 +82,14 @@ const MenuSelectCard = ({ isCreating, setIsCreating }: IMenuSelectCard) => {
                   {(nutrStatus === "exceed" || nutrStatus === "satisfied") && (
                     <GuideCircle nutrStatus={nutrStatus} />
                   )}
-                  <CardText isActivated={isActivated}>{`끼니 ${
-                    idx + 1
-                  }`}</CardText>
+                  <Row>
+                    <CardText isActivated={isActivated}>{`${
+                      isActivated
+                        ? MENU_NUM_LABEL[idx].slice(0, -2)
+                        : MENU_NUM_LABEL[idx]
+                    }`}</CardText>
+                    {isActivated && <Icon source={icons.appIcon} size={20} />}
+                  </Row>
                 </CardBtn>
               </Row>
             );

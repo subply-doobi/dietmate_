@@ -21,7 +21,6 @@ import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import Foodlist from "./Foodlist";
 import NutrientsProgress from "../common/nutrient/NutrientsProgress";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
-import { NUTRIENT_PROGRESS_HEIGHT } from "@/shared/constants";
 
 const ProductSelectToast = () => {
   // redux

@@ -2,7 +2,7 @@ import { IAddressData } from "@/shared/api/types/address";
 import { IDietDetailAllData } from "@/shared/api/types/diet";
 import { IUserData } from "@/shared/api/types/user";
 import { channelKey, IPG } from "./payConsts";
-import { ENV } from "@/shared/constants";
+import { ENV, MENU_NUM_LABEL } from "@/shared/constants";
 
 type IPayMethod =
   | "CARD"
@@ -196,7 +196,7 @@ export const setPayParams = ({
   const payParams_iamport: IIamportPayParams = {
     storeId: ENV.STORE_ID_IAMPORT as string,
     paymentId: `paymentU${userData.userId}D${Date.now()}`,
-    orderName: `${menuNum}개 끼니 (식품 ${productNum}개)`,
+    orderName: `${MENU_NUM_LABEL[menuNum - 1]} 공식 (식품 ${productNum}개)`,
     totalAmount: priceTotal + shippingPrice,
     currency: "CURRENCY_KRW",
     payMethod: paymentMethod,
@@ -228,7 +228,7 @@ export const setPayParams = ({
     products: [
       {
         id: `productU${userData.userId}D${Date.now()}`,
-        name: `${menuNum}개 끼니 (식품 ${productNum}개)`,
+        name: `${MENU_NUM_LABEL[menuNum - 1]} 공식 (식품 ${productNum}개)`,
         amount: priceTotal + shippingPrice,
         quantity: 1,
       },

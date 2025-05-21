@@ -1,16 +1,20 @@
 import styled from "styled-components/native";
-import { TextMain } from "@/shared/ui/styledComps";
+import { Icon, Row, TextMain } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { IDietTotalObjData } from "@/shared/api/types/diet";
 import { TouchableOpacityProps, ViewProps } from "react-native";
+import { icons } from "@/shared/iconSource";
 
 interface IAddMenuBtn extends TouchableOpacityProps {
   dTOData: IDietTotalObjData;
 }
 const AddMenuBtn = ({ dTOData, ...props }: IAddMenuBtn) => (
-  <Btn {...props}>
+  <Btn {...props} style={{ boxShadow: " 2px 2px 5px rgba(0, 0, 0, 0.12)" }}>
     <BtnBar isActive={Object.keys(dTOData).length === 0} />
-    <BtnText>끼니 추가</BtnText>
+    <Row style={{ marginLeft: -10, columnGap: 4 }}>
+      <Icon source={icons.appIcon} size={28} />
+      <BtnText>추가</BtnText>
+    </Row>
   </Btn>
 );
 
@@ -30,6 +34,7 @@ const BtnText = styled(TextMain)`
   font-size: 16px;
   font-weight: bold;
   line-height: 24px;
+  margin-left: 4px;
 `;
 const BtnBar = styled.View<{ isActive: boolean }>`
   width: 4px;

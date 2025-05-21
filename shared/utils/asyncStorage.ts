@@ -135,7 +135,7 @@ export const addToRecentProduct = async (productNo: string) => {
     const isProductExists = products.some((p) => p === productNo);
 
     if (isProductExists) {
-      return;
+      products = products.filter((p) => p !== productNo);
     }
 
     // Add to front

@@ -1,10 +1,11 @@
 import colors from "@/shared/colors";
-import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import { Col, Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import { ImageSourcePropType, TouchableOpacityProps } from "react-native";
 import styled from "styled-components/native";
 
 interface ISelectBtn extends TouchableOpacityProps {
   text: string;
+  isActive?: boolean;
   subText?: string;
   leftBar?: boolean;
   iconSource?: ImageSourcePropType;
@@ -12,6 +13,7 @@ interface ISelectBtn extends TouchableOpacityProps {
 }
 const SelectBtn = ({
   text,
+  isActive = true,
   subText,
   leftBar,
   iconSource,
@@ -32,12 +34,15 @@ const SelectBtn = ({
     >
       <Row style={{ columnGap: 8 }}>
         {iconSource && isIconLeft && <Icon source={iconSource} size={32} />}
-        <BtnText>{text}</BtnText>
-        {iconSource && !isIconLeft && <Icon source={iconSource} size={32} />}
+        <Col>
+          <BtnText>{text}</BtnText>
+          {subText && <BtnSubText>{subText}</BtnSubText>}
+        </Col>
+        {iconSource && !isIconLeft && <Icon source={iconSource} size={40} />}
       </Row>
 
-      {subText && <BtnSubText>{subText}</BtnSubText>}
       {leftBar && <LeftBar />}
+      {!isActive && <OpacityView />}
     </Btn>
   );
 };
@@ -74,4 +79,14 @@ const LeftBar = styled.View`
   bottom: 0px;
   background-color: ${colors.main};
   border-radius: 8px 0px 0px 8px;
+`;
+
+const OpacityView = styled.View`
+  background-color: ${colors.whiteOpacity70};
+  position: absolute;
+  border-radius: 8px;
+  top: 0px;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `;

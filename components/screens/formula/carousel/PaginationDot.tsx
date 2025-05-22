@@ -46,11 +46,25 @@ const PaginationDot = ({ index }: { index: number }) => {
   const text = isActive
     ? MENU_NUM_LABEL[index].slice(0, -2)
     : MENU_NUM_LABEL[index];
+
+  const isSatisfied = nutrStatus === "satisfied";
+
   return (
-    <PaginationDotView nutrStatus={nutrStatus}>
+    <PaginationDotView>
       <PaginationText>{text}</PaginationText>
       {isActive && (
         <Icon source={icons.appIcon} size={16} style={{ marginRight: -3 }} />
+      )}
+      {isSatisfied && (
+        <Icon
+          source={icons.checkboxCheckedGreen_24}
+          size={10}
+          style={{
+            position: "absolute",
+            right: -1,
+            top: -1,
+          }}
+        />
       )}
     </PaginationDotView>
   );
@@ -58,7 +72,7 @@ const PaginationDot = ({ index }: { index: number }) => {
 
 export default PaginationDot;
 
-const PaginationDotView = styled.View<{ nutrStatus: string | undefined }>`
+const PaginationDotView = styled.View`
   flex-direction: row;
   width: 100%;
   height: 100%;
@@ -66,12 +80,7 @@ const PaginationDotView = styled.View<{ nutrStatus: string | undefined }>`
   align-items: center;
   background-color: ${colors.white};
   border-radius: 6px;
-  border-color: ${({ nutrStatus }) =>
-    nutrStatus === "exceed"
-      ? colors.warning
-      : nutrStatus === "satisfied"
-      ? colors.success
-      : colors.inactive};
+  border-color: ${colors.inactive};
   border-width: 1px;
 `;
 

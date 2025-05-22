@@ -41,12 +41,6 @@ export type IModalName =
 
   // transparentScreen
   | "tutorialTPSStart" // 튜토리얼 시작
-  | "tutorialTPSAddMenu"
-  | "tutorialTPSAddFood"
-  | "tutorialTPSSelectFood"
-  | "tutorialTPSAutoRemain"
-  | "tutorialTPSChangeFood"
-  | "tutorialTPSAutoMenu"
 
   // bottomSheet
   | "filterBS"

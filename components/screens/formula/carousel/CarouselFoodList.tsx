@@ -13,10 +13,7 @@ import {
 } from "@/shared/ui/styledComps";
 import { commaToNum } from "@/shared/utils/sumUp";
 import colors from "@/shared/colors";
-import DTooltip from "@/shared/ui/DTooltip";
 import { icons } from "@/shared/iconSource";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
-import { openModal } from "@/features/reduxSlices/modalSlice";
 import {
   useDeleteDietDetail,
   useListDietTotalObj,
@@ -153,8 +150,11 @@ const CarouselFoodList = ({
             return (
               <ItemBox
                 style={{
-                  borderWidth: isSelected ? 2 : 0,
+                  boxShadow: isSelected
+                    ? "1px 1px 5px rgba(0, 0, 0, 0.18)"
+                    : "none",
                 }}
+                isSelected={isSelected}
                 onPress={() => onItemPressed(item.productNo)}
               >
                 <PlatformNm numberOfLines={1} ellipsizeMode="tail">
@@ -266,13 +266,15 @@ const DummyText = styled(TextSub)`
   line-height: 24px;
 `;
 
-const ItemBox = styled.TouchableOpacity`
+const ItemBox = styled.TouchableOpacity<{
+  isSelected: boolean;
+}>`
   width: ${ITEM_WIDTH}px;
   height: ${ITEM_HEIGHT}px;
   border-radius: 4px;
   padding: 4px;
-  border-width: 1px;
-  border-color: ${colors.black};
+  border-width: ${({ isSelected }) => (isSelected ? "0.5px" : "0px")};
+  border-color: ${colors.lineLight};
   align-items: center;
 `;
 

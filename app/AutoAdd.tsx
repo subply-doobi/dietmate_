@@ -155,9 +155,9 @@ const AutoAdd = () => {
         }}
       >
         <RandomProductsSection />
-        <LikeFoodsSection />
-        <RecentOpenedSection />
         <LowShippingSection />
+        <RecentOpenedSection />
+        <LikeFoodsSection />
         <RecentOrderSection />
         <OthersSection />
         {/* <ExcessFoodsSection /> */}

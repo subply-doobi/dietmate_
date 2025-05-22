@@ -3,7 +3,6 @@ import { ActivityIndicator } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
-import Toast from "react-native-toast-message";
 
 // doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
@@ -14,22 +13,19 @@ import {
 import { IDietDetailData } from "@/shared/api/types/diet";
 import { IProductData } from "@/shared/api/types/product";
 import colors from "@/shared/colors";
-import {
-  AM_ERROR_STATUS,
-  AM_INITIAL_STATUS,
-  AM_SELECTED_CATEGORY_IDX,
-  AM_PRICE_TARGET,
-  AM_MENU_NUM,
-  AM_SUCCESS_STATUS,
-} from "@/shared/constants";
+import { AM_SELECTED_CATEGORY_IDX, AM_PRICE_TARGET } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import CtaButton from "@/shared/ui/CtaButton";
-import { Col, Icon, TextMain } from "@/shared/ui/styledComps";
+import { Col, Icon, Row, TextMain } from "@/shared/ui/styledComps";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { getNutrStatus } from "@/shared/utils/sumUp";
-import { setGlobalLoading } from "@/features/reduxSlices/commonSlice";
+import {
+  setCurrentDiet,
+  setGlobalLoading,
+} from "@/features/reduxSlices/commonSlice";
 import { useRouter } from "expo-router";
+import { useMemo, useState } from "react";
 
 interface ICarouselCta {
   carouselMenu: IDietDetailData;
@@ -54,16 +50,24 @@ const CarouselCta = ({
   const globalLoading = useAppSelector((state) => state.common.globalLoading);
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
+  // useState
+  const [showCheckOverwrite, setShowCheckOverwrite] = useState(false);
+
   // react-query
   const { data: bLData } = useGetBaseLine();
   const createDietDetailMutation = useCreateDietDetail();
   const deleteDietDetailMutation = useDeleteDietDetail();
 
-  const nutrStatus = getNutrStatus({
-    totalFoodList,
-    bLData,
-    dDData: carouselMenu,
-  });
+  // useMemo
+  const isMenuFull = useMemo(() => {
+    const nutrStatus = getNutrStatus({
+      totalFoodList,
+      bLData,
+      dDData: carouselMenu,
+    });
+    const isMenuFull = nutrStatus === "satisfied" || nutrStatus === "exceed";
+    return isMenuFull;
+  }, [carouselMenu, totalFoodList, bLData]);
 
   // fn
   const addMenu = async (data: IProductData[][]) => {
@@ -135,8 +139,7 @@ const CarouselCta = ({
         {
           medianCalorie,
           foodGroupForAutoMenu,
-          initialMenu: [],
-          // initialMenu: autoMenuType === "add" ? carouselMenu : [],
+          initialMenu: isMenuFull ? [] : carouselMenu,
           baseLine: bLData,
           selectedCategoryIdx: AM_SELECTED_CATEGORY_IDX,
           priceTarget: AM_PRICE_TARGET,
@@ -151,10 +154,10 @@ const CarouselCta = ({
     }
     // 자동구성된 메뉴 추가
     try {
-      // autoMenuType === "add"
-      //   ? await addMenu(recommendedMenu)
-      //   : await overwriteMenu(recommendedMenu);
-      overwriteMenu(recommendedMenu);
+      isMenuFull
+        ? await overwriteMenu(recommendedMenu)
+        : await addMenu(recommendedMenu);
+      // overwriteMenu(recommendedMenu);
     } catch (e) {
       console.log("식품추가 중 오류 발생: ", e);
       return;
@@ -169,15 +172,14 @@ const CarouselCta = ({
   };
 
   // etc
-  const isMenuFull = nutrStatus === "satisfied" || nutrStatus === "exceed";
   const isCurrent = currentFMCIdx === carouselIdx;
   const autoMenuBtnStyle = "border";
   // const autoMenuType = isMenuFull ? "overwrite" : "add";
   const addBtnStyle = isMenuFull ? "border" : "borderActive";
-  const addBtnText = "식품 추가";
+  const addBtnText = isMenuFull ? "영양이 충분해요" : "영양소에 맞게 추가";
   const addBtnIconSource = isMenuFull
-    ? icons.plusSquare_24
-    : icons.plusSquareActive_24;
+    ? icons.formula_36
+    : icons.formulaActive_36;
 
   return (
     <>
@@ -187,8 +189,20 @@ const CarouselCta = ({
           btnStyle={autoMenuBtnStyle}
           shadow={true}
           style={{ width: 48, height: 48 }}
-          btnContent={() => <Icon source={icons.dice_36} size={36} />}
-          onPress={() => setOneAutoMenu()}
+          btnContent={() => <Icon source={icons.search_36} size={32} />}
+          onPress={() => {
+            dispatch(setCurrentDiet(carouselDietNo));
+            router.push({ pathname: "/ManualAdd" });
+          }}
+        />
+        <CtaButton
+          btnStyle={autoMenuBtnStyle}
+          shadow={true}
+          style={{ width: 48, height: 48 }}
+          btnContent={() => <Icon source={icons.dice_36} size={32} />}
+          onPress={() =>
+            isMenuFull ? setShowCheckOverwrite(true) : setOneAutoMenu()
+          }
         />
 
         {/* Add btn */}
@@ -202,9 +216,13 @@ const CarouselCta = ({
             fontSize: 14,
             color: isMenuFull ? colors.inactive : colors.textSub,
           }}
-          btnContent={() =>
-            !isMenuFull && <Icon source={addBtnIconSource} size={18} />
-          }
+          btnContent={() => (
+            <Icon
+              source={addBtnIconSource}
+              size={28}
+              style={{ marginLeft: -16 }}
+            />
+          )}
           onPress={onCtaPress}
         />
       </BtnBox>
@@ -221,6 +239,27 @@ const CarouselCta = ({
           />
         </OpacityView>
       )}
+      {showCheckOverwrite && (
+        <OpacityView>
+          <Col style={{ rowGap: 4 }}>
+            <LoadingText>현재 근에 식품이 충분해요</LoadingText>
+            <LoadingText>기존 식품들을 덮어쓸까요?</LoadingText>
+          </Col>
+          <Row style={{ position: "absolute", bottom: 0, width: "100%" }}>
+            <CheckOverwriteBtn onPress={() => setShowCheckOverwrite(false)}>
+              <SelectedText>취소</SelectedText>
+            </CheckOverwriteBtn>
+            <CheckOverwriteBtn
+              onPress={() => {
+                setShowCheckOverwrite(false);
+                setOneAutoMenu();
+              }}
+            >
+              <SelectedText>확인</SelectedText>
+            </CheckOverwriteBtn>
+          </Row>
+        </OpacityView>
+      )}
     </>
   );
 };
@@ -235,7 +274,7 @@ const BtnBox = styled.View`
   padding: 0 16px;
   flex-direction: row;
   justify-content: space-between;
-  column-gap: 4px;
+  column-gap: 8px;
   align-items: center;
 `;
 
@@ -264,4 +303,20 @@ const LoadingSubText = styled(TextMain)`
   line-height: 18px;
   color: ${colors.inactive};
   text-align: center;
+`;
+
+const CheckOverwriteBtn = styled.TouchableOpacity`
+  flex: 1;
+  height: 48px;
+  border-width: 1px;
+  border-color: ${colors.line};
+  justify-content: center;
+  align-items: center;
+`;
+
+const SelectedText = styled(TextMain)`
+  color: ${colors.white};
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: bold;
 `;

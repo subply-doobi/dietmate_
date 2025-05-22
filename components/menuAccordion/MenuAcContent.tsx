@@ -1,8 +1,5 @@
 import styled from "styled-components/native";
-import NutrientsProgress from "@/components/common/nutrient/NutrientsProgress";
 import colors from "@/shared/colors";
-import Menu from "./Menu";
-import AccordionCtaBtns from "./AccordionCtaBtns";
 import {
   Col,
   HorizontalLine,
@@ -15,6 +12,7 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useDispatch } from "react-redux";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import MenuNumSelect from "@/components/common/cart/MenuNumSelect";
+import FoodList from "./FoodList";
 
 interface IMenuAcContent {
   dietNo: string;
@@ -45,14 +43,8 @@ const MenuAcContent = ({ dietNo }: IMenuAcContent) => {
 
   return (
     <Container>
-      <HorizontalSpace height={8} />
-      <NutrientsProgress dietDetailData={dDData} tooltipShow={false} />
-      <Menu dietDetailData={dDData} dietNo={dietNo} />
-
-      {/* 식품추가 - 자동구성 버튼 */}
-      <HorizontalSpace height={40} />
-      <AccordionCtaBtns dDData={dDData} dietNo={dietNo} />
-
+      {/* 식품 리스트 */}
+      <FoodList dietNo={dietNo} />
       {/* 수량조절 - 가격 */}
       {dDData.length !== 0 && (
         <Col
@@ -72,7 +64,6 @@ const MenuAcContent = ({ dietNo }: IMenuAcContent) => {
           <Price>{commaToNum(dietPrice)}원</Price>
         </Col>
       )}
-      <HorizontalSpace height={24} />
     </Container>
   );
 };
@@ -85,11 +76,11 @@ const Container = styled.View`
   border-bottom-right-radius: 5px;
   border-color: ${colors.lineLight};
   border-width: 1px;
-  padding: 0 8px;
+  padding: 40px 16px;
 `;
 
 const Price = styled(TextMain)`
   font-size: 18px;
   font-weight: bold;
-  margin-top: 16px;
+  margin-top: 8px;
 `;

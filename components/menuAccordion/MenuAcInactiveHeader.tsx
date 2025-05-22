@@ -8,23 +8,22 @@ import styled from "styled-components/native";
 // doobi
 import { IBaseLineData } from "@/shared/api/types/baseLine";
 import { IDietTotalObjData } from "@/shared/api/types/diet";
-
-import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
 import DTooltip from "@/shared/ui/DTooltip";
 import { Col, Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 
-import { useDeleteDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
 
 import { commaToNum, getNutrStatus, sumUpPrice } from "@/shared/utils/sumUp";
 import { checkNoStockP } from "@/shared/utils/productStatusCheck";
-import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 
 import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import MenuNumSelect from "../common/cart/MenuNumSelect";
 import { ENV, MENU_NUM_LABEL } from "@/shared/constants";
+import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
+import { useRouter } from "expo-router";
 
 interface IMenuAcInactiveHeader {
   controllable?: boolean;
@@ -40,6 +39,9 @@ const MenuAcInactiveHeader = ({
   selected = false,
   leftBarInactive,
 }: IMenuAcInactiveHeader) => {
+  // navigation
+  const router = useRouter();
+
   // redux
   const dispatch = useAppDispatch();
   const { totalFoodList, currentDietNo } = useAppSelector(
@@ -51,48 +53,39 @@ const MenuAcInactiveHeader = ({
 
   // react-query
   const { data: dTOData, isFetching: isDTOFetching } = useListDietTotalObj();
-  const dDData = dTOData?.[dietNo]?.dietDetail ?? [];
-  const idx =
-    Object.keys(dTOData || {}).findIndex((key) => key === dietNo) || 0;
 
-  // fn
-  const onMenuNoSelectPress = () => {
-    if (!dTOData) return;
-    dispatch(
-      openModal({
-        name: "menuNumSelectBS",
-        values: { dietNoToNumControl: dietNo },
-      })
-    );
-  };
+  // useMemo
+  const {
+    dDData,
+    idx,
+    isFoodNeeded,
+    priceText,
+    currentQty,
+    hasNoStockP,
+    changedDietNo,
+  } = useMemo(() => {
+    const dDData = dTOData?.[dietNo]?.dietDetail ?? [];
+    const idx =
+      Object.keys(dTOData || {}).findIndex((key) => key === dietNo) || 0;
+    const priceSum = sumUpPrice(dDData);
+    const nutrStatus = getNutrStatus({ totalFoodList, bLData, dDData });
+    const isFoodNeeded = nutrStatus === "empty" || nutrStatus === "notEnough";
+    const priceText = `${commaToNum(priceSum)}원`;
 
-  // etc
-  const priceSum = sumUpPrice(dDData);
-  const nutrStatus = getNutrStatus({ totalFoodList, bLData, dDData });
-  const iconSource =
-    nutrStatus === "satisfied"
-      ? icons.checkRoundCheckedGreen_24
-      : icons.warning_24;
-  const priceText = dDData.length !== 0 ? `${commaToNum(priceSum)}원` : "";
-  const barColor = selected
-    ? colors.main
-    : leftBarInactive
-    ? colors.inactive
-    : currentDietNo === dietNo
-    ? colors.dark
-    : colors.inactive;
-  const thumbnailBorderColor =
-    nutrStatus === "satisfied"
-      ? colors.success
-      : nutrStatus === "exceed"
-      ? colors.warning
-      : colors.lineLight;
-  const currentQty = dDData.length > 0 ? parseInt(dDData[0].qty, 10) : 1;
+    const currentQty = dDData.length > 0 ? parseInt(dDData[0].qty, 10) : 1;
 
-  const { hasNoStockP, changedDietNo } = useMemo(() => {
     // 재고없는 상품 확인
     const hasNoStockP = checkNoStockP(dTOData, dietNo);
-    if (!dTOData) return { hasNoStockP, changedDietNo: [] };
+    if (!dTOData)
+      return {
+        dDData,
+        hasNoStockP,
+        changedDietNo: [],
+        idx,
+        isFoodNeeded,
+        priceText,
+        currentQty,
+      };
     Object.keys(prevDTO).length === 0 && setPrevDTO(dTOData);
     // 자동구성으로 어떤 끼니가 바뀌었는지 확인
     const changedDietNo = Object.keys(dTOData).filter((dietNo) => {
@@ -110,14 +103,29 @@ const MenuAcInactiveHeader = ({
       return false;
     });
     changedDietNo.length > 0 && setPrevDTO(dTOData);
+
     return {
+      dDData,
       hasNoStockP,
       changedDietNo,
+      idx,
+      isFoodNeeded,
+      priceText,
+      currentQty,
     };
   }, [dTOData]);
 
+  // etc
+  const barColor = selected
+    ? colors.main
+    : leftBarInactive
+    ? colors.inactive
+    : currentDietNo === dietNo
+    ? colors.dark
+    : colors.inactive;
+
   return (
-    <Box selected={selected}>
+    <Box>
       <LeftBar style={{ backgroundColor: barColor }} />
       <Col
         style={{
@@ -134,78 +142,72 @@ const MenuAcInactiveHeader = ({
           }}
         >
           <Title>{MENU_NUM_LABEL[idx]}</Title>
-          <SubTitle>{priceText}</SubTitle>
+          {currentQty > 1 && <SubTitle>( x {currentQty} )</SubTitle>}
         </Row>
 
-        {dDData.length === 0 ? (
-          <SubTitle style={{ marginTop: 4, marginLeft: 2 }}>
-            식품을 담아보세요
-          </SubTitle>
-        ) : (
-          <Row
-            style={{
-              flex: 1,
-              alignItems: "flex-end",
-              columnGap: 16,
-              marginTop: 8,
-            }}
-          >
-            <DTooltip
-              tooltipShow={hasNoStockP}
-              text="재고없는 상품이 있어요 눌러서 교체해주세요"
-              boxTop={-36}
-            />
-            <ThumnailBox style={{ borderColor: thumbnailBorderColor }}>
-              {isDTOFetching && changedDietNo.includes(dietNo) ? (
-                <ActivityIndicator
-                  size={"small"}
-                  color={colors.dark}
-                  style={{ flex: 1, alignSelf: "center" }}
-                />
-              ) : (
-                dDData.map((p) => (
-                  <Thumbnail
-                    key={p.productNo}
-                    source={{
-                      uri: `${ENV.BASE_URL}${p.mainAttUrl}`,
-                    }}
-                  />
-                ))
-              )}
-              {nutrStatus === "exceed" && (
-                <Icon
-                  size={20}
-                  source={iconSource}
-                  style={{ position: "absolute", right: 0, top: 0 }}
-                />
-              )}
-            </ThumnailBox>
-
-            {controllable && dDData.length !== 0 && (
-              <MenuNumSelect
-                disabled={dDData.length === 0}
-                action="openModal"
-                currentQty={currentQty}
-                openMenuNumSelect={onMenuNoSelectPress}
+        <Row
+          style={{
+            flex: 1,
+            alignItems: "flex-end",
+            columnGap: 16,
+            marginTop: 8,
+          }}
+        >
+          <DTooltip
+            tooltipShow={hasNoStockP}
+            text="재고없는 상품이 있어요 눌러서 교체해주세요"
+            boxTop={-36}
+          />
+          <ThumnailBox>
+            {isDTOFetching && changedDietNo.includes(dietNo) ? (
+              <ActivityIndicator
+                size={"small"}
+                color={colors.dark}
+                style={{ flex: 1, alignSelf: "center" }}
               />
+            ) : (
+              dDData.map((p) => (
+                <Thumbnail
+                  key={p.productNo}
+                  source={{
+                    uri: `${ENV.BASE_URL}${p.mainAttUrl}`,
+                  }}
+                />
+              ))
             )}
-          </Row>
-        )}
+            {isFoodNeeded && (
+              <PlusBtn
+                onPress={() => {
+                  dispatch(setCurrentFMCIdx(idx));
+                  router.push({ pathname: "/(tabs)/Formula" });
+                }}
+              >
+                <Icon source={icons.plusGrey_24} size={16} />
+              </PlusBtn>
+            )}
+          </ThumnailBox>
+          {isFoodNeeded && currentDietNo === dietNo && (
+            <DTooltip
+              tooltipShow={true}
+              text="식품이 더 필요해요"
+              color={colors.dark}
+              boxTop={-16}
+              boxLeft={dDData.length * 40 + 24}
+            />
+          )}
+          <SubTitle>{priceText}</SubTitle>
+        </Row>
       </Col>
 
       {controllable && (
-        <DeleteBtn
-          onPress={() =>
-            dispatch(
-              openModal({
-                name: "menuDeleteAlert",
-                values: { dietNoToDel: dietNo },
-              })
-            )
-          }
+        <EditBtn
+          onPress={() => {
+            dispatch(setCurrentFMCIdx(idx));
+            router.push({ pathname: "/(tabs)/Formula" });
+          }}
         >
-          <Icon source={icons.cancelRound_24} />
-        </DeleteBtn>
+          <Icon source={icons.edit_24} />
+        </EditBtn>
       )}
       {hasNoStockP && <OpacityBox />}
     </Box>
@@ -214,17 +216,15 @@ const MenuAcInactiveHeader = ({
 
 export default MenuAcInactiveHeader;
 
-const Box = styled.View<{
-  selected?: boolean;
-}>`
+const Box = styled.View`
   background-color: ${colors.white};
   width: 100%;
+  height: 128px;
   flex-direction: row;
   justify-content: space-between;
   border-radius: 5px;
   border-width: 1px;
-  border-color: ${({ selected }) => colors.inactive};
-  border-width: ${({ selected }) => (selected ? "1px" : "1px")};
+  border-color: ${colors.inactive};
 `;
 
 const OpacityBox = styled.View`
@@ -259,10 +259,10 @@ const SubTitle = styled(TextSub)`
   line-height: 18px;
 `;
 
-const DeleteBtn = styled.TouchableOpacity`
+const EditBtn = styled.TouchableOpacity`
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 8px;
+  right: 8px;
   width: 32px;
   height: 32px;
   justify-content: center;
@@ -294,4 +294,16 @@ const Thumbnail = styled.Image`
   height: 40px;
   background-color: ${colors.backgroundLight2};
   border-radius: 4px;
+`;
+
+const PlusBtn = styled.TouchableOpacity`
+  width: 40px;
+  height: 40px;
+  background-color: ${colors.backgroundLight2};
+  border-radius: 4px;
+  border-width: 1px;
+  border-color: ${colors.lineLight};
+
+  justify-content: center;
+  align-items: center;
 `;

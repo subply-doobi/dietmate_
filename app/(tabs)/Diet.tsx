@@ -31,21 +31,16 @@ import { setFoodToOrder } from "@/features/reduxSlices/orderSlice";
 import { getAddDietStatusFrDTData } from "@/shared/utils/getDietAddStatus";
 import { commaToNum, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { checkNoStockPAll } from "@/shared/utils/productStatusCheck";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
 
-import {
-  DEFAULT_BOTTOM_TAB_HEIGHT,
-  IS_IOS,
-  SCREENHEIGHT,
-  SCREENWIDTH,
-} from "@/shared/constants";
+import { IS_IOS, SCREENHEIGHT, SCREENWIDTH } from "@/shared/constants";
 
 import colors from "@/shared/colors";
 import { Col, Container, HorizontalSpace } from "@/shared/ui/styledComps";
 import CtaButton from "@/shared/ui/CtaButton";
-import AddMenuBtn from "@/components/screens/diet/AddMenuBtn";
 import CartSummary from "@/components/screens/diet/CartSummary";
+import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 
 const Diet = () => {
   // navigation
@@ -130,16 +125,13 @@ const Diet = () => {
   };
 
   const calculateTargetY = (hasFoodInMenuArr: boolean[]): number => {
-    let targetY = 40;
-    const commonY = 16 + 16 + 24 + 20;
+    let topMargin = 40;
 
-    hasFoodInMenuArr.forEach((hasFoodInMenu) => {
-      targetY += hasFoodInMenu
-        ? commonY + 56 + 8 // When the menu has food
-        : commonY + 18 + 4; // When the menu is empty
+    hasFoodInMenuArr.forEach(() => {
+      topMargin += 128 + 16; // 128: menuAcInactiveHeader height, 20: rowGap
     });
 
-    return targetY;
+    return topMargin;
   };
 
   const calculateScrollTarget = (menuIdx: number): number => {
@@ -161,26 +153,21 @@ const Diet = () => {
   };
 
   const updateSections = (activeSections: number[]) => {
-    dispatch(setMenuAcActive(activeSections));
-    if (!dTOData || activeSections.length === 0) return;
+    if (!dTOData) return;
     const currentIdx = activeSections[0];
     const currentDietNo = Object.keys(dTOData)[currentIdx];
+    const hasNoFood = dTOData[currentDietNo]?.dietDetail.length === 0;
     currentDietNo && dispatch(setCurrentDiet(currentDietNo));
-    scrollToCurrentMenu(currentIdx);
-  };
 
-  const onAddMenuPressed = () => {
-    if (!dTOData) return;
-    dispatch(closeModal({ name: "tutorialTPSAddMenu" }));
-    if (addDietStatus === "possible") {
-      setTimeout(() => {
-        dispatch(openModal({ name: "menuCreateAlert" }));
-      }, 200);
+    if (hasNoFood) {
+      dispatch(setCurrentFMCIdx(currentIdx));
+      router.push({ pathname: "/(tabs)/Formula" });
       return;
     }
-    setTimeout(() => {
-      dispatch(openModal({ name: "menuCreateNAAlert" }));
-    }, 200);
+    dispatch(setMenuAcActive(activeSections));
+    if (activeSections.length === 0) return;
+
+    scrollToCurrentMenu(currentIdx);
   };
 
   // AutoMenu tutorial인 경우 스크롤 자동구성 버튼 위치로 내리기
@@ -262,9 +249,9 @@ const Diet = () => {
           />
 
           {/* 끼니추가 버튼 */}
-          {dTOData && (
+          {/* {dTOData && (
             <AddMenuBtn onPress={onAddMenuPressed} dTOData={dTOData} />
-          )}
+          )} */}
         </Col>
 
         {/* 끼니 정보 요약 */}

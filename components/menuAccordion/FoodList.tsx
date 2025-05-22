@@ -1,36 +1,24 @@
 // RN, expo
-import { SetStateAction } from "react";
 
 // 3rd
 import styled from "styled-components/native";
 
 // doobi
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import {
-  useDeleteDietDetail,
-  useListDietTotalObj,
-} from "@/shared/api/queries/diet";
-import { icons } from "@/shared/iconSource";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { commaToNum } from "@/shared/utils/sumUp";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
 import { ENV, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 
-import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
-import DAlert from "@/shared/ui/DAlert";
-import DeleteAlertContent from "../modal/alert/DeleteAlertContent";
+import { Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import DTooltip from "@/shared/ui/DTooltip";
 import { useRouter } from "expo-router";
 
 interface IFoodList {
-  selectedFoods: { [key: string]: string[] };
-  setSelectedFoods: React.Dispatch<SetStateAction<{ [key: string]: string[] }>>;
   dietNo: string;
 }
 
-const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
+const FoodList = ({ dietNo }: IFoodList) => {
   // redux
-  const dispatch = useAppDispatch();
 
   // navigation
   const router = useRouter();
@@ -38,38 +26,17 @@ const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
   // react-query
   const { data: dTOData } = useListDietTotalObj();
   const dietDetailData = dTOData?.[dietNo]?.dietDetail ?? [];
-  const deleteMutation = useDeleteDietDetail();
-
-  // etc
-  const addToSelected = (productNo: string) => {
-    const newArr = selectedFoods[dietNo]
-      ? [...selectedFoods[dietNo], productNo]
-      : [productNo];
-    const newObj = {
-      ...selectedFoods,
-      [dietNo]: newArr,
-    };
-    setSelectedFoods(newObj);
-  };
-  const deleteFromSelected = (productNo: string) => {
-    const newObj = {
-      ...selectedFoods,
-      [dietNo]: [...selectedFoods[dietNo]?.filter((v) => v !== productNo)],
-    };
-    setSelectedFoods(newObj);
-  };
 
   return (
     <Container>
       {dietDetailData?.map((food, idx) => {
-        const isSelected = selectedFoods[dietNo]?.includes(food.productNo);
         const hasNoStock = food.statusCd === "SP012001" ? false : true;
         return (
           <FoodBox key={idx}>
             <Row
               style={{
                 width: "100%",
-                alignItems: "flex-start",
+                columnGap: 12,
               }}
             >
               {/* 식품 이미지 */}
@@ -88,18 +55,9 @@ const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
                   resizeMode="center"
                 />
               </FoodDetailBtn>
-              {isSelected && (
-                <SelectedCheckImage source={icons.checkboxCheckedGreen_24} />
-              )}
 
               {/* 식품정보 */}
-              <SelectBtn
-                onPress={() =>
-                  isSelected
-                    ? deleteFromSelected(food.productNo)
-                    : addToSelected(food.productNo)
-                }
-              >
+              <SelectBtn onPress={() => {}}>
                 <Row style={{ justifyContent: "space-between" }}>
                   <SellerText>{food.platformNm}</SellerText>
                 </Row>
@@ -109,11 +67,13 @@ const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
 
                 {/* 영양정보 */}
                 <NutrientBox>
-                  <NutrientText>
-                    칼로리{" "}
-                    <NutrientValue>{parseInt(food.calorie)} kcal</NutrientValue>
-                  </NutrientText>
                   <Row style={{ columnGap: 8 }}>
+                    <NutrientText>
+                      칼{" "}
+                      <NutrientValue>
+                        {parseInt(food.calorie)} kcal
+                      </NutrientValue>
+                    </NutrientText>
                     <NutrientText>
                       탄 <NutrientValue>{parseInt(food.carb)} g</NutrientValue>
                     </NutrientText>
@@ -132,34 +92,6 @@ const FoodList = ({ selectedFoods, setSelectedFoods, dietNo }: IFoodList) => {
                 </ProductPrice>
               </SelectBtn>
 
-              <RightBtnBox>
-                <DeleteBtn
-                  onPress={() => {
-                    dispatch(
-                      openModal({
-                        name: "productDeleteAlert",
-                        values: { productNoToDelArr: [food.productNo] },
-                      })
-                    );
-                  }}
-                >
-                  <Icon source={icons.cancelRound_24} />
-                </DeleteBtn>
-                <ChangeBtn
-                  onPress={() => {
-                    router.push({
-                      pathname: "/Change",
-                      params: {
-                        dietNo,
-                        productNo: food.productNo,
-                        food: JSON.stringify(food),
-                      },
-                    });
-                  }}
-                >
-                  <Icon source={icons.changeRound_24} />
-                </ChangeBtn>
-              </RightBtnBox>
               {hasNoStock && <OpacityBox />}
             </Row>
             <DTooltip
@@ -178,13 +110,11 @@ export default FoodList;
 
 const Container = styled.View`
   width: 100%;
-  margin-top: 24px;
-  row-gap: 20px;
+  row-gap: 24px;
 `;
 
 const FoodBox = styled.View`
   width: 100%;
-  height: 104px;
 `;
 
 const OpacityBox = styled.View`
@@ -202,52 +132,17 @@ const FoodDetailBtn = styled.TouchableOpacity``;
 
 const SelectBtn = styled.TouchableOpacity`
   flex: 1;
-  margin: 0 8px;
-`;
-
-const SelectedCheckImage = styled.Image`
-  position: absolute;
-
-  width: 24px;
-  height: 24px;
 `;
 
 const ThumbnailImage = styled.Image`
-  width: 104px;
-  height: 104px;
+  width: 80px;
+  height: 80px;
   border-radius: 5px;
 `;
 
 const SellerText = styled(TextSub)`
   margin-left: 4px;
   font-size: 11px;
-`;
-
-const RightBtnBox = styled.View`
-  width: 32px;
-  height: 100%;
-  border-radius: 5px;
-  border-width: 1px;
-  border-color: ${colors.lineLight};
-  z-index: 2;
-`;
-
-const DeleteBtn = styled.TouchableOpacity`
-  width: 100%;
-  height: 50%;
-  justify-content: center;
-  align-items: center;
-  background-color: ${colors.white};
-`;
-
-const ChangeBtn = styled.TouchableOpacity`
-  width: 100%;
-  height: 50%;
-  background-color: ${colors.white};
-  justify-content: center;
-  align-items: center;
-  border-top-width: 1px;
-  border-color: ${colors.lineLight};
 `;
 
 const ProductNmText = styled(TextMain)`
@@ -258,7 +153,7 @@ const ProductNmText = styled(TextMain)`
 
 const NutrientBox = styled.View`
   background-color: ${colors.backgroundLight};
-  padding: 8px 4px;
+  padding: 4px;
   margin-top: 4px;
   column-gap: 12px;
 `;
@@ -271,7 +166,7 @@ const NutrientValue = styled(TextMain)`
 `;
 
 const ProductPrice = styled(TextMain)`
-  margin-top: 4px;
+  margin-top: 2px;
   margin-left: 4px;
   font-size: 11px;
 `;

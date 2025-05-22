@@ -30,8 +30,14 @@ const FormulaMore = () => {
   const numOfMenuLabel = MENU_NUM_LABEL[numOfMenu - 1];
   const maxMenuNum = MENU_NUM_LABEL.length;
 
-  const addDietStatus = getAddDietStatusFrDTData(dTOData).status;
+  const {
+    status: addDietStatus,
+    text: addBtnText,
+    subText: addBtnSubText,
+  } = getAddDietStatusFrDTData(dTOData);
 
+  const isAddMenuActive =
+    numOfMenu <= maxMenuNum - 1 && addDietStatus === "possible";
   const METHOD_BTN = [
     {
       text: `자동으로 ${numOfMenuLabel} 공식 만들기`,
@@ -53,10 +59,10 @@ const FormulaMore = () => {
       },
     },
     {
-      text: "한 근 추가하기",
-      subText: "",
+      text: isAddMenuActive ? "한 근 추가하기" : addBtnText,
+      subText: addBtnSubText,
       iconSource: icons.plusRoundBlack_32,
-      isActive: numOfMenu <= maxMenuNum - 1 && addDietStatus === "possible",
+      isActive: isAddMenuActive,
       onPress: () => {
         createDietMutation.mutate({ setDietNo: true });
         dispatch(setCurrentFMCIdx(numOfMenu));
@@ -65,17 +71,19 @@ const FormulaMore = () => {
     },
   ];
 
-  const activeBtn = METHOD_BTN.filter((item) => item.isActive);
+  // const activeBtn = METHOD_BTN.filter((item) => item.isActive);
 
   return (
     <Container style={{}}>
       <BtnBox>
-        {activeBtn.map((item, idx) => (
+        {METHOD_BTN.map((item, idx) => (
           <SelectBtn
             key={idx}
             text={item.text}
             subText={item.subText}
             iconSource={item.iconSource}
+            disabled={!item.isActive}
+            isActive={item.isActive}
             onPress={item.onPress}
           />
         ))}

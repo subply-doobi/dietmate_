@@ -11,11 +11,7 @@ import {
 import colors from "../../../shared/colors";
 import Nutr from "./Nutr";
 import { commaToNum, sumUpPrice } from "../../../shared/utils/sumUp";
-import {
-  ENV,
-  MENU_NUM_LABEL,
-  SERVICE_PRICE_PER_PRODUCT,
-} from "@/shared/constants";
+import { ENV, MENU_LABEL, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 
 interface IOrderedMenu {
   orderDetailData: Readonly<IOrderedProduct[][]>;
@@ -25,7 +21,7 @@ const OrderedMenu = ({ orderDetailData }: IOrderedMenu) => {
     <AccordionContentContainer style={{ rowGap: 64 }}>
       {orderDetailData.map((order, idx) => (
         <Col key={order[0].dietNo}>
-          <MenuTitle>{`${MENU_NUM_LABEL[idx]} (x${order[0].qty})`}</MenuTitle>
+          <MenuTitle>{`${MENU_LABEL[idx]} (x${order[0].qty})`}</MenuTitle>
           <HorizontalLine style={{ marginTop: 8 }} />
           <HorizontalSpace height={24} />
           <Nutr

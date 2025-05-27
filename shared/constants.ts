@@ -60,6 +60,15 @@ export const KOREAN_NUTRITION_REFERENCE_URL =
 export const PLAY_STORE_URL = "market://details?id=com.subply.dietmate";
 export const APP_STORE_URL =
   "itms-apps://itunes.apple.com/us/app//id6472628268";
+export const MENU_LABEL = [
+  "한 근",
+  "두 근",
+  "세 근",
+  "네 근",
+  "다섯 근",
+  "여섯 근",
+  "일곱 근",
+];
 export const MENU_NUM_LABEL = [
   "한 근",
   "두 근",
@@ -68,6 +77,9 @@ export const MENU_NUM_LABEL = [
   "다섯 근",
   "여섯 근",
   "일곱 근",
+  "여덟 근",
+  "아홉 근",
+  "열 근",
 ];
 
 // autoMenu constants
@@ -189,9 +201,9 @@ interface INutrErrorRange {
   [key: string]: [number, number];
 }
 export const NUTR_ERROR_RANGE: INutrErrorRange = {
-  calorie: [-50, 50],
-  carb: [-15, 15],
-  protein: [-5, 5],
+  calorie: [-80, 80],
+  carb: [-20, 20],
+  protein: [-8, 8],
   fat: [-3, 3],
 };
 

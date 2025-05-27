@@ -19,7 +19,7 @@ import { checkNoStockP } from "@/shared/utils/productStatusCheck";
 import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { ENV, MENU_NUM_LABEL } from "@/shared/constants";
+import { ENV, MENU_LABEL } from "@/shared/constants";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 import { useRouter } from "expo-router";
 
@@ -144,7 +144,7 @@ const MenuAcInactiveHeader = ({
             marginLeft: 2,
           }}
         >
-          <Title>{MENU_NUM_LABEL[idx]}</Title>
+          <Title>{MENU_LABEL[idx]}</Title>
           {currentQty > 1 && <SubTitle>( x {currentQty} )</SubTitle>}
         </Row>
 

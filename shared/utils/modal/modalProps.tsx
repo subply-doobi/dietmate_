@@ -6,7 +6,7 @@ import {
 import {
   APP_STORE_URL,
   IS_ANDROID,
-  MENU_NUM_LABEL,
+  MENU_LABEL,
   PLAY_STORE_URL,
   SCREENWIDTH,
 } from "@/shared/constants";
@@ -235,7 +235,7 @@ export const useModalProps = () => {
       renderContent: () => (
         <DeleteAlertContent
           deleteText={`"${
-            MENU_NUM_LABEL[Object.keys(dTOData || {}).indexOf(dietNoToDelete)]
+            MENU_LABEL[Object.keys(dTOData || {}).indexOf(dietNoToDelete)]
           }"을`}
         />
       ),

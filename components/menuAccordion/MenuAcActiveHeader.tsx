@@ -14,7 +14,7 @@ import { getNutrStatus, sumUpPrice, commaToNum } from "@/shared/utils/sumUp";
 import { icons } from "@/shared/iconSource";
 
 import colors from "@/shared/colors";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL } from "@/shared/constants";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 import { useMemo } from "react";
 import { useRouter } from "expo-router";
@@ -44,7 +44,7 @@ const MenuAcActiveHeader = ({ bLData, dietNo }: IMenuAcActiveHeader) => {
   return (
     <Box>
       <Row style={{ alignItems: "flex-end", columnGap: 12 }}>
-        <Title>{MENU_NUM_LABEL[idx]}</Title>
+        <Title>{MENU_LABEL[idx]}</Title>
         {currentQty > 1 && <SubTitle>{`( x${currentQty} )`}</SubTitle>}
       </Row>
       <EditBtn

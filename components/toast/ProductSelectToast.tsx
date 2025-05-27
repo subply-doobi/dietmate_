@@ -5,7 +5,6 @@ import { ActivityIndicator } from "react-native";
 // 3rd
 import styled from "styled-components/native";
 import { useRouter } from "expo-router";
-import Toast from "react-native-toast-message";
 
 // doobi
 
@@ -21,8 +20,9 @@ import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import ProductSelectFoodlist from "./ProductSelectTFoodlist";
 import NutrientsProgress from "../common/nutrient/NutrientsProgress";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
+import { IToastCustomConfigParams } from "@/shared/store/toastStore";
 
-const ProductSelectToast = () => {
+const ProductSelectToast = (props: IToastCustomConfigParams) => {
   // redux
   const dispatch = useAppDispatch();
   const selectedFood = useAppSelector(
@@ -64,7 +64,7 @@ const ProductSelectToast = () => {
     if (!selectedFood) {
       return;
     }
-    Toast.hide();
+    props.hide();
     router.push({
       pathname: "/FoodDetail",
       params: { productNo: selectedFood.productNo },
@@ -75,7 +75,7 @@ const ProductSelectToast = () => {
     if (!selectedFood) {
       return;
     }
-    Toast.hide();
+    props.hide();
     setTimeout(() => {
       dispatch(setAutoAddSelectedFood(undefined));
     }, 150);
@@ -88,12 +88,20 @@ const ProductSelectToast = () => {
     }, 500);
   };
 
+  const onPressBack = () => {
+    dispatch(setAutoAddSelectedFood(undefined));
+    props.hide();
+  };
+
   if (!selectedFood) {
     return null;
   }
 
   return (
     <ToastBox>
+      <BackBtn onPress={onPressBack}>
+        <Icon source={icons.deleteRoundWhite_24} size={20} />
+      </BackBtn>
       <NutrientsProgress
         dietDetailData={expectedMenu}
         textColor={colors.whiteOpacity70}
@@ -125,8 +133,18 @@ export default ProductSelectToast;
 const ToastBox = styled.View`
   width: 95%;
   background-color: ${colors.blackOpacity80};
-  padding: 0 16px;
+  padding: 24px 16px;
   border-radius: 4px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const BackBtn = styled.TouchableOpacity`
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
   justify-content: center;
   align-items: center;
 `;

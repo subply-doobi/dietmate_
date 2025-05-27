@@ -8,16 +8,23 @@ import {
   VerticalSpace,
 } from "@/shared/ui/styledComps";
 import styled from "styled-components/native";
-import { IDietDetailData } from "@/shared/api/types/diet";
+import {
+  IDietDetailData,
+  IDietDetailProductData,
+} from "@/shared/api/types/diet";
 import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
-import { IProductData } from "@/shared/api/types/product";
+import { IProductData, IProductDetailData } from "@/shared/api/types/product";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import {
   setProductToAdd,
   setProductToDel,
 } from "@/features/reduxSlices/lowerShippingSlice";
-import { commaToNum, IShippingPriceValues } from "@/shared/utils/sumUp";
+import {
+  commaToNum,
+  IShippingPriceObj,
+  IShippingPriceValues,
+} from "@/shared/utils/sumUp";
 import DTooltip from "@/shared/ui/DTooltip";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
@@ -25,13 +32,9 @@ import Toast from "react-native-toast-message";
 interface IFoodlistToMod {
   type: "del" | "add";
   foods: IDietDetailData | IProductData[];
-  freeShippingPObjArr?: IShippingPriceValues[];
+  shippingPriceObj: IShippingPriceObj;
 }
-const FoodlistToMod = ({
-  type,
-  foods,
-  freeShippingPObjArr,
-}: IFoodlistToMod) => {
+const FoodlistToMod = ({ type, foods, shippingPriceObj }: IFoodlistToMod) => {
   // navigation
   const router = useRouter();
 
@@ -77,16 +80,44 @@ const FoodlistToMod = ({
       )}
       keyExtractor={(_, idx) => idx.toString()}
       renderItem={({ item }) => {
+        // check item type is IDietDetailProductData or IProductData[] by "qty"
+        const currentQty = "qty" in item ? parseInt(item.qty as string) : 1;
         const isSelected =
           item.productNo === productToDel?.productNo ||
           item.productNo === productToAdd?.productNo;
-        const isChangeNA =
-          type === "del" && changeAvailableFoods[item.productNo].length === 0;
+
+        let needInfoOpacity = false;
+        let disabled = false;
+        let infoText = "";
+
+        if (type === "del") {
+          const oShippingPrice =
+            shippingPriceObj[item.platformNm].shippingPrice;
+          const freeshippingPrice =
+            shippingPriceObj[item.platformNm].freeShippingPrice;
+          const ePrice =
+            shippingPriceObj[item.platformNm].price -
+            (parseInt(item.price) + SERVICE_PRICE_PER_PRODUCT) * currentQty;
+          const eShippingPrice =
+            ePrice >= freeshippingPrice ? 0 : parseInt(item.shippingPrice);
+
+          if (oShippingPrice === 0 && eShippingPrice !== 0) {
+            needInfoOpacity = true;
+            infoText = `배송비 발생\n주의`;
+          }
+
+          if (changeAvailableFoods[item.productNo].length === 0) {
+            needInfoOpacity = true;
+            disabled = true;
+            infoText = `변경 가능한\n식품이 없어요`;
+          }
+        }
+
         return (
           <ItemBox
             isSelected={isSelected}
             type={type}
-            disabled={isChangeNA}
+            disabled={disabled}
             onPress={() => onItemPressed(item)}
           >
             <PlatformNm numberOfLines={1} ellipsizeMode="tail">
@@ -130,12 +161,12 @@ const FoodlistToMod = ({
                 });
               }}
             />
-            {isChangeNA && (
-              <NotAvailableBox>
-                <ProductNm
-                  style={{ textAlign: "center" }}
-                >{`변경 가능한\n식품이 없어요`}</ProductNm>
-              </NotAvailableBox>
+            {needInfoOpacity && (
+              <OpacityBox>
+                <ProductNm style={{ textAlign: "center" }}>
+                  {infoText}
+                </ProductNm>
+              </OpacityBox>
             )}
           </ItemBox>
         );
@@ -179,13 +210,13 @@ const ProductNm = styled(TextMain)`
   color: ${colors.white};
 `;
 
-const NotAvailableBox = styled.View`
+const OpacityBox = styled.View`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: ${colors.blackOpacity70};
+  background-color: ${colors.blackOpacity50};
   border-radius: 4px;
   align-items: center;
   justify-content: center;

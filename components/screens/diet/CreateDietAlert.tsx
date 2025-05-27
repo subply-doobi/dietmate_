@@ -11,7 +11,7 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import MenuNumSelect from "@/components/common/cart/MenuNumSelect";
 import { useEffect } from "react";
 import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL } from "@/shared/constants";
 
 interface ICreateDietAlert {
   numOfCreateDiet: number;
@@ -36,7 +36,7 @@ const CreateDietAlert = ({
   const NumOfMenu = dTOData ? Object.keys(dTOData).length : 0;
   const desc = `총 다섯 근 공식을 추천해요 \n${
     NumOfMenu !== 0
-      ? `(현재 "${MENU_NUM_LABEL[NumOfMenu - 1]}"이 공식에 있어요)`
+      ? `(현재 "${MENU_LABEL[NumOfMenu - 1]}"이 공식에 있어요)`
       : ""
   }`;
   if (isCreating)
@@ -55,7 +55,7 @@ const CreateDietAlert = ({
         action="setQty"
         currentQty={numOfCreateDiet}
         setQty={setNumOfCreateDiet}
-        maxQty={MENU_NUM_LABEL.length - NumOfMenu}
+        maxQty={MENU_LABEL.length - NumOfMenu}
       />
     </Container>
   );

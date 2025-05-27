@@ -21,10 +21,15 @@ import {
   TextSub,
 } from "@/shared/ui/styledComps";
 import MenuNumSelect from "../../common/cart/MenuNumSelect";
-import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
+import {
+  commaToNum,
+  sumUpDietFromDTOData,
+  sumUpPrice,
+} from "@/shared/utils/sumUp";
 import colors from "@/shared/colors";
 import {
   ENV,
+  MENU_LABEL,
   MENU_NUM_LABEL,
   SCREENHEIGHT,
   SCREENWIDTH,
@@ -49,9 +54,12 @@ const MenuNumSelectContent = () => {
   const [qty, setQty] = useState(1);
 
   // useMemo
-  const { dDData, idx, currentDietBySeller, otherDietBySeller } =
+  const { dDData, idx, currentDietBySeller, otherDietBySeller, maxQty } =
     useMemo(() => {
       const dDData = dTOData?.[dietNoToNumControl]?.dietDetail ?? [];
+      const { menuNum } = sumUpDietFromDTOData(dTOData);
+      const maxQty =
+        MENU_NUM_LABEL.length - menuNum + parseInt(dDData[0]?.qty || "1");
       dDData.length > 0 && setQty(parseInt(dDData[0].qty));
 
       const idx =
@@ -69,7 +77,7 @@ const MenuNumSelectContent = () => {
         otherDietBySeller[dietNo] = dTODataBySeller[dietNo];
       });
 
-      return { dDData, idx, currentDietBySeller, otherDietBySeller };
+      return { dDData, idx, currentDietBySeller, otherDietBySeller, maxQty };
     }, [dTOData]);
 
   // useEffect
@@ -94,7 +102,7 @@ const MenuNumSelectContent = () => {
         <TouchableWithoutFeedback>
           <Col>
             <HorizontalSpace height={24} />
-            <TitleText>{MENU_NUM_LABEL[idx]}</TitleText>
+            <TitleText>{MENU_LABEL[idx]}</TitleText>
 
             {/* 현재 끼니 식품 리스트 */}
             <HorizontalSpace height={8} />
@@ -198,6 +206,7 @@ const MenuNumSelectContent = () => {
             action="setQty"
             setQty={setQty}
             currentQty={qty}
+            maxQty={maxQty}
           />
         </Col>
         <HorizontalSpace height={40} />

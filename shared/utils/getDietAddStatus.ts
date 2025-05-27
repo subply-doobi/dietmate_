@@ -1,5 +1,5 @@
 import { IDietTotalObjData } from "../api/types/diet";
-import { MENU_NUM_LABEL } from "../constants";
+import { MENU_LABEL } from "../constants";
 
 export const getAddDietStatusFrDTData = (
   dTOData: IDietTotalObjData | undefined
@@ -12,7 +12,7 @@ export const getAddDietStatusFrDTData = (
   );
   const status = !dTOData
     ? "noData"
-    : numOfMenu >= MENU_NUM_LABEL.length
+    : numOfMenu >= MENU_LABEL.length
     ? "limit"
     : hasEmptyMenu
     ? "empty"
@@ -22,9 +22,7 @@ export const getAddDietStatusFrDTData = (
     status === "noData"
       ? "데이터가 없습니다."
       : status === "limit"
-      ? `${
-          MENU_NUM_LABEL[MENU_NUM_LABEL.length - 1]
-        } 까지만\n추가할 수 있습니다.`
+      ? `${MENU_LABEL[MENU_LABEL.length - 1]} 까지만\n추가할 수 있습니다.`
       : status === "empty"
       ? "비어있는 근이 있어요"
       : "추가 가능한\n근입니다.";

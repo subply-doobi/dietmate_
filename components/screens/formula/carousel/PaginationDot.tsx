@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import styled from "styled-components/native";
 import colors from "@/shared/colors";
 import { Icon, TextMain } from "@/shared/ui/styledComps";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL } from "@/shared/constants";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
@@ -43,9 +43,7 @@ const PaginationDot = ({ index }: { index: number }) => {
   }, [nutrStatus]);
 
   const isActive = currentFMCIdx === index;
-  const text = isActive
-    ? MENU_NUM_LABEL[index].slice(0, -2)
-    : MENU_NUM_LABEL[index];
+  const text = isActive ? MENU_LABEL[index].slice(0, -2) : MENU_LABEL[index];
 
   const isSatisfied = nutrStatus === "satisfied";
 

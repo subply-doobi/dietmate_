@@ -5,7 +5,7 @@ import {
 } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import {
-  MENU_NUM_LABEL,
+  MENU_LABEL,
   NUTR_ERROR_RANGE,
   SCREENHEIGHT,
   SERVICE_PRICE_PER_PRODUCT,
@@ -35,6 +35,7 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { onLowerShippingTHide } from "@/features/reduxSlices/lowerShippingSlice";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
 import SummaryBox, { IShippingSummaryObj } from "./SummaryBox";
+import DTooltip from "@/shared/ui/DTooltip";
 
 const FoodChangeToast = (props: IToastCustomConfigParams) => {
   // redux
@@ -138,12 +139,11 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
           remainPrice: delORPrice,
           shippingPrice: delOSPrice,
         } = shippingPriceObj[platformNmToDel];
-        const delEPrice =
-          delOPrice -
-          (parseInt(productToDel.price) + SERVICE_PRICE_PER_PRODUCT);
-        const delERPrice =
-          delORPrice +
-          (parseInt(productToDel.price) + SERVICE_PRICE_PER_PRODUCT);
+        const delDPrice =
+          (parseInt(productToDel.price) + SERVICE_PRICE_PER_PRODUCT) *
+          currentQty;
+        const delEPrice = delOPrice - delDPrice;
+        const delERPrice = delORPrice + delDPrice;
         const delESPrice =
           delEPrice >= delFSPrice ? 0 : parseInt(productToDel.shippingPrice);
         shippingSummaryObj[platformNmToDel] = {
@@ -176,7 +176,8 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
           Object.keys(shippingSummaryObj).includes(platformNmToAdd);
 
         const addDPrice =
-          parseInt(productToAdd.price) + SERVICE_PRICE_PER_PRODUCT;
+          (parseInt(productToAdd.price) + SERVICE_PRICE_PER_PRODUCT) *
+          currentQty;
         const addEPrice = isExist
           ? shippingSummaryObj[platformNmToAdd].ePrice + addDPrice
           : addOPrice + addDPrice;
@@ -236,7 +237,7 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
           }}
         >
           <Row style={{ columnGap: 8 }}>
-            <Title>{MENU_NUM_LABEL[menuIdx]}</Title>
+            <Title>{MENU_LABEL[menuIdx]}</Title>
             {currentQty > 1 && <SubText>( x{currentQty} )</SubText>}
           </Row>
           <Row style={{ columnGap: 8 }}>
@@ -266,7 +267,7 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
         <FoodlistToMod
           type="del"
           foods={dDData}
-          freeShippingPObjArr={freeShippingPObjArr}
+          shippingPriceObj={shippingPriceObj}
         />
 
         {/* 배송합계 */}
@@ -285,7 +286,11 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
             <Text style={{ marginTop: 40 }}>
               현재 근에 더할 식품을 선택해주세요
             </Text>
-            <FoodlistToMod type="add" foods={foodlistToAdd} />
+            <FoodlistToMod
+              type="add"
+              foods={foodlistToAdd}
+              shippingPriceObj={shippingPriceObj}
+            />
           </>
         )}
 
@@ -381,6 +386,15 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
           btnTextStyle={{ color: colors.white }}
           btnText="식품 변경"
           onPress={() => onChangeFoodPress()}
+        />
+        <DTooltip
+          tooltipShow={productToDel && productToAdd ? false : true}
+          text={`삭제/추가할 식품을 모두 선택해주세요`}
+          reversed={true}
+          boxBottom={-40}
+          boxRight={0}
+          triangleRight={30}
+          color={colors.brown}
         />
       </CtaRow>
     </ToastBox>

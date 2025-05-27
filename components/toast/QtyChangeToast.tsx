@@ -3,7 +3,7 @@ import {
   useUpdateDietDetail,
 } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
-import { MENU_NUM_LABEL, SCREENHEIGHT } from "@/shared/constants";
+import { MENU_LABEL, MENU_NUM_LABEL, SCREENHEIGHT } from "@/shared/constants";
 import CtaButton from "@/shared/ui/CtaButton";
 import {
   commaToNum,
@@ -26,6 +26,7 @@ import { IToastCustomConfigParams } from "@/shared/store/toastStore";
 import { regroupDDataBySeller } from "@/shared/utils/dataTransform";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { onLowerShippingTHide } from "@/features/reduxSlices/lowerShippingSlice";
+import DTooltip from "@/shared/ui/DTooltip";
 
 const QtyChangeToast = (props: IToastCustomConfigParams) => {
   // redux
@@ -47,6 +48,7 @@ const QtyChangeToast = (props: IToastCustomConfigParams) => {
     platformNmArr,
     regroupedBySeller,
     currentQty,
+    maxQty,
     shippingPriceObj,
     curentMenuPrice,
   } = useMemo(() => {
@@ -54,7 +56,9 @@ const QtyChangeToast = (props: IToastCustomConfigParams) => {
     const dietNo = dietNoArr[menuIdx] || "";
     const dDData = dTOData?.[dietNo]?.dietDetail || [];
     const regroupedBySeller = regroupDDataBySeller(dDData);
-    const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
+    const { shippingPriceObj, menuNum } = sumUpDietFromDTOData(dTOData);
+    const maxQty =
+      MENU_NUM_LABEL.length - menuNum + parseInt(dDData[0]?.qty || "1");
 
     // platformNm array without duplicates
     const platformNmArr = Array.from(
@@ -71,6 +75,7 @@ const QtyChangeToast = (props: IToastCustomConfigParams) => {
       shippingPriceObj,
       regroupedBySeller,
       currentQty,
+      maxQty,
       curentMenuPrice,
     };
   }, [menuIdx, dTOData]);
@@ -99,8 +104,10 @@ const QtyChangeToast = (props: IToastCustomConfigParams) => {
             columnGap: 8,
           }}
         >
-          <Title>{MENU_NUM_LABEL[menuIdx]}</Title>
-          {currentQty > 1 && <SubText>( x{currentQty} )</SubText>}
+          <Row style={{ columnGap: 8 }}>
+            <Title>{MENU_LABEL[menuIdx]}</Title>
+            {currentQty > 1 && <SubText>( x{currentQty} )</SubText>}
+          </Row>
           <Title>{commaToNum(curentMenuPrice)}원</Title>
         </Row>
         <Foodlist dDData={dDData} mainTextColor={colors.white} />
@@ -123,24 +130,25 @@ const QtyChangeToast = (props: IToastCustomConfigParams) => {
               <Col key={idx} style={{ width: "100%" }}>
                 <Text style={{ fontWeight: "bold" }}>{seller}</Text>
                 <HorizontalSpace height={12} />
-                <Row>
+                <Row style={{ alignItems: "center", columnGap: 4 }}>
+                  <Text>식품 :</Text>
                   {dPrice === 0 ? (
-                    <Text>식품 : {commaToNum(oPrice)}원</Text>
+                    <Text>{commaToNum(oPrice)}원</Text>
                   ) : (
-                    <TextSub style={{ textDecorationLine: "line-through" }}>
-                      식품 : {commaToNum(oPrice)}원
-                    </TextSub>
+                    <SubText style={{ textDecorationLine: "line-through" }}>
+                      {commaToNum(oPrice)}원
+                    </SubText>
                   )}
-                  {dPrice > 0 && <Text> {commaToNum(expectedPrice)}원</Text>}
+                  {dPrice !== 0 && <Text>{commaToNum(expectedPrice)}원</Text>}
                 </Row>
                 {isFreeShipping ? (
-                  <TextSub>배송비: {commaToNum(expectedSPrice)}원</TextSub>
+                  <SubText>배송비: {commaToNum(expectedSPrice)}원</SubText>
                 ) : (
-                  <TextSub>
+                  <SubText>
                     배송비: {commaToNum(oSPrice)}원 (
                     {commaToNum(freeshippingPrice - oPrice - dPrice)} 원 더
                     구매시 무료)
-                  </TextSub>
+                  </SubText>
                 )}
               </Col>
             );
@@ -152,8 +160,17 @@ const QtyChangeToast = (props: IToastCustomConfigParams) => {
           <MenuNumSelect
             action="setQty"
             setQty={setQty}
-            maxQty={10}
             currentQty={qty}
+            maxQty={maxQty}
+          />
+          <DTooltip
+            text={`다른 근들을 포함해서 총 ${
+              MENU_NUM_LABEL[MENU_NUM_LABEL.length - 1]
+            }을 추천해요`}
+            tooltipShow={qty >= maxQty}
+            boxRight={0}
+            boxTop={-32}
+            triangleRight={16}
           />
         </Col>
       )}

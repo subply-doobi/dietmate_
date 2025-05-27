@@ -11,7 +11,7 @@ import FoodList from "./FoodList";
 import colors from "../../../shared/colors";
 import { updateTotalCheckList } from "../../../shared/utils/asyncStorage";
 import { IFlattedOrderedProduct } from "@/shared/utils/screens/checklist/menuFlat";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL } from "@/shared/constants";
 
 interface IMenuBox {
   order: IFlattedOrderedProduct[][];
@@ -54,7 +54,7 @@ const MenuBox = ({ order, checklist, setChecklist }: IMenuBox) => {
               >
                 <LeftBar />
                 <CheckListTitle>
-                  {MENU_NUM_LABEL[idx]}{" "}
+                  {MENU_LABEL[idx]}{" "}
                   {menu[0].qtyIdx > 0 && `(${menu[0].qtyIdx + 1})`}
                 </CheckListTitle>
                 <Icon

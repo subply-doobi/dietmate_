@@ -8,7 +8,11 @@ import {
   TextMain,
 } from "@/shared/ui/styledComps";
 
-import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
+import {
+  commaToNum,
+  sumUpDietFromDTOData,
+  sumUpPrice,
+} from "@/shared/utils/sumUp";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useDispatch } from "react-redux";
 import { openModal } from "@/features/reduxSlices/modalSlice";
@@ -19,6 +23,8 @@ import { icons } from "@/shared/iconSource";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 import { useRouter } from "expo-router";
+import { useMemo } from "react";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 
 interface IMenuAcContent {
   dietNo: string;

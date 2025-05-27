@@ -1,6 +1,7 @@
 import CartSummary from "@/components/screens/diet/CartSummary";
 import MenuToMod from "@/components/screens/lowerShipping/MenuToMod";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
+import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
@@ -28,6 +29,7 @@ import {
 import { useFocusEffect, useRouter } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { ActivityIndicator, ScrollView } from "react-native";
+import Toast from "react-native-toast-message";
 import styled from "styled-components/native";
 
 const LowerShipping = () => {
@@ -48,37 +50,41 @@ const LowerShipping = () => {
 
   // react-query
   const createDietMutation = useCreateDiet();
+  const { data: bLData } = useGetBaseLine();
   const { data: dTOData, isFetching: isDTODataFetching } =
     useListDietTotalObj();
 
   // useMemo
   const {
-    guideSubTitle,
+    guideTitle,
     qtyModRecomendedArr,
     onlyFoodModArr,
     bothModArr,
     onlyQtyModArr,
     addDietStatus,
+    totalShippingPrice,
   } = useMemo(() => {
     if (!dTOData)
       return {
         menuNum: 0,
-        guideSubTitle: "",
+        guideTitle: "",
         qtyModRecomendedArr: [],
         onlyFoodModArr: [],
         bothModArr: [],
         onlyQtyModArr: [],
         addDietStatus: "noData",
+        totalShippingPrice: 0,
       };
-    const { shippingPriceObj, menuNum } = sumUpDietFromDTOData(dTOData);
+    const { shippingPriceObj, menuNum, totalShippingPrice } =
+      sumUpDietFromDTOData(dTOData);
     const { free, notFree } = getSortedShippingPriceObj(shippingPriceObj);
     const firstTargetSeller = notFree[0];
     const addDietStatus = getAddDietStatusFrDTData(dTOData).status;
     const targetPlatformNm = firstTargetSeller?.platformNm || "";
     const remainPrice = firstTargetSeller?.remainPrice || 0;
-    const guideSubTitle = `${targetPlatformNm} 식품 ${commaToNum(
+    const guideTitle = `"${targetPlatformNm}" 무료배송까지\n${commaToNum(
       remainPrice
-    )}원 추가시 \n배송비를 줄일 수 있어요!`;
+    )}원 남았어요!`;
 
     const { included, notIncluded } = getSortedMenuArrBySellerPrice({
       dTOData,
@@ -105,6 +111,7 @@ const LowerShipping = () => {
     // 해당 근의 목표식품사 금액 큰 순으로, 근수를 3개 이상 구매하면 무료배송이 가능한 경우
     // 하지만 변경가능한 식품이 없다면 qty변경만 가능한 근으로 분리
     const qtyModRecomendedArr = getMenusWithChangeAvailableFoods(
+      bLData,
       qtyChangeRecommended,
       totalFoodList,
       targetPlatformNm
@@ -118,6 +125,7 @@ const LowerShipping = () => {
     // 나머지 중 근수변경, 식품변경 모두 가능한 경우 중
     // 변경가능 식품이 없는 경우는 근수 변경만 가능한 식품으로 분리
     const bothModArr = getMenusWithChangeAvailableFoods(
+      bLData,
       notQtyChangeRecommended,
       totalFoodList,
       targetPlatformNm
@@ -130,13 +138,14 @@ const LowerShipping = () => {
 
     // 해당 근에 목표식품사 식품이 없는 경우는 식품 교체만 가능 (근데 교체가능한 식품이 있는 근만 필터링)
     const onlyFoodModArr = getMenusWithChangeAvailableFoods(
+      bLData,
       onlyFoodChangePossible,
       totalFoodList,
       targetPlatformNm
     ).filter((menu) => !checkNoFoodAvailable(menu));
 
     return {
-      guideSubTitle,
+      guideTitle,
       targetPlatformNm,
       qtyModRecomendedArr,
       onlyFoodModArr,
@@ -144,6 +153,7 @@ const LowerShipping = () => {
       onlyQtyModArr,
       menuNum,
       addDietStatus,
+      totalShippingPrice,
     };
   }, [dTOData]);
 
@@ -159,6 +169,20 @@ const LowerShipping = () => {
     }
   });
 
+  // useEffect
+  useEffect(() => {
+    if (totalShippingPrice === 0) {
+      // 배송비 전체 무료
+      router.back();
+      Toast.show({
+        type: "success",
+        text1: "배송비가 모두 무료로 변경되었어요!",
+        position: "bottom",
+        visibilityTime: 2000,
+      });
+    }
+  }, [totalShippingPrice]);
+
   if (isDTODataFetching)
     return (
       <Container style={{ alignItems: "center", justifyContent: "center" }}>
@@ -170,14 +194,39 @@ const LowerShipping = () => {
     <Container>
       <ScrollView showsVerticalScrollIndicator={false}>
         <GuideTitle
-          title={`배송비를 줄여볼게요`}
-          subTitle={guideSubTitle}
+          title={guideTitle}
+          subTitle={"무료배송 금액이 가장 가까운 순으로 도와드릴게요"}
           style={{ marginTop: 40 }}
         />
 
+        {/* 근 추가 버튼은 최대 근수 미만 + 중복 합쳐서 10개 미만일때만*/}
+        {addDietStatus === "possible" && (
+          <Col style={{ marginTop: 80 }}>
+            <RecommendationText>새로운 근 추가도 가능해요</RecommendationText>
+            <CtaButton
+              style={{ width: "99%", marginTop: 24 }}
+              btnStyle="border"
+              btnText={"추가하기"}
+              btnContent={() => (
+                <Icon
+                  source={icons.appIcon}
+                  size={28}
+                  style={{ marginLeft: -12 }}
+                />
+              )}
+              onPress={() => {
+                createDietMutation.mutate({ setDietNo: true });
+                router.back();
+                dispatch(setCurrentFMCIdx(Object.keys(dTOData || {}).length));
+                router.push("/(tabs)/Formula");
+              }}
+            />
+          </Col>
+        )}
+
         {/* 근수변경 추천 */}
         {qtyModRecomendedArr.length > 0 && (
-          <Col style={{ marginTop: 64 }}>
+          <Col style={{ marginTop: 80 }}>
             <RecommendationText>
               같은 근을 여러 개 구매할 수 있어요
             </RecommendationText>
@@ -209,30 +258,6 @@ const LowerShipping = () => {
         )}
         <MenuToMod menuArr={onlyQtyModArr} type="qtyOnly" />
 
-        <Col style={{ marginTop: 80 }}>
-          <RecommendationText>새로운 근 추가도 가능해요</RecommendationText>
-        </Col>
-        {/* 근 추가 버튼은 최대 근수 미만 + 중복 합쳐서 10개 미만일때만*/}
-        {addDietStatus === "possible" && (
-          <CtaButton
-            style={{ width: "99%", marginTop: 24 }}
-            btnStyle="border"
-            btnText={"추가하기"}
-            btnContent={() => (
-              <Icon
-                source={icons.appIcon}
-                size={28}
-                style={{ marginLeft: -12 }}
-              />
-            )}
-            onPress={() => {
-              createDietMutation.mutate({ setDietNo: true });
-              router.back();
-              dispatch(setCurrentFMCIdx(Object.keys(dTOData || {}).length));
-              router.push("/(tabs)/Formula");
-            }}
-          />
-        )}
         <CartSummary containerStyle={{ marginTop: 64, paddingBottom: 120 }} />
       </ScrollView>
     </Container>

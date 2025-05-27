@@ -16,7 +16,7 @@ import Address from "@/components/screens/order/Address";
 import FoodToOrder from "@/components/screens/order/FoodToOrder";
 import Orderer from "@/components/screens/order/Orderer";
 import PaymentMethod from "@/components/screens/order/PaymentMethod";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
 
 interface IGetOrderAccordionContent {
   menuNum: number;

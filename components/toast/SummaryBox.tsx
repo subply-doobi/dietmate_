@@ -42,7 +42,7 @@ const SummaryBox = ({ shippingSummaryObj, seller }: ISummaryBox) => {
             {commaToNum(oPrice)}원
           </SubText>
         )}
-        {ePrice > 0 && (
+        {
           <SubText
             style={{
               color: ePrice === oPrice ? colors.textSub : colors.white,
@@ -50,26 +50,30 @@ const SummaryBox = ({ shippingSummaryObj, seller }: ISummaryBox) => {
           >
             {commaToNum(ePrice)}원
           </SubText>
-        )}
+        }
       </Row>
-      <Row style={{ columnGap: 4 }}>
-        <SubText>배송비:</SubText>
-        {oShippingPrice !== eShippingPrice && (
-          <SubText style={{ textDecorationLine: "line-through" }}>
-            {oShippingPrice === 0 ? `무료` : `${commaToNum(oShippingPrice)}원`}
-          </SubText>
-        )}
-        <SubText>
-          {eShippingPrice === 0 ? `무료` : `${commaToNum(eShippingPrice)}원`}
-        </SubText>
-        {eShippingPrice > 0 && (
+      {ePrice > 0 && (
+        <Row style={{ columnGap: 4 }}>
+          <SubText>배송비:</SubText>
+          {oShippingPrice !== eShippingPrice && (
+            <SubText style={{ textDecorationLine: "line-through" }}>
+              {oShippingPrice === 0
+                ? `무료`
+                : `${commaToNum(oShippingPrice)}원`}
+            </SubText>
+          )}
           <SubText>
-            {" "}
-            ({commaToNum(shippingSummaryObj[seller].freeShippingPrice)}원 이상
-            무료배송)
+            {eShippingPrice === 0 ? `무료` : `${commaToNum(eShippingPrice)}원`}
           </SubText>
-        )}
-      </Row>
+          {eShippingPrice > 0 && (
+            <SubText>
+              {" "}
+              ({commaToNum(shippingSummaryObj[seller].freeShippingPrice)}원 이상
+              무료배송)
+            </SubText>
+          )}
+        </Row>
+      )}
     </Col>
   );
 };

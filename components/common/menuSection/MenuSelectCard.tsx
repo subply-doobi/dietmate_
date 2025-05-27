@@ -14,7 +14,7 @@ import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL } from "@/shared/constants";
 import { icons } from "@/shared/iconSource";
 
 interface IMenuSelectCard {
@@ -85,8 +85,8 @@ const MenuSelectCard = ({ isCreating, setIsCreating }: IMenuSelectCard) => {
                   <Row>
                     <CardText isActivated={isActivated}>{`${
                       isActivated
-                        ? MENU_NUM_LABEL[idx].slice(0, -2)
-                        : MENU_NUM_LABEL[idx]
+                        ? MENU_LABEL[idx].slice(0, -2)
+                        : MENU_LABEL[idx]
                     }`}</CardText>
                     {isActivated && <Icon source={icons.appIcon} size={20} />}
                   </Row>

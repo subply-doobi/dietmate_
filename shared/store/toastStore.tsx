@@ -31,6 +31,7 @@ export const showQtyChangeToast = ({ menuIdx }: { menuIdx: number }) => {
     position: "bottom",
     autoHide: false,
     swipeable: false,
+    bottomOffset: 8,
   });
 };
 export const showFoodChangeToast = ({
@@ -48,6 +49,7 @@ export const showFoodChangeToast = ({
     position: "bottom",
     autoHide: false,
     swipeable: false,
+    bottomOffset: 8,
   });
 };
 
@@ -56,7 +58,9 @@ export type IToastCustomConfigParams = ToastConfigParams<{
   menuWithChangeAvailableFoods?: MenuWithChangeAvailableFoods;
 }>;
 export const toastConfig = {
-  productSelect: () => <ProductSelectToast />,
+  productSelect: (props: IToastCustomConfigParams) => (
+    <ProductSelectToast {...props} />
+  ),
   qtyChange: (props: IToastCustomConfigParams) => <QtyChangeToast {...props} />,
   foodChange: (props: IToastCustomConfigParams) => (
     <FoodChangeToast {...props} />

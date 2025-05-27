@@ -1,5 +1,5 @@
 import colors from "@/shared/colors";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL } from "@/shared/constants";
 import {
   showFoodChangeToast,
   showQtyChangeToast,
@@ -25,7 +25,7 @@ const MenuToMod = ({ menuArr, type }: IMenuToMod) => {
           style={{ boxShadow: "1px 1px 5px rgba(0, 0, 0, 0.12)" }}
         >
           <Row style={{ justifyContent: "center" }}>
-            <CardTitle>{MENU_NUM_LABEL[menu.index]}</CardTitle>
+            <CardTitle>{MENU_LABEL[menu.index]}</CardTitle>
             {Number(menu.dietDetailData[0]?.qty) > 1 && (
               <CardSubTitle style={{ marginLeft: 8 }}>
                 ( x{menu.dietDetailData[0]?.qty} )

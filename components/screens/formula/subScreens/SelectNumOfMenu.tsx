@@ -7,7 +7,7 @@ import {
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL } from "@/shared/constants";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import CtaButton from "@/shared/ui/CtaButton";
@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import styled from "styled-components/native";
 
-const PICKER_DATA_ARR = [...MENU_NUM_LABEL];
+const PICKER_DATA_ARR = [...MENU_LABEL];
 
 const SelectNumOfMenu = () => {
   // redux

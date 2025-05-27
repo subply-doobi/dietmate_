@@ -12,7 +12,7 @@ import colors from "@/shared/colors";
 import { commaToNum } from "@/shared/utils/sumUp";
 import { regroupDDataBySeller } from "@/shared/utils/dataTransform";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
-import { ENV, MENU_NUM_LABEL } from "@/shared/constants";
+import { ENV, MENU_LABEL } from "@/shared/constants";
 
 const FoodToOrder = () => {
   // redux
@@ -55,7 +55,7 @@ const FoodsInOneDiet = ({ dietNo }: FoodInOneDietProps) => {
     <Col>
       {foodToOrder && (
         <View>
-          <MenuTitle>{`${MENU_NUM_LABEL[idx]} ( x${foodToOrder[dietNo].dietDetail[0]?.qty} )`}</MenuTitle>
+          <MenuTitle>{`${MENU_LABEL[idx]} ( x${foodToOrder[dietNo].dietDetail[0]?.qty} )`}</MenuTitle>
           <HorizontalLine
             style={{ marginTop: 8, backgroundColor: colors.line }}
           />

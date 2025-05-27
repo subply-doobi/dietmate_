@@ -20,7 +20,7 @@ import {
 import { commaToNum } from "@/shared/utils/sumUp";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
 
 interface ICurrentDietCard {
   isDietEmpty: boolean;

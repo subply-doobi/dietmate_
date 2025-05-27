@@ -23,7 +23,7 @@ import {
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
 import CtaButton from "@/shared/ui/CtaButton";
 
 interface ICartSummary {

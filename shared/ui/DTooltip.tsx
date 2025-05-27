@@ -69,7 +69,10 @@ const DTooltip = ({
       onPress={() => (onPressFn ? onPressFn() : {})}
     >
       {reversed && triangle && (
-        <TooltipTriangleRvs style={{ ...triangleHorizontalStyle }} />
+        <TooltipTriangleRvs
+          color={color}
+          style={{ ...triangleHorizontalStyle }}
+        />
       )}
       <TooltipBox color={color}>
         {customContent ? customContent() : <TooltipText>{text}</TooltipText>}
@@ -142,7 +145,7 @@ const TooltipTriangle = styled.View<{ color?: string }>`
   border-right-color: transparent;
   border-top-color: ${({ color }) => (color ? color : colors.green)};
 `;
-const TooltipTriangleRvs = styled.View`
+const TooltipTriangleRvs = styled.View<{ color?: string }>`
   position: absolute;
   width: 0;
   height: 0;
@@ -153,5 +156,5 @@ const TooltipTriangleRvs = styled.View`
   background-color: transparent;
   border-left-color: transparent;
   border-right-color: transparent;
-  border-bottom-color: ${colors.warning};
+  border-bottom-color: ${({ color }) => (color ? color : colors.green)};
 `;

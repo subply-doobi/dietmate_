@@ -5,9 +5,9 @@ import {
   filterByProductNoArr,
   convertProductDataArrToPNoArr,
   filterDuplicateProduct,
-  findClosestFSPlatformNm,
 } from "@/shared/utils/filter";
 import { IOrderedProduct } from "@/shared/api/types/order";
+import { getSortedShippingPriceObj } from "@/shared/utils/sumUp";
 
 interface AutoAddState {
   availableFoods: IProductData[];
@@ -63,7 +63,7 @@ const filteredPSlice = createSlice({
 
       // Low shipping foods
       const lowerShippingPricePlatform =
-        findClosestFSPlatformNm(shippingPriceObj);
+        getSortedShippingPriceObj(shippingPriceObj)?.notFree[0];
       const lowShippingFoods = lowerShippingPricePlatform
         ? filterByPlatformNm({
             products: availableFoods,

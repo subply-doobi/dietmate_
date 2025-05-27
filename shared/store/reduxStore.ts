@@ -8,6 +8,7 @@ import modalReducer from "../../features/reduxSlices/modalSlice";
 import autoMenuReducer from "../../features/reduxSlices/autoMenuSlice";
 import filteredProductReducer from "../../features/reduxSlices/filteredPSlice";
 import formulaReducer from "../../features/reduxSlices/formulaSlice";
+import lowerShippingReducer from "../../features/reduxSlices/lowerShippingSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     formula: formulaReducer,
     sortFilter: sortFilterReducer,
     filteredProduct: filteredProductReducer,
+    lowerShipping: lowerShippingReducer,
     autoMenu: autoMenuReducer,
     order: orderReducer,
     modal: modalReducer,

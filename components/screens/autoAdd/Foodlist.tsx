@@ -1,5 +1,6 @@
 // RN, expo
 import { ImageSourcePropType, ScrollView } from "react-native";
+import { useMemo } from "react";
 
 // 3rd
 import styled from "styled-components/native";
@@ -13,15 +14,17 @@ import {
   SERVICE_PRICE_PER_PRODUCT,
 } from "@/shared/constants";
 import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
-import { commaToNum, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
+import {
+  commaToNum,
+  getSortedShippingPriceObj,
+  sumUpDietFromDTOData,
+} from "@/shared/utils/sumUp";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import colors from "@/shared/colors";
 import { setAutoAddSelectedFood } from "@/features/reduxSlices/formulaSlice";
 import { showProductSelectToast } from "@/shared/store/toastStore";
 import { icons } from "@/shared/iconSource";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { useMemo } from "react";
-import { findClosestFSPlatformNm } from "@/shared/utils/filter";
 
 interface IProductCardSection {
   title?: string;
@@ -171,7 +174,8 @@ export const LowShippingSection = () => {
   // useMemo
   const { remainPrice, platformNm } = useMemo(() => {
     const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
-    const closestShipping = findClosestFSPlatformNm(shippingPriceObj);
+    const closestShipping =
+      getSortedShippingPriceObj(shippingPriceObj)?.notFree[0];
     const remainPrice = closestShipping?.remainPrice;
     const platformNm = closestShipping?.platformNm;
 

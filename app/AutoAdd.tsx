@@ -33,7 +33,6 @@ import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import Toast from "react-native-toast-message";
 import styled from "styled-components/native";
 
 const AutoAdd = () => {

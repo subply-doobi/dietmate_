@@ -2,12 +2,12 @@ import {
   IDietDetailData,
   IDietDetailProductData,
   IDietTotalObjData,
-} from '../api/types/diet';
-import {IOrderData, IOrderedProduct} from '../api/types/order';
-import {IProductData} from '../api/types/product';
+} from "../api/types/diet";
+import { IOrderData, IOrderedProduct } from "../api/types/order";
+import { IProductData } from "../api/types/product";
 
 interface IRegroupedData {
-  [key: string]: IProductData[];
+  [key: string]: IDietDetailData;
 }
 export const regroupDDataBySeller = (dDData: IDietDetailData | undefined) =>
   !dDData
@@ -24,7 +24,7 @@ export const regroupDDataBySeller = (dDData: IDietDetailData | undefined) =>
 // 다른 끼니에 같은 productNo 식품 있어도 그냥 추가
 // <- 식품사별 금액만 계산할 것이라서 이후 식품을 보여준다면 중복상품qty 조절 필요함
 export const reGroupOrderBySeller = (
-  orderData: IOrderData | undefined,
+  orderData: IOrderData | undefined
 ): IOrderedProduct[][] => {
   let reGroupedProducts: Array<IOrderedProduct[]> = [[]];
   if (orderData === undefined || orderData.length === 0)
@@ -50,23 +50,23 @@ export const reGroupOrderBySeller = (
 };
 
 export const regroupByBuyDateAndDietNo = (
-  orderData: IOrderData | undefined,
+  orderData: IOrderData | undefined
 ): IOrderedProduct[][][] => {
   if (!orderData) return [];
 
   const regrouped: IOrderedProduct[][][] = [];
 
-  orderData.forEach(data => {
-    const {buyDate, dietNo} = data;
+  orderData.forEach((data) => {
+    const { buyDate, dietNo } = data;
     const buyDateIndex = regrouped.findIndex(
-      group => group[0][0].buyDate === buyDate,
+      (group) => group[0][0].buyDate === buyDate
     );
 
     if (buyDateIndex === -1) {
       regrouped.push([[data]]);
     } else {
       const dietNoIndex = regrouped[buyDateIndex].findIndex(
-        group => group[0].dietNo === dietNo,
+        (group) => group[0].dietNo === dietNo
       );
 
       if (dietNoIndex === -1) {
@@ -86,16 +86,16 @@ interface IRegroupedBySellerFromDTOData {
   };
 }
 export const reGroupBySellerFromDTOData = (
-  dTOData: IDietTotalObjData | undefined,
+  dTOData: IDietTotalObjData | undefined
 ): IRegroupedBySellerFromDTOData => {
   let regroupedBySeller: IRegroupedBySellerFromDTOData = {};
   if (!dTOData) return regroupedBySeller;
 
   const dietNoArr = Object.keys(dTOData);
-  dietNoArr.forEach(dietNo => {
-    dTOData[dietNo].dietDetail.forEach(p => {
+  dietNoArr.forEach((dietNo) => {
+    dTOData[dietNo].dietDetail.forEach((p) => {
       if (!regroupedBySeller[dietNo]) {
-        regroupedBySeller[dietNo] = {[p.platformNm]: [p]};
+        regroupedBySeller[dietNo] = { [p.platformNm]: [p] };
       } else if (!regroupedBySeller[dietNo][p.platformNm]) {
         regroupedBySeller[dietNo][p.platformNm] = [p];
       } else {
@@ -111,12 +111,12 @@ export const tfDTOToDDA = (dTOData: IDietTotalObjData | undefined) => {
 
   const productMap = new Map<string, IDietDetailProductData>();
 
-  Object.values(dTOData).forEach(menu => {
-    menu.dietDetail.forEach(p => {
+  Object.values(dTOData).forEach((menu) => {
+    menu.dietDetail.forEach((p) => {
       if (productMap.has(p.productNo)) {
         productMap.get(p.productNo)!.qty += p.qty;
       } else {
-        productMap.set(p.productNo, {...p});
+        productMap.set(p.productNo, { ...p });
       }
     });
   });
@@ -152,7 +152,7 @@ export const separateFoods = (totalFoodList: IProductData[]) => {
   const highProtFood: IProductData[] = [];
   const highFatFood: IProductData[] = [];
 
-  totalFoodList.forEach(food => {
+  totalFoodList.forEach((food) => {
     const carbRatio = ((Number(food.carb) * 4) / Number(food.calorie)) * 100;
     const proteinRatio =
       ((Number(food.protein) * 4) / Number(food.calorie)) * 100;
@@ -179,7 +179,7 @@ export const separateFoods = (totalFoodList: IProductData[]) => {
 
 export const categorizeFood = (
   foods: IProductData[],
-  selectedCategoryIdxArr: number[] = [0, 1, 2, 3, 4, 5],
+  selectedCategoryIdxArr: number[] = [0, 1, 2, 3, 4, 5]
 ) => {
   // 001: 도시락   | 002: 닭가슴살 | 003: 샐러드
   // 004: 영양간식 | 005: 과자     | 006: 음료
@@ -198,25 +198,25 @@ export const categorizeFood = (
   const isChipSelected = selectedCategoryIdxArr.includes(5);
   const isDrinkSelected = selectedCategoryIdxArr.includes(6);
 
-  foods.forEach(food => {
+  foods.forEach((food) => {
     const categoryCd = food.categoryCd;
     switch (categoryCd) {
-      case 'CG001':
+      case "CG001":
         isLunchBoxSelected && categorizedFood.lunchBox.push(food);
         break;
-      case 'CG002':
+      case "CG002":
         isChickenSelected && categorizedFood.chicken.push(food);
         break;
-      case 'CG003':
+      case "CG003":
         isSaladSelected && categorizedFood.salad.push(food);
         break;
-      case 'CG004':
+      case "CG004":
         isSnackSelected && categorizedFood.snack.push(food);
         break;
-      case 'CG005':
+      case "CG005":
         isChipSelected && categorizedFood.chip.push(food);
         break;
-      case 'CG006':
+      case "CG006":
         isDrinkSelected && categorizedFood.drink.push(food);
         break;
       default:

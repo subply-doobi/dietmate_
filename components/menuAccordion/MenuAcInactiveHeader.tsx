@@ -15,12 +15,10 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 
 import { commaToNum, getNutrStatus, sumUpPrice } from "@/shared/utils/sumUp";
 import { checkNoStockP } from "@/shared/utils/productStatusCheck";
-import { openModal } from "@/features/reduxSlices/modalSlice";
 
 import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import MenuNumSelect from "../common/cart/MenuNumSelect";
 import { ENV, MENU_NUM_LABEL } from "@/shared/constants";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 import { useRouter } from "expo-router";
@@ -44,9 +42,9 @@ const MenuAcInactiveHeader = ({
 
   // redux
   const dispatch = useAppDispatch();
-  const { totalFoodList, currentDietNo } = useAppSelector(
-    (state) => state.common
-  );
+  const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
+  const currentDietNo = useAppSelector((state) => state.common.currentDietNo);
+  const foodneededArr = useAppSelector((state) => state.common.foodNeededArr);
 
   // useState
   const [prevDTO, setPrevDTO] = useState<IDietTotalObjData>({});
@@ -57,8 +55,8 @@ const MenuAcInactiveHeader = ({
   // useMemo
   const {
     dDData,
-    idx,
     isFoodNeeded,
+    idx,
     priceText,
     currentQty,
     hasNoStockP,
@@ -68,10 +66,13 @@ const MenuAcInactiveHeader = ({
     const idx =
       Object.keys(dTOData || {}).findIndex((key) => key === dietNo) || 0;
     const priceSum = sumUpPrice(dDData);
-    const nutrStatus = getNutrStatus({ totalFoodList, bLData, dDData });
-    const isFoodNeeded = nutrStatus === "empty" || nutrStatus === "notEnough";
     const priceText = `${commaToNum(priceSum)}원`;
-
+    const nutrStatus = getNutrStatus({
+      totalFoodList,
+      bLData,
+      dDData,
+    });
+    const isFoodNeeded = nutrStatus === "empty" || nutrStatus === "notEnough";
     const currentQty = dDData.length > 0 ? parseInt(dDData[0].qty, 10) : 1;
 
     // 재고없는 상품 확인
@@ -79,10 +80,10 @@ const MenuAcInactiveHeader = ({
     if (!dTOData)
       return {
         dDData,
+        isFoodNeeded,
         hasNoStockP,
         changedDietNo: [],
         idx,
-        isFoodNeeded,
         priceText,
         currentQty,
       };
@@ -107,15 +108,17 @@ const MenuAcInactiveHeader = ({
     return {
       dDData,
       hasNoStockP,
+      isFoodNeeded,
       changedDietNo,
       idx,
-      isFoodNeeded,
       priceText,
       currentQty,
     };
   }, [dTOData]);
 
   // etc
+  const neededTooltipShow = foodneededArr.findIndex((v) => v) === idx;
+
   const barColor = selected
     ? colors.main
     : leftBarInactive
@@ -186,11 +189,11 @@ const MenuAcInactiveHeader = ({
               </PlusBtn>
             )}
           </ThumnailBox>
-          {isFoodNeeded && currentDietNo === dietNo && (
+          {neededTooltipShow && (
             <DTooltip
               tooltipShow={true}
               text="식품이 더 필요해요"
-              color={colors.dark}
+              color={colors.green}
               boxTop={-16}
               boxLeft={dDData.length * 40 + 24}
             />

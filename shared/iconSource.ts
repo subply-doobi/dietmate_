@@ -38,6 +38,7 @@ export const icons = {
   // delete
   deleteRoundWhite_24: require(`./assets/icons/24_delete_round_white.png`),
   deleteRoundBlack_32: require(`./assets/icons/32_delete_round_black.png`),
+  deleteRoundWarning_24: require(`./assets/icons/24_delete_round_warning.png`),
 
   // check
   checkbox_24: require(`./assets/icons/24_checkbox.png`),
@@ -85,6 +86,7 @@ export const icons = {
   userRound_24: require(`./assets/icons/24_user_round.png`),
   networkError_80: require(`./assets/icons/80_network_error.png`),
   more_24: require(`./assets/icons/24_more.png`),
+  truck_24: require(`./assets/icons/24_truck.png`),
   dice_36: require(`./assets/icons/36_dice.png`),
   calculateBlack_32: require(`./assets/icons/32_calculate_black.png`),
 

@@ -18,7 +18,7 @@ import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
-import Foodlist from "./Foodlist";
+import ProductSelectFoodlist from "./ProductSelectTFoodlist";
 import NutrientsProgress from "../common/nutrient/NutrientsProgress";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
 
@@ -99,7 +99,7 @@ const ProductSelectToast = () => {
         textColor={colors.whiteOpacity70}
         isLoading={isLoading}
       />
-      <Foodlist foods={currentMenu} />
+      <ProductSelectFoodlist foods={currentMenu} />
       <CtaRow>
         <InfoBtn onPress={onPressInfo}>
           <Row style={{ columnGap: 4, width: "100%" }}>

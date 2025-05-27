@@ -1,58 +1,57 @@
 // RN, expo
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Platform, ScrollView, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
 // 3rd
 // import {useIsFocused, useNavigation} from '@react-navigation/native';
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useHeaderHeight } from "@react-navigation/elements";
 import Accordion from "react-native-collapsible/Accordion";
-import { useIsFocused } from "@react-navigation/native";
 
 // doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import {
-  useCreateDietCnt,
-  useListDietTotalObj,
-} from "@/shared/api/queries/diet";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useListProduct } from "@/shared/api/queries/product";
 
 import { getMenuAcContent } from "@/shared/utils/menuAccordion";
 import {
   setCurrentDiet,
-  setInsets,
+  setFoodNeededArr,
   setMenuAcActive,
   setTotalFoodList,
 } from "@/features/reduxSlices/commonSlice";
 
 import { setFoodToOrder } from "@/features/reduxSlices/orderSlice";
-import { getAddDietStatusFrDTData } from "@/shared/utils/getDietAddStatus";
-import { commaToNum, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
+import {
+  commaToNum,
+  getNutrStatus,
+  sumUpDietFromDTOData,
+} from "@/shared/utils/sumUp";
 import { checkNoStockPAll } from "@/shared/utils/productStatusCheck";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
 
-import { IS_IOS, SCREENHEIGHT, SCREENWIDTH } from "@/shared/constants";
+import { SCREENWIDTH } from "@/shared/constants";
 
 import colors from "@/shared/colors";
 import { Col, Container, HorizontalSpace } from "@/shared/ui/styledComps";
 import CtaButton from "@/shared/ui/CtaButton";
 import CartSummary from "@/components/screens/diet/CartSummary";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
+import { useIsFocused } from "@react-navigation/native";
 
 const Diet = () => {
   // navigation
   const router = useRouter();
-  const isFocused = useIsFocused();
-  const headerHeight = useHeaderHeight();
   const bottomTabBarHeight = useBottomTabBarHeight();
+  const isFocused = useIsFocused();
 
   // redux
   const dispatch = useAppDispatch();
-  const { currentDietNo, menuAcActive, isTutorialMode, tutorialProgress } =
-    useAppSelector((state) => state.common);
+  const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
+  const currentDietNo = useAppSelector((state) => state.common.currentDietNo);
+  const menuAcActive = useAppSelector((state) => state.common.menuAcActive);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -73,8 +72,6 @@ const Diet = () => {
 
   // useRef
   const scrollRef = useRef<ScrollView>(null);
-  const autoMenuBtnRef =
-    useRef<React.ElementRef<typeof TouchableOpacity>>(null);
 
   // useMemo
   const {
@@ -112,9 +109,23 @@ const Diet = () => {
     };
   }, [dTOData]);
 
-  // etc
-  const { status: addDietStatus, text: addDietNAText } =
-    getAddDietStatusFrDTData(dTOData);
+  useEffect(() => {
+    if (!isFocused) return;
+    if (!dTOData) return;
+    dispatch(setMenuAcActive([]));
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+    const dietNoArr = Object.keys(dTOData || {});
+    const foodNeededArr = dietNoArr.map((dietNo) => {
+      const nutrStatus = getNutrStatus({
+        totalFoodList,
+        bLData,
+        dDData: dTOData[dietNo].dietDetail,
+      });
+      const isFoodNeeded = nutrStatus === "empty" || nutrStatus === "notEnough";
+      return isFoodNeeded;
+    });
+    dispatch(setFoodNeededArr(foodNeededArr));
+  }, [isFocused, dTOData]);
 
   // fn
   const getHasFoodInMenuArray = (menuIdx: number): boolean[] => {
@@ -170,57 +181,6 @@ const Diet = () => {
     scrollToCurrentMenu(currentIdx);
   };
 
-  // AutoMenu tutorial인 경우 스크롤 자동구성 버튼 위치로 내리기
-  // Complete tutorial인 경우는 스크롤 맨 위로
-  useEffect(() => {
-    if (isTutorialMode && tutorialProgress === "Complete") {
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-      return;
-    }
-    if (isTutorialMode && tutorialProgress === "AutoMenu") {
-      setTimeout(
-        () =>
-          autoMenuBtnRef?.current?.measure((fx, fy, width, height, px, py) => {
-            scrollRef.current?.scrollTo({
-              y:
-                py -
-                SCREENHEIGHT +
-                height +
-                headerHeight +
-                bottomTabBarHeight +
-                (IS_IOS ? 0 : 41),
-              animated: true,
-            });
-          }),
-        500
-      );
-      return;
-    }
-  }, [tutorialProgress]);
-
-  // DTP tutorial
-  useEffect(() => {
-    if (!isFocused) return;
-
-    if (
-      tutorialProgress === "AddMenu" ||
-      tutorialProgress === "AddFood" ||
-      tutorialProgress === "AutoRemain" ||
-      tutorialProgress === "ChangeFood" ||
-      tutorialProgress === "AutoMenu"
-    ) {
-      setTimeout(() => {
-        dispatch(openModal({ name: `tutorialTPS${tutorialProgress}` }));
-      }, 300);
-      return;
-    }
-  }, [tutorialProgress, isFocused]);
-
-  useEffect(() => {
-    if (!isFocused) return;
-    dispatch(setInsets({ headerHeight, bottomTabBarHeight }));
-  }, [headerHeight, bottomTabBarHeight]);
-
   // render
   return (
     <Container
@@ -255,7 +215,10 @@ const Diet = () => {
         </Col>
 
         {/* 끼니 정보 요약 */}
-        <CartSummary />
+        <CartSummary
+          hasLowerShippingCta={true}
+          containerStyle={{ paddingHorizontal: 16, paddingBottom: 104 }}
+        />
       </ScrollView>
 
       {/* 주문 버튼 */}

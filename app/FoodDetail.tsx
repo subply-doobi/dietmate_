@@ -98,6 +98,7 @@ const FoodDetail = () => {
   const detailMenu = ["영양성분", "식품상세", "배송정책"];
 
   // etc
+  const infoOnly = params.type === "infoOnly" ? true : false;
   const isIncludedInLike =
     productData &&
     likeData?.map((food) => food.productNo).includes(productData?.productNo);
@@ -189,7 +190,7 @@ const FoodDetail = () => {
     <Container>
       {/* 영양성분 그래프 */}
       <InnerContainer>
-        {!!dietDetailData && (
+        {!!dietDetailData && !infoOnly && (
           <NutrientsProgress dietDetailData={dietDetailData} />
         )}
       </InnerContainer>
@@ -306,21 +307,23 @@ const FoodDetail = () => {
               source={isIncludedInLike ? icons.likeActive_48 : icons.like_48}
             />
           </LikeBtn>
-          <CtaButton
-            btnStyle="active"
-            style={{
-              width: SCREENWIDTH - 32 - 16 - 52 - 6,
-              backgroundColor: colors.main,
-            }}
-            onPress={handlePressAddCartBtn}
-            btnText={
-              params.from === "Change"
-                ? "뒤로가기"
-                : isAddedInCurrentDiet
-                ? "현재끼니에서 제거"
-                : "현재끼니에 추가"
-            }
-          />
+          {!infoOnly && (
+            <CtaButton
+              btnStyle="active"
+              style={{
+                width: SCREENWIDTH - 32 - 16 - 52 - 6,
+                backgroundColor: colors.main,
+              }}
+              onPress={handlePressAddCartBtn}
+              btnText={
+                params.from === "Change"
+                  ? "뒤로가기"
+                  : isAddedInCurrentDiet
+                  ? "현재끼니에서 제거"
+                  : "현재끼니에 추가"
+              }
+            />
+          )}
         </BtnBox>
       </View>
     </Container>
@@ -400,6 +403,7 @@ const BtnBox = styled(StickyFooter)`
   flex: 1;
   flex-direction: row;
   column-gap: 6px;
+  justify-content: flex-end;
 `;
 
 const LikeBtn = styled.Pressable`

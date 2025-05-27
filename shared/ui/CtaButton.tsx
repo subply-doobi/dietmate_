@@ -37,6 +37,7 @@ const CtaButton = forwardRef((p: ICtaButton, ref) => {
   const shadowStyle = shadow
     ? {
         boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.12)",
+        marginBottom: 3,
       }
     : {};
 
@@ -52,7 +53,7 @@ const CtaButton = forwardRef((p: ICtaButton, ref) => {
       <Row style={{ columnGap: 4 }}>
         {btnContent && btnContent()}
         {btnText && (
-          <BtnText btnStyle={btnStyle} style={btnTextStyle}>
+          <BtnText btnStyle={btnStyle} style={[btnTextStyle]}>
             {btnText}
           </BtnText>
         )}

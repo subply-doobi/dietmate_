@@ -41,7 +41,6 @@ export const getNutrStatus = ({
 }): "error" | "empty" | "notEnough" | "satisfied" | "exceed" => {
   // error
   if (!bLData || !dDData || totalFoodList.length === 0) return "error";
-
   // empty
   if (dDData.length === 0) return "empty";
 
@@ -129,21 +128,27 @@ interface IRegroupedBySeller {
   [key: string]: IDietDetailData;
 }
 
+export interface IShippingPriceValues {
+  platformNm: string;
+  price: number;
+  freeShippingPrice: number;
+  remainPrice: number;
+  shippingPrice: number;
+  shippingText: string;
+}
+export interface IShippingPriceObj {
+  [key: string]: IShippingPriceValues;
+}
 const getShippingPriceObjBySeller = (reGroupedBySeller: IRegroupedBySeller) => {
   const sellerArr = Object.keys(reGroupedBySeller);
-  let shippingPriceObj: {
-    [key: string]: {
-      price: number;
-      freeShippingPrice: number;
-      shippingPrice: number;
-      shippingText: string;
-    };
-  } = {};
+  let shippingPriceObj: IShippingPriceObj = {};
   for (let seller of sellerArr) {
     if (!shippingPriceObj[seller]) {
       shippingPriceObj[seller] = {
+        platformNm: seller,
         price: 0,
         freeShippingPrice: 0,
+        remainPrice: 0,
         shippingPrice: 0,
         shippingText: "",
       };
@@ -161,22 +166,99 @@ const getShippingPriceObjBySeller = (reGroupedBySeller: IRegroupedBySeller) => {
       10
     );
 
+    shippingPriceObj[seller].remainPrice =
+      shippingPriceObj[seller].freeShippingPrice -
+      shippingPriceObj[seller].price;
+
     const isFree =
-      shippingPriceObj[seller].price >=
-      shippingPriceObj[seller].freeShippingPrice;
+      shippingPriceObj[seller].remainPrice <= 0 ||
+      shippingPriceObj[seller].freeShippingPrice === 0;
 
     shippingPriceObj[seller].shippingPrice = isFree
       ? 0
       : parseInt(reGroupedBySeller[seller][0].shippingPrice, 10);
+
     shippingPriceObj[seller].shippingText = isFree
       ? "무료"
       : `${commaToNum(shippingPriceObj[seller].shippingPrice)} (${commaToNum(
-          shippingPriceObj[seller].freeShippingPrice -
-            shippingPriceObj[seller].price
+          shippingPriceObj[seller].remainPrice
         )}원 더 구매 시 무료)`;
   }
 
   return shippingPriceObj;
+};
+
+export const getSortedShippingPriceObj = (
+  shippingPriceObj: IShippingPriceObj
+) => {
+  const platformNmArr = Object.keys(shippingPriceObj);
+  if (platformNmArr.length === 0)
+    return {
+      free: [],
+      notFree: [],
+    };
+
+  // make array of objects with shippingPriceObj
+  const shippingPriceObjArr = platformNmArr.map((platformNm) => {
+    return shippingPriceObj[platformNm];
+  });
+
+  // sort by remainPrice
+  shippingPriceObjArr.sort((a, b) => {
+    return a.remainPrice - b.remainPrice;
+  });
+
+  // separate positive and negative remainPrice
+  const free = shippingPriceObjArr.filter((item) => item.remainPrice <= 0);
+  const notFree = shippingPriceObjArr.filter((item) => item.remainPrice > 0);
+
+  return {
+    free,
+    notFree,
+  };
+};
+
+export interface ILowerShippingMenuObj {
+  index: number;
+  dietDetailData: IDietDetailData;
+  currentDietPrice: number;
+  currentDietSellerPrice: number;
+}
+export const getSortedMenuArrBySellerPrice = ({
+  dTOData,
+  seller,
+}: {
+  dTOData: IDietTotalObjData;
+  seller: string;
+}) => {
+  const dietNoArr = Object.keys(dTOData);
+  const included: ILowerShippingMenuObj[] = [];
+  const notIncluded: ILowerShippingMenuObj[] = [];
+
+  dietNoArr.forEach((dietNo, idx) => {
+    const SellerDDData = dTOData[dietNo].dietDetail.filter(
+      (food) => food.platformNm === seller
+    );
+    const currentDietSellerPrice = sumUpPrice(SellerDDData, true);
+    const menuObj = {
+      index: idx,
+      dietDetailData: dTOData[dietNo].dietDetail,
+      currentDietPrice: sumUpPrice(dTOData[dietNo].dietDetail, false),
+      currentDietSellerPrice,
+    };
+    if (SellerDDData.length > 0) {
+      included.push(menuObj);
+    } else {
+      notIncluded.push(menuObj);
+    }
+  });
+
+  included.sort((a, b) => b.currentDietSellerPrice - a.currentDietSellerPrice);
+  notIncluded.sort(
+    (a, b) => b.currentDietSellerPrice - a.currentDietSellerPrice
+  );
+
+  return { included, notIncluded };
 };
 
 /** true | false 는 수량 고려할 것인지 */
@@ -203,14 +285,7 @@ export const sumUpDietFromDTOData = (
   let priceTotal = 0;
   let totalShippingPrice = 0;
   let regroupedBySeller: IRegroupedBySeller = {};
-  let shippingPriceObj: {
-    [key: string]: {
-      price: number;
-      freeShippingPrice: number;
-      shippingPrice: number;
-      shippingText: string;
-    };
-  } = {};
+  let shippingPriceObj: IShippingPriceObj = {};
   if (!dTOData || Object.keys(dTOData).length === 0)
     return {
       menuNum,

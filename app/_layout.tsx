@@ -105,6 +105,17 @@ export default function RootLayout() {
               name="Change"
               options={{ headerShown: true, headerTitle: "식품변경" }}
             />
+
+            {/* 배송비절약  */}
+            <Stack.Screen
+              name="LowerShipping"
+              options={{
+                headerShown: true,
+                headerTitle: "",
+                // headerLeft: () => <BackArrow goBackFn={router.back} />,
+              }}
+            />
+
             <Stack.Screen
               name="Mypage"
               options={{

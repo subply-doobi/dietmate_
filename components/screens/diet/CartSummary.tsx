@@ -1,22 +1,19 @@
 // Description: 장바구니 페이지에서 총 끼니 수, 상품 수, 금액을 보여주는 컴포넌트
 //RN, 3rd
 import { useEffect, useMemo } from "react";
-import { View } from "react-native";
+import { View, ViewStyle } from "react-native";
 import styled from "styled-components/native";
 
 //doobi util, redux, etc
 import colors from "@/shared/colors";
 import { setShippingPrice } from "@/features/reduxSlices/orderSlice";
-import {
-  applySortFilter,
-  updateSearch,
-} from "@/features/reduxSlices/sortFilterSlice";
 import { icons } from "@/shared/iconSource";
 import { commaToNum, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 
 //doobi Component
 import {
   HorizontalLine,
+  Icon,
   Row,
   TextMain,
   TextSub,
@@ -24,31 +21,16 @@ import {
 
 // react-query
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
-import { IDietTotalObjData } from "@/shared/api/types/diet";
 import { MENU_NUM_LABEL } from "@/shared/constants";
+import CtaButton from "@/shared/ui/CtaButton";
 
-const getIncludingDietNoArr = (
-  dTOData: IDietTotalObjData | undefined,
-  seller: string
-) => {
-  if (!dTOData) return [];
-  const dietNoArr = Object.keys(dTOData);
-
-  return dietNoArr
-    .filter((dietNo) => dTOData[dietNo].dietDetail.length > 0)
-    .filter((dietNo) =>
-      dTOData[dietNo].dietDetail.some((food) => food.platformNm === seller)
-    )
-    .map((dietNo) => ({
-      dietNo,
-      idx: dietNoArr.indexOf(dietNo),
-    }));
-};
-
-const CartSummary = () => {
+interface ICartSummary {
+  containerStyle?: ViewStyle;
+  hasLowerShippingCta?: boolean;
+}
+const CartSummary = ({ containerStyle, hasLowerShippingCta }: ICartSummary) => {
   // navigation
   const router = useRouter();
 
@@ -92,17 +74,11 @@ const CartSummary = () => {
     dispatch(setShippingPrice(totalShippingPrice));
   }, [totalShippingPrice, dispatch]);
 
-  const onSearchBtnPress = (platformNm: string) => {
-    dispatch(updateSearch(platformNm));
-    dispatch(applySortFilter());
-    router.push({ pathname: "/(tabs)/Search" });
-  };
-
   return regroupedBySeller &&
     Object.keys(regroupedBySeller).length === 0 ? null : (
     //장바구니 하단에 보여지는 총 끼니 수, 상품 수, 금액
-    <TotalSummaryContainer>
-      <Row style={{ marginTop: 40, justifyContent: "space-between" }}>
+    <TotalSummaryContainer style={[containerStyle]}>
+      <Row style={{ justifyContent: "space-between" }}>
         <SummaryText>
           {MENU_NUM_LABEL[menuNum - 1]} 공식을 만들고 있어요
         </SummaryText>
@@ -117,17 +93,11 @@ const CartSummary = () => {
       {Object.keys(regroupedBySeller).map((seller, index) => {
         //식품사별 가격, 배송비 합계
         const { price: sellerPrice, shippingText } = shippingPriceObj[seller];
-        // 어느끼니에 속하는지 확인
-        const includingDietNoArr = getIncludingDietNoArr(dTOData, seller);
-
         return (
           <View key={index}>
-            <Row style={{ marginTop: 24, justifyContent: "space-between" }}>
-              <SummarySellerText>{seller}</SummarySellerText>
-              <SearchBtn onPress={() => onSearchBtnPress(seller)}>
-                <SearchImage source={icons.search_18} />
-              </SearchBtn>
-            </Row>
+            <SummarySellerText style={{ marginTop: 24 }}>
+              {seller}
+            </SummarySellerText>
             <SummaryText style={{ marginTop: 12 }}>
               식품: {commaToNum(sellerPrice)}원
             </SummaryText>
@@ -135,37 +105,6 @@ const CartSummary = () => {
               배송비:
               {shippingText}
             </SummmaryTextSub>
-
-            {/* 끼니 버튼 렌더링 컴포넌트 */}
-            <Row
-              style={{
-                marginTop: 16,
-                flexWrap: "wrap",
-                gap: 8,
-              }}
-            >
-              {includingDietNoArr.map((e) => {
-                //dietItem.dietSeq가 중복일 경우 하나만 가져오기
-                return (
-                  <SmallButton
-                    key={e.dietNo}
-                    onPress={() => {
-                      dispatch(
-                        openModal({
-                          name: "menuNumSelectBS",
-                          values: { dietNoToNumControl: e.dietNo },
-                        })
-                      );
-                    }}
-                  >
-                    <SummaryText>{MENU_NUM_LABEL[e.idx]}</SummaryText>
-                  </SmallButton>
-                );
-              })}
-              <SummmaryTextSub style={{ marginLeft: 2 }}>
-                에 "{seller}" 식품이 포함되어 있어요
-              </SummmaryTextSub>
-            </Row>
           </View>
         );
       })}
@@ -180,6 +119,18 @@ const CartSummary = () => {
         <SummmaryTextSub>배송비 합계</SummmaryTextSub>
         <SummaryValueSub>{commaToNum(totalShippingPrice)} 원</SummaryValueSub>
       </Row>
+      {totalShippingPrice > 0 && hasLowerShippingCta && (
+        <CtaButton
+          btnStyle="borderActive"
+          btnText="배송비를 낮춰주세요"
+          btnTextStyle={{ color: colors.textSub }}
+          btnContent={() => <Icon source={icons.truck_24} size={24} />}
+          style={{ marginTop: 24 }}
+          onPress={() => {
+            router.push({ pathname: "/LowerShipping" });
+          }}
+        />
+      )}
     </TotalSummaryContainer>
   );
 };
@@ -187,8 +138,9 @@ const CartSummary = () => {
 export default CartSummary;
 
 const TotalSummaryContainer = styled.View`
-  padding: 0px 16px 104px 16px;
+  /* padding: 0px 16px 104px 16px; */
   background-color: ${colors.white};
+  padding-top: 40px;
 `;
 
 const SummaryText = styled(TextMain)`

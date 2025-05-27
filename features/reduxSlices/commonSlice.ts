@@ -36,6 +36,7 @@ export interface ICommonState {
   };
   globalLoading: boolean;
   currentDietNo: string;
+  foodNeededArr: boolean[];
   totalFoodList: IProductData[];
   totalFoodListIsLoaded: boolean;
   foodGroupForAutoMenu: IFoodGroupForAutoMenu;
@@ -60,6 +61,7 @@ const initialState: ICommonState = {
   },
   globalLoading: false,
   currentDietNo: "",
+  foodNeededArr: [],
   totalFoodList: [],
   totalFoodListIsLoaded: false,
   foodGroupForAutoMenu: {
@@ -103,6 +105,9 @@ export const commonSlice = createSlice({
       state.currentDietNo = action.payload;
       state.progressTooltipShow = true;
       // queryClient.invalidateQueries([PRODUCTS]);
+    },
+    setFoodNeededArr: (state, action: PayloadAction<boolean[]>) => {
+      state.foodNeededArr = action.payload;
     },
     setTotalFoodList: (state, action: PayloadAction<IProductData[]>) => {
       state.totalFoodList = action.payload;
@@ -168,6 +173,7 @@ export const {
   setInsets,
   setGlobalLoading,
   setCurrentDiet,
+  setFoodNeededArr,
   setTotalFoodList,
   setMenuAcActive,
   setIsTutorialMode,

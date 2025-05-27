@@ -8,7 +8,7 @@ import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import colors from "@/shared/colors";
 import { icons } from "@/shared/iconSource";
 
-const Foodlist = ({ foods }: { foods: IDietDetailData }) => {
+const ProductSelectFoodlist = ({ foods }: { foods: IDietDetailData }) => {
   // redux
   const selectedFood = useAppSelector(
     (state) => state.formula.autoAddSelectedFood
@@ -53,7 +53,7 @@ const Foodlist = ({ foods }: { foods: IDietDetailData }) => {
   );
 };
 
-export default Foodlist;
+export default ProductSelectFoodlist;
 
 const Grid = styled.View`
   margin-top: 24px;

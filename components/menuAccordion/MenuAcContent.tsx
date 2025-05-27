@@ -4,6 +4,7 @@ import {
   Col,
   HorizontalLine,
   HorizontalSpace,
+  Icon,
   TextMain,
 } from "@/shared/ui/styledComps";
 
@@ -13,17 +14,27 @@ import { useDispatch } from "react-redux";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import MenuNumSelect from "@/components/common/cart/MenuNumSelect";
 import FoodList from "./FoodList";
+import CtaButton from "@/shared/ui/CtaButton";
+import { icons } from "@/shared/iconSource";
+import { useAppSelector } from "@/shared/hooks/reduxHooks";
+import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
+import { useRouter } from "expo-router";
 
 interface IMenuAcContent {
   dietNo: string;
 }
 const MenuAcContent = ({ dietNo }: IMenuAcContent) => {
+  // navigation
+  const router = useRouter();
+
   // redux
   const dispatch = useDispatch();
+  const foodNeededArr = useAppSelector((state) => state.common.foodNeededArr);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
   const dDData = dTOData?.[dietNo]?.dietDetail ?? [];
+  const idx = Object.keys(dTOData ?? {}).indexOf(dietNo);
 
   // etc
   const dietPrice = sumUpPrice(dDData);
@@ -45,6 +56,18 @@ const MenuAcContent = ({ dietNo }: IMenuAcContent) => {
     <Container>
       {/* 식품 리스트 */}
       <FoodList dietNo={dietNo} />
+      {foodNeededArr[idx] && (
+        <CtaButton
+          style={{ marginTop: 24 }}
+          btnStyle="border"
+          btnText="식품이 더 필요해요"
+          btnContent={() => <Icon source={icons.plusRoundSmall_24} size={18} />}
+          onPress={() => {
+            dispatch(setCurrentFMCIdx(idx));
+            router.push({ pathname: "/(tabs)/Formula" });
+          }}
+        />
+      )}
       {/* 수량조절 - 가격 */}
       {dDData.length !== 0 && (
         <Col

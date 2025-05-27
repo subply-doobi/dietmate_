@@ -26,8 +26,6 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 
 import colors from "@/shared/colors";
-import DAlert from "@/shared/ui/DAlert";
-import CommonAlertContent from "@/components/modal/alert/CommonAlertContent";
 import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
 
 const FOOD_ERROR_RANGE = {

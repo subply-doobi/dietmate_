@@ -1,6 +1,7 @@
 import { IDietTotalObjData } from "../api/types/diet";
 import { IOrderData, IOrderedProduct } from "../api/types/order";
 import { IProductData } from "../api/types/product";
+import { IShippingPriceObj } from "./sumUp";
 
 // multiple recommended menu -> flatten foodlist without duplicates
 export const flattenMenuArr = (menu: IProductData[][]) => {
@@ -41,33 +42,6 @@ export const filterDuplicateProduct = ({
     | IOrderedProduct[];
 };
 
-interface IShippingPriceObj {
-  [key: string]: {
-    price: number;
-    freeShippingPrice: number;
-    shippingPrice: number;
-    shippingText: string;
-  };
-}
-export const findClosestFSPlatformNm = (
-  shippingPriceObj: IShippingPriceObj
-) => {
-  const platformNmArr = Object.keys(shippingPriceObj);
-  if (platformNmArr.length === 0) return undefined;
-  // make array of objects with platformNm and remainPrice(freeShippingPrice - price)
-  const remainPriceArr = platformNmArr.map((platformNm) => ({
-    platformNm,
-    remainPrice:
-      shippingPriceObj[platformNm].freeShippingPrice -
-      shippingPriceObj[platformNm].price,
-  }));
-  // sort by remainPrice
-  remainPriceArr.sort((a, b) => a.remainPrice - b.remainPrice);
-  // return item with the smallest positive remainPrice
-  const closestPlatform = remainPriceArr.find((item) => item.remainPrice >= 0);
-  return closestPlatform || undefined;
-};
-
 export const filterByPlatformNm = ({
   products,
   platformNm,
@@ -93,4 +67,38 @@ export const filterByProductNoArr = ({
   productNoArr: string[];
 }) => {
   return products.filter((product) => productNoArr.includes(product.productNo));
+};
+
+export const filterByNutrient = ({
+  totalFoodList,
+  calorie,
+  carb,
+  protein,
+  fat,
+}: {
+  totalFoodList: IProductData[];
+  calorie: number[];
+  carb: number[];
+  protein: number[];
+  fat: number[];
+}) => {
+  return totalFoodList.filter((food) => {
+    const fCalorie = Number(food.calorie);
+    const fCarb = Number(food.carb);
+    const fProtein = Number(food.protein);
+    const fFat = Number(food.fat);
+
+    if (
+      fCalorie >= calorie[0] &&
+      fCalorie <= calorie[1] &&
+      fCarb >= carb[0] &&
+      fCarb <= carb[1] &&
+      fProtein >= protein[0] &&
+      fProtein <= protein[1] &&
+      fFat >= fat[0] &&
+      fFat <= fat[1]
+    ) {
+      return true;
+    }
+  });
 };

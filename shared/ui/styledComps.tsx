@@ -1,4 +1,5 @@
 import styled from "styled-components/native";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 import colors from "../colors";
 import {
@@ -81,8 +82,9 @@ export const TextSub = styled.Text`
 `;
 
 export const Container = ({ children, ...props }: ViewProps) => {
+  const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
-  const statusBarHeight = insets.top;
+  const statusBarHeight = headerHeight === 0 ? insets.top : 0;
   const insetTop = Platform.OS === "android" ? statusBarHeight : 0;
   const insetBottom = Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0;
 

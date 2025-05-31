@@ -10,8 +10,11 @@ import { icons } from "@/shared/iconSource";
 
 const ProductSelectFoodlist = ({ foods }: { foods: IDietDetailData }) => {
   // redux
-  const selectedFood = useAppSelector(
-    (state) => state.formula.autoAddSelectedFood
+  const autoAddFoodForAdd = useAppSelector(
+    (state) => state.formula.autoAddFoodForAdd
+  );
+  const autoAddFoodForChange = useAppSelector(
+    (state) => state.formula.autoAddFoodForChange
   );
 
   return (
@@ -27,6 +30,11 @@ const ProductSelectFoodlist = ({ foods }: { foods: IDietDetailData }) => {
                 source={{ uri: `${ENV.BASE_URL}${f.mainAttUrl}` }}
                 resizeMode="cover"
               />
+              {f.productNo === autoAddFoodForChange?.productNo && (
+                <OpacityBox>
+                  <OpacityText>교체</OpacityText>
+                </OpacityBox>
+              )}
             </ItemBox>
           ))
         ) : (
@@ -35,15 +43,15 @@ const ProductSelectFoodlist = ({ foods }: { foods: IDietDetailData }) => {
           </ItemBox>
         )}
       </CurrentMenuBox>
-      {selectedFood && (
+      {autoAddFoodForAdd && (
         <Row style={{ columnGap: 4 }}>
           <Icon source={icons.plusRoundBlack_32} size={24} />
           <SelectedItemBox>
             <PlatformNm numberOfLines={1} ellipsizeMode="tail">
-              {selectedFood?.platformNm}
+              {autoAddFoodForAdd?.platformNm}
             </PlatformNm>
             <ThumbnailImg
-              source={{ uri: `${ENV.BASE_URL}${selectedFood.mainAttUrl}` }}
+              source={{ uri: `${ENV.BASE_URL}${autoAddFoodForAdd.mainAttUrl}` }}
               resizeMode="cover"
             />
           </SelectedItemBox>
@@ -60,7 +68,7 @@ const Grid = styled.View`
   width: 100%;
   flex-direction: row;
   flex-wrap: wrap;
-  padding: 8px;
+  padding: 8px 0;
   column-gap: 4px;
 `;
 
@@ -72,6 +80,25 @@ const CurrentMenuBox = styled.View`
   border-color: ${colors.whiteOpacity30};
   padding: 8px;
   gap: 8px;
+`;
+
+const OpacityBox = styled.View`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60px;
+  border-radius: 4px;
+  background-color: ${colors.blackOpacity50};
+  align-items: center;
+  justify-content: center;
+`;
+
+const OpacityText = styled(TextSub)`
+  color: ${colors.white};
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
 `;
 
 const ItemBox = styled.View`

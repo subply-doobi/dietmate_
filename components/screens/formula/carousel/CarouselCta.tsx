@@ -167,7 +167,7 @@ const CarouselCta = ({
   const onCtaPress = () => {
     router.push({
       pathname: "/AutoAdd",
-      params: { menu: JSON.stringify(carouselMenu) },
+      params: { menu: JSON.stringify(carouselMenu), type: "add" },
     });
   };
 

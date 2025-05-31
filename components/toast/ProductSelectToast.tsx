@@ -1,16 +1,14 @@
 // react, expo
 import { useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
 import { useRouter } from "expo-router";
 
 // doobi
-
-import { setAutoAddSelectedFood } from "@/features/reduxSlices/formulaSlice";
 import {
   useCreateDietDetail,
+  useDeleteDietDetail,
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
@@ -21,12 +19,17 @@ import ProductSelectFoodlist from "./ProductSelectTFoodlist";
 import NutrientsProgress from "../common/nutrient/NutrientsProgress";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
 import { IToastCustomConfigParams } from "@/shared/store/toastStore";
+import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
+import ProductSelectTShippingInfo from "./ProductSelectTShippingInfo";
 
 const ProductSelectToast = (props: IToastCustomConfigParams) => {
   // redux
   const dispatch = useAppDispatch();
-  const selectedFood = useAppSelector(
-    (state) => state.formula.autoAddSelectedFood
+  const autoAddFoodForAdd = useAppSelector(
+    (state) => state.formula.autoAddFoodForAdd
+  );
+  const autoAddFoodForChange = useAppSelector(
+    (state) => state.formula.autoAddFoodForChange
   );
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
@@ -36,6 +39,7 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
   // react-query
   const { data: dTOData } = useListDietTotalObj();
   const createDietDetailMutation = useCreateDietDetail();
+  const deleteDietDetailMutation = useDeleteDietDetail();
 
   // navigation
   const router = useRouter();
@@ -43,13 +47,15 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
   // etc
   const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx];
   const currentMenu = dTOData?.[currentDietNo]?.dietDetail || [];
-  const expectedMenu = selectedFood
-    ? currentMenu.concat(selectedFood as IDietDetailProductData)
+  const expectedMenu = autoAddFoodForAdd
+    ? currentMenu
+        .filter((m) => m.productNo !== autoAddFoodForChange?.productNo)
+        .concat(autoAddFoodForAdd as IDietDetailProductData)
     : currentMenu;
 
   // useEffect
   useEffect(() => {
-    if (!selectedFood) {
+    if (!autoAddFoodForAdd) {
       setIsLoading(true);
       return;
     }
@@ -57,43 +63,58 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
     setTimeout(() => {
       setIsLoading(false);
     }, 800);
-  }, [selectedFood]);
+  }, [autoAddFoodForAdd]);
 
   // fn
   const onPressInfo = () => {
-    if (!selectedFood) {
+    if (!autoAddFoodForAdd) {
       return;
     }
     props.hide();
     router.push({
       pathname: "/FoodDetail",
-      params: { productNo: selectedFood.productNo },
+      params: { productNo: autoAddFoodForAdd.productNo, type: "infoOnly" },
     });
   };
 
   const onPressAdd = () => {
-    if (!selectedFood) {
+    if (!autoAddFoodForAdd) {
       return;
     }
     props.hide();
     setTimeout(() => {
-      dispatch(setAutoAddSelectedFood(undefined));
+      dispatch(
+        setAutoAddFood({
+          foodForAdd: undefined,
+          foodForChange: undefined,
+        })
+      );
     }, 150);
     router.back();
-    setTimeout(() => {
-      createDietDetailMutation.mutate({
+    setTimeout(async () => {
+      autoAddFoodForChange &&
+        (await deleteDietDetailMutation.mutateAsync({
+          dietNo: currentDietNo,
+          productNo: autoAddFoodForChange.productNo,
+        }));
+      await createDietDetailMutation.mutateAsync({
         dietNo: currentDietNo,
-        food: selectedFood,
+        food: autoAddFoodForAdd,
       });
     }, 500);
   };
 
   const onPressBack = () => {
-    dispatch(setAutoAddSelectedFood(undefined));
+    dispatch(
+      setAutoAddFood({
+        foodForAdd: undefined,
+        foodForChange: autoAddFoodForChange,
+      })
+    );
     props.hide();
   };
 
-  if (!selectedFood) {
+  if (!autoAddFoodForAdd) {
     return null;
   }
 
@@ -107,22 +128,41 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
         textColor={colors.whiteOpacity70}
         isLoading={isLoading}
       />
+      <ProductSelectTShippingInfo />
       <ProductSelectFoodlist foods={currentMenu} />
       <CtaRow>
         <InfoBtn onPress={onPressInfo}>
+          {autoAddFoodForChange && (
+            <ProductNm
+              style={{
+                color: colors.textSub,
+                textDecorationLine: "line-through",
+                fontWeight: "200",
+              }}
+            >
+              {autoAddFoodForChange?.productNm}
+            </ProductNm>
+          )}
           <Row style={{ columnGap: 4, width: "100%" }}>
-            <ProductNm>{selectedFood.productNm}</ProductNm>
+            <ProductNm>{autoAddFoodForAdd.productNm}</ProductNm>
             <Icon source={icons.infoRoundWhite_24} size={16} />
           </Row>
           <NutrText>{`칼: ${parseInt(
-            selectedFood.calorie
-          )}kcal | 탄: ${parseInt(selectedFood.carb)}g | 단: ${parseInt(
-            selectedFood.protein
-          )}g | 지: ${parseInt(selectedFood.fat)}g`}</NutrText>
+            autoAddFoodForAdd.calorie
+          )}kcal | 탄: ${parseInt(autoAddFoodForAdd.carb)}g | 단: ${parseInt(
+            autoAddFoodForAdd.protein
+          )}g | 지: ${parseInt(autoAddFoodForAdd.fat)}g`}</NutrText>
         </InfoBtn>
-        <PlusBtn onPress={onPressAdd}>
-          <Icon source={icons.plusRoundSmall_24} size={28} />
-        </PlusBtn>
+        <CTA onPress={onPressAdd}>
+          <Icon
+            source={
+              autoAddFoodForChange
+                ? icons.changeRoundWhite_24
+                : icons.plusRoundWhite_24
+            }
+            size={24}
+          />
+        </CTA>
       </CtaRow>
     </ToastBox>
   );
@@ -161,8 +201,8 @@ const CtaRow = styled.View`
 const InfoBtn = styled.TouchableOpacity`
   flex: 1;
   height: 72px;
-  padding: 0 4px;
   row-gap: 4px;
+  padding-left: 4px;
   justify-content: center;
 `;
 
@@ -179,12 +219,12 @@ const NutrText = styled(TextSub)`
   color: ${colors.inactive};
 `;
 
-const PlusBtn = styled.TouchableOpacity`
+const CTA = styled.TouchableOpacity`
   width: 48px;
   height: 48px;
   border-radius: 4px;
   border-width: 1px;
-  border-color: ${colors.whiteOpacity30};
+  border-color: ${colors.main};
   /* background-color: ${colors.main}; */
   justify-content: center;
   align-items: center;

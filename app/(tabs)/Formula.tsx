@@ -102,7 +102,7 @@ const Formula = () => {
 
   return (
     <Container style={{ backgroundColor: colors.white, paddingHorizontal: 0 }}>
-      <BackArrow style={{ marginLeft: 8 }} goBackFn={() => goPrev()} />
+      {/* <BackArrow style={{ marginLeft: 8 }} goBackFn={() => goPrev()} /> */}
       <ProgressBox>
         <Progress.Bar
           progress={progressValue[currentPage] || 0}

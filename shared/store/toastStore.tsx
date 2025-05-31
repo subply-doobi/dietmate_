@@ -5,11 +5,9 @@ import Toast, { ToastConfigParams } from "react-native-toast-message";
 import { MenuWithChangeAvailableFoods } from "../utils/screens/lowerShipping/changeAvailable";
 import { store } from "./reduxStore";
 import {
-  onLowerShippingTHide,
   setFoodChangeToast,
   setQtyChangeToast,
 } from "@/features/reduxSlices/lowerShippingSlice";
-import { IShippingPriceObj, IShippingPriceValues } from "../utils/sumUp";
 
 export const showProductSelectToast = () => {
   Toast.show({
@@ -17,6 +15,7 @@ export const showProductSelectToast = () => {
     position: "bottom",
     autoHide: false,
     swipeable: false,
+    bottomOffset: 8,
   });
 };
 

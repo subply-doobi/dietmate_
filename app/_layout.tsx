@@ -21,7 +21,7 @@ import ModalComponent from "@/components/modal/ModalComponent";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/shared/store/toastStore";
-import { setAutoAddSelectedFood } from "@/features/reduxSlices/formulaSlice";
+import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
 
 // Kakao SDK 초기화
 initializeKakaoSDK("5065665acbfa07f0dd876a374e66e618");
@@ -90,7 +90,12 @@ export default function RootLayout() {
                 headerLeft: () => (
                   <BackArrow
                     goBackFn={() => {
-                      store.dispatch(setAutoAddSelectedFood(undefined));
+                      store.dispatch(
+                        setAutoAddFood({
+                          foodForAdd: undefined,
+                          foodForChange: undefined,
+                        })
+                      );
                       router.back();
                     }}
                   />

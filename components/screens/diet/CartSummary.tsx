@@ -28,9 +28,16 @@ import CtaButton from "@/shared/ui/CtaButton";
 
 interface ICartSummary {
   containerStyle?: ViewStyle;
+  mainTextColor?: string;
+  subTextColor?: string;
   hasLowerShippingCta?: boolean;
 }
-const CartSummary = ({ containerStyle, hasLowerShippingCta }: ICartSummary) => {
+const CartSummary = ({
+  containerStyle,
+  hasLowerShippingCta,
+  mainTextColor,
+  subTextColor,
+}: ICartSummary) => {
   // navigation
   const router = useRouter();
 
@@ -79,10 +86,10 @@ const CartSummary = ({ containerStyle, hasLowerShippingCta }: ICartSummary) => {
     //장바구니 하단에 보여지는 총 끼니 수, 상품 수, 금액
     <TotalSummaryContainer style={[containerStyle]}>
       <Row style={{ justifyContent: "space-between" }}>
-        <SummaryText>
+        <SummaryText $color={mainTextColor}>
           {MENU_NUM_LABEL[menuNum - 1]} 공식을 만들고 있어요
         </SummaryText>
-        <SummaryValue>
+        <SummaryValue $color={mainTextColor}>
           근 당{" "}
           {menuNum === 0 ? 0 : commaToNum(Math.floor(priceTotal / menuNum))} 원
         </SummaryValue>
@@ -95,13 +102,13 @@ const CartSummary = ({ containerStyle, hasLowerShippingCta }: ICartSummary) => {
         const { price: sellerPrice, shippingText } = shippingPriceObj[seller];
         return (
           <View key={index}>
-            <SummarySellerText style={{ marginTop: 24 }}>
+            <SummarySellerText $color={mainTextColor} style={{ marginTop: 24 }}>
               {seller}
             </SummarySellerText>
-            <SummaryText style={{ marginTop: 12 }}>
+            <SummaryText $color={mainTextColor} style={{ marginTop: 12 }}>
               식품: {commaToNum(sellerPrice)}원
             </SummaryText>
-            <SummmaryTextSub style={{ marginTop: 2 }}>
+            <SummmaryTextSub $color={subTextColor} style={{ marginTop: 2 }}>
               배송비:
               {shippingText}
             </SummmaryTextSub>
@@ -112,20 +119,35 @@ const CartSummary = ({ containerStyle, hasLowerShippingCta }: ICartSummary) => {
       <HorizontalLine style={{ marginTop: 24 }} />
 
       <Row style={{ marginTop: 24, justifyContent: "space-between" }}>
-        <SummaryText>상품 가격 (총 {productNum}개)</SummaryText>
-        <SummaryValue>{commaToNum(priceTotal)} 원</SummaryValue>
+        <SummaryText $color={mainTextColor}>
+          상품 가격 (총 {productNum}개)
+        </SummaryText>
+        <SummaryValue $color={mainTextColor}>
+          {commaToNum(priceTotal)} 원
+        </SummaryValue>
       </Row>
       <Row style={{ marginTop: 2, justifyContent: "space-between" }}>
-        <SummmaryTextSub>배송비 합계</SummmaryTextSub>
-        <SummaryValueSub>{commaToNum(totalShippingPrice)} 원</SummaryValueSub>
+        <SummmaryTextSub $color={subTextColor}>배송비 합계</SummmaryTextSub>
+        <SummaryValueSub $color={subTextColor}>
+          {commaToNum(totalShippingPrice)} 원
+        </SummaryValueSub>
       </Row>
       {totalShippingPrice > 0 && hasLowerShippingCta && (
         <CtaButton
           btnStyle="borderActive"
-          btnText="배송비를 낮춰주세요"
-          btnTextStyle={{ color: colors.textSub }}
-          btnContent={() => <Icon source={icons.truck_24} size={24} />}
-          style={{ marginTop: 24 }}
+          btnText="배송비를 낮춰봐요"
+          btnTextStyle={{
+            color: mainTextColor || colors.textSub,
+            fontSize: 14,
+          }}
+          btnContent={() => (
+            <Icon
+              source={icons.truckInactive_24}
+              size={24}
+              style={{ marginLeft: -8 }}
+            />
+          )}
+          style={{ marginTop: 24, backgroundColor: "" }}
           onPress={() => {
             router.push({ pathname: "/LowerShipping" });
           }}
@@ -143,52 +165,32 @@ const TotalSummaryContainer = styled.View`
   padding-top: 40px;
 `;
 
-const SummaryText = styled(TextMain)`
+const SummaryText = styled(TextMain)<{ $color?: string }>`
   font-size: 14px;
   line-height: 20px;
+  color: ${({ $color }) => $color || colors.textMain};
 `;
 
-const SummmaryTextSub = styled(TextSub)`
+const SummmaryTextSub = styled(TextSub)<{ $color?: string }>`
   font-size: 14px;
   line-height: 20px;
+  color: ${({ $color }) => $color || colors.textSub};
 `;
 
-const SummaryValue = styled(TextMain)`
+const SummaryValue = styled(TextMain)<{ $color?: string }>`
   font-size: 14px;
   font-weight: bold;
+  color: ${({ $color }) => $color || colors.textMain};
 `;
-const SummaryValueSub = styled(TextSub)`
+
+const SummaryValueSub = styled(TextSub)<{ $color?: string }>`
   font-size: 14px;
   font-weight: bold;
+  color: ${({ $color }) => $color || colors.textSub};
 `;
 
-const SummarySellerText = styled(TextMain)`
+const SummarySellerText = styled(TextMain)<{ $color?: string }>`
   font-size: 14px;
   font-weight: bold;
-`;
-
-const SmallButton = styled.TouchableOpacity`
-  width: 46px;
-  height: 32px;
-  border-radius: 5px;
-  border: 1px solid ${colors.lineLight};
-  justify-content: center;
-  align-items: center;
-`;
-
-const SearchImage = styled.Image`
-  width: 24px;
-  height: 24px;
-`;
-
-const SearchBtn = styled.TouchableOpacity`
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 32px;
-  height: 32px;
-  background-color: ${colors.backgroundLight2};
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
+  color: ${({ $color }) => $color || colors.textMain};
 `;

@@ -1,5 +1,5 @@
 // RN, expo
-import { ImageSourcePropType, ScrollView } from "react-native";
+import { FlatList, ImageSourcePropType, ScrollView, View } from "react-native";
 import { useMemo } from "react";
 
 // 3rd
@@ -13,7 +13,13 @@ import {
   SCREENWIDTH,
   SERVICE_PRICE_PER_PRODUCT,
 } from "@/shared/constants";
-import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import {
+  Icon,
+  Row,
+  TextMain,
+  TextSub,
+  VerticalSpace,
+} from "@/shared/ui/styledComps";
 import {
   commaToNum,
   getSortedShippingPriceObj,
@@ -21,10 +27,13 @@ import {
 } from "@/shared/utils/sumUp";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import colors from "@/shared/colors";
-import { setAutoAddSelectedFood } from "@/features/reduxSlices/formulaSlice";
+
 import { showProductSelectToast } from "@/shared/store/toastStore";
 import { icons } from "@/shared/iconSource";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { ViewStyle } from "react-native";
+import SortFilter from "./SortFilter";
+import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
 
 interface IProductCardSection {
   title?: string;
@@ -42,40 +51,58 @@ interface IProductCardItem {
   itemSize: number;
   badgeText?: string;
   showPlatformNm?: boolean;
+  style?: ViewStyle;
 }
 const ProductCardItem = ({
   item,
   itemSize,
   showPlatformNm = true,
+  style = {},
 }: IProductCardItem) => {
   // redux
   const dispatch = useAppDispatch();
-  const selectedFood = useAppSelector(
-    (state) => state.formula.autoAddSelectedFood
+  const autoAddFoodForAdd = useAppSelector(
+    (state) => state.formula.autoAddFoodForAdd
+  );
+  const autoAddFoodForChange = useAppSelector(
+    (state) => state.formula.autoAddFoodForChange
   );
 
   // etc
-  const isSelected = selectedFood?.productNo === item.productNo;
+  const isSelected = autoAddFoodForAdd?.productNo === item.productNo;
 
   const onPress = () => {
     if (isSelected) {
       Toast.hide();
       setTimeout(() => {
-        dispatch(setAutoAddSelectedFood(undefined));
+        dispatch(
+          setAutoAddFood({
+            foodForAdd: undefined,
+            foodForChange: autoAddFoodForChange,
+          })
+        );
       }, 150);
       return;
     }
-    dispatch(setAutoAddSelectedFood(item));
+    dispatch(
+      setAutoAddFood({
+        foodForAdd: item,
+        foodForChange: autoAddFoodForChange,
+      })
+    );
     showProductSelectToast();
   };
 
   return (
     <Box
       isSelected={isSelected}
-      style={{
-        width: itemSize,
-        boxShadow: isSelected ? "1px 2px 3px rgba(0, 0, 0, 0.12)" : "none",
-      }}
+      style={[
+        {
+          width: itemSize,
+          boxShadow: isSelected ? "1px 2px 3px rgba(0, 0, 0, 0.12)" : "none",
+        },
+        { ...style },
+      ]}
       onPress={onPress}
       activeOpacity={0.85}
     >
@@ -87,7 +114,14 @@ const ProductCardItem = ({
           height: itemSize - 8,
         }}
       />
-      <Price style={{ alignSelf: "flex-end", marginRight: 2 }}>
+      <ProductNm
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        style={{ alignSelf: "flex-start" }}
+      >
+        {item.productNm}
+      </ProductNm>
+      <Price>
         {commaToNum(parseInt(item.price) + SERVICE_PRICE_PER_PRODUCT)}원
       </Price>
       {/* {badgeText && <ModernBadge>{badgeText}</ModernBadge>} */}
@@ -95,7 +129,7 @@ const ProductCardItem = ({
   );
 };
 
-const ProductCardSection = ({
+const Foodlist = ({
   title,
   subTitle,
   products = [],
@@ -105,186 +139,49 @@ const ProductCardSection = ({
   gap = 8,
   showPlatformNm = true,
   iconSource,
-}: IProductCardSection) =>
-  products.length > 0 && (
-    <Section>
-      {title && (
-        <Row style={{ paddingLeft: 4, columnGap: 4 }}>
-          <SectionTitle>{title}</SectionTitle>
-          {iconSource && <Icon source={iconSource} size={24} />}
-        </Row>
-      )}
-      {subTitle && <SectionSubTitle>{subTitle}</SectionSubTitle>}
-      {horizontalScroll ? (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ marginTop: 16 }}
-          contentContainerStyle={{
-            paddingBottom: 3,
-          }}
-        >
-          <Row style={{ width: "100%", columnGap: gap }}>
-            {products.map((item) => (
-              <ProductCardItem
-                key={item.productNo}
-                item={item}
-                itemSize={itemSize}
-                badgeText={badgeText}
-                showPlatformNm={showPlatformNm}
-              />
-            ))}
-          </Row>
-        </ScrollView>
-      ) : (
-        <Grid style={{ gap: gap }}>
-          {products.map((item) => (
-            <ProductCardItem
-              key={item.productNo}
-              item={item}
-              itemSize={itemSize}
-              badgeText={badgeText}
-              showPlatformNm={showPlatformNm}
-            />
-          ))}
-        </Grid>
-      )}
-    </Section>
-  );
-
-export const RandomProductsSection = () => {
-  const products =
-    useAppSelector((state) => state.filteredProduct.randomFoods) || [];
-  return (
-    <ProductCardSection title="선택장애는 이제 그만!" products={products} />
-  );
-};
-
-export const LowShippingSection = () => {
-  // redux
-  const products =
-    useAppSelector((state) => state.filteredProduct.lowShippingFoods) || [];
-  const selectedFood = useAppSelector(
-    (state) => state.formula.autoAddSelectedFood
-  );
-
-  // react-query
-  const { data: dTOData } = useListDietTotalObj();
-
-  // useMemo
-  const { remainPrice, platformNm } = useMemo(() => {
-    const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
-    const closestShipping =
-      getSortedShippingPriceObj(shippingPriceObj)?.notFree[0];
-    const remainPrice = closestShipping?.remainPrice;
-    const platformNm = closestShipping?.platformNm;
-
-    return {
-      remainPrice,
-      platformNm,
-    };
-  }, [dTOData]);
-
-  const isAvailable = selectedFood && remainPrice && platformNm;
-  const expectedShippingPrice = isAvailable
-    ? remainPrice - parseInt(selectedFood.price)
-    : 0;
-  let shippingText = "";
-  if (isAvailable) {
-    shippingText =
-      expectedShippingPrice >= 0
-        ? `${platformNm}: ${commaToNum(
-            expectedShippingPrice
-          )}원 더 담으면 무료배송!`
-        : `${platformNm}: 무료배송!`;
-  } else {
-    shippingText = `${platformNm}: ${commaToNum(
-      remainPrice
-    )}원 더 담으면 무료배송!`;
-  }
+}: IProductCardSection) => {
+  const numColumns = horizontalScroll
+    ? 1
+    : Math.floor(SCREENWIDTH / (itemSize + gap * 2));
 
   return (
-    <ProductCardSection
-      title={`배송비를 낮춰봐요!`}
-      subTitle={shippingText}
-      products={products}
-      horizontalScroll
-      showPlatformNm={false}
-      itemSize={SCREENWIDTH * 0.4}
+    <FlatList
+      ListHeaderComponent={SortFilter}
+      data={products}
+      keyExtractor={(item) => item.productNo}
+      horizontal={horizontalScroll}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={{
+        width: "100%",
+        marginBottom: 64,
+        gap,
+      }}
+      numColumns={numColumns}
+      renderItem={({ item, index }) => {
+        const isLastColumn = (index + 1) % numColumns === 0;
+        const isLastRow = index >= products.length - numColumns;
+        return (
+          <ProductCardItem
+            item={item}
+            itemSize={itemSize}
+            badgeText={badgeText}
+            showPlatformNm={showPlatformNm}
+            style={{
+              marginRight: isLastColumn ? 0 : gap,
+              marginBottom: isLastRow ? 0 : gap,
+            }}
+          />
+        );
+      }}
+      // To force FlatList to re-render when switching between grid/horizontal
+      key={horizontalScroll ? "h" : "v"}
+      // ItemSeparatorComponent={() => <View style={{ width: gap }} />}
     />
   );
 };
-
-export const RecentOpenedSection = () => {
-  const products =
-    useAppSelector((state) => state.filteredProduct.recentFoods) || [];
-  return (
-    <ProductCardSection
-      title="최근 보거나 추가했던 제품들이에요"
-      products={products}
-      horizontalScroll
-      itemSize={80}
-    />
-  );
-};
-
-export const LikeFoodsSection = () => {
-  const products =
-    useAppSelector((state) => state.filteredProduct.likeFoods) || [];
-  return (
-    <ProductCardSection
-      title="찜한 제품들이에요"
-      products={products}
-      itemSize={(SCREENWIDTH - 32 - 8) / 2}
-      gap={8}
-    />
-  );
-};
-
-export const RecentOrderSection = () => {
-  const products =
-    useAppSelector((state) => state.filteredProduct.recentOrderFoods) || [];
-  return (
-    <ProductCardSection
-      title="최근 주문했던 제품이에요"
-      products={products}
-      badgeText="주문완료"
-      horizontalScroll
-    />
-  );
-};
-
-export const OthersSection = () => {
-  const products =
-    useAppSelector((state) => state.filteredProduct.others) || [];
-  return (
-    <ProductCardSection
-      title="이런 제품도 있어요"
-      products={products}
-      itemSize={(SCREENWIDTH - 32 - 8) / 2}
-      gap={8}
-    />
-  );
-};
-
-export const ExcessFoodsSection = () => {
-  const products =
-    useAppSelector((state) => state.filteredProduct.excessFoods) || [];
-  return (
-    <ProductCardSection
-      title={"여기서부터는 목표영양이 초과될 가능성이 있어요..."}
-      products={products}
-      itemSize={(SCREENWIDTH - 32 - 16) / 3}
-      gap={8}
-    />
-  );
-};
+export default Foodlist;
 
 // --- Styled-components (same as your file) ---
-const Section = styled.View`
-  width: 100%;
-  margin-bottom: 64px;
-`;
 
 const SectionTitle = styled(TextMain)`
   font-size: 16px;
@@ -299,14 +196,6 @@ const SectionSubTitle = styled(TextSub)`
   letter-spacing: -0.5px;
   margin-top: 2px;
   margin-left: 4px;
-`;
-
-const Grid = styled.View`
-  width: 100%;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 16px;
 `;
 
 const Box = styled.TouchableOpacity<{ isSelected: boolean }>`
@@ -325,28 +214,24 @@ const Thumbnail = styled.Image`
   border-radius: 4px;
 `;
 
-const Price = styled(TextMain)`
-  font-size: 12px;
-  line-height: 16px;
-  margin-left: 2px;
-`;
-
 const PlatformNm = styled(TextSub)`
   font-size: 12px;
   line-height: 16px;
   width: 100%;
   text-align: left;
+  padding: 0 2px;
 `;
 
-const SelectedInfoRow = styled.View`
-  height: 48px;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: ${colors.blackOpacity70};
-  z-index: 10;
-  align-items: center;
-  padding: 0 8px;
-  column-gap: 8px;
+const ProductNm = styled(TextMain)`
+  width: 100%;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: right;
+  padding: 0 2px;
+  margin-top: 4px;
+`;
+
+const Price = styled(ProductNm)`
+  color: ${colors.textSub};
+  margin-top: 0;
 `;

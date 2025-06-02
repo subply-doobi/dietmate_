@@ -7,10 +7,8 @@ export interface IShippingSummaryObj {
   [key: string]: {
     freeShippingPrice: number;
     oPrice: number;
-    oRemainPrice: number;
     oShippingPrice: number;
     ePrice: number;
-    eRemainPrice: number;
     eShippingPrice: number;
   };
 }
@@ -19,16 +17,9 @@ interface ISummaryBox {
   shippingSummaryObj: IShippingSummaryObj;
   seller: string;
 }
-const SummaryBox = ({ shippingSummaryObj, seller }: ISummaryBox) => {
-  const {
-    freeShippingPrice,
-    oPrice,
-    oRemainPrice,
-    oShippingPrice,
-    ePrice,
-    eRemainPrice,
-    eShippingPrice,
-  } = shippingSummaryObj[seller];
+const ShippingSummary = ({ shippingSummaryObj, seller }: ISummaryBox) => {
+  const { freeShippingPrice, oPrice, oShippingPrice, ePrice, eShippingPrice } =
+    shippingSummaryObj[seller];
 
   return (
     <Col>
@@ -68,8 +59,7 @@ const SummaryBox = ({ shippingSummaryObj, seller }: ISummaryBox) => {
           {eShippingPrice > 0 && (
             <SubText>
               {" "}
-              ({commaToNum(shippingSummaryObj[seller].freeShippingPrice)}원 이상
-              무료배송)
+              ({commaToNum(freeShippingPrice)}원 이상 무료배송)
             </SubText>
           )}
         </Row>
@@ -78,7 +68,7 @@ const SummaryBox = ({ shippingSummaryObj, seller }: ISummaryBox) => {
   );
 };
 
-export default SummaryBox;
+export default ShippingSummary;
 
 const Text = styled(TextMain)`
   font-size: 14px;

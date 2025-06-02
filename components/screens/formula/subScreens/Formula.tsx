@@ -1,6 +1,6 @@
 // RN, expo
 import { useEffect, useMemo, useRef } from "react";
-import { ActivityIndicator, Dimensions } from "react-native";
+import { ActivityIndicator, Dimensions, ScrollView } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -13,7 +13,7 @@ import Carousel, {
 // doobi
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { Col, Icon, Row } from "@/shared/ui/styledComps";
+import { Col, Icon, Row, TextMain } from "@/shared/ui/styledComps";
 import { FORMULA_CAROUSEL_HEIGHT, SCREENWIDTH } from "@/shared/constants";
 import { icons } from "@/shared/iconSource";
 import CarouselContent from "../carousel/CarouselContent";
@@ -29,6 +29,7 @@ import CtaButton from "@/shared/ui/CtaButton";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import Toast from "react-native-toast-message";
+import BottomInfo from "@/components/common/bottomsheet/BottomInfo";
 
 const width = Dimensions.get("window").width;
 
@@ -126,10 +127,10 @@ const Formula = () => {
       <Container>
         <Row
           style={{
-            marginTop: -32,
             alignSelf: "center",
-            columnGap: 8,
+            marginTop: 24,
             justifyContent: "center",
+            columnGap: 8,
             width: "100%",
           }}
         >
@@ -161,6 +162,7 @@ const Formula = () => {
             <Icon source={icons.more_24} size={24} />
           </MoreBtn>
         </Row>
+
         <Carousel
           mode="parallax"
           modeConfig={{
@@ -174,7 +176,7 @@ const Formula = () => {
           }
           ref={carouselRef}
           width={width}
-          height={FORMULA_CAROUSEL_HEIGHT + 24}
+          // height={FORMULA_CAROUSEL_HEIGHT + 24}
           data={menuArr}
           loop={false}
           onSnapToItem={(index) => {
@@ -189,6 +191,8 @@ const Formula = () => {
             />
           )}
         />
+        <BottomInfo />
+
         {isAllSuccess && (
           <CtaButton
             btnStyle="active"
@@ -213,7 +217,6 @@ export default Formula;
 const Container = styled.View`
   flex: 1;
   background-color: ${colors.backgroundLight2};
-  justify-content: center;
 `;
 
 const MoreBtn = styled.TouchableOpacity`

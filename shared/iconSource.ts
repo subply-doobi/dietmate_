@@ -29,6 +29,7 @@ export const icons = {
   down_8: require(`./assets/icons/8_down.png`),
   up_8: require(`./assets/icons/8_up.png`),
   round_8: require(`./assets/icons/8_round.png`),
+  plusRoundWhite_24: require(`./assets/icons/24_plus_round_white.png`),
 
   // change
   changeRound_24: require(`./assets/icons/24_change_round.png`),
@@ -86,9 +87,25 @@ export const icons = {
   userRound_24: require(`./assets/icons/24_user_round.png`),
   networkError_80: require(`./assets/icons/80_network_error.png`),
   more_24: require(`./assets/icons/24_more.png`),
-  truck_24: require(`./assets/icons/24_truck.png`),
   dice_36: require(`./assets/icons/36_dice.png`),
+  dice_36_active: require(`./assets/icons/36_dice_active.png`),
   calculateBlack_32: require(`./assets/icons/32_calculate_black.png`),
+  heart_active_36: require(`./assets/icons/36_heart_active.png`),
+  heart_36: require(`./assets/icons/36_heart.png`),
+
+  // filter
+  targetInactive_24: require(`./assets/icons/24_target_inactive.png`),
+  targetActive_24: require(`./assets/icons/24_target_active.png`),
+  targetxInactive24: require(`./assets/icons/24_targetx_inactive.png`),
+  targetxActive24: require(`./assets/icons/24_targetx_active.png`),
+  truckInactive_24: require(`./assets/icons/24_truck_inactive.png`),
+  truckActive_24: require(`./assets/icons/24_truck_active.png`),
+  cardInactive_24: require(`./assets/icons/24_card_inactive.png`),
+  cardActive_24: require(`./assets/icons/24_card_active.png`),
+  moneyInactive_24: require(`./assets/icons/24_money_inactive.png`),
+  moneyActive_24: require(`./assets/icons/24_money_active.png`),
+  eyeInactive_24: require(`./assets/icons/24_eye_inactive.png`),
+  eyeActive_24: require(`./assets/icons/24_eye_active.png`),
 
   // mypage btns
   question_mypage_24: require(`./assets/icons/24_mypage_question.png`),

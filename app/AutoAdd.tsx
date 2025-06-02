@@ -1,24 +1,19 @@
+import BottomInfo from "@/components/common/bottomsheet/BottomInfo";
+import Foodlist from "@/components/screens/autoAdd/Foodlist";
 import {
-  ExcessFoodsSection,
-  LikeFoodsSection,
-  LowShippingSection,
-  OthersSection,
-  RandomProductsSection,
-  RecentOpenedSection,
-  RecentOrderSection,
-} from "@/components/screens/autoAdd/Foodlist";
-import { setAvailableFoods } from "@/features/reduxSlices/filteredPSlice";
+  selectFilteredSortedProducts,
+  setAvailableFoods,
+  setLastFilteredList,
+} from "@/features/reduxSlices/filteredPSlice";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useListOrder } from "@/shared/api/queries/order";
 import { useListProductMark } from "@/shared/api/queries/product";
-import { IProductData } from "@/shared/api/types/product";
 import colors from "@/shared/colors";
-import { AM_SELECTED_CATEGORY_IDX } from "@/shared/constants";
+import { AM_SELECTED_CATEGORY_IDX, SCREENWIDTH } from "@/shared/constants";
 import { useAsync } from "@/shared/hooks/asyncStateHooks";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { showProductSelectToast } from "@/shared/store/toastStore";
-import CtaButton from "@/shared/ui/CtaButton";
 import {
   Col,
   Container,
@@ -32,7 +27,6 @@ import { sumUpDietFromDTOData, sumUpNutrients } from "@/shared/utils/sumUp";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 
 const AutoAdd = () => {
@@ -43,9 +37,10 @@ const AutoAdd = () => {
     (state) => state.common.foodGroupForAutoMenu
   );
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-  const selectedFood = useAppSelector(
-    (state) => state.formula.autoAddSelectedFood
+  const autoAddFoodForAdd = useAppSelector(
+    (state) => state.formula.autoAddFoodForAdd
   );
+  const products = useAppSelector(selectFilteredSortedProducts);
 
   const currentMenu = JSON.parse(useLocalSearchParams()?.menu as string);
 
@@ -57,21 +52,16 @@ const AutoAdd = () => {
 
   // useState
   const [isDelayOver, setIsDelayOver] = useState(false);
-  // const [selectedFood, setSelectedFood] = useState<IProductData | undefined>(
-  //   undefined
-  // );
 
   // useMemo
-  const { shippingPriceObj, canBeExcess } = useMemo(() => {
+  const { shippingPriceObj } = useMemo(() => {
     // 총 끼니 수, 상품 수, 금액 계산
     const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
     const currentMenuCalorie = sumUpNutrients(currentMenu).cal;
     const remainCalorie = Number(bLData?.calorie) - currentMenuCalorie;
-    const canBeExcess = remainCalorie < medianCalorie;
 
     return {
       shippingPriceObj,
-      canBeExcess,
     };
   }, [dTOData]);
 
@@ -98,8 +88,7 @@ const AutoAdd = () => {
         setAvailableFoods({
           totalFoodList,
           availableFoods: f,
-          shippingPriceObj,
-          recentProductNoArr: await getRecentProducts(),
+          recentOpenedFoodsPNoArr: await getRecentProducts(),
           listOrderData: listOrderData,
           likeData: likeData,
         })
@@ -113,7 +102,6 @@ const AutoAdd = () => {
     if (!bLData || !dTOData || !listOrderData || !likeData) {
       return;
     }
-
     execute();
     const timer = setTimeout(() => {
       setIsDelayOver(true);
@@ -122,7 +110,7 @@ const AutoAdd = () => {
   }, [dTOData, bLData, listOrderData, likeData]);
 
   useFocusEffect(() => {
-    if (!selectedFood) {
+    if (!autoAddFoodForAdd) {
       return;
     }
     showProductSelectToast();
@@ -142,25 +130,15 @@ const AutoAdd = () => {
   }
 
   return (
-    <Container
-      style={{
-        paddingTop: 0,
-      }}
-    >
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingBottom: 320,
-        }}
-      >
-        <RandomProductsSection />
-        <LowShippingSection />
-        <RecentOpenedSection />
-        <LikeFoodsSection />
-        <RecentOrderSection />
-        <OthersSection />
-        {/* <ExcessFoodsSection /> */}
-      </ScrollView>
+    <Container>
+      <Foodlist
+        title="추천 식품"
+        subTitle="목표 영양에 맞춰 추천된 식품이에요."
+        itemSize={(SCREENWIDTH - 32 - 8) / 2}
+        products={products}
+        badgeText="자동 추가"
+        gap={8}
+      />
     </Container>
   );
 };

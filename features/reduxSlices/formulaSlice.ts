@@ -7,13 +7,15 @@ type IFormulaProgress = Array<IFormulaPageNm>;
 export interface IFormulaState {
   currentFMCIdx: number;
   formulaProgress: IFormulaProgress;
-  autoAddSelectedFood: IProductData | undefined;
+  autoAddFoodForAdd: IProductData | undefined;
+  autoAddFoodForChange: IProductData | undefined;
 }
 
 const initialState: IFormulaState = {
   currentFMCIdx: 0,
   formulaProgress: [],
-  autoAddSelectedFood: undefined,
+  autoAddFoodForAdd: undefined,
+  autoAddFoodForChange: undefined,
 };
 
 const formulaSlice = createSlice({
@@ -26,15 +28,19 @@ const formulaSlice = createSlice({
     setFormulaProgress: (state, action: PayloadAction<IFormulaProgress>) => {
       state.formulaProgress = action.payload;
     },
-    setAutoAddSelectedFood: (
+    setAutoAddFood: (
       state,
-      action: PayloadAction<IProductData | undefined>
+      action: PayloadAction<{
+        foodForAdd?: IProductData;
+        foodForChange?: IProductData;
+      }>
     ) => {
-      state.autoAddSelectedFood = action.payload;
+      state.autoAddFoodForAdd = action.payload.foodForAdd;
+      state.autoAddFoodForChange = action.payload.foodForChange;
     },
   },
 });
 
-export const { setCurrentFMCIdx, setFormulaProgress, setAutoAddSelectedFood } =
+export const { setCurrentFMCIdx, setFormulaProgress, setAutoAddFood } =
   formulaSlice.actions;
 export default formulaSlice.reducer;

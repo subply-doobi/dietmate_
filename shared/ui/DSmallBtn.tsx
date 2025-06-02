@@ -1,17 +1,18 @@
-import styled from 'styled-components/native';
-import {Icon, TextSub} from './styledComps';
-import {icons} from '../iconSource';
-import colors from '../colors';
-import {TouchableOpacityProps} from 'react-native';
+import styled from "styled-components/native";
+import { Icon, TextSub } from "./styledComps";
+import { icons } from "../iconSource";
+import colors from "../colors";
+import { TouchableOpacityProps } from "react-native";
 
 interface IDSmallBtn extends TouchableOpacityProps {
   btnText: string;
   iconSource?: string;
   iconSize?: number;
 }
-const DSmallBtn = ({btnText, iconSource, iconSize, ...props}: IDSmallBtn) => {
+const DSmallBtn = ({ btnText, iconSource, iconSize, ...props }: IDSmallBtn) => {
+  const style = props.style || {};
   return (
-    <Btn {...props}>
+    <Btn {...props} style={[style]}>
       <BtnText>{btnText}</BtnText>
       {iconSource && (
         <Icon

@@ -1,7 +1,7 @@
 import NutrientsProgress from "@/components/common/nutrient/NutrientsProgress";
 import { useDeleteDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
-import { FORMULA_CAROUSEL_HEIGHT } from "@/shared/constants";
+import { FORMULA_CAROUSEL_HEIGHT, MENU_LABEL } from "@/shared/constants";
 import { icons } from "@/shared/iconSource";
 import {
   Col,
@@ -9,6 +9,7 @@ import {
   Icon,
   Row,
   TextMain,
+  TextSub,
 } from "@/shared/ui/styledComps";
 import { useEffect, useState } from "react";
 import { ICarouselInstance } from "react-native-reanimated-carousel";
@@ -17,6 +18,9 @@ import SelectAllRow from "./SelectAllRow";
 import CarouselCta from "./CarouselCta";
 import CarouselFoodList from "./CarouselFoodList";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
+import MenuNumSelect from "@/components/common/cart/MenuNumSelect";
+import DSmallBtn from "@/shared/ui/DSmallBtn";
+import { showQtyChangeToast } from "@/shared/store/toastStore";
 
 interface ICarouselContent {
   carouselRef: React.RefObject<ICarouselInstance>;
@@ -40,6 +44,7 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
   const carouselDietNo = Object.keys(dTOData || {})[carouselIdx];
   const carouselMenu = dTOData?.[carouselDietNo]?.dietDetail || [];
   const isCurrent = currentFMCIdx === carouselIdx;
+  const currentQty = dTOData?.[carouselDietNo]?.dietDetail?.[0]?.qty || 1;
 
   const menuDelete = () => {
     const lastMenuIdx = Object.keys(dTOData || {}).length - 1;
@@ -92,6 +97,36 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
           </DeleteCheckBox>
         )}
 
+        {/* 상단 타이틀 */}
+        <Row
+          style={{
+            paddingHorizontal: 16,
+            justifyContent: "space-between",
+            height: 32,
+          }}
+        >
+          <Row style={{ columnGap: 8 }}>
+            <Title>{MENU_LABEL[carouselIdx]}</Title>
+            {Number(currentQty) > 1 && <SubTitle>( x{currentQty} )</SubTitle>}
+          </Row>
+          {carouselMenu.length > 0 && (
+            <DSmallBtn
+              btnText="근수 변경"
+              style={{
+                borderWidth: 1,
+                borderColor: colors.lineLight,
+                paddingTop: 8,
+                paddingBottom: 8,
+                paddingLeft: 8,
+                paddingRight: 8,
+              }}
+              onPress={() => {
+                showQtyChangeToast({ menuIdx: carouselIdx });
+              }}
+            />
+          )}
+        </Row>
+
         {/* 삭제 버튼 */}
         {!isCheckDelete && (
           <MenuDeleteBtn onPress={() => isCurrent && setIsCheckDelete(true)}>
@@ -100,7 +135,7 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
         )}
 
         {/* 상단 progressBar */}
-        <Col style={{ paddingHorizontal: 16 }}>
+        <Col style={{ paddingHorizontal: 16, marginTop: 8 }}>
           <NutrientsProgress dietDetailData={carouselMenu} />
         </Col>
 
@@ -134,18 +169,28 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
 export default CarouselContent;
 
 const MenuCard = styled.View`
-  height: ${FORMULA_CAROUSEL_HEIGHT + 24}px;
+  /* height: ${FORMULA_CAROUSEL_HEIGHT + 24}px; */
   margin: 0 32px;
-  padding: 24px 0;
+  padding: 24px 0 0 0;
   z-index: 0;
 `;
 
 const Box = styled.View`
   width: 100%;
-  height: ${FORMULA_CAROUSEL_HEIGHT}px;
+  /* height: ${FORMULA_CAROUSEL_HEIGHT}px; */
   border-radius: 5px;
-  padding-top: 24px;
+  padding: 24px 0;
   background-color: ${colors.white};
+`;
+
+const Title = styled(TextMain)`
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: bold;
+`;
+const SubTitle = styled(TextSub)`
+  font-size: 14px;
+  line-height: 18px;
 `;
 
 const MenuDeleteBtn = styled.TouchableOpacity`

@@ -19,6 +19,8 @@ import {
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
 import { useRouter } from "expo-router";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
 
 const ITEM_WIDTH = 88;
 const ITEM_HEIGHT = 120;
@@ -38,6 +40,9 @@ const CarouselFoodList = ({
 }: ICarouselFoodList) => {
   // navigation
   const router = useRouter();
+
+  // redux
+  const dispatch = useAppDispatch();
 
   // useState
   const [isCheckDelete, setIsCheckDelete] = useState(false);
@@ -87,12 +92,15 @@ const CarouselFoodList = ({
       show: selectedFoods.length === 1,
       iconSource: icons.changeRoundWhite_24,
       onPress: () => {
+        dispatch(
+          setAutoAddFood({ foodForChange: selectedItem, foodForAdd: undefined })
+        );
         router.push({
-          pathname: "/Change",
+          pathname: "/AutoAdd",
           params: {
-            dietNo: currentCarouselDietNo,
-            productNo: selectedFoods[0],
-            food: JSON.stringify(selectedItem),
+            menu: JSON.stringify(
+              data.filter((p) => p.productNo !== selectedFoods[0])
+            ),
           },
         });
       },

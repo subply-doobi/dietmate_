@@ -19,7 +19,6 @@ import {
   TextMain,
   TextSub,
 } from "@/shared/ui/styledComps";
-import { regroupDDataBySeller } from "@/shared/utils/dataTransform";
 import {
   commaToNum,
   getSortedShippingPriceObj,
@@ -34,8 +33,9 @@ import FoodlistToMod from "./FoodlistToMod";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { onLowerShippingTHide } from "@/features/reduxSlices/lowerShippingSlice";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
-import SummaryBox, { IShippingSummaryObj } from "./SummaryBox";
+import { IShippingSummaryObj } from "./ShippingSummary";
 import DTooltip from "@/shared/ui/DTooltip";
+import ShippingSummary from "./ShippingSummary";
 
 const FoodChangeToast = (props: IToastCustomConfigParams) => {
   // redux
@@ -114,17 +114,14 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
       const {
         price: targetOPrice,
         freeShippingPrice: targetFSPrice,
-        remainPrice: targetORPrice,
         shippingPrice: targetOSPrice,
       } = shippingPriceObj[firstTargetSeller.platformNm];
 
       shippingSummaryObj[firstTargetSeller.platformNm] = {
         freeShippingPrice: targetFSPrice,
         oPrice: targetOPrice,
-        oRemainPrice: targetORPrice,
         oShippingPrice: targetOSPrice,
         ePrice: targetOPrice,
-        eRemainPrice: targetORPrice,
         eShippingPrice: targetOSPrice,
       };
 
@@ -136,23 +133,19 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
         const {
           freeShippingPrice: delFSPrice,
           price: delOPrice,
-          remainPrice: delORPrice,
           shippingPrice: delOSPrice,
         } = shippingPriceObj[platformNmToDel];
         const delDPrice =
           (parseInt(productToDel.price) + SERVICE_PRICE_PER_PRODUCT) *
           currentQty;
         const delEPrice = delOPrice - delDPrice;
-        const delERPrice = delORPrice + delDPrice;
         const delESPrice =
           delEPrice >= delFSPrice ? 0 : parseInt(productToDel.shippingPrice);
         shippingSummaryObj[platformNmToDel] = {
           freeShippingPrice: delFSPrice,
           oPrice: delOPrice,
-          oRemainPrice: delORPrice,
           oShippingPrice: delOSPrice,
           ePrice: delEPrice,
-          eRemainPrice: delERPrice,
           eShippingPrice: delESPrice,
         };
       }
@@ -163,7 +156,6 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
         const {
           freeShippingPrice: addFSPrice,
           price: addOPrice,
-          remainPrice: addORPrice,
           shippingPrice: addOSPrice,
         } = shippingPriceObj[platformNmToAdd] || {
           freeShippingPrice: parseInt(productToAdd.freeShippingPrice),
@@ -181,19 +173,14 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
         const addEPrice = isExist
           ? shippingSummaryObj[platformNmToAdd].ePrice + addDPrice
           : addOPrice + addDPrice;
-        const addERPrice = isExist
-          ? shippingSummaryObj[platformNmToAdd].eRemainPrice - addDPrice
-          : addORPrice - addDPrice;
         const addESPrice =
           addEPrice >= addFSPrice ? 0 : parseInt(productToAdd.shippingPrice);
 
         shippingSummaryObj[platformNmToAdd] = {
           freeShippingPrice: addFSPrice,
           oPrice: addOPrice,
-          oRemainPrice: addORPrice,
           oShippingPrice: addOSPrice,
           ePrice: addEPrice,
-          eRemainPrice: addERPrice,
           eShippingPrice: addESPrice,
         };
       }
@@ -273,7 +260,7 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
         {/* 배송합계 */}
         {productToDel && (
           <SummaryContainer>
-            <SummaryBox
+            <ShippingSummary
               shippingSummaryObj={shippingSummaryObj}
               seller={productToDel.platformNm}
             />
@@ -297,7 +284,7 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
         {/* 배송합계 */}
         {productToAdd && (
           <SummaryContainer>
-            <SummaryBox
+            <ShippingSummary
               shippingSummaryObj={shippingSummaryObj}
               seller={productToAdd.platformNm}
             />

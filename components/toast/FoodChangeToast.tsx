@@ -32,10 +32,8 @@ import NutrientsProgress from "../common/nutrient/NutrientsProgress";
 import FoodlistToMod from "./FoodlistToMod";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { onLowerShippingTHide } from "@/features/reduxSlices/lowerShippingSlice";
-import { IDietDetailProductData } from "@/shared/api/types/diet";
-import { IShippingSummaryObj } from "./ShippingSummary";
 import DTooltip from "@/shared/ui/DTooltip";
-import ShippingSummary from "./ShippingSummary";
+import ShippingSummary from "./SellerShippingText";
 
 const FoodChangeToast = (props: IToastCustomConfigParams) => {
   // redux
@@ -99,94 +97,17 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
     ? menuChangedAvailable[productToDelPNo] || []
     : [];
 
-  const { expectedDData, expectedCurrentMenuPrice, shippingSummaryObj } =
-    useMemo(() => {
-      // current dietDetail Data minus productToDel and plus productToAdd
-      if (!dTOData)
-        return {
-          expectedDData: [],
-          expectedCurrentMenuPrice: 0,
-          shippingSummaryObj: {},
-        };
-      let expectedDData = [...dDData];
-
-      let shippingSummaryObj: IShippingSummaryObj = {};
-      const {
-        price: targetOPrice,
-        freeShippingPrice: targetFSPrice,
-        shippingPrice: targetOSPrice,
-      } = shippingPriceObj[firstTargetSeller.platformNm];
-
-      shippingSummaryObj[firstTargetSeller.platformNm] = {
-        freeShippingPrice: targetFSPrice,
-        oPrice: targetOPrice,
-        oShippingPrice: targetOSPrice,
-        ePrice: targetOPrice,
-        eShippingPrice: targetOSPrice,
+  const { expectedDData, expectedCurrentMenuPrice } = useMemo(() => {
+    // current dietDetail Data minus productToDel and plus productToAdd
+    if (!dTOData)
+      return {
+        expectedDData: [],
+        expectedCurrentMenuPrice: 0,
       };
-
-      if (productToDel) {
-        expectedDData = expectedDData.filter(
-          (item) => item.productNo !== productToDelPNo
-        );
-        const platformNmToDel = productToDel.platformNm;
-        const {
-          freeShippingPrice: delFSPrice,
-          price: delOPrice,
-          shippingPrice: delOSPrice,
-        } = shippingPriceObj[platformNmToDel];
-        const delDPrice =
-          (parseInt(productToDel.price) + SERVICE_PRICE_PER_PRODUCT) *
-          currentQty;
-        const delEPrice = delOPrice - delDPrice;
-        const delESPrice =
-          delEPrice >= delFSPrice ? 0 : parseInt(productToDel.shippingPrice);
-        shippingSummaryObj[platformNmToDel] = {
-          freeShippingPrice: delFSPrice,
-          oPrice: delOPrice,
-          oShippingPrice: delOSPrice,
-          ePrice: delEPrice,
-          eShippingPrice: delESPrice,
-        };
-      }
-
-      if (productToAdd) {
-        expectedDData.push(productToAdd as IDietDetailProductData);
-        const platformNmToAdd = productToAdd.platformNm;
-        const {
-          freeShippingPrice: addFSPrice,
-          price: addOPrice,
-          shippingPrice: addOSPrice,
-        } = shippingPriceObj[platformNmToAdd] || {
-          freeShippingPrice: parseInt(productToAdd.freeShippingPrice),
-          price: 0,
-          remainPrice: parseInt(productToAdd.freeShippingPrice),
-          shippingPrice: parseInt(productToAdd.shippingPrice),
-        };
-
-        const isExist =
-          Object.keys(shippingSummaryObj).includes(platformNmToAdd);
-
-        const addDPrice =
-          (parseInt(productToAdd.price) + SERVICE_PRICE_PER_PRODUCT) *
-          currentQty;
-        const addEPrice = isExist
-          ? shippingSummaryObj[platformNmToAdd].ePrice + addDPrice
-          : addOPrice + addDPrice;
-        const addESPrice =
-          addEPrice >= addFSPrice ? 0 : parseInt(productToAdd.shippingPrice);
-
-        shippingSummaryObj[platformNmToAdd] = {
-          freeShippingPrice: addFSPrice,
-          oPrice: addOPrice,
-          oShippingPrice: addOSPrice,
-          ePrice: addEPrice,
-          eShippingPrice: addESPrice,
-        };
-      }
-      const expectedCurrentMenuPrice = sumUpPrice(expectedDData);
-      return { expectedDData, expectedCurrentMenuPrice, shippingSummaryObj };
-    }, [productToAdd, productToDel]);
+    let expectedDData = [...dDData];
+    const expectedCurrentMenuPrice = sumUpPrice(expectedDData);
+    return { expectedDData, expectedCurrentMenuPrice };
+  }, [productToAdd, productToDel]);
 
   // fn
   const onChangeFoodPress = async () => {
@@ -261,7 +182,10 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
         {productToDel && (
           <SummaryContainer>
             <ShippingSummary
-              shippingSummaryObj={shippingSummaryObj}
+              shippingPriceObj={shippingPriceObj}
+              mainTextColor={colors.white}
+              subTextColor={colors.textSub}
+              productToDel={productToDel}
               seller={productToDel.platformNm}
             />
           </SummaryContainer>
@@ -285,7 +209,10 @@ const FoodChangeToast = (props: IToastCustomConfigParams) => {
         {productToAdd && (
           <SummaryContainer>
             <ShippingSummary
-              shippingSummaryObj={shippingSummaryObj}
+              shippingPriceObj={shippingPriceObj}
+              mainTextColor={colors.white}
+              subTextColor={colors.textSub}
+              productToAdd={productToAdd}
               seller={productToAdd.platformNm}
             />
           </SummaryContainer>

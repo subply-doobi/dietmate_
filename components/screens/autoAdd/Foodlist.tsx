@@ -1,6 +1,5 @@
 // RN, expo
-import { FlatList, ImageSourcePropType, ScrollView, View } from "react-native";
-import { useMemo } from "react";
+import { FlatList, ImageSourcePropType } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -104,7 +103,6 @@ const ProductCardItem = ({
         { ...style },
       ]}
       onPress={onPress}
-      activeOpacity={0.85}
     >
       {showPlatformNm && <PlatformNm>{item.platformNm}</PlatformNm>}
       <Thumbnail
@@ -153,7 +151,7 @@ const Foodlist = ({
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{
         width: "100%",
-        marginBottom: 64,
+        paddingBottom: 64,
         gap,
       }}
       numColumns={numColumns}

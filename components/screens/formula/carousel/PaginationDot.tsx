@@ -9,11 +9,15 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import Toast from "react-native-toast-message";
+import { useFocusEffect } from "expo-router";
 
 const PaginationDot = ({ index }: { index: number }) => {
   // redux
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
+  const formulaProgress = useAppSelector(
+    (state) => state.formula.formulaProgress
+  );
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -29,10 +33,14 @@ const PaginationDot = ({ index }: { index: number }) => {
     });
 
     return nutrStatus;
-  }, [currentMenu]);
+  }, [dTOData]);
 
   useEffect(() => {
-    if (nutrStatus === "satisfied" && currentFMCIdx === index) {
+    if (
+      nutrStatus === "satisfied" &&
+      currentFMCIdx === index &&
+      formulaProgress.includes("Formula")
+    ) {
       Toast.show({
         type: "success",
         text1: "현재 근이 완료되었어요",
@@ -44,7 +52,6 @@ const PaginationDot = ({ index }: { index: number }) => {
 
   const isActive = currentFMCIdx === index;
   const text = isActive ? MENU_LABEL[index].slice(0, -2) : MENU_LABEL[index];
-
   const isSatisfied = nutrStatus === "satisfied";
 
   return (

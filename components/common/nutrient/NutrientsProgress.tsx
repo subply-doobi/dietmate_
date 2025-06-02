@@ -46,20 +46,26 @@ const ProgressBar = ({
   denominator,
   textColor,
 }: INutrientProgress) => {
-  const [color, setColor] = useState(colors.main);
+  // const [color, setColor] = useState(colors.main);
   const progress = numerator / denominator;
 
-  useEffect(() => {
-    const indicatorColor =
-      numerator > denominator + nutrUpperBoundByTitle[title]
-        ? colors.warning
-        : numerator < denominator + nutrLowerBoundByTitle[title]
-        ? colors.main
-        : colors.success;
-    setTimeout(() => {
-      setColor(indicatorColor);
-    }, 700);
-  }, [numerator]);
+  // useEffect(() => {
+  //   const indicatorColor =
+  //     numerator > denominator + nutrUpperBoundByTitle[title]
+  //       ? colors.warning
+  //       : numerator < denominator + nutrLowerBoundByTitle[title]
+  //       ? colors.main
+  //       : colors.success;
+  //   setTimeout(() => {
+  //     setColor(indicatorColor);
+  //   }, 700);
+  // }, [numerator]);
+  const color =
+    numerator > denominator + nutrUpperBoundByTitle[title]
+      ? colors.warning
+      : numerator < denominator + nutrLowerBoundByTitle[title]
+      ? colors.main
+      : colors.success;
 
   return (
     <ProgressBarContainer>
@@ -130,7 +136,7 @@ const NutrientsProgress = ({
     <Container>
       {isLoading ? (
         <LoadingBox>
-          <ActivityIndicator size="small" color={colors.main} />
+          {/* <ActivityIndicator size="small" color={colors.main} /> */}
         </LoadingBox>
       ) : (
         <Col style={{ width: "100%", height: NUTRIENT_PROGRESS_HEIGHT }}>

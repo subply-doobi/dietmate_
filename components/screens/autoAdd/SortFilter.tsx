@@ -15,8 +15,10 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
+import DTooltip from "@/shared/ui/DTooltip";
 import { Icon, TextMain, TextSub } from "@/shared/ui/styledComps";
 import {
+  commaToNum,
   getSortedShippingPriceObj,
   sumUpDietFromDTOData,
 } from "@/shared/utils/sumUp";
@@ -53,6 +55,7 @@ const SortFilter = () => {
 
   // useState
   const [isSearchPressed, setIsSearchPressed] = useState(false);
+  const [isTooltipShow, setIsTooltipShow] = useState(true);
 
   // useRef
   const searchInputRef = useRef<TextInput>(null);
@@ -67,11 +70,20 @@ const SortFilter = () => {
   const { data: dTOData } = useListDietTotalObj();
 
   // useMemo
-  const firstTargetSeller = useMemo(() => {
-    if (!dTOData) return "";
-    const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
+  const { firstTargetSeller, tooltipText, priceTotal } = useMemo(() => {
+    if (!dTOData) return { firstTargetSeller: "", tooltipText: "" };
+    const { shippingPriceObj, priceTotal } = sumUpDietFromDTOData(dTOData);
     const { free, notFree } = getSortedShippingPriceObj(shippingPriceObj);
-    return notFree[0]?.platformNm || "";
+    const firstTargetSeller = notFree[0]?.platformNm || "";
+    const tooltipText = `"${firstTargetSeller}" ${commaToNum(
+      notFree[0]?.remainPrice
+    )}원 더 담으면 무료배송`;
+
+    return {
+      firstTargetSeller,
+      tooltipText,
+      priceTotal,
+    };
   }, [dTOData]);
 
   // useEffect
@@ -154,6 +166,7 @@ const SortFilter = () => {
       iconSize: 24,
       iconStyle: undefined,
       onPress: () => {
+        setIsTooltipShow(false);
         platformNm.length === 0
           ? dispatch(setPlatformNm([firstTargetSeller]))
           : dispatch(setPlatformNm([]));
@@ -287,6 +300,16 @@ const SortFilter = () => {
                 style={btn.iconStyle || {}}
               />
             )}
+            {btn.id === "platformNm" && priceTotal !== 0 && (
+              <DTooltip
+                text={tooltipText}
+                color={colors.main}
+                tooltipShow={isTooltipShow}
+                boxRight={8}
+                boxTop={-32}
+                triangleRight={16}
+              />
+            )}
           </Btn>
         ))}
       </Box>
@@ -303,6 +326,7 @@ export default SortFilter;
 
 const Container = styled.View`
   width: 100%;
+  margin-top: 32px;
   margin-bottom: 24px;
 `;
 

@@ -132,6 +132,7 @@ export interface IShippingPriceValues {
   platformNm: string;
   price: number;
   freeShippingPrice: number;
+  sellerShippingPrice: number;
   remainPrice: number;
   shippingPrice: number;
   shippingText: string;
@@ -148,8 +149,9 @@ const getShippingPriceObjBySeller = (reGroupedBySeller: IRegroupedBySeller) => {
         platformNm: seller,
         price: 0,
         freeShippingPrice: 0,
-        remainPrice: 0,
+        sellerShippingPrice: 0,
         shippingPrice: 0,
+        remainPrice: 0,
         shippingText: "",
       };
     }
@@ -163,6 +165,11 @@ const getShippingPriceObjBySeller = (reGroupedBySeller: IRegroupedBySeller) => {
 
     shippingPriceObj[seller].freeShippingPrice = parseInt(
       reGroupedBySeller[seller][0].freeShippingPrice,
+      10
+    );
+
+    shippingPriceObj[seller].sellerShippingPrice = parseInt(
+      reGroupedBySeller[seller][0].shippingPrice,
       10
     );
 

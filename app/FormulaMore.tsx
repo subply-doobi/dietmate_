@@ -38,38 +38,41 @@ const FormulaMore = () => {
 
   const isAddMenuActive =
     numOfMenu <= maxMenuNum - 1 && addDietStatus === "possible";
-  const METHOD_BTN = [
-    {
-      text: `자동으로 ${numOfMenuLabel} 공식 만들기`,
-      subText: "",
-      iconSource: icons.calculateBlack_32,
-      isActive: true,
-      onPress: () => {
-        router.back();
-        dispatch(setFormulaProgress(progress.concat("AMSelect")));
-      },
-    },
-    {
-      text: `${numOfMenuLabel} 모두 삭제하기`,
-      subText: "",
-      iconSource: icons.deleteRoundBlack_32,
-      isActive: true,
-      onPress: () => {
-        dispatch(openModal({ name: "menuDeleteAllAlert" }));
-      },
-    },
-    {
-      text: isAddMenuActive ? "한 근 추가하기" : addBtnText,
-      subText: addBtnSubText,
-      iconSource: icons.plusRoundBlack_32,
-      isActive: isAddMenuActive,
-      onPress: () => {
-        createDietMutation.mutate({ setDietNo: true });
-        dispatch(setCurrentFMCIdx(numOfMenu));
-        router.back();
-      },
-    },
-  ];
+  const METHOD_BTN =
+    numOfMenu === 0
+      ? []
+      : [
+          {
+            text: `자동으로 ${numOfMenuLabel} 공식 만들기`,
+            subText: "",
+            iconSource: icons.calculateBlack_32,
+            isActive: true,
+            onPress: () => {
+              router.back();
+              dispatch(setFormulaProgress(progress.concat("AMSelect")));
+            },
+          },
+          {
+            text: `${numOfMenuLabel} 모두 삭제하기`,
+            subText: "",
+            iconSource: icons.deleteRoundBlack_32,
+            isActive: true,
+            onPress: () => {
+              dispatch(openModal({ name: "menuDeleteAllAlert" }));
+            },
+          },
+          {
+            text: isAddMenuActive ? "한 근 추가하기" : addBtnText,
+            subText: addBtnSubText,
+            iconSource: icons.plusRoundBlack_32,
+            isActive: isAddMenuActive,
+            onPress: () => {
+              createDietMutation.mutate({ setDietNo: true });
+              dispatch(setCurrentFMCIdx(numOfMenu));
+              router.back();
+            },
+          },
+        ];
 
   // const activeBtn = METHOD_BTN.filter((item) => item.isActive);
 

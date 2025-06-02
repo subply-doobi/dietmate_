@@ -73,6 +73,9 @@ const filteredPSlice = createSlice({
         random3: false,
       };
     },
+    setRecentlyOpenedFoodsPNoArr: (state, action: PayloadAction<string[]>) => {
+      state.recentOpenedFoodsPNoArr = action.payload;
+    },
     setBaseListType: (
       state,
       action: PayloadAction<"totalFoodList" | "availableFoods">
@@ -191,16 +194,21 @@ export const selectFilteredSortedProducts = createSelector(
       result = result.filter((p) => platformNm.includes(p.platformNm));
     }
     if (recentlyOpened && Array.isArray(recentOpenedFoodsPNoArr)) {
-      const ids = new Set(recentOpenedFoodsPNoArr);
-      result = result.filter((p) => ids.has(p.productNo));
+      // const ids = new Set(recentOpenedFoodsPNoArr);
+      // result = result.filter((p) => ids.has(p.productNo));
+      result = recentOpenedFoodsPNoArr
+        .map((productNo) => result.find((p) => p.productNo === productNo))
+        .filter(Boolean) as IProductData[];
     }
     if (liked && Array.isArray(likeFoods)) {
       const ids = new Set(likeFoods.map((p) => p.productNo));
       result = result.filter((p) => ids.has(p.productNo));
     }
     if (recentlyOrdered && Array.isArray(recentOrderFoods)) {
-      const ids = new Set(recentOrderFoods.map((p) => p.productNo));
-      result = result.filter((p) => ids.has(p.productNo));
+      const orderNos = recentOrderFoods.map((o) => o.productNo);
+      result = orderNos
+        .map((productNo) => result.find((p) => p.productNo === productNo))
+        .filter(Boolean) as IProductData[];
     }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -227,6 +235,7 @@ export const selectFilteredSortedProducts = createSelector(
 
 export const {
   setAvailableFoods,
+  setRecentlyOpenedFoodsPNoArr,
   setBaseListType,
   setSortBy,
   setPlatformNm,

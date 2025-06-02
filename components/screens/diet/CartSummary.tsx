@@ -13,6 +13,7 @@ import { commaToNum, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 //doobi Component
 import {
   HorizontalLine,
+  HorizontalSpace,
   Icon,
   Row,
   TextMain,
@@ -25,6 +26,7 @@ import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
 import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
 import CtaButton from "@/shared/ui/CtaButton";
+import SellerShippingText from "@/components/toast/SellerShippingText";
 
 interface ICartSummary {
   containerStyle?: ViewStyle;
@@ -87,7 +89,7 @@ const CartSummary = ({
     <TotalSummaryContainer style={[containerStyle]}>
       <Row style={{ justifyContent: "space-between" }}>
         <SummaryText $color={mainTextColor}>
-          {MENU_NUM_LABEL[menuNum - 1]} 공식을 만들고 있어요
+          공식에 전체 {MENU_NUM_LABEL[menuNum - 1]}이 있어요
         </SummaryText>
         <SummaryValue $color={mainTextColor}>
           근 당{" "}
@@ -99,19 +101,15 @@ const CartSummary = ({
       {/* 식품사별로 그룹핑 */}
       {Object.keys(regroupedBySeller).map((seller, index) => {
         //식품사별 가격, 배송비 합계
-        const { price: sellerPrice, shippingText } = shippingPriceObj[seller];
         return (
           <View key={index}>
-            <SummarySellerText $color={mainTextColor} style={{ marginTop: 24 }}>
-              {seller}
-            </SummarySellerText>
-            <SummaryText $color={mainTextColor} style={{ marginTop: 12 }}>
-              식품: {commaToNum(sellerPrice)}원
-            </SummaryText>
-            <SummmaryTextSub $color={subTextColor} style={{ marginTop: 2 }}>
-              배송비:
-              {shippingText}
-            </SummmaryTextSub>
+            <HorizontalSpace height={24} />
+            <SellerShippingText
+              seller={seller}
+              shippingPriceObj={shippingPriceObj}
+              mainTextColor={mainTextColor}
+              subTextColor={subTextColor}
+            />
           </View>
         );
       })}

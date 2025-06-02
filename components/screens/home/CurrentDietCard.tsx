@@ -23,14 +23,14 @@ import { useRouter } from "expo-router";
 import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
 
 interface ICurrentDietCard {
-  isDietEmpty: boolean;
+  formulaStatus: string;
   ctaBtnText: string;
   menuNum: number;
   priceTotal: number;
   totalShippingPrice: number;
 }
 const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
-  const { isDietEmpty, ctaBtnText, menuNum, priceTotal, totalShippingPrice } =
+  const { formulaStatus, ctaBtnText, menuNum, priceTotal, totalShippingPrice } =
     p;
 
   // redux
@@ -44,10 +44,15 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
 
   // fn
   const onCtaPressed = () => {
-    if (isDietEmpty) {
+    if (formulaStatus === "empty") {
       router.push({ pathname: "/(tabs)/Formula" });
       return;
     }
+    if (formulaStatus === "inProgress") {
+      router.push({ pathname: "/(tabs)/Diet" });
+      return;
+    }
+
     if (!dTOData) return;
     dispatch(setFoodToOrder(dTOData));
     dispatch(setShippingPrice(totalShippingPrice));
@@ -57,9 +62,12 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
   // useEffect
   //
 
-  const menuCardTitle = isDietEmpty
-    ? "새로운 공식을 기다리고 있어요"
-    : "계산할 공식이 있어요";
+  const menuCardTitle =
+    formulaStatus === "empty"
+      ? "새로운 공식을 기다리고 있어요"
+      : formulaStatus === "inProgress"
+      ? "만들던 공식이 있어요"
+      : "계산할 공식이 있어요";
   return (
     <ShadowView
       style={{
@@ -76,20 +84,11 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
         <Col>
           <Row style={{ justifyContent: "space-between" }}>
             <Row>
-              <Icon source={icons.warning_24} />
+              <Icon source={icons.warning_24} size={18} />
               <CardTitle>{menuCardTitle}</CardTitle>
             </Row>
-
-            {!isDietEmpty && (
-              <TargetChangeBtn
-                onPress={() => router.push({ pathname: "/(tabs)/Diet" })}
-              >
-                <SubText>공식상세</SubText>
-                <Icon size={20} source={icons.arrowRight_20} />
-              </TargetChangeBtn>
-            )}
           </Row>
-          {!isDietEmpty && (
+          {formulaStatus !== "empty" && (
             <Col style={{ marginTop: 24 }}>
               <Row>
                 <Icon source={icons.menu_24} />

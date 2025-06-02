@@ -1,4 +1,5 @@
-import BottomInfo from "@/components/common/bottomsheet/BottomInfo";
+import EdgeInfo from "@/components/common/summaryInfo/EdgeInfo";
+import BottomInfo from "@/components/common/summaryInfo/EdgeInfo";
 import Foodlist from "@/components/screens/autoAdd/Foodlist";
 import {
   selectFilteredSortedProducts,
@@ -24,12 +25,20 @@ import { getRecentProducts } from "@/shared/utils/asyncStorage";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { flattenMenuArr } from "@/shared/utils/filter";
 import { sumUpDietFromDTOData, sumUpNutrients } from "@/shared/utils/sumUp";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 
 const AutoAdd = () => {
+  // navigation
+  const navigation = useNavigation();
+
   // redux
   const dispatch = useAppDispatch();
   const medianCalorie = useAppSelector((state) => state.common.medianCalorie);
@@ -40,8 +49,10 @@ const AutoAdd = () => {
   const autoAddFoodForAdd = useAppSelector(
     (state) => state.formula.autoAddFoodForAdd
   );
+  const autoAddFoodForChange = useAppSelector(
+    (state) => state.formula.autoAddFoodForChange
+  );
   const products = useAppSelector(selectFilteredSortedProducts);
-
   const currentMenu = JSON.parse(useLocalSearchParams()?.menu as string);
 
   // react-query
@@ -52,18 +63,6 @@ const AutoAdd = () => {
 
   // useState
   const [isDelayOver, setIsDelayOver] = useState(false);
-
-  // useMemo
-  const { shippingPriceObj } = useMemo(() => {
-    // 총 끼니 수, 상품 수, 금액 계산
-    const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
-    const currentMenuCalorie = sumUpNutrients(currentMenu).cal;
-    const remainCalorie = Number(bLData?.calorie) - currentMenuCalorie;
-
-    return {
-      shippingPriceObj,
-    };
-  }, [dTOData]);
 
   // useAsyncHook
   const { isLoading, isError, isSuccess, error, execute, reset } = useAsync(
@@ -99,6 +98,9 @@ const AutoAdd = () => {
   );
 
   useEffect(() => {
+    navigation.setOptions({
+      headerTitle: !!autoAddFoodForChange ? "식품교체" : "식품추가",
+    });
     if (!bLData || !dTOData || !listOrderData || !likeData) {
       return;
     }

@@ -282,7 +282,7 @@ const OpacityView = styled.View`
   background-color: ${colors.blackOpacity70};
   position: absolute;
   border-radius: 0 0 5px 5px;
-  top: 102px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;

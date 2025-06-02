@@ -214,11 +214,12 @@ const LowerShipping = () => {
                   style={{ marginLeft: -12 }}
                 />
               )}
-              onPress={() => {
-                createDietMutation.mutate({ setDietNo: true });
-                router.back();
+              onPress={async () => {
                 dispatch(setCurrentFMCIdx(Object.keys(dTOData || {}).length));
-                router.push("/(tabs)/Formula");
+                await createDietMutation.mutateAsync({ setDietNo: true });
+                setTimeout(() => {
+                  router.push("/(tabs)/Formula");
+                }, 100);
               }}
             />
           </Col>

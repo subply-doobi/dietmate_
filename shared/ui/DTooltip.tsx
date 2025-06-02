@@ -100,7 +100,7 @@ export default DTooltip;
 const Container = styled.Pressable`
   position: absolute;
   margin: 0px 0px 6px 0px;
-  z-index: 1000;
+  z-index: 10;
 `;
 
 const TooltipBox = styled.View<{ color?: string }>`

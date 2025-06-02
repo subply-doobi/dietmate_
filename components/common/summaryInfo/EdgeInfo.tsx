@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import colors from "@/shared/colors";
 import Animated, {
@@ -11,9 +11,20 @@ import { useListDietTotalObj } from "../../../shared/api/queries/diet";
 import { Icon } from "@/shared/ui/styledComps";
 import { icons } from "@/shared/iconSource";
 import CartSummary from "@/components/screens/diet/CartSummary";
-import Toast from "react-native-toast-message";
+import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 
-const BottomInfo = () => {
+interface IEdgeInfo {
+  visible?: boolean;
+  position?: "absolute" | "relative";
+  direction?: "top" | "bottom";
+  closeddHeight?: number;
+}
+const EdgeInfo = ({
+  visible = true,
+  position = "absolute",
+  direction = "bottom",
+  closeddHeight = 68,
+}: IEdgeInfo) => {
   // useRef
   const ref = React.useRef<View>(null);
 
@@ -21,7 +32,7 @@ const BottomInfo = () => {
   const { data: dTOData } = useListDietTotalObj();
 
   // animation values to change height
-  const CLOSED_HEIGHT = 68;
+  const CLOSED_HEIGHT = closeddHeight;
   const [contentHeight, setContentHeight] = useState(CLOSED_HEIGHT);
   const [opened, setOpened] = useState(false);
   const height = useSharedValue(CLOSED_HEIGHT);
@@ -32,10 +43,6 @@ const BottomInfo = () => {
     });
   }, [opened]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    height: height.value,
-  }));
-
   useEffect(() => {
     if (ref.current) {
       ref.current.measure((x, y, width, height) => {
@@ -44,12 +51,35 @@ const BottomInfo = () => {
     }
   }, [ref.current, dTOData]);
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: height.value,
+  }));
+
+  const containerStyle = {
+    top: direction === "top" ? 0 : undefined,
+    bottom: direction === "bottom" ? 0 : undefined,
+    position,
+  };
+
+  const iconSource =
+    opened && direction === "top"
+      ? icons.arrowUp_20
+      : opened && direction === "bottom"
+      ? icons.arrowDown_20
+      : !opened && direction === "top"
+      ? icons.arrowDown_20
+      : icons.arrowUp_20;
+
+  if (!visible) {
+    return null;
+  }
+
   return (
-    <Container style={animatedStyle}>
+    <Container style={[containerStyle, animatedStyle]}>
       <ToggleBox onPress={() => setOpened((prev) => !prev)}>
         <Box ref={ref}>
           <Icon
-            source={opened ? icons.arrowDown_20 : icons.arrowUp_20}
+            source={iconSource}
             style={{ position: "absolute", alignSelf: "center", top: 4 }}
             size={20}
           />
@@ -68,11 +98,12 @@ const BottomInfo = () => {
   );
 };
 
-export default BottomInfo;
+export default EdgeInfo;
 
 const Container = styled(Animated.View)`
   position: absolute;
   overflow: hidden;
+  z-index: 100;
   bottom: 0;
   left: 0;
   right: 0;

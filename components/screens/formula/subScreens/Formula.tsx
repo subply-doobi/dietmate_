@@ -1,6 +1,6 @@
 // RN, expo
 import { useEffect, useMemo, useRef } from "react";
-import { ActivityIndicator, Dimensions, ScrollView } from "react-native";
+import { ActivityIndicator, Dimensions } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -13,23 +13,24 @@ import Carousel, {
 // doobi
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { Col, Icon, Row, TextMain } from "@/shared/ui/styledComps";
+import { Icon, Row } from "@/shared/ui/styledComps";
 import { FORMULA_CAROUSEL_HEIGHT, SCREENWIDTH } from "@/shared/constants";
 import { icons } from "@/shared/iconSource";
 import CarouselContent from "../carousel/CarouselContent";
 import PaginationDot from "../carousel/PaginationDot";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
 import {
   setCurrentFMCIdx,
   setFormulaProgress,
 } from "@/features/reduxSlices/formulaSlice";
 import CtaButton from "@/shared/ui/CtaButton";
-import { getNutrStatus } from "@/shared/utils/sumUp";
+import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import Toast from "react-native-toast-message";
-import BottomInfo from "@/components/common/bottomsheet/BottomInfo";
+import EdgeInfo from "@/components/common/summaryInfo/EdgeInfo";
+import DTooltip from "@/shared/ui/DTooltip";
 
 const width = Dimensions.get("window").width;
 
@@ -54,8 +55,13 @@ const Formula = () => {
   const menuArr = Object.keys(dTOData || {});
 
   // useMemo
-  const isAllSuccess = useMemo(() => {
-    if (!dTOData) return;
+  const { isAllSuccess, priceTotal } = useMemo(() => {
+    if (!dTOData)
+      return {
+        isAllSuccess: false,
+        priceTotal: 0,
+      };
+    const { priceTotal } = sumUpDietFromDTOData(dTOData);
     const isSuccessArr = Object.values(dTOData).map((item) => {
       const { dietDetail } = item;
       const isSuccess = getNutrStatus({
@@ -66,7 +72,7 @@ const Formula = () => {
       return isSuccess;
     });
     const isAllSuccess = isSuccessArr.every((item) => item === "satisfied");
-    return isAllSuccess;
+    return { isAllSuccess, priceTotal };
   }, [dTOData]);
 
   // useRef
@@ -79,9 +85,6 @@ const Formula = () => {
     if (isNoMenu) {
       dispatch(setFormulaProgress(["SelectNumOfMenu"]));
       return;
-    }
-    if (currentFMCIdx > menuArr.length - 1) {
-      dispatch(setCurrentFMCIdx(menuArr.length - 1));
     }
   }, [dTOData]);
 
@@ -99,22 +102,6 @@ const Formula = () => {
 
   const isCarouselIdxExceed = menuArr.length - 1 < currentFMCIdx;
   const isCarouselHided = modalSeq.length > 0;
-
-  useEffect(() => {
-    if (!dTOData) return;
-    if (!isAllSuccess) return;
-    if (Object.keys(dTOData).length === 0) {
-      Toast.hide();
-      return;
-    }
-    Toast.show({
-      type: "success",
-      text1: "공식의 모든 근이 완성되었어요!",
-      text2: "장바구니에서 내 공식을 확인해보세요",
-      position: "bottom",
-      visibilityTime: 2500,
-    });
-  }, [isAllSuccess]);
 
   if (!isFocused || isCarouselIdxExceed || isCarouselHided) {
     return (
@@ -191,20 +178,30 @@ const Formula = () => {
             />
           )}
         />
-        <BottomInfo />
+        <EdgeInfo visible={priceTotal > 0} />
 
         {isAllSuccess && (
           <CtaButton
             btnStyle="active"
-            btnText="공식 만들기 완료 "
+            btnText="공식 확인하기"
             style={{
               position: "absolute",
-              bottom: 8,
+              bottom: 76,
               right: 16,
               left: 16,
               width: SCREENWIDTH - 32,
+              zIndex: 0,
             }}
             onPress={() => router.push("/(tabs)/Diet")}
+          />
+        )}
+        {isAllSuccess && (
+          <DTooltip
+            tooltipShow={isAllSuccess}
+            text="모든 근이 완료되었어요!"
+            boxLeft={20}
+            boxBottom={68 + 8 + 52 - 4}
+            color={colors.green}
           />
         )}
       </Container>

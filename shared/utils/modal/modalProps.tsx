@@ -253,10 +253,12 @@ export const useModalProps = () => {
       confirmLabel: "삭제",
       onConfirm: () => {
         if (!dTOData) return;
-        deleteDietAllMutation.mutate();
-        dispatch(setFormulaProgress(["SelectNumOfMenu"]));
-        router.back();
         commonClose("menuDeleteAllAlert");
+        dispatch(setFormulaProgress(["SelectNumOfMenu"]));
+        deleteDietAllMutation.mutate();
+        setTimeout(() => {
+          router.back();
+        }, 100);
       },
       onCancel: () => commonClose("menuDeleteAllAlert"),
       renderContent: () => <DeleteAlertContent deleteText={"모든 근을"} />,

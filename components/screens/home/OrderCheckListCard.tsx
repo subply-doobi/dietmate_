@@ -74,7 +74,11 @@ const OrderChecklistCard = ({
       }}
     >
       <Row>
-        {isOrderEmpty && <Icon source={icons.warning_24} />}
+        {isOrderEmpty ? (
+          <Icon source={icons.warning_24} />
+        ) : (
+          <Icon source={icons.checkRoundCheckedGreen_24} size={18} />
+        )}
         <CardTitle>{checklistCardTitle}</CardTitle>
       </Row>
 

@@ -44,7 +44,7 @@ const LastOrderCard = ({
       >
         <Row style={{ justifyContent: "space-between" }}>
           <Row>
-            <Icon source={icons.checkRoundCheckedGreen_24} />
+            <Icon source={icons.cardActive_24} size={20} />
             <CardTitle>마지막 주문정보</CardTitle>
           </Row>
           <TargetChangeBtn

@@ -16,7 +16,7 @@ import { useListOrder } from "@/shared/api/queries/order";
 import { loadBaseLineData } from "@/features/reduxSlices/userInputSlice";
 import colors from "@/shared/colors";
 import { regroupByBuyDateAndDietNo } from "@/shared/utils/dataTransform";
-import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
+import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useListProduct } from "@/shared/api/queries/product";
 import { flatOrderMenuWithQty } from "@/shared/utils/screens/checklist/menuFlat";
 import { DEFAULT_BOTTOM_TAB_HEIGHT } from "@/shared/constants";
@@ -48,6 +48,7 @@ const NewHome = () => {
     totalFoodListIsLoaded,
     isTutorialMode,
     tutorialProgress,
+    totalFoodList,
   } = useAppSelector((state) => state.common);
   const modalSeq = useAppSelector((state) => state.modal.modalSeq);
 
@@ -57,7 +58,7 @@ const NewHome = () => {
 
   // react-query
   // const { data: testErrData, refetch: throwErr } = useTestErrQuery();
-  const { data: baseLineData } = useGetBaseLine();
+  const { data: bLData } = useGetBaseLine();
   const { data: dTOData } = useListDietTotalObj();
   const deleteDietAllMutation = useDeleteDietAll();
   const { refetch: refetchLPData } = useListProduct(
@@ -86,23 +87,47 @@ const NewHome = () => {
   }, [orderData]);
 
   // useMemo
-  const { menuNum, productNum, priceTotal, totalShippingPrice } =
+  const { menuNum, priceTotal, totalShippingPrice, formulaStatus } =
     useMemo(() => {
+      if (!dTOData) {
+        return {
+          menuNum: 0,
+          priceTotal: 0,
+          totalShippingPrice: 0,
+          formulaStatus: "empty",
+        };
+      }
+
       // 총 끼니 수, 상품 수, 금액 계산
-      const { menuNum, productNum, priceTotal, totalShippingPrice } =
+      const { menuNum, priceTotal, totalShippingPrice } =
         sumUpDietFromDTOData(dTOData);
+
+      const isSuccessArr = Object.values(dTOData).map((item) => {
+        const { dietDetail } = item;
+        const isSuccess = getNutrStatus({
+          bLData: bLData,
+          dDData: dietDetail,
+          totalFoodList: totalFoodList,
+        });
+        return isSuccess;
+      });
+      const isAllSuccess = isSuccessArr.every((item) => item === "satisfied");
+
+      const formulaStatus =
+        priceTotal === 0 ? "empty" : isAllSuccess ? "complete" : "inProgress";
+
       return {
         menuNum,
-        productNum,
         priceTotal,
         totalShippingPrice,
+        formulaStatus,
       };
     }, [dTOData]);
 
   // useEffect
   useEffect(() => {
-    baseLineData && dispatch(loadBaseLineData(baseLineData));
-  }, [baseLineData]);
+    bLData && dispatch(loadBaseLineData(bLData));
+  }, [bLData]);
 
   // 앱 시작할 때 내가 어떤 끼니를 보고 있는지 redux에 저장해놓기 위해 필요함
   useEffect(() => {
@@ -167,14 +192,12 @@ const NewHome = () => {
     return () => clearTimeout(timeoutId);
   }, [tutorialProgress, dTOData, menuNum, isFocused]);
 
-  const isDietEmpty =
-    menuNum === 0 ||
-    (dTOData &&
-      Object.keys(dTOData).every(
-        (dietNo) => dTOData[dietNo].dietDetail.length === 0
-      )) ||
-    false;
-  const ctaBtnText = isDietEmpty ? "공식 만들기" : "공식 계산하기";
+  const ctaBtnText =
+    formulaStatus === "complete"
+      ? "공식 계산하기"
+      : formulaStatus === "empty"
+      ? "공식 만들기"
+      : "공식 확인하기";
 
   const statusBarHeight = useSafeAreaInsets().top;
 
@@ -207,7 +230,7 @@ const NewHome = () => {
         {/* 현재 식단 카드 (식단 있으면 구매, 없으면 식단구성버튼)*/}
         <CurrentDietCard
           ref={ctaBtnRef}
-          isDietEmpty={isDietEmpty}
+          formulaStatus={formulaStatus}
           ctaBtnText={ctaBtnText}
           menuNum={menuNum}
           priceTotal={priceTotal}

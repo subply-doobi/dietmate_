@@ -15,7 +15,7 @@ import {
 } from "@/shared/utils/sumUp";
 import { useMemo } from "react";
 import styled from "styled-components/native";
-import ShippingSummary, { IShippingSummaryObj } from "./ShippingSummary";
+import SellerShippingText from "./SellerShippingText";
 
 const ProductSelectTShippingInfo = () => {
   // redux
@@ -30,46 +30,32 @@ const ProductSelectTShippingInfo = () => {
   const { data: dTOData } = useListDietTotalObj();
 
   // useMemo
-  const { shippingSummaryObj } = useMemo(() => {
+  const { shippingPriceObj } = useMemo(() => {
     const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
-    const delAddProductArr = [autoAddFoodForChange, autoAddFoodForAdd];
+    return { shippingPriceObj };
+  }, [dTOData]);
 
-    let shippingSummaryObj: IShippingSummaryObj = {};
-    for (let i = 0; i < delAddProductArr.length; i++) {
-      const product = delAddProductArr[i];
-      if (!product) continue;
-
-      const shippingPrice = parseInt(product.shippingPrice);
-      const freeShippingPrice = parseInt(product.freeShippingPrice);
-      const oPrice = shippingPriceObj[product.platformNm]?.price || 0;
-      const oShippingPrice =
-        shippingPriceObj[product.platformNm]?.shippingPrice || 0;
-      const dPrice =
-        i === 0
-          ? -(parseInt(product.price) + SERVICE_PRICE_PER_PRODUCT)
-          : parseInt(product.price) + SERVICE_PRICE_PER_PRODUCT;
-      const ePrice = oPrice + dPrice;
-      const eShippingPrice = ePrice >= freeShippingPrice ? 0 : shippingPrice;
-
-      shippingSummaryObj[product.platformNm] = {
-        freeShippingPrice,
-        oPrice,
-        oShippingPrice,
-        ePrice,
-        eShippingPrice,
-      };
-    }
-
-    return { shippingSummaryObj };
-  }, [autoAddFoodForAdd, autoAddFoodForChange, dTOData]);
+  // etc
+  // relevantSellerNmArr no dupicates, no undefined values
+  const relevantSellerNmArr = Array.from(
+    new Set(
+      [autoAddFoodForAdd?.platformNm, autoAddFoodForChange?.platformNm].filter(
+        Boolean
+      ) as string[]
+    )
+  );
 
   return (
     <Box>
-      {Object.keys(shippingSummaryObj).map((seller, idx) => (
-        <ShippingSummary
+      {relevantSellerNmArr.map((seller, idx) => (
+        <SellerShippingText
           key={idx}
-          shippingSummaryObj={shippingSummaryObj}
+          shippingPriceObj={shippingPriceObj}
           seller={seller}
+          productToAdd={autoAddFoodForAdd}
+          productToDel={autoAddFoodForChange}
+          mainTextColor={colors.white}
+          subTextColor={colors.textSub}
         />
       ))}
     </Box>

@@ -21,6 +21,11 @@ import { IDietDetailProductData } from "@/shared/api/types/diet";
 import { IToastCustomConfigParams } from "@/shared/store/toastStore";
 import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
 import ProductSelectTShippingInfo from "./ProductSelectTShippingInfo";
+import { setRecentlyOpenedFoodsPNoArr } from "@/features/reduxSlices/filteredPSlice";
+import {
+  addToRecentProduct,
+  getRecentProducts,
+} from "@/shared/utils/asyncStorage";
 
 const ProductSelectToast = (props: IToastCustomConfigParams) => {
   // redux
@@ -32,9 +37,6 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
     (state) => state.formula.autoAddFoodForChange
   );
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
-
-  // useState
-  const [isLoading, setIsLoading] = useState(true);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
@@ -53,24 +55,16 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
         .concat(autoAddFoodForAdd as IDietDetailProductData)
     : currentMenu;
 
-  // useEffect
-  useEffect(() => {
-    if (!autoAddFoodForAdd) {
-      setIsLoading(true);
-      return;
-    }
-    // selectedFood 없을 때 추가된 경우 delay loading 후 progressBar 보여주기
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-  }, [autoAddFoodForAdd]);
-
   // fn
-  const onPressInfo = () => {
+  const onPressInfo = async () => {
     if (!autoAddFoodForAdd) {
       return;
     }
     props.hide();
+
+    await addToRecentProduct(autoAddFoodForAdd.productNo);
+    const recentlyOpenedFoodsPNoArr = await getRecentProducts();
+    dispatch(setRecentlyOpenedFoodsPNoArr(recentlyOpenedFoodsPNoArr));
     router.push({
       pathname: "/FoodDetail",
       params: { productNo: autoAddFoodForAdd.productNo, type: "infoOnly" },
@@ -126,7 +120,7 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
       <NutrientsProgress
         dietDetailData={expectedMenu}
         textColor={colors.whiteOpacity70}
-        isLoading={isLoading}
+        // isLoading={isLoading}
       />
       <ProductSelectTShippingInfo />
       <ProductSelectFoodlist foods={currentMenu} />

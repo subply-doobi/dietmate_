@@ -305,9 +305,9 @@ const SortFilter = () => {
                 text={tooltipText}
                 color={colors.main}
                 tooltipShow={isTooltipShow}
-                boxRight={8}
+                boxRight={-16}
                 boxTop={-32}
-                triangleRight={16}
+                triangleRight={36}
               />
             )}
           </Btn>

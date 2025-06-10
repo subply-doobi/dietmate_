@@ -45,6 +45,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   newArchEnabled: true,
   updates: {
     url: "https://u.expo.dev/3961e206-831a-4f33-b8a6-f72e46a5aab0",
+    checkAutomatically: "NEVER",
   },
   runtimeVersion: getVersion(),
   ios: {

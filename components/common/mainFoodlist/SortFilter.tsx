@@ -13,9 +13,9 @@ import {
 } from "@/features/reduxSlices/filteredPSlice";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
+import { MAIN_FOODLIST_HEADER_HEIGHT } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
-import DTooltip from "@/shared/ui/DTooltip";
 import { Icon, TextMain, TextSub } from "@/shared/ui/styledComps";
 import {
   commaToNum,
@@ -24,7 +24,7 @@ import {
 } from "@/shared/utils/sumUp";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { TextInput } from "react-native";
+import { ScrollView, TextInput } from "react-native";
 import styled from "styled-components/native";
 
 // Btn
@@ -55,7 +55,6 @@ const SortFilter = () => {
 
   // useState
   const [isSearchPressed, setIsSearchPressed] = useState(false);
-  const [isTooltipShow, setIsTooltipShow] = useState(true);
 
   // useRef
   const searchInputRef = useRef<TextInput>(null);
@@ -88,9 +87,9 @@ const SortFilter = () => {
 
   // useEffect
   // 정렬일때는 lastFilteredList 저장해서 refiltering 필요 없도록 함
-  useEffect(() => {
-    if (lastAppliedFilter !== "sortBy") dispatch(setLastFilteredList(products));
-  }, [lastAppliedFilter]);
+  // useEffect(() => {
+  //   if (lastAppliedFilter !== "sortBy") dispatch(setLastFilteredList(products));
+  // }, [lastAppliedFilter]);
 
   // BTNS isActive
   const isActiveObj = {
@@ -106,34 +105,6 @@ const SortFilter = () => {
   };
 
   const BTNS = [
-    // 목표영양
-    {
-      id: "availableFoods",
-      label: isActiveObj.availableFoods ? "목표영양에 적합한" : "",
-      isActive: isActiveObj.availableFoods,
-      iconSource: isActiveObj.availableFoods
-        ? icons.targetActive_24
-        : icons.targetInactive_24,
-      iconSize: 18,
-      iconStyle: undefined,
-      onPress: () =>
-        !isActiveObj.availableFoods &&
-        dispatch(setBaseListType("availableFoods")),
-    },
-    // 전체식품
-    {
-      id: "totalFoodList",
-      label: isActiveObj.totalFoodList ? "전체" : "",
-      isActive: isActiveObj.totalFoodList,
-      iconSource: isActiveObj.totalFoodList
-        ? icons.targetxActive24
-        : icons.targetxInactive24,
-      iconSize: undefined,
-      iconStyle: undefined,
-      onPress: () =>
-        !isActiveObj.totalFoodList &&
-        dispatch(setBaseListType("totalFoodList")),
-    },
     // 검색
     {
       id: "search",
@@ -166,7 +137,6 @@ const SortFilter = () => {
       iconSize: 24,
       iconStyle: undefined,
       onPress: () => {
-        setIsTooltipShow(false);
         platformNm.length === 0
           ? dispatch(setPlatformNm([firstTargetSeller]))
           : dispatch(setPlatformNm([]));
@@ -275,7 +245,17 @@ const SortFilter = () => {
 
   return (
     <Container>
-      <Box>
+      <ScrollView
+        style={{ height: "100%" }}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          alignItems: "center",
+          gap: 8,
+          paddingVertical: 16,
+          paddingHorizontal: 16,
+        }}
+      >
         {BTNS.map((btn, idx) => (
           <Btn
             key={idx}
@@ -300,24 +280,9 @@ const SortFilter = () => {
                 style={btn.iconStyle || {}}
               />
             )}
-            {btn.id === "platformNm" && priceTotal !== 0 && (
-              <DTooltip
-                text={tooltipText}
-                color={colors.main}
-                tooltipShow={isTooltipShow}
-                boxRight={-16}
-                boxTop={-32}
-                triangleRight={36}
-              />
-            )}
           </Btn>
         ))}
-      </Box>
-      <Title>
-        {autoAddType === "add" ? "추가 가능한" : "교체 가능한"}{" "}
-        {products.length}개 식품이 검색되었어요
-      </Title>
-      <SubTitle>{subTitleText}</SubTitle>
+      </ScrollView>
     </Container>
   );
 };
@@ -326,21 +291,12 @@ export default SortFilter;
 
 const Container = styled.View`
   width: 100%;
-  margin-top: 32px;
-  margin-bottom: 24px;
-`;
-
-const Box = styled.View`
-  width: 100%;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 8px;
+  height: 56px;
 `;
 
 const Btn = styled.TouchableOpacity`
   flex-direction: row;
   height: 40px;
-  background-color: ${colors.white};
   border-radius: 20px;
   border-width: 1px;
   border-color: ${colors.lineLight};

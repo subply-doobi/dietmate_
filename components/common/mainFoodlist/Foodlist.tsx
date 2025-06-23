@@ -1,5 +1,5 @@
 // RN, expo
-import { FlatList, ImageSourcePropType } from "react-native";
+import { Animated, ImageSourcePropType } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -9,30 +9,21 @@ import Toast from "react-native-toast-message";
 import { IProductData } from "@/shared/api/types/product";
 import {
   ENV,
+  MAIN_FOODLIST_HEADER_HEIGHT,
   SCREENWIDTH,
   SERVICE_PRICE_PER_PRODUCT,
 } from "@/shared/constants";
-import {
-  Icon,
-  Row,
-  TextMain,
-  TextSub,
-  VerticalSpace,
-} from "@/shared/ui/styledComps";
-import {
-  commaToNum,
-  getSortedShippingPriceObj,
-  sumUpDietFromDTOData,
-} from "@/shared/utils/sumUp";
+import { TextMain, TextSub } from "@/shared/ui/styledComps";
+import { commaToNum } from "@/shared/utils/sumUp";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import colors from "@/shared/colors";
 
 import { showProductSelectToast } from "@/shared/store/toastStore";
-import { icons } from "@/shared/iconSource";
-import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { ViewStyle } from "react-native";
-import SortFilter from "./SortFilter";
 import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
+import ListHeaderComponent from "./ListHeaderComponent";
+import ListFooterComponent from "./ListFooterComponent";
+import { useEffect, useRef, useState } from "react";
 
 interface IProductCardSection {
   title?: string;
@@ -128,8 +119,6 @@ const ProductCardItem = ({
 };
 
 const Foodlist = ({
-  title,
-  subTitle,
   products = [],
   badgeText,
   horizontalScroll = false,
@@ -138,63 +127,89 @@ const Foodlist = ({
   showPlatformNm = true,
   iconSource,
 }: IProductCardSection) => {
+  // useState
+  const [showSortFilter, setShowSortFilter] = useState(false);
   const numColumns = horizontalScroll
     ? 1
     : Math.floor(SCREENWIDTH / (itemSize + gap * 2));
 
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const sortFilterAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const listener = scrollY.addListener(({ value }) => {
+      setShowSortFilter(value >= MAIN_FOODLIST_HEADER_HEIGHT - 56);
+    });
+    return () => scrollY.removeListener(listener);
+  }, []);
+  const headerHideHeight = MAIN_FOODLIST_HEADER_HEIGHT - 56;
+
   return (
-    <FlatList
-      ListHeaderComponent={SortFilter}
-      data={products}
-      keyExtractor={(item) => item.productNo}
-      horizontal={horizontalScroll}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{
-        width: "100%",
-        paddingBottom: 64,
-        gap,
-      }}
-      numColumns={numColumns}
-      renderItem={({ item, index }) => {
-        const isLastColumn = (index + 1) % numColumns === 0;
-        const isLastRow = index >= products.length - numColumns;
-        return (
-          <ProductCardItem
-            item={item}
-            itemSize={itemSize}
-            badgeText={badgeText}
-            showPlatformNm={showPlatformNm}
-            style={{
-              marginRight: isLastColumn ? 0 : gap,
-              marginBottom: isLastRow ? 0 : gap,
-            }}
-          />
-        );
-      }}
-      // To force FlatList to re-render when switching between grid/horizontal
-      key={horizontalScroll ? "h" : "v"}
-      // ItemSeparatorComponent={() => <View style={{ width: gap }} />}
-    />
+    <>
+      <Animated.View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: colors.white,
+          zIndex: 10,
+          transform: [
+            {
+              translateY: scrollY.interpolate({
+                inputRange: [0, headerHideHeight],
+                outputRange: [0, -headerHideHeight],
+                extrapolate: "clamp",
+              }),
+            },
+          ],
+        }}
+      >
+        <ListHeaderComponent />
+      </Animated.View>
+      <Animated.FlatList
+        // ListHeaderComponent={ListHeaderComponent}
+        ListFooterComponent={ListFooterComponent}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        data={products}
+        keyExtractor={(item) => item.productNo}
+        horizontal={horizontalScroll}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          width: "100%",
+          paddingTop: MAIN_FOODLIST_HEADER_HEIGHT,
+          paddingBottom: 64,
+          paddingHorizontal: 16,
+          zIndex: 1,
+          gap,
+        }}
+        numColumns={numColumns}
+        renderItem={({ item, index }) => {
+          const isLastColumn = (index + 1) % numColumns === 0;
+          const isLastRow = index >= products.length - numColumns;
+          return (
+            <ProductCardItem
+              item={item}
+              itemSize={itemSize}
+              badgeText={badgeText}
+              showPlatformNm={showPlatformNm}
+              style={{
+                marginRight: isLastColumn ? 0 : gap,
+                marginBottom: isLastRow ? 0 : gap,
+              }}
+            />
+          );
+        }}
+        // To force FlatList to re-render when switching between grid/horizontal
+        // key={horizontalScroll ? "h" : "v"}
+        // ItemSeparatorComponent={() => <View style={{ width: gap }} />}
+      />
+    </>
   );
 };
 export default Foodlist;
-
-// --- Styled-components (same as your file) ---
-
-const SectionTitle = styled(TextMain)`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 22px;
-  letter-spacing: -0.5px;
-`;
-
-const SectionSubTitle = styled(TextSub)`
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: -0.5px;
-  margin-top: 2px;
-  margin-left: 4px;
-`;
 
 const Box = styled.TouchableOpacity<{ isSelected: boolean }>`
   border-radius: 5px;

@@ -1,6 +1,6 @@
 import EdgeInfo from "@/components/common/summaryInfo/EdgeInfo";
 import BottomInfo from "@/components/common/summaryInfo/EdgeInfo";
-import Foodlist from "@/components/screens/autoAdd/Foodlist";
+import Foodlist from "@/components/common/mainFoodlist/Foodlist";
 import {
   selectFilteredSortedProducts,
   setAvailableFoods,
@@ -88,8 +88,8 @@ const AutoAdd = () => {
           totalFoodList,
           availableFoods: f,
           recentOpenedFoodsPNoArr: await getRecentProducts(),
-          listOrderData: listOrderData,
-          likeData: likeData,
+          listOrderData: listOrderData || [],
+          likeData: likeData || [],
         })
       );
 
@@ -132,10 +132,8 @@ const AutoAdd = () => {
   }
 
   return (
-    <Container>
+    <Container style={{ paddingLeft: 0, paddingRight: 0 }}>
       <Foodlist
-        title="추천 식품"
-        subTitle="목표 영양에 맞춰 추천된 식품이에요."
         itemSize={(SCREENWIDTH - 32 - 8) / 2}
         products={products}
         badgeText="자동 추가"

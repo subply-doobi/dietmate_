@@ -7,9 +7,11 @@ export interface sortFilterStateInClient {
   // 식품 목록
   totalFoodList: IProductData[]; // 전체
   availableFoods: IProductData[]; // 영양 목표 달성 가능
-  recentOrderFoods?: IOrderedProduct[]; // 최근 주문 식품
   recentOpenedFoodsPNoArr?: string[]; // 최근 열어본 식품
-  likeFoods?: IProductData[]; // 좋아요 식품
+  recentlyOpenedFoods: IProductData[];
+  recentlyOrderedFoods: IOrderedProduct[]; // 최근 주문 식품
+  likedFoods: IProductData[]; // 좋아요 식품
+  random3Foods: IProductData[]; // 랜덤으로 3개 식품
   // 필터링 상태
   filter: {
     baseListType: "totalFoodList" | "availableFoods";
@@ -28,6 +30,10 @@ export interface sortFilterStateInClient {
 const initialState: sortFilterStateInClient = {
   totalFoodList: [],
   availableFoods: [],
+  recentlyOpenedFoods: [],
+  recentlyOrderedFoods: [],
+  likedFoods: [],
+  random3Foods: [],
   filter: {
     baseListType: "availableFoods",
     sortBy: null,
@@ -52,15 +58,39 @@ const filteredPSlice = createSlice({
         totalFoodList: IProductData[];
         availableFoods: IProductData[];
         recentOpenedFoodsPNoArr: string[];
-        listOrderData?: IOrderedProduct[];
-        likeData?: IProductData[];
+        listOrderData: IOrderedProduct[];
+        likeData: IProductData[];
       }>
     ) => {
       state.totalFoodList = action.payload.totalFoodList;
       state.availableFoods = action.payload.availableFoods;
       state.recentOpenedFoodsPNoArr = action.payload.recentOpenedFoodsPNoArr;
-      state.recentOrderFoods = action.payload.listOrderData;
-      state.likeFoods = action.payload.likeData;
+      state.recentlyOrderedFoods = action.payload.listOrderData;
+      state.likedFoods = action.payload.likeData;
+
+      // random3
+      const shuffled = [...state.availableFoods].sort(
+        () => Math.random() - 0.5
+      );
+      state.random3Foods = shuffled.slice(0, 3);
+
+      // 2. recentlyOpenedFoods: preserve order from recentOpenedFoodsPNoArr
+      state.recentlyOpenedFoods = action.payload.recentOpenedFoodsPNoArr
+        .map((productNo) =>
+          state.availableFoods.find((p) => p.productNo === productNo)
+        )
+        .filter(Boolean) as IProductData[];
+
+      // 3. likedFoods: from likeData
+      state.likedFoods = (action.payload.likeData ?? []).filter((p) =>
+        state.availableFoods.some((a) => a.productNo === p.productNo)
+      );
+
+      // 4. recentlyOrderedFoods: from listOrderData, preserve order
+      state.recentlyOrderedFoods = (action.payload.listOrderData ?? []).filter(
+        (o) => state.availableFoods.some((a) => a.productNo === o.productNo)
+      );
+
       // 필터링 초기화
       state.filter = {
         baseListType: "availableFoods",
@@ -140,8 +170,8 @@ export const selectFilteredSortedProducts = createSelector(
     (state: RootState) => state.common.totalFoodList,
     (state: RootState) => state.filteredProduct.availableFoods,
     (state: RootState) => state.filteredProduct.recentOpenedFoodsPNoArr,
-    (state: RootState) => state.filteredProduct.likeFoods,
-    (state: RootState) => state.filteredProduct.recentOrderFoods,
+    (state: RootState) => state.filteredProduct.likedFoods,
+    (state: RootState) => state.filteredProduct.recentlyOrderedFoods,
     (state: RootState) => state.filteredProduct.lastAppliedFilter,
     (state: RootState) => state.filteredProduct.lastFilteredList,
     // filter state

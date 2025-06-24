@@ -12,6 +12,7 @@ import {
   MAIN_FOODLIST_HEADER_HEIGHT,
   SCREENWIDTH,
   SERVICE_PRICE_PER_PRODUCT,
+  SORT_FILTER_HEIGHT,
 } from "@/shared/constants";
 import { TextMain, TextSub } from "@/shared/ui/styledComps";
 import { commaToNum } from "@/shared/utils/sumUp";
@@ -127,47 +128,17 @@ const Foodlist = ({
   showPlatformNm = true,
   iconSource,
 }: IProductCardSection) => {
-  // useState
-  const [showSortFilter, setShowSortFilter] = useState(false);
   const numColumns = horizontalScroll
     ? 1
     : Math.floor(SCREENWIDTH / (itemSize + gap * 2));
 
   const scrollY = useRef(new Animated.Value(0)).current;
-  const sortFilterAnim = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    const listener = scrollY.addListener(({ value }) => {
-      setShowSortFilter(value >= MAIN_FOODLIST_HEADER_HEIGHT - 56);
-    });
-    return () => scrollY.removeListener(listener);
-  }, []);
-  const headerHideHeight = MAIN_FOODLIST_HEADER_HEIGHT - 56;
+  const headerHideHeight = MAIN_FOODLIST_HEADER_HEIGHT - SORT_FILTER_HEIGHT;
 
   return (
     <>
-      <Animated.View
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: colors.white,
-          zIndex: 10,
-          transform: [
-            {
-              translateY: scrollY.interpolate({
-                inputRange: [0, headerHideHeight],
-                outputRange: [0, -headerHideHeight],
-                extrapolate: "clamp",
-              }),
-            },
-          ],
-        }}
-      >
-        <ListHeaderComponent />
-      </Animated.View>
       <Animated.FlatList
-        // ListHeaderComponent={ListHeaderComponent}
+        // ListHeaderComponent={}
         ListFooterComponent={ListFooterComponent}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -206,6 +177,26 @@ const Foodlist = ({
         // key={horizontalScroll ? "h" : "v"}
         // ItemSeparatorComponent={() => <View style={{ width: gap }} />}
       />
+      <Animated.View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: colors.white,
+          transform: [
+            {
+              translateY: scrollY.interpolate({
+                inputRange: [0, headerHideHeight],
+                outputRange: [0, -headerHideHeight],
+                extrapolate: "clamp",
+              }),
+            },
+          ],
+        }}
+      >
+        <ListHeaderComponent />
+      </Animated.View>
     </>
   );
 };

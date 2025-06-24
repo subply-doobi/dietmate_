@@ -290,6 +290,7 @@ const PlatformNm = styled(TextSub)`
   font-size: 11px;
   line-height: 16px;
   align-self: flex-start;
+  padding-left: 2px;
 `;
 
 const ThumbnailImg = styled.Image`
@@ -302,6 +303,7 @@ const PriceText = styled(TextMain)`
   font-size: 11px;
   line-height: 16px;
   align-self: flex-end;
+  padding-right: 2px;
 `;
 
 const SelectedInfoRow = styled.View`

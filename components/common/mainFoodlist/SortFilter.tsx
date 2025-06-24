@@ -13,7 +13,7 @@ import {
 } from "@/features/reduxSlices/filteredPSlice";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
-import { MAIN_FOODLIST_HEADER_HEIGHT } from "@/shared/constants";
+import { SORT_FILTER_HEIGHT } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import { Icon, TextMain, TextSub } from "@/shared/ui/styledComps";
@@ -22,22 +22,19 @@ import {
   getSortedShippingPriceObj,
   sumUpDietFromDTOData,
 } from "@/shared/utils/sumUp";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, usePathname } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, TextInput } from "react-native";
 import styled from "styled-components/native";
 
-// Btn
-// 1. available 2. total 3. search 4. lowerShipping 5. recentlyOpened 6. liked 7. recentlyOrdered
-// 8. price 9. random
-
 const SortFilter = () => {
   // navigation
   const autoAddType = useLocalSearchParams()?.type;
+  const pathName = usePathname();
+  console.log("autoAddType", autoAddType, "pathName", pathName);
 
   // redux
   const dispatch = useAppDispatch();
-
   const {
     baseListType,
     sortBy,
@@ -54,16 +51,20 @@ const SortFilter = () => {
   const products = useAppSelector(selectFilteredSortedProducts);
 
   // useState
-  const [isSearchPressed, setIsSearchPressed] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   // useRef
   const searchInputRef = useRef<TextInput>(null);
   const searchInputFocused = searchInputRef.current?.isFocused();
+
   // useEffect
   useEffect(() => {
-    if (searchInputRef.current?.isFocused()) return;
-    searchQuery.length === 0 && setIsSearchPressed(false);
-  }, [searchInputFocused, searchQuery]);
+    isSearchActive
+      ? setTimeout(() => {
+          searchInputRef.current?.focus();
+        }, 100)
+      : searchInputRef.current?.blur();
+  }, [isSearchActive]);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
@@ -87,15 +88,15 @@ const SortFilter = () => {
 
   // useEffect
   // 정렬일때는 lastFilteredList 저장해서 refiltering 필요 없도록 함
-  // useEffect(() => {
-  //   if (lastAppliedFilter !== "sortBy") dispatch(setLastFilteredList(products));
-  // }, [lastAppliedFilter]);
+  useEffect(() => {
+    if (lastAppliedFilter !== "sortBy") dispatch(setLastFilteredList(products));
+  }, [lastAppliedFilter]);
 
   // BTNS isActive
   const isActiveObj = {
     availableFoods: baseListType === "availableFoods",
     totalFoodList: baseListType === "totalFoodList",
-    search: isSearchPressed && searchQuery.length > 0,
+    search: isSearchActive,
     platformNm: platformNm.length > 0,
     recentlyOpened: recentlyOpened,
     liked: liked,
@@ -105,31 +106,47 @@ const SortFilter = () => {
   };
 
   const BTNS = [
+    {
+      id: "availableFoods",
+      label: baseListType === "availableFoods" ? "목표영양" : "전체",
+      isActive: isActiveObj.availableFoods,
+      iconSource: isActiveObj.availableFoods
+        ? icons.targetActive_24
+        : icons.targetInactive_24,
+      iconSize: 18,
+      iconStyle: undefined,
+      onPress: () =>
+        baseListType === "availableFoods"
+          ? dispatch(setBaseListType("totalFoodList"))
+          : dispatch(setBaseListType("availableFoods")),
+    },
     // 검색
     {
       id: "search",
-      label: isActiveObj.search ? `"${searchQuery}" 검색된` : "",
+      label: "",
       isActive: isActiveObj.search,
       iconSource: isActiveObj.search ? icons.cancelLine_24 : icons.search_36,
       iconSize: 24,
-      iconStyle: { marginLeft: isSearchPressed ? 4 : 0 },
+      iconStyle: { marginLeft: isActiveObj.search ? 4 : 0 },
       onPress: () => {
         if (isActiveObj.search) {
-          dispatch(setSearchQuery(""));
-          setIsSearchPressed(false);
-          return;
+          if (searchQuery.length > 0) {
+            dispatch(setSearchQuery(""));
+          }
+          setIsSearchActive(false);
+          searchInputRef.current?.blur();
+        } else {
+          setIsSearchActive(true);
+          setTimeout(() => {
+            searchInputRef.current?.focus();
+          }, 100);
         }
-        setIsSearchPressed(true);
-        setTimeout(() => {
-          searchInputRef.current?.focus();
-        }, 100);
-        // if (searchInputRef.current?.isFocused()) return;
       },
     },
     // 배송비 절약
     {
       id: "platformNm",
-      label: "무료배송에 근접한",
+      label: "배송비절약",
       isActive: isActiveObj.platformNm,
       iconSource: isActiveObj.platformNm
         ? icons.truckActive_24
@@ -159,7 +176,7 @@ const SortFilter = () => {
     // 좋아요
     {
       id: "liked",
-      label: "좋아요 누른",
+      label: "좋아요",
       isActive: isActiveObj.liked,
       iconSource: isActiveObj.liked ? icons.heart_active_36 : icons.heart_36,
       iconSize: 20,
@@ -185,7 +202,7 @@ const SortFilter = () => {
     // 무작위
     {
       id: "random3",
-      label: "식품 중 무작위 3개",
+      label: "무작위 3개",
       isActive: isActiveObj.random3,
       iconSource: isActiveObj.random3 ? icons.dice_36_active : icons.dice_36,
       iconSize: 24,
@@ -224,7 +241,7 @@ const SortFilter = () => {
     // 초기화
     {
       id: "resetSortFilter",
-      label: "초기화",
+      label: "",
       isActive: false,
       iconSource: icons.initialize_24,
       iconSize: 20,
@@ -235,64 +252,52 @@ const SortFilter = () => {
     },
   ];
 
-  // subTitle text -> BTNS labels concat
-  const subTitleText = BTNS.reduce((acc, btn) => {
-    if (btn.isActive && btn.label) {
-      return acc + (acc ? ", " : "") + btn.label;
-    }
-    return acc;
-  }, "").concat(" 식품입니다.");
-
   return (
-    <Container>
-      <ScrollView
-        style={{ height: "100%" }}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          alignItems: "center",
-          gap: 8,
-          paddingVertical: 16,
-          paddingHorizontal: 16,
-        }}
-      >
-        {BTNS.map((btn, idx) => (
-          <Btn
-            key={idx}
-            onPress={btn.onPress}
-            style={{
-              borderColor: btn.isActive ? colors.main : colors.lineLight,
-            }}
-          >
-            {btn.id === "search" && isSearchPressed && (
-              <SearchTextInput
-                ref={searchInputRef}
-                placeholder="검색어 입력"
-                placeholderTextColor={colors.textSub}
-                onChangeText={(t) => dispatch(setSearchQuery(t))}
-                value={searchQuery}
-              />
-            )}
-            {btn.iconSource && (
-              <Icon
-                source={btn.iconSource}
-                size={btn.iconSize || 20}
-                style={btn.iconStyle || {}}
-              />
-            )}
-          </Btn>
-        ))}
-      </ScrollView>
-    </Container>
+    <ScrollView
+      style={{ height: SORT_FILTER_HEIGHT }}
+      keyboardShouldPersistTaps="always"
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={{
+        alignItems: "center",
+        gap: 8,
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        zIndex: 100,
+      }}
+    >
+      {BTNS.map((btn, idx) => (
+        <Btn
+          key={idx}
+          onPress={btn.onPress}
+          style={{
+            borderColor: btn.isActive ? colors.main : colors.lineLight,
+          }}
+        >
+          {btn.id === "search" && btn.isActive && (
+            <SearchTextInput
+              ref={searchInputRef}
+              placeholder="검색어 입력"
+              placeholderTextColor={colors.textSub}
+              onChangeText={(t) => dispatch(setSearchQuery(t))}
+              value={searchQuery}
+            />
+          )}
+          {btn.iconSource && (
+            <Icon
+              source={btn.iconSource}
+              size={btn.iconSize || 20}
+              style={btn.iconStyle || {}}
+            />
+          )}
+          {btn.label && <BtnText>{btn.label}</BtnText>}
+        </Btn>
+      ))}
+    </ScrollView>
   );
 };
 
 export default SortFilter;
-
-const Container = styled.View`
-  width: 100%;
-  height: 56px;
-`;
 
 const Btn = styled.TouchableOpacity`
   flex-direction: row;

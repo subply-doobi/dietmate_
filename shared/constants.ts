@@ -46,6 +46,7 @@ export const HOME_FILTER_HEADER_HEIGHT = 120;
 export const DEFAULT_BOTTOM_TAB_HEIGHT = 83;
 export const BOTTOM_INDICATOR_IOS = 16;
 export const FORMULA_CAROUSEL_HEIGHT = 390;
+export const SORT_FILTER_HEIGHT = 64;
 export const MAIN_FOODLIST_HEADER_HEIGHT =
   24 +
   22 +
@@ -53,14 +54,14 @@ export const MAIN_FOODLIST_HEADER_HEIGHT =
   16 +
   12 +
   4 +
-  4 +
+  12 +
   ((SCREENWIDTH - 32 - 16) / 3 - 8) +
+  4 +
   16 +
   4 +
   16 +
-  16 +
-  40 +
-  16;
+  24 +
+  SORT_FILTER_HEIGHT;
 // HorizontalFoodlist 컴포넌트 height + SortFilter 컴포넌트 height
 
 // service constants

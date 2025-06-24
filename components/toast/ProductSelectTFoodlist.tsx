@@ -70,6 +70,7 @@ const Grid = styled.View`
   flex-wrap: wrap;
   padding: 8px 0;
   column-gap: 4px;
+  row-gap: 8px;
 `;
 
 const CurrentMenuBox = styled.View`

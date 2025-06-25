@@ -24,7 +24,8 @@ import { ViewStyle } from "react-native";
 import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
 import ListHeaderComponent from "./ListHeaderComponent";
 import ListFooterComponent from "./ListFooterComponent";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
+import ListEmptyComponent from "./ListEmptyComponent";
 
 interface IProductCardSection {
   title?: string;
@@ -139,18 +140,24 @@ const Foodlist = ({
     <>
       <Animated.FlatList
         // ListHeaderComponent={}
+        data={products}
+        ListEmptyComponent={ListEmptyComponent}
         ListFooterComponent={ListFooterComponent}
+        progressViewOffset={MAIN_FOODLIST_HEADER_HEIGHT}
+        refreshing={false}
+        onRefresh={() => {
+          console.log("Refreshing..."); // Implement your refresh logic here
+        }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true }
         )}
-        data={products}
         keyExtractor={(item) => item.productNo}
         horizontal={horizontalScroll}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
           width: "100%",
-          paddingTop: MAIN_FOODLIST_HEADER_HEIGHT,
+          paddingTop: MAIN_FOODLIST_HEADER_HEIGHT + 4,
           paddingBottom: 64,
           paddingHorizontal: 16,
           zIndex: 1,
@@ -177,6 +184,7 @@ const Foodlist = ({
         // key={horizontalScroll ? "h" : "v"}
         // ItemSeparatorComponent={() => <View style={{ width: gap }} />}
       />
+
       <Animated.View
         style={{
           position: "absolute",

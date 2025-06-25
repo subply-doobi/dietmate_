@@ -99,12 +99,11 @@ export default DTooltip;
 
 const Container = styled.Pressable`
   position: absolute;
-  margin: 0px 0px 6px 0px;
   z-index: 10;
 `;
 
 const TooltipBox = styled.View<{ color?: string }>`
-  height: 100%;
+  /* height: 24px; */
   flex-direction: row;
   background-color: ${({ color }) => (color ? color : colors.green)};
   padding: 5px;
@@ -114,9 +113,9 @@ const TooltipBox = styled.View<{ color?: string }>`
 `;
 
 const TooltipText = styled(TextMain)`
-  font-size: 14px;
+  font-size: 12px;
   color: ${colors.white};
-  line-height: 18px;
+  line-height: 16px;
 `;
 
 const IconContainer = styled.View`
@@ -136,7 +135,7 @@ const TooltipTriangle = styled.View<{ color?: string }>`
   position: absolute;
   width: 0;
   height: 0;
-  bottom: -6px;
+  bottom: -4px;
   border-left-width: 6px;
   border-right-width: 6px;
   border-top-width: 9px;

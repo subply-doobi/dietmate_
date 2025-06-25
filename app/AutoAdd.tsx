@@ -31,8 +31,8 @@ import {
   useNavigation,
   useRouter,
 } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 import styled from "styled-components/native";
 
 const AutoAdd = () => {
@@ -136,7 +136,6 @@ const AutoAdd = () => {
       <Foodlist
         itemSize={(SCREENWIDTH - 32 - 8) / 2}
         products={products}
-        badgeText="자동 추가"
         gap={8}
       />
     </Container>

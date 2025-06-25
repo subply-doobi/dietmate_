@@ -48,7 +48,6 @@ const ListHeaderComponent = ({ animatedStyle }: IListHeaderComponent) => {
           itemSize={(SCREENWIDTH - 32 - 16) / 3}
         />
       )}
-      <HorizontalSpace height={24} />
       <SortFilter />
     </Col>
   );

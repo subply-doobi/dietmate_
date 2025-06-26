@@ -1,3 +1,4 @@
+import { openBottomSheet } from "@/features/reduxSlices/commonSlice";
 import {
   resetSortFilter,
   selectFilteredSortedProducts,
@@ -13,38 +14,49 @@ import {
 } from "@/features/reduxSlices/filteredPSlice";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
-import { SORT_FILTER_HEIGHT } from "@/shared/constants";
+import { categoryCodeToName, SORT_FILTER_HEIGHT } from "@/shared/constants";
+import { openBS } from "@/shared/hooks/bottomSheetHandler";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
+import DTooltip from "@/shared/ui/DTooltip";
 import { Icon, TextMain, TextSub } from "@/shared/ui/styledComps";
 import {
   commaToNum,
   getSortedShippingPriceObj,
   sumUpDietFromDTOData,
 } from "@/shared/utils/sumUp";
+import { useBottomSheet, useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useLocalSearchParams, usePathname } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, TextInput } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 
 const SortFilter = () => {
   // navigation
-  const autoAddType = useLocalSearchParams()?.type;
-  const pathName = usePathname();
-  console.log("autoAddType", autoAddType, "pathName", pathName);
+  // const autoAddType = useLocalSearchParams()?.type;
+  // const pathName = usePathname();
 
   // redux
   const dispatch = useAppDispatch();
   const {
     baseListType,
-    sortBy,
+    category,
+    searchQuery,
     platformNm,
     recentlyOpened,
     liked,
     recentlyOrdered,
-    searchQuery,
     random3,
+    sortBy,
   } = useAppSelector((state) => state.filteredProduct.filter);
+  const currentSortNm = sortBy?.replace(/Asc|Desc/g, "") || "";
+  const sortState = sortBy?.endsWith("Asc")
+    ? "Asc"
+    : sortBy?.endsWith("Desc")
+    ? "Desc"
+    : "";
+
   const lastAppliedFilter = useAppSelector(
     (state) => state.filteredProduct.lastAppliedFilter
   );
@@ -52,10 +64,10 @@ const SortFilter = () => {
 
   // useState
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isTooltipShow, setIsTooltipShow] = useState(true);
 
   // useRef
   const searchInputRef = useRef<TextInput>(null);
-  const searchInputFocused = searchInputRef.current?.isFocused();
 
   // useEffect
   useEffect(() => {
@@ -75,9 +87,9 @@ const SortFilter = () => {
     const { shippingPriceObj, priceTotal } = sumUpDietFromDTOData(dTOData);
     const { free, notFree } = getSortedShippingPriceObj(shippingPriceObj);
     const firstTargetSeller = notFree[0]?.platformNm || "";
-    const tooltipText = `"${firstTargetSeller}" ${commaToNum(
+    const tooltipText = `"${firstTargetSeller}" 무료배송까지 ${commaToNum(
       notFree[0]?.remainPrice
-    )}원 더 담으면 무료배송`;
+    )}원`;
 
     return {
       firstTargetSeller,
@@ -94,31 +106,38 @@ const SortFilter = () => {
 
   // BTNS isActive
   const isActiveObj = {
-    availableFoods: baseListType === "availableFoods",
-    totalFoodList: baseListType === "totalFoodList",
+    baseListType: baseListType === "availableFoods",
+    category: category !== "",
     search: isSearchActive,
     platformNm: platformNm.length > 0,
     recentlyOpened: recentlyOpened,
     liked: liked,
     recentlyOrdered: recentlyOrdered,
-    sortBy: sortBy === "priceAsc" || sortBy === "priceDesc",
+    sortBy: sortBy !== "",
     random3: random3,
   };
 
   const BTNS = [
     {
-      id: "availableFoods",
-      label: baseListType === "availableFoods" ? "목표영양" : "전체",
-      isActive: isActiveObj.availableFoods,
-      iconSource: isActiveObj.availableFoods
+      id: "baseListType",
+      label: baseListType === "availableFoods" ? "영양목표" : "전체",
+      isActive: isActiveObj.baseListType,
+      iconSource: isActiveObj.baseListType
         ? icons.targetActive_24
         : icons.targetInactive_24,
       iconSize: 18,
-      iconStyle: undefined,
-      onPress: () =>
-        baseListType === "availableFoods"
-          ? dispatch(setBaseListType("totalFoodList"))
-          : dispatch(setBaseListType("availableFoods")),
+      onPress: () => dispatch(openBottomSheet("baseListTypeFilter")),
+    },
+    // 카테고리
+    {
+      id: "category",
+      label: category ? categoryCodeToName[category] : "카테고리",
+      isActive: isActiveObj.category,
+      iconSource: undefined,
+      iconSize: 20,
+      onPress: () => {
+        dispatch(openBottomSheet("categoryFilter"));
+      },
     },
     // 검색
     {
@@ -127,7 +146,6 @@ const SortFilter = () => {
       isActive: isActiveObj.search,
       iconSource: isActiveObj.search ? icons.cancelLine_24 : icons.search_36,
       iconSize: 24,
-      iconStyle: { marginLeft: isActiveObj.search ? 4 : 0 },
       onPress: () => {
         if (isActiveObj.search) {
           if (searchQuery.length > 0) {
@@ -146,17 +164,15 @@ const SortFilter = () => {
     // 배송비 절약
     {
       id: "platformNm",
-      label: "배송비절약",
+      label: platformNm.length === 0 ? "배송비 절약" : platformNm[0],
       isActive: isActiveObj.platformNm,
       iconSource: isActiveObj.platformNm
         ? icons.truckActive_24
         : icons.truckInactive_24,
       iconSize: 24,
-      iconStyle: undefined,
       onPress: () => {
-        platformNm.length === 0
-          ? dispatch(setPlatformNm([firstTargetSeller]))
-          : dispatch(setPlatformNm([]));
+        dispatch(openBottomSheet("platformFilter"));
+        isTooltipShow && setIsTooltipShow(false);
       },
     },
     // 최근 본
@@ -168,7 +184,6 @@ const SortFilter = () => {
         ? icons.eyeActive_24
         : icons.eyeInactive_24,
       iconSize: undefined,
-      iconStyle: undefined,
       onPress: () => {
         dispatch(setRecentlyOpened(!recentlyOpened));
       },
@@ -180,7 +195,6 @@ const SortFilter = () => {
       isActive: isActiveObj.liked,
       iconSource: isActiveObj.liked ? icons.heart_active_36 : icons.heart_36,
       iconSize: 20,
-      iconStyle: undefined,
       onPress: () => {
         dispatch(setLiked(!liked));
       },
@@ -194,48 +208,50 @@ const SortFilter = () => {
         ? icons.cardActive_24
         : icons.cardInactive_24,
       iconSize: undefined,
-      iconStyle: undefined,
       onPress: () => {
         dispatch(setRecentlyOrdered(!recentlyOrdered));
       },
     },
     // 무작위
-    {
-      id: "random3",
-      label: "무작위 3개",
-      isActive: isActiveObj.random3,
-      iconSource: isActiveObj.random3 ? icons.dice_36_active : icons.dice_36,
-      iconSize: 24,
-      iconStyle: undefined,
-      onPress: () => {
-        random3 ? dispatch(setRandom3(false)) : dispatch(setRandom3(true));
-      },
-    },
+    // {
+    //   id: "random3",
+    //   label: "무작위 3개",
+    //   isActive: isActiveObj.random3,
+    //   iconSource: isActiveObj.random3 ? icons.dice_36_active : icons.dice_36,
+    //   iconSize: 24,
+    //   onPress: () => {
+    //     random3 ? dispatch(setRandom3(false)) : dispatch(setRandom3(true));
+    //   },
+    // },
     // 가격 정렬
     {
-      id: "sortByPrice",
+      id: "sort",
       label:
-        sortBy === "priceAsc"
-          ? "가격 저렴한 순"
-          : sortBy === "priceDesc"
-          ? "가격 비싼 순"
-          : "",
+        currentSortNm === "price"
+          ? "가격"
+          : currentSortNm === "calorie"
+          ? "칼로리"
+          : currentSortNm === "protein"
+          ? "단백질"
+          : currentSortNm === "carb"
+          ? "탄수화물"
+          : currentSortNm === "fat"
+          ? "지방"
+          : currentSortNm === "priceCalorieCompare"
+          ? "가칼비"
+          : currentSortNm === "priceProteinCompare"
+          ? "가단비"
+          : "정렬",
       isActive: isActiveObj.sortBy,
-      iconSource: !sortBy
-        ? icons.moneyInactive_24
-        : sortBy === "priceAsc"
-        ? icons.sortAscending_24
-        : icons.sortDescending_24,
-      iconSize: undefined,
-      iconStyle: undefined,
+      iconSource:
+        sortState === "Asc"
+          ? icons.sortAscending_24
+          : sortState === "Desc"
+          ? icons.sortDescending_24
+          : icons.sort_24,
+      iconSize: 18,
       onPress: () => {
-        if (sortBy === "priceAsc") {
-          dispatch(setSortBy("priceDesc"));
-        } else if (sortBy === "priceDesc") {
-          dispatch(setSortBy(null));
-        } else {
-          dispatch(setSortBy("priceAsc"));
-        }
+        dispatch(openBottomSheet("sort"));
       },
     },
     // 초기화
@@ -245,23 +261,31 @@ const SortFilter = () => {
       isActive: false,
       iconSource: icons.initialize_24,
       iconSize: 20,
-      iconStyle: undefined,
       onPress: () => {
-        dispatch(resetSortFilter());
+        dispatch(resetSortFilter("availableFoods"));
       },
     },
   ];
 
+  // product.length === 0 일때 sortFilter 동작 안하는 문제있음
+  // -> 해당 상황에서만 sortFilterKey를 변경하여 강제로 리렌더링
+  const [sortFilterKey, toggleSortFilterKey] = useState(false);
+  useEffect(() => {
+    if (products.length !== 0) return;
+    toggleSortFilterKey((prev) => !prev);
+  }, [products.length]);
+
   return (
     <ScrollView
+      key={String(sortFilterKey)}
       style={{ height: SORT_FILTER_HEIGHT }}
       keyboardShouldPersistTaps="always"
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{
-        alignItems: "center",
-        gap: 8,
-        paddingVertical: 16,
+        columnGap: 8,
+        paddingTop: 32,
+        paddingBottom: 8,
         paddingHorizontal: 16,
         zIndex: 100,
       }}
@@ -287,10 +311,19 @@ const SortFilter = () => {
             <Icon
               source={btn.iconSource}
               size={btn.iconSize || 20}
-              style={btn.iconStyle || {}}
+              style={{ marginLeft: !!btn.iconSource && !!btn.label ? -6 : 0 }}
             />
           )}
           {btn.label && <BtnText>{btn.label}</BtnText>}
+          {btn.id === "platformNm" && !!firstTargetSeller && (
+            <DTooltip
+              text={tooltipText}
+              color={colors.main}
+              tooltipShow={isTooltipShow}
+              boxTop={-28}
+              boxLeft={8}
+            />
+          )}
         </Btn>
       ))}
     </ScrollView>

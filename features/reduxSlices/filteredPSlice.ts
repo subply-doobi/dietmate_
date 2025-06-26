@@ -15,7 +15,23 @@ export interface sortFilterStateInClient {
   // 필터링 상태
   filter: {
     baseListType: "totalFoodList" | "availableFoods";
-    sortBy: "priceAsc" | "priceDesc" | null;
+    category: "" | "CG001" | "CG002" | "CG003" | "CG004" | "CG005" | "CG006";
+    sortBy:
+      | ""
+      | "priceAsc"
+      | "priceDesc"
+      | "calorieAsc"
+      | "calorieDesc"
+      | "carbAsc"
+      | "carbDesc"
+      | "proteinAsc"
+      | "proteinDesc"
+      | "fatAsc"
+      | "fatDesc"
+      | "priceCalorieCompareAsc"
+      | "priceCalorieCompareDesc"
+      | "priceProteinCompareAsc"
+      | "priceProteinCompareDesc";
     platformNm: string[];
     recentlyOpened: boolean;
     liked: boolean;
@@ -36,7 +52,8 @@ const initialState: sortFilterStateInClient = {
   random3Foods: [],
   filter: {
     baseListType: "availableFoods",
-    sortBy: null,
+    category: "",
+    sortBy: "",
     platformNm: [],
     recentlyOpened: false,
     liked: false,
@@ -93,8 +110,12 @@ const filteredPSlice = createSlice({
 
       // 필터링 초기화
       state.filter = {
-        baseListType: "availableFoods",
-        sortBy: null,
+        baseListType:
+          action.payload.availableFoods.length > 0
+            ? "availableFoods"
+            : "totalFoodList",
+        category: "",
+        sortBy: "",
         platformNm: [],
         recentlyOpened: false,
         liked: false,
@@ -113,9 +134,17 @@ const filteredPSlice = createSlice({
       state.filter.baseListType = action.payload;
       state.lastAppliedFilter = "baseListType";
     },
+    setCategory: (
+      state,
+      action: PayloadAction<
+        "" | "CG001" | "CG002" | "CG003" | "CG004" | "CG005" | "CG006"
+      >
+    ) => {
+      state.filter.category = action.payload;
+    },
     setSortBy: (
       state,
-      action: PayloadAction<"priceAsc" | "priceDesc" | null>
+      action: PayloadAction<sortFilterStateInClient["filter"]["sortBy"]>
     ) => {
       state.filter.sortBy = action.payload;
       state.lastAppliedFilter = "sortBy";
@@ -144,10 +173,14 @@ const filteredPSlice = createSlice({
       state.filter.random3 = action.payload;
       state.lastAppliedFilter = "random3";
     },
-    resetSortFilter: (state) => {
+    resetSortFilter: (
+      state,
+      action: PayloadAction<"availableFoods" | "totalFoodList">
+    ) => {
       state.filter = {
-        baseListType: "availableFoods",
-        sortBy: null,
+        baseListType: action.payload,
+        category: "",
+        sortBy: "",
         platformNm: [],
         recentlyOpened: false,
         liked: false,
@@ -176,6 +209,7 @@ export const selectFilteredSortedProducts = createSelector(
     (state: RootState) => state.filteredProduct.lastFilteredList,
     // filter state
     (state: RootState) => state.filteredProduct.filter.baseListType,
+    (state: RootState) => state.filteredProduct.filter.category,
     (state: RootState) => state.filteredProduct.filter.searchQuery,
     (state: RootState) => state.filteredProduct.filter.platformNm,
     (state: RootState) => state.filteredProduct.filter.recentlyOpened,
@@ -194,6 +228,7 @@ export const selectFilteredSortedProducts = createSelector(
     lastFilteredList,
     // filter state
     baseListType,
+    category,
     searchQuery,
     platformNm,
     recentlyOpened,
@@ -202,13 +237,70 @@ export const selectFilteredSortedProducts = createSelector(
     random3,
     sortBy
   ) => {
+    // 마지막에 sort 적용된 경우 다른 필터링 없이 정렬만 진행 후 return
     if (lastAppliedFilter === "sortBy" && lastFilteredList.length > 0) {
-      // Sorting
       const result = [...lastFilteredList];
-      if (sortBy === "priceAsc") {
-        result.sort((a, b) => Number(a.price) - Number(b.price));
-      } else if (sortBy === "priceDesc") {
-        result.sort((a, b) => Number(b.price) - Number(a.price));
+      switch (sortBy) {
+        case "priceAsc":
+          result.sort((a, b) => Number(a.price) - Number(b.price));
+          break;
+        case "priceDesc":
+          result.sort((a, b) => Number(b.price) - Number(a.price));
+          break;
+        case "calorieAsc":
+          result.sort((a, b) => Number(a.calorie) - Number(b.calorie));
+          break;
+        case "calorieDesc":
+          result.sort((a, b) => Number(b.calorie) - Number(a.calorie));
+          break;
+        case "carbAsc":
+          result.sort((a, b) => Number(a.carb) - Number(b.carb));
+          break;
+        case "carbDesc":
+          result.sort((a, b) => Number(b.carb) - Number(a.carb));
+          break;
+        case "proteinAsc":
+          result.sort((a, b) => Number(a.protein) - Number(b.protein));
+          break;
+        case "proteinDesc":
+          result.sort((a, b) => Number(b.protein) - Number(a.protein));
+          break;
+        case "fatAsc":
+          result.sort((a, b) => Number(a.fat) - Number(b.fat));
+          break;
+        case "fatDesc":
+          result.sort((a, b) => Number(b.fat) - Number(a.fat));
+          break;
+        case "priceCalorieCompareAsc":
+          result.sort(
+            (a, b) =>
+              Number(a.price) / Number(a.calorie) -
+              Number(b.price) / Number(b.calorie)
+          );
+          break;
+        case "priceCalorieCompareDesc":
+          result.sort(
+            (a, b) =>
+              Number(b.price) / Number(b.calorie) -
+              Number(a.price) / Number(a.calorie)
+          );
+          break;
+        case "priceProteinCompareAsc":
+          result.sort(
+            (a, b) =>
+              Number(a.price) / Number(a.protein) -
+              Number(b.price) / Number(b.protein)
+          );
+          break;
+        case "priceProteinCompareDesc":
+          result.sort(
+            (a, b) =>
+              Number(b.price) / Number(b.protein) -
+              Number(a.price) / Number(a.protein)
+          );
+          break;
+        default:
+          break;
       }
       return result;
     }
@@ -220,6 +312,10 @@ export const selectFilteredSortedProducts = createSelector(
         : [...totalFoodList];
 
     // Filtering
+    if (category !== "") {
+      result = result.filter((p) => p.categoryCd === category);
+    }
+
     if (platformNm.length > 0) {
       result = result.filter((p) => platformNm.includes(p.platformNm));
     }
@@ -254,10 +350,67 @@ export const selectFilteredSortedProducts = createSelector(
     }
 
     // Sorting
-    if (sortBy === "priceAsc") {
-      result.sort((a, b) => Number(a.price) - Number(b.price));
-    } else if (sortBy === "priceDesc") {
-      result.sort((a, b) => Number(b.price) - Number(a.price));
+    switch (sortBy) {
+      case "priceAsc":
+        result.sort((a, b) => Number(a.price) - Number(b.price));
+        break;
+      case "priceDesc":
+        result.sort((a, b) => Number(b.price) - Number(a.price));
+        break;
+      case "calorieAsc":
+        result.sort((a, b) => Number(a.calorie) - Number(b.calorie));
+        break;
+      case "calorieDesc":
+        result.sort((a, b) => Number(b.calorie) - Number(a.calorie));
+        break;
+      case "carbAsc":
+        result.sort((a, b) => Number(a.carb) - Number(b.carb));
+        break;
+      case "carbDesc":
+        result.sort((a, b) => Number(b.carb) - Number(a.carb));
+        break;
+      case "proteinAsc":
+        result.sort((a, b) => Number(a.protein) - Number(b.protein));
+        break;
+      case "proteinDesc":
+        result.sort((a, b) => Number(b.protein) - Number(a.protein));
+        break;
+      case "fatAsc":
+        result.sort((a, b) => Number(a.fat) - Number(b.fat));
+        break;
+      case "fatDesc":
+        result.sort((a, b) => Number(b.fat) - Number(a.fat));
+        break;
+      case "priceCalorieCompareAsc":
+        result.sort(
+          (a, b) =>
+            Number(a.price) / Number(a.calorie) -
+            Number(b.price) / Number(b.calorie)
+        );
+        break;
+      case "priceCalorieCompareDesc":
+        result.sort(
+          (a, b) =>
+            Number(b.price) / Number(b.calorie) -
+            Number(a.price) / Number(a.calorie)
+        );
+        break;
+      case "priceProteinCompareAsc":
+        result.sort(
+          (a, b) =>
+            Number(a.price) / Number(a.protein) -
+            Number(b.price) / Number(b.protein)
+        );
+        break;
+      case "priceProteinCompareDesc":
+        result.sort(
+          (a, b) =>
+            Number(b.price) / Number(b.protein) -
+            Number(a.price) / Number(a.protein)
+        );
+        break;
+      default:
+        break;
     }
     return result;
   }
@@ -267,6 +420,7 @@ export const {
   setAvailableFoods,
   setRecentlyOpenedFoodsPNoArr,
   setBaseListType,
+  setCategory,
   setSortBy,
   setPlatformNm,
   setRecentlyOpened,

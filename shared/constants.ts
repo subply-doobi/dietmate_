@@ -46,7 +46,7 @@ export const HOME_FILTER_HEADER_HEIGHT = 120;
 export const DEFAULT_BOTTOM_TAB_HEIGHT = 83;
 export const BOTTOM_INDICATOR_IOS = 16;
 export const FORMULA_CAROUSEL_HEIGHT = 390;
-export const SORT_FILTER_HEIGHT = 64;
+export const SORT_FILTER_HEIGHT = 80;
 export const MAIN_FOODLIST_HEADER_HEIGHT =
   24 +
   22 +
@@ -54,13 +54,12 @@ export const MAIN_FOODLIST_HEADER_HEIGHT =
   16 +
   12 +
   4 +
-  12 +
+  16 +
   ((SCREENWIDTH - 32 - 16) / 3 - 8) +
   4 +
   16 +
-  4 +
   16 +
-  24 +
+  4 +
   SORT_FILTER_HEIGHT;
 // HorizontalFoodlist 컴포넌트 height + SortFilter 컴포넌트 height
 
@@ -196,7 +195,10 @@ export const NUTR_RATIO_CD = [
   { cdNm: "40 : 40 : 20(벌크업)", cd: "SP005003" },
 ];
 
-export const categoryCode: { [key: string]: string } = {
+export const categoryCode: {
+  [key: string]: "" | "CG001" | "CG002" | "CG003" | "CG004" | "CG005" | "CG006";
+} = {
+  전체: "",
   도시락: "CG001",
   닭가슴살: "CG002",
   샐러드: "CG003",
@@ -225,13 +227,13 @@ export const NUTR_ERROR_RANGE: INutrErrorRange = {
 };
 
 export const SORT_LIST = [
-  { id: 0, label: "칼로리", name: "calorie" },
-  { id: 1, label: "탄수화물", name: "carb" },
+  // { id: 1, label: "탄수화물", name: "carb" },
+  // { id: 3, label: "지방", name: "fat" },
+  { id: 0, label: "가격", name: "price" },
+  { id: 1, label: "칼로리", name: "calorie" },
   { id: 2, label: "단백질", name: "protein" },
-  { id: 3, label: "지방", name: "fat" },
-  { id: 4, label: "가격", name: "price" },
-  { id: 5, label: "가칼비", name: "priceCalorieCompare" },
-  { id: 6, label: "가단비", name: "priceProteinCompare" },
+  { id: 3, label: "가칼비", name: "priceCalorieCompare" },
+  { id: 4, label: "가단비", name: "priceProteinCompare" },
 ];
 
 export const FILTER_LIST = [

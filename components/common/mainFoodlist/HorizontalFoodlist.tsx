@@ -126,7 +126,7 @@ const HorizontalFoodlist = ({
   showPlatformNm = true,
 }: IProductCardSection) => {
   return (
-    <Col style={{}}>
+    <Col>
       <Col style={{ marginLeft: paddingHorizontal ?? 16 }}>
         {title && <SectionTitle>{title}</SectionTitle>}
         {subTitle && <SectionSubTitle>{subTitle}</SectionSubTitle>}

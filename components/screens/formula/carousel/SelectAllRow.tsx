@@ -1,32 +1,34 @@
+import {
+  openBottomSheet,
+  setProductToDel,
+} from "@/features/reduxSlices/bottomSheetSlice";
 import { IDietDetailData } from "@/shared/api/types/diet";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import { HorizontalSpace, Icon, Row, TextMain } from "@/shared/ui/styledComps";
 import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
 import styled from "styled-components/native";
 
 interface ISelectAllRow {
-  selectedFoods: string[];
-  setSelectedFoods: React.Dispatch<React.SetStateAction<string[]>>;
   carouselMenu: IDietDetailData;
 }
-const SelectAllRow = ({
-  selectedFoods,
-  setSelectedFoods,
-  carouselMenu,
-}: ISelectAllRow) => {
+const SelectAllRow = ({ carouselMenu }: ISelectAllRow) => {
+  // redux
+  const dispatch = useAppDispatch();
+  const pToDel = useAppSelector((state) => state.bottomSheet.product.del);
+
   const isMenuEmpty = carouselMenu.length === 0;
-  const isCheckedAll =
-    !isMenuEmpty && selectedFoods.length === carouselMenu.length;
+  const isCheckedAll = !isMenuEmpty && pToDel.length === carouselMenu.length;
 
   // 전체선택 - 삭제 start
   const checkAll = () => {
-    const allArr = !isMenuEmpty ? carouselMenu.map((v) => v.productNo) : [];
-    carouselMenu && setSelectedFoods(allArr);
+    if (isMenuEmpty) return;
+    dispatch(setProductToDel([...carouselMenu]));
+    dispatch(openBottomSheet("productToAddSelect"));
   };
-  const unCheckAll = () => setSelectedFoods([]);
+  const unCheckAll = () => dispatch(setProductToDel([]));
 
   // if (isMenuEmpty) return null;
-
   return (
     <SelectedDeleteRow>
       <SelectAllBox

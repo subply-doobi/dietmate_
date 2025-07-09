@@ -22,8 +22,6 @@ const CategoryFilterBSComp = () => {
     (state) => state.filteredProduct.filter.category
   );
 
-  console.log("CategoryFilterBSComp category", category);
-
   const categoryArr = Object.keys(categoryCode);
 
   // bottomSheet

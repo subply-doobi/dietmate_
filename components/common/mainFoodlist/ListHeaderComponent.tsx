@@ -36,7 +36,7 @@ const ListHeaderComponent = ({ animatedStyle }: IListHeaderComponent) => {
     // Shuffle the combined list
     rowFoods1.sort(() => Math.random() - 0.5);
     setFoodlist(rowFoods1);
-  }, []);
+  }, [recentlyOpenedFoods, likedFoods, random3Foods]);
 
   return (
     <Col style={{ marginTop: 24 }}>

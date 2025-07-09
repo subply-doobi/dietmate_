@@ -3,23 +3,13 @@ import { FlatList, ImageSourcePropType } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
-import Toast from "react-native-toast-message";
 
 // doobi
 import { IProductData } from "@/shared/api/types/product";
-import {
-  ENV,
-  SCREENWIDTH,
-  SERVICE_PRICE_PER_PRODUCT,
-} from "@/shared/constants";
+import { ENV, SCREENWIDTH } from "@/shared/constants";
 import { Col, TextMain, TextSub } from "@/shared/ui/styledComps";
-import { commaToNum } from "@/shared/utils/sumUp";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import colors from "@/shared/colors";
-
-import { showProductSelectToast } from "@/shared/store/toastStore";
-import { ViewStyle } from "react-native";
-import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
+import ProductItem from "./ProductItem";
 
 interface IProductCardSection {
   title?: string;
@@ -33,87 +23,6 @@ interface IProductCardSection {
   showPlatformNm?: boolean;
   iconSource?: ImageSourcePropType;
 }
-interface IProductCardItem {
-  item: IProductData;
-  itemSize: number;
-  badgeText?: string;
-  showPlatformNm?: boolean;
-  style?: ViewStyle;
-}
-const ProductCardItem = ({
-  item,
-  itemSize,
-  showPlatformNm = true,
-  style = {},
-}: IProductCardItem) => {
-  // redux
-  const dispatch = useAppDispatch();
-  const autoAddFoodForAdd = useAppSelector(
-    (state) => state.formula.autoAddFoodForAdd
-  );
-  const autoAddFoodForChange = useAppSelector(
-    (state) => state.formula.autoAddFoodForChange
-  );
-
-  // etc
-  const isSelected = autoAddFoodForAdd?.productNo === item.productNo;
-
-  const onPress = () => {
-    if (isSelected) {
-      Toast.hide();
-      setTimeout(() => {
-        dispatch(
-          setAutoAddFood({
-            foodForAdd: undefined,
-            foodForChange: autoAddFoodForChange,
-          })
-        );
-      }, 150);
-      return;
-    }
-    dispatch(
-      setAutoAddFood({
-        foodForAdd: item,
-        foodForChange: autoAddFoodForChange,
-      })
-    );
-    showProductSelectToast();
-  };
-
-  return (
-    <Box
-      isSelected={isSelected}
-      style={[
-        {
-          width: itemSize,
-          boxShadow: isSelected ? "1px 2px 3px rgba(0, 0, 0, 0.12)" : "none",
-        },
-        { ...style },
-      ]}
-      onPress={onPress}
-    >
-      {showPlatformNm && <PlatformNm>{item.platformNm}</PlatformNm>}
-      <Thumbnail
-        source={{ uri: `${ENV.BASE_URL}${item.mainAttUrl}` }}
-        style={{
-          width: itemSize - 8,
-          height: itemSize - 8,
-        }}
-      />
-      <ProductNm
-        numberOfLines={1}
-        ellipsizeMode="tail"
-        style={{ alignSelf: "flex-start" }}
-      >
-        {item.productNm}
-      </ProductNm>
-      <Price>
-        {commaToNum(parseInt(item.price) + SERVICE_PRICE_PER_PRODUCT)}원
-      </Price>
-      {/* {badgeText && <ModernBadge>{badgeText}</ModernBadge>} */}
-    </Box>
-  );
-};
 
 const HorizontalFoodlist = ({
   title,
@@ -143,7 +52,7 @@ const HorizontalFoodlist = ({
         }}
         renderItem={({ item, index }) => {
           return (
-            <ProductCardItem
+            <ProductItem
               item={item}
               itemSize={itemSize}
               badgeText={badgeText}

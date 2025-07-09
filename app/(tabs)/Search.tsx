@@ -6,78 +6,55 @@ import { ActivityIndicator, Animated, FlatList, Platform } from "react-native";
 import styled from "styled-components/native";
 
 // doobi
-import MenuSection from "@/components/common/menuSection/MenuSection";
-import FlatlistHeaderComponent from "@/components/screens/search/FlatlistHeaderComponent";
-import HomeFoodListAndBtn from "@/components/screens/search/HomeFoodListAndBtn";
 import colors from "@/shared/colors";
 
 import { useHeaderHeight } from "@react-navigation/elements";
-import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import { useListProduct } from "@/shared/api/queries/product";
-import { IProductData } from "@/shared/api/types/product";
+import {
+  useListProduct,
+  useListProductMark,
+} from "@/shared/api/queries/product";
 import {
   DEFAULT_BOTTOM_TAB_HEIGHT,
+  SCREENWIDTH,
   tutorialSortFilter,
 } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Col, Container } from "@/shared/ui/styledComps";
+import Foodlist from "@/components/common/mainFoodlist/Foodlist";
+import {
+  selectFilteredSortedProducts,
+  setAvailableFoods,
+} from "@/features/reduxSlices/filteredPSlice";
+import { getRecentProducts } from "@/shared/utils/asyncStorage";
+import { useListOrder } from "@/shared/api/queries/order";
+import { useFocusEffect, usePathname } from "expo-router";
+import { setTotalFoodList } from "@/features/reduxSlices/commonSlice";
+import { useIsFocused } from "@react-navigation/native";
+import { setProductToDel } from "@/features/reduxSlices/bottomSheetSlice";
 
-// ManualAdd 와 튜토리얼, MenuSection 끼니선택만 다름
-// Search는 BottomTab에 보여져야해서 파일 분리
 const Search = () => {
   // navigation
-  const headerHeight = useHeaderHeight();
+  const pathName = usePathname();
+  const isFocused = useIsFocused();
 
   // redux
-  const { currentDietNo, isTutorialMode, tutorialProgress } = useAppSelector(
-    (state) => state.common
+  const dispatch = useAppDispatch();
+  const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
+  const totalFoodListIsLoaded = useAppSelector(
+    (state) => state.common.totalFoodListIsLoaded
   );
-  const { applied: appliedSortFilter } = useAppSelector(
-    (state) => state.sortFilter
-  );
+  const products = useAppSelector(selectFilteredSortedProducts);
 
   // react-query
   const { isLoading: getBaseLineIsLoading } = useGetBaseLine(); // 미리 캐싱
   const { data: dTOData, isLoading: isDTODataLoading } = useListDietTotalObj();
-  const dDData = dTOData?.[currentDietNo]?.dietDetail ?? [];
-  const numOfDiet = dTOData ? Object.keys(dTOData).length : 0;
-  const { data: productData } = useListProduct(
-    {
-      dietNo: currentDietNo,
-      appliedSortFilter: isTutorialMode
-        ? tutorialSortFilter
-        : appliedSortFilter,
-    },
-    {
-      enabled: currentDietNo ? true : false,
-    }
-  );
-
-  // Animation
-  // flatList header hide Event
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const diffClamp = Animated.diffClamp(scrollY, 0, 100);
-  const translateY = diffClamp.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, -100],
-  });
-  // flatlist scrollToTop
-  const flatListRef = useRef<FlatList<IProductData> | null>(null);
-  const scrollTop = () => {
-    flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
-  };
-
-  // etc
-  // useEffect(() => {
-  //   if (isTutorialMode && tutorialProgress === "SelectFood") {
-  //     setTimeout(() => {
-  //       dispatch(openModal({ name: "tutorialTPS", modalId: "Search" }));
-  //     }, 200);
-  //   } else {
-  //     dispatch(closeModal({ name: "tutorialTPS" }));
-  //   }
-  // }, [isTutorialMode, tutorialProgress]);
+  const createDietMutation = useCreateDiet();
+  const { data: listOrderData } = useListOrder();
+  const { data: likeData } = useListProductMark();
+  const numOfDiet = Object.keys(dTOData || {}).length;
 
   // render
   if (getBaseLineIsLoading || isDTODataLoading) {
@@ -87,49 +64,50 @@ const Search = () => {
       </Container>
     );
   }
-  const insetTop = useSafeAreaInsets().top;
 
-  return (
-    <Container
-      style={{
-        paddingTop: insetTop,
-        paddingBottom: Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0,
-      }}
-    >
-      {/* 끼니선택, progressBar section */}
-      <MenuSection />
+  useEffect(() => {
+    if (!isFocused) return;
+    dispatch(setProductToDel([]));
+  }, [isFocused]);
 
-      {numOfDiet === 0 ? (
-        <ContentContainer></ContentContainer>
-      ) : (
-        <ContentContainer>
-          {/* 검색결과 수 및 정렬 필터 */}
-          <FlatlistHeaderComponent
-            translateY={translateY}
-            searchedNum={productData?.length}
-          />
+  useEffect(() => {
+    if (!totalFoodListIsLoaded) return;
+    const loadProducts = async () => {
+      dispatch(
+        setAvailableFoods({
+          screenNm: pathName,
+          totalFoodList,
+          availableFoods: [],
+          recentOpenedFoodsPNoArr: await getRecentProducts(),
+          listOrderData: listOrderData || [],
+          likeData: likeData || [],
+        })
+      );
+    };
+    loadProducts();
+  }, [totalFoodListIsLoaded, totalFoodList.length]);
 
-          {/* 상품 리스트 */}
-          {!isTutorialMode && (
-            <HomeFoodListAndBtn
-              scrollY={scrollY}
-              flatListRef={flatListRef}
-              scrollTop={scrollTop}
-            />
-          )}
-        </ContentContainer>
-      )}
+  useEffect(() => {
+    if (!isFocused) return;
+    if (numOfDiet > 0) return;
+    createDietMutation.mutate({});
+  }, [numOfDiet]);
+
+  return totalFoodListIsLoaded ? (
+    <Container style={{ paddingHorizontal: 0 }}>
+      <Col>
+        <Foodlist
+          itemSize={(SCREENWIDTH - 32 - 8) / 2}
+          products={products}
+          gap={8}
+        />
+      </Col>
+    </Container>
+  ) : (
+    <Container style={{ justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator color={colors.main} size={"small"} />
     </Container>
   );
 };
 
 export default Search;
-
-const Container = styled.View`
-  flex: 1;
-`;
-
-const ContentContainer = styled.View`
-  flex: 1;
-  background-color: ${colors.white};
-`;

@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import styled from "styled-components/native";
 
 // doobi
-import { closeBottomSheet } from "@/features/reduxSlices/commonSlice";
 import {
   setSortBy,
   sortFilterStateInClient,
@@ -23,6 +22,7 @@ import {
   Row,
   TextMain,
 } from "@/shared/ui/styledComps";
+import { closeBottomSheet } from "@/features/reduxSlices/bottomSheetSlice";
 
 const sortTooltipText: {
   [key: string]: string;

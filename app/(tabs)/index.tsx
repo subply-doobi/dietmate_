@@ -26,10 +26,7 @@ import { PRODUCTS } from "@/shared/api/keys";
 import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
 
 import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
-import {
-  setCurrentDiet,
-  setTotalFoodList,
-} from "@/features/reduxSlices/commonSlice";
+import { setTotalFoodList } from "@/features/reduxSlices/commonSlice";
 
 import CurrentDietCard from "@/components/screens/home/CurrentDietCard";
 import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
@@ -43,13 +40,9 @@ const NewHome = () => {
 
   // redux
   const dispatch = useAppDispatch();
-  const {
-    currentDietNo,
-    totalFoodListIsLoaded,
-    isTutorialMode,
-    tutorialProgress,
-    totalFoodList,
-  } = useAppSelector((state) => state.common);
+  const { isTutorialMode, tutorialProgress, totalFoodList } = useAppSelector(
+    (state) => state.common
+  );
   const modalSeq = useAppSelector((state) => state.modal.modalSeq);
 
   // useRef (튜토리얼 식단 구성하기 버튼 위치)
@@ -60,16 +53,8 @@ const NewHome = () => {
   // const { data: testErrData, refetch: throwErr } = useTestErrQuery();
   const { data: bLData } = useGetBaseLine();
   const { data: dTOData } = useListDietTotalObj();
+  const initialDietNo = Object.keys(dTOData || {})[0] || "";
   const deleteDietAllMutation = useDeleteDietAll();
-  const { refetch: refetchLPData } = useListProduct(
-    {
-      dietNo: currentDietNo,
-      appliedSortFilter: initialSortFilterState.applied,
-    },
-    {
-      enabled: false,
-    }
-  );
   const { data: orderData } = useListOrder();
 
   // useMemo
@@ -128,31 +113,6 @@ const NewHome = () => {
   useEffect(() => {
     bLData && dispatch(loadBaseLineData(bLData));
   }, [bLData]);
-
-  // 앱 시작할 때 내가 어떤 끼니를 보고 있는지 redux에 저장해놓기 위해 필요함
-  useEffect(() => {
-    if (currentDietNo !== "") return;
-    const initializeDiet = async () => {
-      const firstDietNo = dTOData ? Object.keys(dTOData)[0] : "";
-      dispatch(setCurrentDiet(firstDietNo));
-    };
-
-    initializeDiet();
-  }, [dTOData]);
-
-  // 처음 앱 켰을 때 전체 식품리스트를 redux에 저장해놓고 끼니 자동구성에 사용
-  useEffect(() => {
-    const loadTotalFoodList = async () => {
-      if (!currentDietNo) return;
-      if (totalFoodListIsLoaded) return;
-      const lPData = (await refetchLPData()).data;
-      if (!lPData) return;
-      dispatch(setTotalFoodList(lPData));
-      queryClient.removeQueries({ queryKey: [PRODUCTS, currentDietNo] });
-    };
-
-    loadTotalFoodList();
-  }, [currentDietNo]);
 
   // useEffect
   // 튜토리얼 시작

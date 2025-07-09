@@ -1,5 +1,5 @@
 // RN, expo
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Text, ScrollView, View, ActivityIndicator } from "react-native";
 
 // 3rd
@@ -41,8 +41,13 @@ import {
   useGetProduct,
   useListProductMark,
 } from "@/shared/api/queries/product";
-import { useAppSelector } from "@/shared/hooks/reduxHooks";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
 
 import { icons } from "@/shared/iconSource";
 import { commaToNum, sumUpPriceOfSeller } from "@/shared/utils/sumUp";
@@ -52,6 +57,10 @@ import {
   makeTableData,
 } from "@/shared/utils/screens/foodDetail/makeNutrTable";
 import { addToRecentProduct } from "@/shared/utils/asyncStorage";
+import {
+  openBottomSheet,
+  setProductToAdd,
+} from "@/features/reduxSlices/bottomSheetSlice";
 
 interface IShowPart {
   clicked: string;
@@ -70,6 +79,7 @@ const ShowPart = ({ clicked, table, data }: IShowPart) => {
 
 const FoodDetail = () => {
   // redux
+  const dispatch = useAppDispatch();
   const { currentDietNo } = useAppSelector((state) => state.common);
 
   // navigation
@@ -108,7 +118,6 @@ const FoodDetail = () => {
   );
 
   // 식품마다 headerTitle바꾸기 + 최근 본 식품에 추가(지금은 asyncStorage)
-  // TBD : route.params.item 타입 관련 해결 및 만약 null값일 시 에러처리
   useEffect(() => {
     const waitPage = async () => {
       setTimeout(() => setIsPageLoading(false), 500);

@@ -1,5 +1,4 @@
 // react, expo
-import { useEffect, useState } from "react";
 
 // 3rd
 import styled from "styled-components/native";
@@ -14,20 +13,19 @@ import {
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
-import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import { Col, Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import ProductSelectFoodlist from "./ProductSelectTFoodlist";
 import NutrientsProgress from "../common/nutrient/NutrientsProgress";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
-import { IToastCustomConfigParams } from "@/shared/store/toastStore";
-import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
 import ProductSelectTShippingInfo from "./ProductSelectTShippingInfo";
 import { setRecentlyOpenedFoodsPNoArr } from "@/features/reduxSlices/filteredPSlice";
 import {
   addToRecentProduct,
   getRecentProducts,
 } from "@/shared/utils/asyncStorage";
+import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 
-const ProductSelectToast = (props: IToastCustomConfigParams) => {
+const ProductSelectToast = () => {
   // redux
   const dispatch = useAppDispatch();
   const autoAddFoodForAdd = useAppSelector(
@@ -37,6 +35,9 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
     (state) => state.formula.autoAddFoodForChange
   );
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
+
+  // BSM
+  const { dismiss } = useBottomSheetModal();
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
@@ -60,7 +61,7 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
     if (!autoAddFoodForAdd) {
       return;
     }
-    props.hide();
+    dismiss();
 
     await addToRecentProduct(autoAddFoodForAdd.productNo);
     const recentlyOpenedFoodsPNoArr = await getRecentProducts();
@@ -72,40 +73,23 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
   };
 
   const onPressAdd = () => {
-    if (!autoAddFoodForAdd) {
-      return;
-    }
-    props.hide();
-    setTimeout(() => {
-      dispatch(
-        setAutoAddFood({
-          foodForAdd: undefined,
-          foodForChange: undefined,
-        })
-      );
-    }, 150);
-    router.back();
-    setTimeout(async () => {
-      autoAddFoodForChange &&
-        (await deleteDietDetailMutation.mutateAsync({
-          dietNo: currentDietNo,
-          productNo: autoAddFoodForChange.productNo,
-        }));
-      await createDietDetailMutation.mutateAsync({
-        dietNo: currentDietNo,
-        food: autoAddFoodForAdd,
-      });
-    }, 500);
+    dismiss();
+    // router.back();
+    // setTimeout(async () => {
+    //   autoAddFoodForChange &&
+    //     (await deleteDietDetailMutation.mutateAsync({
+    //       dietNo: currentDietNo,
+    //       productNo: autoAddFoodForChange.productNo,
+    //     }));
+    //   await createDietDetailMutation.mutateAsync({
+    //     dietNo: currentDietNo,
+    //     food: autoAddFoodForAdd,
+    //   });
+    // }, 500);
   };
 
   const onPressBack = () => {
-    dispatch(
-      setAutoAddFood({
-        foodForAdd: undefined,
-        foodForChange: autoAddFoodForChange,
-      })
-    );
-    props.hide();
+    dismiss();
   };
 
   if (!autoAddFoodForAdd) {
@@ -165,7 +149,6 @@ const ProductSelectToast = (props: IToastCustomConfigParams) => {
 export default ProductSelectToast;
 
 const ToastBox = styled.View`
-  width: 95%;
   background-color: ${colors.blackOpacity80};
   padding: 24px 16px;
   border-radius: 4px;

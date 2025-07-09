@@ -1,4 +1,7 @@
-import { openBottomSheet } from "@/features/reduxSlices/commonSlice";
+import {
+  closeBottomSheet,
+  openBottomSheet,
+} from "@/features/reduxSlices/bottomSheetSlice";
 import {
   resetSortFilter,
   selectFilteredSortedProducts,
@@ -15,7 +18,6 @@ import {
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { categoryCodeToName, SORT_FILTER_HEIGHT } from "@/shared/constants";
-import { openBS } from "@/shared/hooks/bottomSheetHandler";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import DTooltip from "@/shared/ui/DTooltip";
@@ -267,17 +269,8 @@ const SortFilter = () => {
     },
   ];
 
-  // product.length === 0 일때 sortFilter 동작 안하는 문제있음
-  // -> 해당 상황에서만 sortFilterKey를 변경하여 강제로 리렌더링
-  const [sortFilterKey, toggleSortFilterKey] = useState(false);
-  useEffect(() => {
-    if (products.length !== 0) return;
-    toggleSortFilterKey((prev) => !prev);
-  }, [products.length]);
-
   return (
     <ScrollView
-      key={String(sortFilterKey)}
       style={{ height: SORT_FILTER_HEIGHT }}
       keyboardShouldPersistTaps="always"
       horizontal

@@ -9,6 +9,7 @@ import autoMenuReducer from "../../features/reduxSlices/autoMenuSlice";
 import filteredProductReducer from "../../features/reduxSlices/filteredPSlice";
 import formulaReducer from "../../features/reduxSlices/formulaSlice";
 import lowerShippingReducer from "../../features/reduxSlices/lowerShippingSlice";
+import bottomSheetReducer from "../../features/reduxSlices/bottomSheetSlice";
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     autoMenu: autoMenuReducer,
     order: orderReducer,
     modal: modalReducer,
+    bottomSheet: bottomSheetReducer, // Add BottomSheet reducer
   },
 });
 

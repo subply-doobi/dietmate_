@@ -8,6 +8,7 @@ import {
   IShippingPriceObj,
   IShippingPriceValues,
 } from "@/shared/utils/sumUp";
+import { StyleProp, ViewStyle } from "react-native";
 import styled from "styled-components/native";
 
 interface ISellerShippingText {

@@ -29,25 +29,31 @@ const BaseListTypeFilterBSComp = () => {
     dismiss();
   };
 
-  return Object.values(BASE_LIST_TYPE).map((type, idx) => (
-    <Col key={idx}>
-      <Btn
-        key={idx}
-        onPress={() => {
-          selectBaseListType(
-            Object.keys(BASE_LIST_TYPE)[idx] as
-              | "totalFoodList"
-              | "availableFoods"
-          );
-        }}
-      >
-        <Text isActive={baseListType === Object.keys(BASE_LIST_TYPE)[idx]}>
-          {type}
-        </Text>
-      </Btn>
-      {idx !== Object.values(BASE_LIST_TYPE).length - 1 && <HorizontalLine />}
+  return (
+    <Col>
+      {Object.values(BASE_LIST_TYPE).map((type, idx) => (
+        <Col key={idx}>
+          <Btn
+            key={idx}
+            onPress={() => {
+              selectBaseListType(
+                Object.keys(BASE_LIST_TYPE)[idx] as
+                  | "totalFoodList"
+                  | "availableFoods"
+              );
+            }}
+          >
+            <Text isActive={baseListType === Object.keys(BASE_LIST_TYPE)[idx]}>
+              {type}
+            </Text>
+          </Btn>
+          {idx !== Object.values(BASE_LIST_TYPE).length - 1 && (
+            <HorizontalLine />
+          )}
+        </Col>
+      ))}
     </Col>
-  ));
+  );
 };
 
 export default BaseListTypeFilterBSComp;

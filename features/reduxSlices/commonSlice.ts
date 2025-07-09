@@ -7,7 +7,6 @@ import {
   separateFoods,
 } from "../../shared/utils/dataTransform";
 import { getMedianCalorie } from "../../shared/utils/sumUp";
-import { IBSCompNm } from "@/components/bottomSheet/GlobalBSM";
 
 const initialCategory = {
   lunchBox: [],
@@ -36,8 +35,6 @@ export interface ICommonState {
     insetTop: number;
   };
   globalLoading: boolean;
-  bottomSheetName: string;
-  currentDietNo: string;
   foodNeededArr: boolean[];
   totalFoodList: IProductData[];
   totalFoodListIsLoaded: boolean;
@@ -61,9 +58,7 @@ const initialState: ICommonState = {
     bottomTabBarHeight: 49,
     insetTop: 0,
   },
-  bottomSheetName: "",
   globalLoading: false,
-  currentDietNo: "",
   foodNeededArr: [],
   totalFoodList: [],
   totalFoodListIsLoaded: false,
@@ -103,17 +98,6 @@ export const commonSlice = createSlice({
     },
     setGlobalLoading: (state, action: PayloadAction<boolean>) => {
       state.globalLoading = action.payload;
-    },
-    openBottomSheet: (state, action: PayloadAction<IBSCompNm>) => {
-      state.bottomSheetName = action.payload;
-    },
-    closeBottomSheet: (state) => {
-      state.bottomSheetName = "";
-    },
-    setCurrentDiet: (state, action: PayloadAction<string>) => {
-      state.currentDietNo = action.payload;
-      state.progressTooltipShow = true;
-      // queryClient.invalidateQueries([PRODUCTS]);
     },
     setFoodNeededArr: (state, action: PayloadAction<boolean[]>) => {
       state.foodNeededArr = action.payload;
@@ -181,9 +165,6 @@ export const commonSlice = createSlice({
 export const {
   setInsets,
   setGlobalLoading,
-  openBottomSheet,
-  closeBottomSheet,
-  setCurrentDiet,
   setFoodNeededArr,
   setTotalFoodList,
   setMenuAcActive,

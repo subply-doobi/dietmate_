@@ -72,7 +72,7 @@ const ProgressBar = ({
       <ProgressBarTitle textColor={textColor}>{title}</ProgressBarTitle>
       <Progress.Bar
         // key={`${title}_${color}`}
-        style={{ marginTop: 5 }}
+        style={{ marginTop: 4 }}
         progress={progress}
         width={null}
         height={4}
@@ -190,7 +190,7 @@ const ProgressBarNumber = styled(TextMain)<{ textColor?: string }>`
   color: ${({ textColor }) => textColor || colors.textMain};
   font-size: 12px;
   line-height: 16px;
-  margin-top: 5px;
+  margin-top: 4px;
   text-align: right;
 `;
 

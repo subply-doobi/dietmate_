@@ -21,9 +21,8 @@ import { useRouter } from "expo-router";
 
 interface IMenuAcActiveHeader {
   dietNo: string;
-  bLData: IBaseLineData;
 }
-const MenuAcActiveHeader = ({ bLData, dietNo }: IMenuAcActiveHeader) => {
+const MenuAcActiveHeader = ({ dietNo }: IMenuAcActiveHeader) => {
   // redux
   const dispatch = useAppDispatch();
   const router = useRouter();

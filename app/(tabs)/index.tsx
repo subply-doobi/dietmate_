@@ -33,6 +33,8 @@ import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
 import LastOrderCard from "@/components/screens/home/LastOrderCard";
 import Profile from "@/components/screens/home/Profile";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import CtaButton from "@/shared/ui/CtaButton";
+import { openBS } from "@/features/reduxSlices/bottomSheetSlice";
 
 const NewHome = () => {
   // navigation
@@ -210,6 +212,14 @@ const NewHome = () => {
         />
 
         <HorizontalSpace height={40} />
+
+        <CtaButton
+          btnStyle="active"
+          btnText="test"
+          onPress={() => {
+            dispatch(openBS("productToAddSelect"));
+          }}
+        />
       </ScrollView>
     </Container>
   );

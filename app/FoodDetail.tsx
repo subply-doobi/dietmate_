@@ -57,10 +57,7 @@ import {
   makeTableData,
 } from "@/shared/utils/screens/foodDetail/makeNutrTable";
 import { addToRecentProduct } from "@/shared/utils/asyncStorage";
-import {
-  openBottomSheet,
-  setProductToAdd,
-} from "@/features/reduxSlices/bottomSheetSlice";
+import { setProductToAdd } from "@/features/reduxSlices/bottomSheetSlice";
 
 interface IShowPart {
   clicked: string;
@@ -80,7 +77,7 @@ const ShowPart = ({ clicked, table, data }: IShowPart) => {
 const FoodDetail = () => {
   // redux
   const dispatch = useAppDispatch();
-  const { currentDietNo } = useAppSelector((state) => state.common);
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
   // navigation
   const navigation = useNavigation();
@@ -88,13 +85,14 @@ const FoodDetail = () => {
   const params = useLocalSearchParams();
 
   // react-query
+  const { data: dTOData } = useListDietTotalObj();
+  const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx];
   const { data: productData, refetch: refetchProduct } = useGetProduct({
     dietNo: currentDietNo,
     productNo: params.productNo as string,
   });
   const { data: likeData } = useListProductMark();
   const { data: baseLineData } = useGetBaseLine();
-  const { data: dTOData } = useListDietTotalObj();
   const dietDetailData = dTOData?.[currentDietNo]?.dietDetail ?? [];
   const dietDetailAllData = tfDTOToDDA(dTOData);
   const createProductMarkMutation = useCreateProductMark();

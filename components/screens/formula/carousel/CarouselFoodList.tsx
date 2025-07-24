@@ -9,11 +9,7 @@ import { TextMain, TextSub, VerticalSpace } from "@/shared/ui/styledComps";
 import { commaToNum } from "@/shared/utils/sumUp";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import {
-  closeBottomSheet,
-  openBottomSheet,
-  setProductToDel,
-} from "@/features/reduxSlices/bottomSheetSlice";
+import { setProductToDel } from "@/features/reduxSlices/bottomSheetSlice";
 import { useEffect, useRef } from "react";
 
 const ITEM_WIDTH = 88;

@@ -3,7 +3,6 @@ import { IProductData, IProductDetailData } from "@/shared/api/types/product";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type IBSNm =
-  | "none"
   // sort and filter
   | "baseListTypeFilter"
   | "categoryFilter"
@@ -13,19 +12,16 @@ export type IBSNm =
   | "productToAddSelect"
   | "productToDelSelect";
 
-type bsAction =
-  | { type: "close" }
-  | { type: "collapse" }
-  | { type: "dismiss" }
-  | { type: "expand" }
-  | { type: "forceClose" }
-  | { type: "present" }
-  | { type: "snapToIndex"; index: number }
-  | { type: "snapToPosition"; position: number };
+export type IBSAction =
+  | { type: "open"; bsNm: IBSNm }
+  | { type: "close"; bsNm?: IBSNm }
+  | { type: "closeAll" }
+  | { type: "snapToIndex"; index: number; bsNm: IBSNm }
+  | { type: "expand"; bsNm: IBSNm };
 
 interface BottomSheetState {
-  bsNm: IBSNm;
-  bsAction: bsAction | undefined;
+  bsNmArr: IBSNm[];
+  actionQueue: IBSAction[];
   currentValue: { index: number; position: number };
   // product select
   product: {
@@ -35,8 +31,8 @@ interface BottomSheetState {
 }
 
 const initialState: BottomSheetState = {
-  bsNm: "none",
-  bsAction: undefined,
+  bsNmArr: [],
+  actionQueue: [],
   currentValue: { index: -1, position: 0 },
   // product select
   product: {
@@ -49,13 +45,65 @@ const bottomSheetSlice = createSlice({
   name: "bottomSheet",
   initialState,
   reducers: {
-    openBottomSheet: (state, action: PayloadAction<IBSNm>) => {
-      state.bsNm = action.payload;
+    // bs action
+    // payload 없는 경우 : 기존 bsNmArr[lastIdx] open
+    // payload 있는 경우 : bsNmArr에 추가하거나 맨 뒤로 옮겨서 open
+    openBS: (state, action: PayloadAction<IBSNm>) => {
+      state.actionQueue.push({
+        type: "open",
+        bsNm: action.payload,
+      });
+
+      if (!state.bsNmArr.includes(action.payload)) {
+        state.bsNmArr.push(action.payload);
+        return;
+      }
+
+      const filteredArr = state.bsNmArr.filter(
+        (name) => name !== action.payload
+      );
+      state.bsNmArr = [...filteredArr, action.payload];
     },
-    closeBottomSheet: (state) => {
-      // state.bsNm === "productSelect" && (state.product.add = undefined);
-      state.bsNm = "none";
+
+    // bsNm에 따라 bsConfig 변경되기 때문에 bs 닫히기 전에 config 변경되면 디자인 깨짐
+    // closeBS의 경우에는 닫힌게 확인이 된 후 bsNm 제거
+    // (GlobalBSM.tsx에서 actionQueue 처리 -> onChange 후에 bsNm 제거)
+    // payload 없는 경우 : 현재 bsNmArr[lastIdx] close
+    // payload 있는 경우 : bsNmArr에서 해당 bsNm 제거
+    closeBS: (state) => {
+      state.actionQueue.push({
+        type: "close",
+      });
     },
+    closeBSAll: (state) => {
+      state.actionQueue.push({
+        type: "closeAll",
+      });
+    },
+    removeBSNm: (state, action: PayloadAction<IBSNm>) => {
+      const bsNm = action.payload;
+      state.bsNmArr = state.bsNmArr.filter((name) => name !== bsNm);
+    },
+    removeAllBsNm: (state) => {
+      state.bsNmArr = [];
+    },
+    snapBS: (state, action: PayloadAction<{ index: number; bsNm: IBSNm }>) => {
+      const { index, bsNm } = action.payload;
+      state.actionQueue.push({ type: "snapToIndex", index, bsNm });
+    },
+    expandBS: (state, action: PayloadAction<{ bsNm: IBSNm }>) => {
+      const { bsNm } = action.payload;
+      state.actionQueue.push({ type: "expand", bsNm });
+    },
+    dequeueBSAction: (state) => {
+      if (state.actionQueue.length > 0) {
+        state.actionQueue.shift();
+      }
+    },
+    resetBSActionQueue: (state) => {
+      state.actionQueue = [];
+    },
+
     // product select
     setProductToAdd: (
       state,
@@ -75,12 +123,6 @@ const bottomSheetSlice = createSlice({
         del: [],
       };
     },
-    setBSAction: (state, action: PayloadAction<bsAction>) => {
-      state.bsAction = action.payload;
-    },
-    clearBSAction: (state) => {
-      state.bsAction = undefined;
-    },
     setCurrentValue: (
       state,
       action: PayloadAction<{ index: number; position: number }>
@@ -91,13 +133,18 @@ const bottomSheetSlice = createSlice({
 });
 
 export const {
-  openBottomSheet,
-  closeBottomSheet,
   setProductToAdd,
   setProductToDel,
   deleteBSProduct,
-  setBSAction,
-  clearBSAction,
+  openBS,
+  closeBS,
+  closeBSAll,
+  removeBSNm,
+  removeAllBsNm,
+  snapBS,
+  expandBS,
+  dequeueBSAction,
+  resetBSActionQueue,
   setCurrentValue,
 } = bottomSheetSlice.actions;
 export default bottomSheetSlice.reducer;

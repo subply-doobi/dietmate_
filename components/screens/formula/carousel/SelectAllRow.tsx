@@ -1,11 +1,11 @@
 import {
-  openBottomSheet,
+  openBS,
   setProductToDel,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import { IDietDetailData } from "@/shared/api/types/diet";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
-import { HorizontalSpace, Icon, Row, TextMain } from "@/shared/ui/styledComps";
+import { Icon, Row, TextMain } from "@/shared/ui/styledComps";
 import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
 import styled from "styled-components/native";
 
@@ -24,7 +24,7 @@ const SelectAllRow = ({ carouselMenu }: ISelectAllRow) => {
   const checkAll = () => {
     if (isMenuEmpty) return;
     dispatch(setProductToDel([...carouselMenu]));
-    dispatch(openBottomSheet("productToAddSelect"));
+    dispatch(openBS("productToAddSelect"));
   };
   const unCheckAll = () => dispatch(setProductToDel([]));
 

@@ -22,7 +22,7 @@ import {
   Row,
   TextMain,
 } from "@/shared/ui/styledComps";
-import { closeBottomSheet } from "@/features/reduxSlices/bottomSheetSlice";
+import { closeBS } from "@/features/reduxSlices/bottomSheetSlice";
 
 const sortTooltipText: {
   [key: string]: string;
@@ -87,7 +87,7 @@ const SortBSComp = () => {
   };
 
   const applySort = () => {
-    dispatch(closeBottomSheet());
+    dispatch(closeBS());
     dispatch(
       setSortBy(
         tempSortState.sortNm.concat(

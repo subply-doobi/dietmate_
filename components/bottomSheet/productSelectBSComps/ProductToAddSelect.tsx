@@ -2,10 +2,10 @@ import NutrientsProgress from "@/components/common/nutrient/NutrientsProgress";
 import ProductSelectFoodlist from "@/components/toast/ProductSelectTFoodlist";
 import ProductSelectTShippingInfo from "@/components/toast/ProductSelectTShippingInfo";
 import {
-  closeBottomSheet,
+  closeBS,
   deleteBSProduct,
-  setBSAction,
-  setProductToDel,
+  expandBS,
+  snapBS,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import { setRecentlyOpenedFoodsPNoArr } from "@/features/reduxSlices/filteredPSlice";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
@@ -34,6 +34,7 @@ import {
 } from "@/shared/utils/asyncStorage";
 import { commaToNum } from "@/shared/utils/sumUp";
 import { usePathname, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
@@ -61,7 +62,6 @@ const ProductToAddSelect = () => {
     (state) => state.bottomSheet.product
   );
   const bsValue = useAppSelector((state) => state.bottomSheet.currentValue);
-
   // react-query
   const { data: dTOData } = useListDietTotalObj();
   const deleteDietDetailMutation = useDeleteDietDetail();
@@ -111,7 +111,7 @@ const ProductToAddSelect = () => {
     if (!pToAdd) {
       return;
     }
-    dispatch(closeBottomSheet());
+    dispatch(closeBS());
 
     await addToRecentProduct(pToAdd[0]?.productNo);
     const recentlyOpenedFoodsPNoArr = await getRecentProducts();
@@ -125,18 +125,17 @@ const ProductToAddSelect = () => {
   };
 
   const onPressAdd = () => {
-    dispatch(closeBottomSheet());
-    if (isIncluded) {
-      router.push({
-        pathname: "/Formula",
-      });
-      dispatch(setProductToDel(pToAdd));
-      return;
-    }
     if (pathNm !== "/Search") {
       router.back();
     }
     setTimeout(async () => {
+      if (isIncluded) {
+        deleteDietDetailMutation.mutate({
+          dietNo: currentDietNo,
+          productNo: pToAdd[0].productNo,
+        });
+        return;
+      }
       pToDel[0] &&
         (await deleteDietDetailMutation.mutateAsync({
           dietNo: currentDietNo,
@@ -146,18 +145,22 @@ const ProductToAddSelect = () => {
         dietNo: currentDietNo,
         food: pToAdd[0],
       });
-      dispatch(deleteBSProduct());
     }, 10);
+    dispatch(deleteBSProduct());
+    setTimeout(() => {
+      dispatch(snapBS({ index: 0, bsNm: "productToAddSelect" }));
+    }, 150);
   };
 
   return (
     <Box>
-      {/* 현재 근, NutrProgress */}
+      {/* 주요정보 : 현재 근, 담긴 식품 */}
       <Row
         style={{
           justifyContent: pathNm === "/AutoAdd" ? "center" : "space-between",
           width: "100%",
           height: 32,
+          marginTop: -8,
         }}
       >
         {pathNm !== "/AutoAdd" && (
@@ -177,93 +180,105 @@ const ProductToAddSelect = () => {
           </LRBtn>
         )}
       </Row>
-      <NutrientsProgress
-        dietDetailData={expectedMenu}
-        textColor={colors.whiteOpacity70}
-      />
 
       {/* 현재 근 식품 확인 */}
       <HorizontalSpace height={12} />
       <ProductSelectFoodlist foods={currentMenu} />
       <HorizontalSpace height={16} />
+      <HorizontalLine lineColor={colors.whiteOpacity30} />
 
-      {/* 썸네일, 식품사, 식품명, 영양정보 */}
       {!!pToAdd[0] && (
         <>
-          <HorizontalLine lineColor={colors.whiteOpacity30} />
-          <CtaRow>
-            <InfoBtn onPress={onPressInfo}>
-              <Icon
-                source={{ uri: `${ENV.BASE_URL}${pToAdd[0].mainAttUrl}` }}
-                style={{ borderRadius: 4 }}
-                size={52}
-              />
-              <Col style={{ flex: 1 }}>
-                {!!pToDel[0] && (
-                  <ProductNm
-                    ellipsizeMode="tail"
-                    numberOfLines={1}
-                    style={{
-                      color: colors.textSub,
-                      textDecorationLine: "line-through",
-                      fontWeight: "200",
-                    }}
-                  >
-                    [{pToDel[0]?.platformNm}] {pToDel[0]?.productNm}
-                  </ProductNm>
-                )}
-                <ProductNm numberOfLines={1} ellipsizeMode="tail">
-                  {pToAdd[0].productNm}
-                </ProductNm>
-                <NutrText>{`칼:${parseInt(
-                  pToAdd[0].calorie
-                )}kcal  탄:${parseInt(pToAdd[0]?.carb)}g  단:${parseInt(
-                  pToAdd[0].protein
-                )}g  지:${parseInt(pToAdd[0]?.fat)}g | ${commaToNum(
-                  parseInt(pToAdd[0].price) + SERVICE_PRICE_PER_PRODUCT
-                )}원`}</NutrText>
-              </Col>
-            </InfoBtn>
-            {bsValue.index === 0 && !isIncluded && (
-              <CTA onPress={onPressAdd}>
+          {/* 썸네일, 식품사, 식품명, 영양정보 */}
+          <HorizontalSpace height={16} />
+          {!!pToAdd[0] && (
+            <CtaRow>
+              <InfoBtn onPress={onPressInfo}>
                 <Icon
-                  source={
-                    pToDel[0]
-                      ? icons.changeRoundWhite_24
-                      : icons.plusRoundWhite_24
-                  }
-                  size={24}
+                  source={{ uri: `${ENV.BASE_URL}${pToAdd[0].mainAttUrl}` }}
+                  style={{ borderRadius: 4 }}
+                  size={52}
                 />
-              </CTA>
+                <Col style={{ flex: 1 }}>
+                  {!!pToDel[0] && (
+                    <ProductNm
+                      ellipsizeMode="tail"
+                      numberOfLines={1}
+                      style={{
+                        color: colors.textSub,
+                        textDecorationLine: "line-through",
+                        fontWeight: "200",
+                      }}
+                    >
+                      [{pToDel[0]?.platformNm}] {pToDel[0]?.productNm}
+                    </ProductNm>
+                  )}
+                  <ProductNm numberOfLines={1} ellipsizeMode="tail">
+                    {pToAdd[0].productNm}
+                  </ProductNm>
+                  <NutrText>{`칼:${parseInt(
+                    pToAdd[0].calorie
+                  )}kcal  탄:${parseInt(pToAdd[0]?.carb)}g  단:${parseInt(
+                    pToAdd[0].protein
+                  )}g  지:${parseInt(pToAdd[0]?.fat)}g | ${commaToNum(
+                    parseInt(pToAdd[0].price) + SERVICE_PRICE_PER_PRODUCT
+                  )}원`}</NutrText>
+                </Col>
+              </InfoBtn>
+              {bsValue.index === 1 && (
+                <CTA onPress={onPressAdd}>
+                  <Icon
+                    source={
+                      isIncluded
+                        ? icons.deleteRoundWhite_24
+                        : pToDel[0]
+                        ? icons.changeRoundWhite_24
+                        : icons.plusRoundWhite_24
+                    }
+                    size={24}
+                  />
+                </CTA>
+              )}
+            </CtaRow>
+          )}
+          <MoreBox>
+            {bsValue.index === 1 && (
+              <TouchableOpacity
+                onPress={() =>
+                  dispatch(expandBS({ bsNm: "productToAddSelect" }))
+                }
+              >
+                <Icon
+                  source={icons.more_24}
+                  size={16}
+                  style={{ alignSelf: "center" }}
+                />
+              </TouchableOpacity>
             )}
-          </CtaRow>
+          </MoreBox>
+          {/* 선택된 식품사 배송비정보 */}
+          {!isIncluded && (
+            <ProductSelectTShippingInfo
+              containerStyle={{ marginLeft: 2, marginTop: 12 }}
+            />
+          )}
+
+          {/* 영양정보 */}
+          <HorizontalSpace height={24} />
+          <NutrientsProgress
+            dietDetailData={expectedMenu}
+            textColor={colors.textSub}
+          />
+
+          {/* 식품추가 버튼 */}
+          <CTA
+            style={{ width: "100%", marginVertical: 24 }}
+            onPress={onPressAdd}
+          >
+            <ProductNm>{ctaText}</ProductNm>
+          </CTA>
         </>
       )}
-      <MoreBox>
-        {bsValue.index === 0 ? (
-          <TouchableOpacity
-            onPress={() => dispatch(setBSAction({ type: "expand" }))}
-          >
-            <Icon
-              source={icons.more_24}
-              size={20}
-              style={{ alignSelf: "center", marginTop: -4 }}
-            />
-          </TouchableOpacity>
-        ) : (
-          <HorizontalLine lineColor={colors.whiteOpacity30} />
-        )}
-      </MoreBox>
-
-      {/* 선택된 식품사 배송비정보 */}
-      {!isIncluded && (
-        <ProductSelectTShippingInfo containerStyle={{ marginLeft: 2 }} />
-      )}
-
-      {/* 식품추가 버튼 */}
-      <CTA style={{ width: "100%", marginVertical: 24 }} onPress={onPressAdd}>
-        <ProductNm>{ctaText}</ProductNm>
-      </CTA>
     </Box>
   );
 };
@@ -287,16 +302,16 @@ const LRBtn = styled.TouchableOpacity`
 const CtaRow = styled.View`
   flex: 1;
   flex-direction: row;
-  height: 72px;
+  height: 52px;
   column-gap: 8px;
   justify-content: space-between;
   align-items: center;
 `;
 
 const MoreBox = styled.View`
-  height: 24px;
+  height: 16px;
   width: 100%;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: center;
 `;
 

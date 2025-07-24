@@ -1,34 +1,48 @@
 import styled from "styled-components/native";
 import { ENV } from "@/shared/constants";
-import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import { TextSub } from "@/shared/ui/styledComps";
 import { IDietDetailData } from "@/shared/api/types/diet";
-import { useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import colors from "@/shared/colors";
-import { icons } from "@/shared/iconSource";
+import { closeBS } from "@/features/reduxSlices/bottomSheetSlice";
+import {
+  addToRecentProduct,
+  getRecentProducts,
+} from "@/shared/utils/asyncStorage";
+import { setRecentlyOpenedFoodsPNoArr } from "@/features/reduxSlices/filteredPSlice";
+import { useRouter } from "expo-router";
 
 const ProductSelectFoodlist = ({ foods }: { foods: IDietDetailData }) => {
+  // navigation
+  const router = useRouter();
+
   // redux
+  const dispatch = useAppDispatch();
   const { add: pToAdd, del: pToDel } = useAppSelector(
     (state) => state.bottomSheet.product
   );
-  const isIncluded = foods.some((f) => f.productNo === pToAdd[0]?.productNo);
+
+  const onItemPressed = async (productNo: string) => {
+    dispatch(closeBS());
+
+    await addToRecentProduct(pToAdd[0]?.productNo);
+    const recentlyOpenedFoodsPNoArr = await getRecentProducts();
+    dispatch(setRecentlyOpenedFoodsPNoArr(recentlyOpenedFoodsPNoArr));
+
+    setTimeout(() => {
+      router.push({
+        pathname: "/FoodDetail",
+        params: { productNo, type: "infoOnly" },
+      });
+    }, 200);
+  };
 
   return (
     <Container>
-      {/* {pToAdd[0] && !isIncluded && (
-        <Row style={{ columnGap: 4 }}>
-          <SelectedItemBox>
-            <ThumbnailImg
-              source={{ uri: `${ENV.BASE_URL}${pToAdd[0]?.mainAttUrl}` }}
-              resizeMode="cover"
-              style={{ width: 64, height: 64 }}
-            />
-          </SelectedItemBox>
-          <Icon source={icons.plusRoundBlack_32} size={24} />
-        </Row>
-      )} */}
       <CurrentMenuBox
-        style={{ justifyContent: foods.length === 0 ? "center" : "flex-start" }}
+        style={{
+          justifyContent: foods.length === 0 ? "center" : "flex-start",
+        }}
       >
         {foods.length === 0 && <EmptyText>식품을 추가해봐요</EmptyText>}
         {foods.map((f) => {
@@ -37,7 +51,10 @@ const ProductSelectFoodlist = ({ foods }: { foods: IDietDetailData }) => {
           const opacityVisible = isIncluded || isToDel;
           const opacityText = isIncluded ? "삭제" : "교체";
           return (
-            <ItemBox key={f.productNo}>
+            <ItemBox
+              key={f.productNo}
+              onPress={() => onItemPressed(f.productNo)}
+            >
               <ThumbnailImg
                 source={{ uri: `${ENV.BASE_URL}${f.mainAttUrl}` }}
                 resizeMode="cover"
@@ -91,7 +108,7 @@ const OpacityText = styled(TextSub)`
   font-weight: 500;
 `;
 
-const ItemBox = styled.View`
+const ItemBox = styled.TouchableOpacity`
   align-items: center;
 `;
 const SelectedItemBox = styled.View`

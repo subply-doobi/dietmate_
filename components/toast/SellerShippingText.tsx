@@ -87,9 +87,7 @@ const SellerShippingText = ({
   return (
     <Col>
       <Row>
-        <Text style={{ fontWeight: "bold" }} mainTextColor={mainTextColor}>
-          {seller}
-        </Text>
+        <Text mainTextColor={mainTextColor}>{seller}</Text>
       </Row>
       <Row style={{ columnGap: 4, marginTop: 4 }}>
         <SubText subTextColor={subTextColor}>식품 :</SubText>
@@ -140,13 +138,14 @@ const SellerShippingText = ({
 export default SellerShippingText;
 
 const Text = styled(TextMain)<{ mainTextColor: string }>`
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
   color: ${({ mainTextColor }) => mainTextColor || colors.textMain};
 `;
 
 const SubText = styled(TextSub)<{ subTextColor: string }>`
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
   color: ${({ subTextColor }) => subTextColor || colors.textSub};
 `;

@@ -1,7 +1,4 @@
-import {
-  closeBottomSheet,
-  openBottomSheet,
-} from "@/features/reduxSlices/bottomSheetSlice";
+import { openBS, closeBS } from "@/features/reduxSlices/bottomSheetSlice";
 import {
   resetSortFilter,
   selectFilteredSortedProducts,
@@ -37,7 +34,7 @@ import styled from "styled-components/native";
 const SortFilter = () => {
   // navigation
   // const autoAddType = useLocalSearchParams()?.type;
-  // const pathName = usePathname();
+  const pathName = usePathname();
 
   // redux
   const dispatch = useAppDispatch();
@@ -128,7 +125,7 @@ const SortFilter = () => {
         ? icons.targetActive_24
         : icons.targetInactive_24,
       iconSize: 18,
-      onPress: () => dispatch(openBottomSheet("baseListTypeFilter")),
+      onPress: () => dispatch(openBS("baseListTypeFilter")),
     },
     // 카테고리
     {
@@ -138,7 +135,7 @@ const SortFilter = () => {
       iconSource: undefined,
       iconSize: 20,
       onPress: () => {
-        dispatch(openBottomSheet("categoryFilter"));
+        dispatch(openBS("categoryFilter"));
       },
     },
     // 검색
@@ -173,7 +170,7 @@ const SortFilter = () => {
         : icons.truckInactive_24,
       iconSize: 24,
       onPress: () => {
-        dispatch(openBottomSheet("platformFilter"));
+        dispatch(openBS("platformFilter"));
         isTooltipShow && setIsTooltipShow(false);
       },
     },
@@ -253,7 +250,7 @@ const SortFilter = () => {
           : icons.sort_24,
       iconSize: 18,
       onPress: () => {
-        dispatch(openBottomSheet("sort"));
+        dispatch(openBS("sort"));
       },
     },
     // 초기화

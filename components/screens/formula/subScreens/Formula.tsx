@@ -28,12 +28,11 @@ import {
 import CtaButton from "@/shared/ui/CtaButton";
 import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import Toast from "react-native-toast-message";
 import EdgeInfo from "@/components/common/summaryInfo/EdgeInfo";
 import DTooltip from "@/shared/ui/DTooltip";
 import {
-  closeBottomSheet,
-  openBottomSheet,
+  closeBS,
+  openBS,
   setProductToDel,
 } from "@/features/reduxSlices/bottomSheetSlice";
 
@@ -93,9 +92,16 @@ const Formula = () => {
 
   useEffect(() => {
     if (!isFocused) return;
-    pToDel.length === 0
-      ? dispatch(closeBottomSheet())
-      : dispatch(openBottomSheet("productToDelSelect"));
+    console.log("Formula subscreen isFocused", isFocused);
+
+    if (pToDel.length === 0) {
+      dispatch(closeBS());
+      return;
+    }
+
+    setTimeout(() => {
+      dispatch(openBS("productToDelSelect"));
+    }, 100);
   }, [pToDel, isFocused]);
 
   // etc
@@ -191,7 +197,7 @@ const Formula = () => {
             />
           )}
         />
-        <EdgeInfo visible={priceTotal > 0} />
+        {/* <EdgeInfo visible={priceTotal > 0} /> */}
 
         {isAllSuccess && (
           <CtaButton

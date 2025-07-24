@@ -29,7 +29,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import styled from "styled-components/native";
 import {
-  closeBottomSheet,
+  closeBSAll,
   setProductToAdd,
 } from "@/features/reduxSlices/bottomSheetSlice";
 
@@ -109,7 +109,7 @@ const AutoAdd = () => {
   useFocusEffect(
     useCallback(() => {
       return () => {
-        dispatch(closeBottomSheet());
+        dispatch(closeBSAll());
       };
     }, [])
   );

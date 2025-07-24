@@ -21,7 +21,12 @@ import ListEmptyComponent from "./ListEmptyComponent";
 import ProductItem from "./ProductItem";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useIsFocused } from "@react-navigation/native";
-import { openBottomSheet } from "@/features/reduxSlices/bottomSheetSlice";
+import {
+  closeBS,
+  closeBSAll,
+  openBS,
+  snapBS,
+} from "@/features/reduxSlices/bottomSheetSlice";
 
 interface IProductCardSection {
   title?: string;
@@ -48,9 +53,11 @@ const Foodlist = ({
   const isFocused = useIsFocused();
 
   // redux
-  // const bsNm = useAppSelector((state) => state.bottomSheet.bsNm);
-  const dispatch = useAppDispatch();
+  const currentValue = useAppSelector(
+    (state) => state.bottomSheet.currentValue
+  );
   const pToAdd = useAppSelector((state) => state.bottomSheet.product.add);
+  const dispatch = useAppDispatch();
 
   const numColumns = horizontalScroll
     ? 1
@@ -61,8 +68,18 @@ const Foodlist = ({
   const headerHideHeight = MAIN_FOODLIST_HEADER_HEIGHT - SORT_FILTER_HEIGHT;
 
   useEffect(() => {
-    if (!isFocused) return;
-    pToAdd.length > 0 && dispatch(openBottomSheet("productToAddSelect"));
+    if (!isFocused) {
+      dispatch(closeBSAll());
+      return;
+    }
+
+    if (currentValue.index < 0 && pToAdd.length > 0) {
+      dispatch(openBS("productToAddSelect"));
+      dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
+      setTimeout(() => {
+        flatListRef.current?.scrollToOffset({ offset: 1, animated: false });
+      }, 100);
+    }
   }, [isFocused]);
 
   return (

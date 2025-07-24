@@ -56,7 +56,7 @@ export default function RootLayout() {
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
           <BottomSheetModalProvider>
-            <StatusBar style="dark" />
+            <StatusBar style="dark" backgroundColor={colors.white} />
 
             {/* Loading */}
             <AppLoading />

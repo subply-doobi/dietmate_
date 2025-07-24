@@ -23,7 +23,6 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   // redux
   const dispatch = useAppDispatch();
-  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const isTotalFoodListLoaded = useAppSelector(
     (state) => state.common.totalFoodListIsLoaded
   );
@@ -49,7 +48,6 @@ export default function TabLayout() {
   }, [dTOData]);
 
   useEffect(() => {
-    console.log("TabLayout useEffect - initialDietNo", initialDietNo);
     if (!dTOData) return;
     if (isTotalFoodListLoaded) return;
     if (initialDietNo === "") return;

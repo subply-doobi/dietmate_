@@ -1,5 +1,5 @@
 import {
-  closeBottomSheet,
+  closeBS,
   setProductToDel,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import {
@@ -36,7 +36,7 @@ const ProductToDelSelect = () => {
 
   // fn
   const onInfoBtnPress = (productNo: string) => {
-    dispatch(closeBottomSheet());
+    dispatch(closeBS());
     setTimeout(() => {
       router.push({
         pathname: "/FoodDetail",
@@ -47,7 +47,7 @@ const ProductToDelSelect = () => {
 
   const onChangeBtnPress = () => {
     if (!pToDel || pToDel.length === 0) return;
-    dispatch(closeBottomSheet());
+    dispatch(closeBS());
     router.push({
       pathname: "/AutoAdd",
       params: {
@@ -72,7 +72,7 @@ const ProductToDelSelect = () => {
     };
     await deleteFoods();
     dispatch(setProductToDel([]));
-    dispatch(closeBottomSheet());
+    dispatch(closeBS());
   };
 
   return (

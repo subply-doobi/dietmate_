@@ -1,8 +1,14 @@
+import {
+  closeBS,
+  setProductToDel,
+} from "@/features/reduxSlices/bottomSheetSlice";
 import { setBaseListType } from "@/features/reduxSlices/filteredPSlice";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { Col, HorizontalLine, TextMain } from "@/shared/ui/styledComps";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
+import { usePathname, useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 const BASE_LIST_TYPE = {
@@ -11,16 +17,37 @@ const BASE_LIST_TYPE = {
 };
 
 const BaseListTypeFilterBSComp = () => {
+  // navigation
+  const pathName = usePathname();
+  const router = useRouter();
+
   // redux
   const dispatch = useAppDispatch();
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const baseListType = useAppSelector(
     (state) => state.filteredProduct.filter.baseListType
   );
+  const pToAdd = useAppSelector((state) => state.bottomSheet.product.add);
+
+  // react-query
+  const { data: dTOData } = useListDietTotalObj();
+  const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx];
+  const dDData = dTOData?.[currentDietNo]?.dietDetail || [];
 
   // bottomSheet
   const { dismiss } = useBottomSheetModal();
 
   const selectBaseListType = (type: "totalFoodList" | "availableFoods") => {
+    dispatch(closeBS());
+    if (pathName === "/Search" && type === "availableFoods") {
+      pToAdd.length > 0 && dispatch(setProductToDel([]));
+      router.push({
+        pathname: "/AutoAdd",
+        params: { menu: JSON.stringify(dDData), type: "add" },
+      });
+      return;
+    }
+
     if (type === baseListType) {
       dismiss();
       return;

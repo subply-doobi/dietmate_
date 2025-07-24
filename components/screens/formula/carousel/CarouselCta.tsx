@@ -20,10 +20,7 @@ import CtaButton from "@/shared/ui/CtaButton";
 import { Col, Icon, Row, TextMain } from "@/shared/ui/styledComps";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { getNutrStatus } from "@/shared/utils/sumUp";
-import {
-  setCurrentDiet,
-  setGlobalLoading,
-} from "@/features/reduxSlices/commonSlice";
+import { setGlobalLoading } from "@/features/reduxSlices/commonSlice";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { setProductToDel } from "@/features/reduxSlices/bottomSheetSlice";

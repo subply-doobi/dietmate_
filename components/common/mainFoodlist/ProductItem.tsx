@@ -12,9 +12,9 @@ import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { commaToNum } from "@/shared/utils/sumUp";
 import {
-  closeBottomSheet,
-  openBottomSheet,
+  openBS,
   setProductToAdd,
+  snapBS,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import { selectFilteredSortedProducts } from "@/features/reduxSlices/filteredPSlice";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
@@ -41,6 +41,10 @@ const ProductItem = ({
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const productToAdd = useAppSelector((state) => state.bottomSheet.product.add);
   const products = useAppSelector(selectFilteredSortedProducts);
+  const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
+  const bsIndex = useAppSelector(
+    (state) => state.bottomSheet.currentValue.index
+  );
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
@@ -54,18 +58,20 @@ const ProductItem = ({
   const isSelected = productToAdd[0]?.productNo === item.productNo;
 
   const onItemPressed = () => {
-    // dispatch(setProductToAdd([item]));
-    // dispatch(openBottomSheet("productToAddSelect"));
     if (isSelected) {
-      dispatch(closeBottomSheet());
-      dispatch(setProductToAdd([]));
+      dispatch(snapBS({ index: 0, bsNm: "productToAddSelect" }));
+      setTimeout(() => {
+        dispatch(setProductToAdd([]));
+      }, 150);
       return;
     }
-
+    bsIndex < 0 && dispatch(openBS("productToAddSelect"));
     const idx = products.findIndex(
       (product) => product.productNo === item.productNo
     );
     const i = Math.floor(idx / 2);
+    dispatch(setProductToAdd([item]));
+    bsIndex < 1 && dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
     !!flatListRef &&
       setTimeout(() => {
         flatListRef.current?.scrollToIndex({
@@ -73,8 +79,6 @@ const ProductItem = ({
           viewPosition: 0.2,
         });
       }, 200);
-    dispatch(setProductToAdd([item]));
-    dispatch(openBottomSheet("productToAddSelect"));
   };
 
   return (
@@ -126,7 +130,7 @@ const Box = styled.TouchableOpacity<{ isSelected: boolean }>`
   padding: 4px;
   border-width: ${({ isSelected }) => (isSelected ? 1 : 0)}px;
   border-color: ${({ isSelected }) =>
-    isSelected ? colors.lineLight : colors.white};
+    isSelected ? colors.main : colors.white};
   justify-content: center;
   align-items: center;
 `;

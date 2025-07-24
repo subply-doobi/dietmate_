@@ -13,7 +13,7 @@ import { openModal } from "../../features/reduxSlices/modalSlice";
 import { router } from "expo-router";
 import { ENV } from "../constants";
 import { Alert } from "react-native";
-import { closeBottomSheet } from "@/features/reduxSlices/bottomSheetSlice";
+import { closeBS, closeBSAll } from "@/features/reduxSlices/bottomSheetSlice";
 
 // 에러 -> 에러코드
 // null -> 네트워크 없음
@@ -99,7 +99,7 @@ const runErrorActionByCode = (code: IErrorCode | undefined | null) => {
 // ErrorAlert 띄우는 경우 확인버튼 눌렀을 때 실행할 함수
 const commonAlertAction = () => {
   queryClient.invalidateQueries();
-  store.dispatch(closeBottomSheet());
+  store.dispatch(closeBSAll());
 };
 
 const ErrAlertActionByCode: ICodeToErrorAction = {

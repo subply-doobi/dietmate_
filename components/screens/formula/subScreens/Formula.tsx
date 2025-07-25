@@ -197,7 +197,7 @@ const Formula = () => {
             />
           )}
         />
-        {/* <EdgeInfo visible={priceTotal > 0} /> */}
+        <EdgeInfo visible={priceTotal > 0} />
 
         {isAllSuccess && (
           <CtaButton

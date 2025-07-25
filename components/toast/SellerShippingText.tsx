@@ -80,9 +80,9 @@ const SellerShippingText = ({
   const eSP = eShippingPrice === 0 ? `무료` : `${commaToNum(eShippingPrice)}원`;
 
   // textColors of eP and ESP when different from oP and oSP
-  const ePColor = ePrice === oPrice ? colors.textSub : colors.white;
+  const ePColor = ePrice === oPrice ? subTextColor : mainTextColor;
   const eSPColor =
-    eShippingPrice === oShippingPrice ? colors.textSub : colors.white;
+    eShippingPrice === oShippingPrice ? subTextColor : mainTextColor;
 
   return (
     <Col>

@@ -24,7 +24,6 @@ const SelectAllRow = ({ carouselMenu }: ISelectAllRow) => {
   const checkAll = () => {
     if (isMenuEmpty) return;
     dispatch(setProductToDel([...carouselMenu]));
-    dispatch(openBS("productToAddSelect"));
   };
   const unCheckAll = () => dispatch(setProductToDel([]));
 

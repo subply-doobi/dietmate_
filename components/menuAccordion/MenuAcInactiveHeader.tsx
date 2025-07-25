@@ -72,7 +72,6 @@ const MenuAcInactiveHeader = ({
       bLData,
       dDData,
     });
-    console.log(idx, nutrStatus);
     const isFoodNeeded = nutrStatus === "empty" || nutrStatus === "notEnough";
     const currentQty = dDData.length > 0 ? parseInt(dDData[0].qty, 10) : 1;
 

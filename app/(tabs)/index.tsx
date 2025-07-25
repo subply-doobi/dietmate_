@@ -213,13 +213,12 @@ const NewHome = () => {
 
         <HorizontalSpace height={40} />
 
-        <CtaButton
+        {/* <CtaButton
           btnStyle="active"
           btnText="test"
           onPress={() => {
-            dispatch(openBS("productToAddSelect"));
           }}
-        />
+        /> */}
       </ScrollView>
     </Container>
   );

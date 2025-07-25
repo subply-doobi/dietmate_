@@ -265,6 +265,10 @@ const SortFilter = () => {
       },
     },
   ];
+  // search screen에서는 baseListType 버튼 사용 안함
+  if (pathName.includes("Search")) {
+    BTNS.shift();
+  }
 
   return (
     <ScrollView

@@ -252,7 +252,7 @@ const GlobalBSM = () => {
           : "none";
       // Always update currentValue in Redux
       dispatch(setCurrentValue({ index, position }));
-
+      console.log("GlobalBSM onChange", changeType);
       // Determine if the action was successful based on previous and current state
       let shouldDequeue = false;
 

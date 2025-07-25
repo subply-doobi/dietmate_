@@ -1,8 +1,4 @@
-import {
-  IDietData,
-  IDietDetailData,
-  IDietTotalObjData,
-} from "../api/types/diet";
+import { IDietTotalObjData } from "../api/types/diet";
 import MenuAcInactiveHeader from "../../components/menuAccordion/MenuAcInactiveHeader";
 import { IBaseLineData } from "../api/types/baseLine";
 import MenuAcActiveHeader from "../../components/menuAccordion/MenuAcActiveHeader";

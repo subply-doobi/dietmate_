@@ -6,6 +6,7 @@ import { SCREENWIDTH } from "@/shared/constants";
 import { IProductData } from "@/shared/api/types/product";
 import Animated from "react-native-reanimated";
 import { useEffect, useState } from "react";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
 
 interface IListHeaderComponent {
   animatedStyle?: any;
@@ -21,6 +22,11 @@ const ListHeaderComponent = ({ animatedStyle }: IListHeaderComponent) => {
     (state) => state.filteredProduct.random3Foods
   );
 
+  const { data: dTOData } = useListDietTotalObj();
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
+  const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx];
+  const dDData = dTOData?.[currentDietNo]?.dietDetail || [];
+
   // useState
   const [foodlist, setFoodlist] = useState<IProductData[]>([]);
   // Combine the food lists for display without duplicates plus random ordering
@@ -31,12 +37,13 @@ const ListHeaderComponent = ({ animatedStyle }: IListHeaderComponent) => {
       ...random3Foods,
     ].filter(
       (food, index, self) =>
-        index === self.findIndex((f) => f.productNo === food.productNo)
+        index === self.findIndex((f) => f.productNo === food.productNo) &&
+        !dDData.some((f) => f.productNo === food.productNo)
     ) as unknown as IProductData[];
     // Shuffle the combined list
     rowFoods1.sort(() => Math.random() - 0.5);
     setFoodlist(rowFoods1);
-  }, []);
+  }, [recentlyOpenedFoods, likedFoods, random3Foods]);
 
   return (
     <Col style={{ marginTop: 24 }}>

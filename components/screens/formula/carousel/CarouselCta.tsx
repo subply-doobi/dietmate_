@@ -20,12 +20,10 @@ import CtaButton from "@/shared/ui/CtaButton";
 import { Col, Icon, Row, TextMain } from "@/shared/ui/styledComps";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { getNutrStatus } from "@/shared/utils/sumUp";
-import {
-  setCurrentDiet,
-  setGlobalLoading,
-} from "@/features/reduxSlices/commonSlice";
+import { setGlobalLoading } from "@/features/reduxSlices/commonSlice";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
+import { setProductToDel } from "@/features/reduxSlices/bottomSheetSlice";
 
 interface ICarouselCta {
   carouselMenu: IDietDetailData;
@@ -126,7 +124,7 @@ const CarouselCta = ({
     if (!bLData || totalFoodList?.length === 0) {
       return;
     }
-
+    dispatch(setProductToDel([]));
     dispatch(setGlobalLoading(true));
     let recommendedMenu: IProductData[][] = [];
 
@@ -185,16 +183,6 @@ const CarouselCta = ({
     <>
       <BtnBox>
         {/* AutoMenu btn */}
-        <CtaButton
-          btnStyle={autoMenuBtnStyle}
-          shadow={true}
-          style={{ width: 48, height: 48 }}
-          btnContent={() => <Icon source={icons.search_36} size={32} />}
-          onPress={() => {
-            dispatch(setCurrentDiet(carouselDietNo));
-            router.push({ pathname: "/ManualAdd" });
-          }}
-        />
         <CtaButton
           btnStyle={autoMenuBtnStyle}
           shadow={true}

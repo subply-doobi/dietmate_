@@ -5,6 +5,7 @@ import { RootState, store } from "@/shared/store/reduxStore";
 
 export interface sortFilterStateInClient {
   // 식품 목록
+  screenNm?: string;
   totalFoodList: IProductData[]; // 전체
   availableFoods: IProductData[]; // 영양 목표 달성 가능
   recentOpenedFoodsPNoArr?: string[]; // 최근 열어본 식품
@@ -72,6 +73,7 @@ const filteredPSlice = createSlice({
     setAvailableFoods: (
       state,
       action: PayloadAction<{
+        screenNm?: string;
         totalFoodList: IProductData[];
         availableFoods: IProductData[];
         recentOpenedFoodsPNoArr: string[];
@@ -79,8 +81,11 @@ const filteredPSlice = createSlice({
         likeData: IProductData[];
       }>
     ) => {
+      const isSearchScreen = action.payload.screenNm === "/Search";
       state.totalFoodList = action.payload.totalFoodList;
-      state.availableFoods = action.payload.availableFoods;
+      state.availableFoods = isSearchScreen
+        ? action.payload.totalFoodList
+        : action.payload.availableFoods;
       state.recentOpenedFoodsPNoArr = action.payload.recentOpenedFoodsPNoArr;
       state.recentlyOrderedFoods = action.payload.listOrderData;
       state.likedFoods = action.payload.likeData;

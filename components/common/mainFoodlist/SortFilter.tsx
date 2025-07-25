@@ -1,4 +1,4 @@
-import { openBottomSheet } from "@/features/reduxSlices/commonSlice";
+import { openBS, closeBS } from "@/features/reduxSlices/bottomSheetSlice";
 import {
   resetSortFilter,
   selectFilteredSortedProducts,
@@ -15,7 +15,6 @@ import {
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { categoryCodeToName, SORT_FILTER_HEIGHT } from "@/shared/constants";
-import { openBS } from "@/shared/hooks/bottomSheetHandler";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { icons } from "@/shared/iconSource";
 import DTooltip from "@/shared/ui/DTooltip";
@@ -35,7 +34,7 @@ import styled from "styled-components/native";
 const SortFilter = () => {
   // navigation
   // const autoAddType = useLocalSearchParams()?.type;
-  // const pathName = usePathname();
+  const pathName = usePathname();
 
   // redux
   const dispatch = useAppDispatch();
@@ -126,7 +125,7 @@ const SortFilter = () => {
         ? icons.targetActive_24
         : icons.targetInactive_24,
       iconSize: 18,
-      onPress: () => dispatch(openBottomSheet("baseListTypeFilter")),
+      onPress: () => dispatch(openBS("baseListTypeFilter")),
     },
     // 카테고리
     {
@@ -136,7 +135,7 @@ const SortFilter = () => {
       iconSource: undefined,
       iconSize: 20,
       onPress: () => {
-        dispatch(openBottomSheet("categoryFilter"));
+        dispatch(openBS("categoryFilter"));
       },
     },
     // 검색
@@ -171,7 +170,7 @@ const SortFilter = () => {
         : icons.truckInactive_24,
       iconSize: 24,
       onPress: () => {
-        dispatch(openBottomSheet("platformFilter"));
+        dispatch(openBS("platformFilter"));
         isTooltipShow && setIsTooltipShow(false);
       },
     },
@@ -251,7 +250,7 @@ const SortFilter = () => {
           : icons.sort_24,
       iconSize: 18,
       onPress: () => {
-        dispatch(openBottomSheet("sort"));
+        dispatch(openBS("sort"));
       },
     },
     // 초기화
@@ -266,18 +265,13 @@ const SortFilter = () => {
       },
     },
   ];
-
-  // product.length === 0 일때 sortFilter 동작 안하는 문제있음
-  // -> 해당 상황에서만 sortFilterKey를 변경하여 강제로 리렌더링
-  const [sortFilterKey, toggleSortFilterKey] = useState(false);
-  useEffect(() => {
-    if (products.length !== 0) return;
-    toggleSortFilterKey((prev) => !prev);
-  }, [products.length]);
+  // search screen에서는 baseListType 버튼 사용 안함
+  if (pathName.includes("Search")) {
+    BTNS.shift();
+  }
 
   return (
     <ScrollView
-      key={String(sortFilterKey)}
       style={{ height: SORT_FILTER_HEIGHT }}
       keyboardShouldPersistTaps="always"
       horizontal

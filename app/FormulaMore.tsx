@@ -77,7 +77,7 @@ const FormulaMore = () => {
   // const activeBtn = METHOD_BTN.filter((item) => item.isActive);
 
   return (
-    <Container style={{}}>
+    <Container style={{ paddingHorizontal: 16 }}>
       <BtnBox>
         {METHOD_BTN.map((item, idx) => (
           <SelectBtn

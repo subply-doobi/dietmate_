@@ -1,85 +1,91 @@
 import styled from "styled-components/native";
-import { View } from "react-native";
-import { ENV, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
-import { commaToNum } from "@/shared/utils/sumUp";
-import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import { ENV } from "@/shared/constants";
+import { TextSub } from "@/shared/ui/styledComps";
 import { IDietDetailData } from "@/shared/api/types/diet";
-import { useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import colors from "@/shared/colors";
-import { icons } from "@/shared/iconSource";
+import { closeBS } from "@/features/reduxSlices/bottomSheetSlice";
+import {
+  addToRecentProduct,
+  getRecentProducts,
+} from "@/shared/utils/asyncStorage";
+import { setRecentlyOpenedFoodsPNoArr } from "@/features/reduxSlices/filteredPSlice";
+import { useRouter } from "expo-router";
 
 const ProductSelectFoodlist = ({ foods }: { foods: IDietDetailData }) => {
+  // navigation
+  const router = useRouter();
+
   // redux
-  const autoAddFoodForAdd = useAppSelector(
-    (state) => state.formula.autoAddFoodForAdd
-  );
-  const autoAddFoodForChange = useAppSelector(
-    (state) => state.formula.autoAddFoodForChange
+  const dispatch = useAppDispatch();
+  const { add: pToAdd, del: pToDel } = useAppSelector(
+    (state) => state.bottomSheet.product
   );
 
+  const onItemPressed = async (productNo: string) => {
+    dispatch(closeBS());
+
+    await addToRecentProduct(pToAdd[0]?.productNo);
+    const recentlyOpenedFoodsPNoArr = await getRecentProducts();
+    dispatch(setRecentlyOpenedFoodsPNoArr(recentlyOpenedFoodsPNoArr));
+
+    setTimeout(() => {
+      router.push({
+        pathname: "/FoodDetail",
+        params: { productNo, type: "infoOnly" },
+      });
+    }, 200);
+  };
+
   return (
-    <Grid>
-      <CurrentMenuBox>
-        {foods.length ? (
-          foods.map((f) => (
-            <ItemBox key={f.productNo}>
-              <PlatformNm numberOfLines={1} ellipsizeMode="tail">
-                {f.platformNm}
-              </PlatformNm>
+    <Container>
+      <CurrentMenuBox
+        style={{
+          justifyContent: foods.length === 0 ? "center" : "flex-start",
+        }}
+      >
+        {foods.length === 0 && <EmptyText>식품을 추가해봐요</EmptyText>}
+        {foods.map((f) => {
+          const isIncluded = f.productNo === pToAdd[0]?.productNo;
+          const isToDel = f.productNo === pToDel[0]?.productNo;
+          const opacityVisible = isIncluded || isToDel;
+          const opacityText = isIncluded ? "삭제" : "교체";
+          return (
+            <ItemBox
+              key={f.productNo}
+              onPress={() => onItemPressed(f.productNo)}
+            >
               <ThumbnailImg
                 source={{ uri: `${ENV.BASE_URL}${f.mainAttUrl}` }}
                 resizeMode="cover"
               />
-              {f.productNo === autoAddFoodForChange?.productNo && (
+              {opacityVisible && (
                 <OpacityBox>
-                  <OpacityText>교체</OpacityText>
+                  <OpacityText>{opacityText}</OpacityText>
                 </OpacityBox>
               )}
             </ItemBox>
-          ))
-        ) : (
-          <ItemBox>
-            <ThumbnailImg />
-          </ItemBox>
-        )}
+          );
+        })}
       </CurrentMenuBox>
-      {autoAddFoodForAdd && (
-        <Row style={{ columnGap: 4 }}>
-          <Icon source={icons.plusRoundBlack_32} size={24} />
-          <SelectedItemBox>
-            <PlatformNm numberOfLines={1} ellipsizeMode="tail">
-              {autoAddFoodForAdd?.platformNm}
-            </PlatformNm>
-            <ThumbnailImg
-              source={{ uri: `${ENV.BASE_URL}${autoAddFoodForAdd.mainAttUrl}` }}
-              resizeMode="cover"
-            />
-          </SelectedItemBox>
-        </Row>
-      )}
-    </Grid>
+    </Container>
   );
 };
 
 export default ProductSelectFoodlist;
 
-const Grid = styled.View`
-  margin-top: 24px;
+const Container = styled.View`
   width: 100%;
+  height: 52px;
   flex-direction: row;
-  flex-wrap: wrap;
-  padding: 8px 0;
   column-gap: 4px;
-  row-gap: 8px;
 `;
 
 const CurrentMenuBox = styled.View`
+  flex: 1;
   flex-direction: row;
-  flex-wrap: wrap;
-  border-radius: 6px;
-  border-width: 1px;
-  border-color: ${colors.whiteOpacity30};
-  padding: 8px;
+  border-radius: 4px;
+  align-items: center;
   gap: 8px;
 `;
 
@@ -88,9 +94,9 @@ const OpacityBox = styled.View`
   left: 0;
   right: 0;
   bottom: 0;
-  height: 60px;
+  height: 52px;
   border-radius: 4px;
-  background-color: ${colors.blackOpacity50};
+  background-color: ${colors.blackOpacity70};
   align-items: center;
   justify-content: center;
 `;
@@ -102,21 +108,20 @@ const OpacityText = styled(TextSub)`
   font-weight: 500;
 `;
 
-const ItemBox = styled.View`
+const ItemBox = styled.TouchableOpacity`
   align-items: center;
 `;
 const SelectedItemBox = styled.View`
   align-items: center;
 `;
 
-const PlatformNm = styled(TextSub)`
-  font-size: 11px;
-  line-height: 14px;
-  align-self: flex-start;
+const EmptyText = styled(TextSub)`
+  font-size: 12px;
+  line-height: 16px;
 `;
 
 const ThumbnailImg = styled.Image`
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
   border-radius: 5px;
 `;

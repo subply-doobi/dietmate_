@@ -43,15 +43,15 @@ const MenuAcInactiveHeader = ({
   // redux
   const dispatch = useAppDispatch();
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-  const currentDietNo = useAppSelector((state) => state.common.currentDietNo);
   const foodneededArr = useAppSelector((state) => state.common.foodNeededArr);
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
   // useState
   const [prevDTO, setPrevDTO] = useState<IDietTotalObjData>({});
 
   // react-query
   const { data: dTOData, isFetching: isDTOFetching } = useListDietTotalObj();
-
+  const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx] || "";
   // useMemo
   const {
     dDData,

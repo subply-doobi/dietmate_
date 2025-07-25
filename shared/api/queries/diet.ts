@@ -1,10 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { queryClient } from "@/shared/store/reactQueryStore";
-import {
-  setCurrentDiet,
-  setMenuAcActive,
-} from "../../../features/reduxSlices/commonSlice";
+import { setMenuAcActive } from "../../../features/reduxSlices/commonSlice";
 
 import { DIET_TOTAL_OBJ, PRODUCTS } from "../keys";
 import { IMutationOptions, IQueryOptions } from "../types/common";
@@ -32,8 +29,6 @@ export const useCreateDiet = (options?: IMutationOptions) => {
     mutationFn: () => mutationFn(CREATE_DIET, "put"),
     onSuccess: (data, { setDietNo }: { setDietNo?: boolean }, context) => {
       options?.onSuccess && options?.onSuccess(data);
-      // 현재 구성중인 끼니의 dietNo, dietIdx를 redux에 저장 => 장바구니와 동기화
-      setDietNo && dispatch(setCurrentDiet(data.dietNo));
 
       // 장바구니 accordion 기존 끼니는 닫아주기
       dispatch(setMenuAcActive([]));
@@ -213,7 +208,6 @@ export const useDeleteDiet = () => {
 
       const prevDietNoArr = Object.keys(prevDTOData);
       if (prevDietNoArr.length === 1) {
-        dispatch(setCurrentDiet(""));
         queryClient.invalidateQueries({ queryKey: [DIET_TOTAL_OBJ] });
         queryClient.invalidateQueries({ queryKey: [PRODUCTS] });
         return;
@@ -232,7 +226,6 @@ export const useDeleteDiet = () => {
         (prevDietNo, idx) => prevDietNo === dietNo
       );
       nextDietIdx = deleteDietIdx === 0 ? 1 : deleteDietIdx - 1;
-      dispatch(setCurrentDiet(prevDietNoArr[nextDietIdx]));
 
       // invalidation
       queryClient.invalidateQueries({ queryKey: [DIET_TOTAL_OBJ] });
@@ -274,7 +267,6 @@ export const useDeleteDietAll = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [DIET_TOTAL_OBJ] });
       queryClient.invalidateQueries({ queryKey: [PRODUCTS] });
-      dispatch(setCurrentDiet(""));
     },
     onError: (error, _, context) => {
       // optimistic update 5. If the mutation fails, use the context returned

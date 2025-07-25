@@ -40,7 +40,7 @@ export const DESIGN_WIDTH = 360;
 export const DALERT_WIDTH = 280;
 export const IS_ANDROID = Platform.OS === "android";
 export const IS_IOS = Platform.OS === "ios";
-export const NUTRIENT_PROGRESS_HEIGHT = 70;
+export const NUTRIENT_PROGRESS_HEIGHT = 48;
 export const FOOD_LIST_ITEM_HEIGHT = 152;
 export const HOME_FILTER_HEADER_HEIGHT = 120;
 export const DEFAULT_BOTTOM_TAB_HEIGHT = 83;

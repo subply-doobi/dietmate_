@@ -28,9 +28,13 @@ import {
 import CtaButton from "@/shared/ui/CtaButton";
 import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import Toast from "react-native-toast-message";
 import EdgeInfo from "@/components/common/summaryInfo/EdgeInfo";
 import DTooltip from "@/shared/ui/DTooltip";
+import {
+  closeBS,
+  openBS,
+  setProductToDel,
+} from "@/features/reduxSlices/bottomSheetSlice";
 
 const width = Dimensions.get("window").width;
 
@@ -41,13 +45,10 @@ const Formula = () => {
 
   // redux
   const dispatch = useAppDispatch();
+  const modalSeq = useAppSelector((state) => state.modal.modalSeq);
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-
-  // const isCarouselHided = useAppSelector(
-  //   (state) => state.modal.isCarouselHided
-  // );
-  const modalSeq = useAppSelector((state) => state.modal.modalSeq);
+  const pToDel = useAppSelector((state) => state.bottomSheet.product.del);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -79,6 +80,7 @@ const Formula = () => {
   const carouselRef = useRef<ICarouselInstance>(null);
   const paginationValue = useSharedValue<number>(0);
 
+  // useEffect
   useEffect(() => {
     if (!dTOData) return;
     const isNoMenu = Object.keys(dTOData || {}).length === 0;
@@ -87,6 +89,20 @@ const Formula = () => {
       return;
     }
   }, [dTOData]);
+
+  useEffect(() => {
+    if (!isFocused) return;
+    console.log("Formula subscreen isFocused", isFocused);
+
+    if (pToDel.length === 0) {
+      dispatch(closeBS());
+      return;
+    }
+
+    setTimeout(() => {
+      dispatch(openBS("productToDelSelect"));
+    }, 100);
+  }, [pToDel, isFocused]);
 
   // etc
   const onPressPagination = (index: number) => {
@@ -169,6 +185,9 @@ const Formula = () => {
           onSnapToItem={(index) => {
             dispatch(setCurrentFMCIdx(index));
           }}
+          onScrollStart={() =>
+            pToDel.length > 0 && dispatch(setProductToDel([]))
+          }
           onProgressChange={paginationValue}
           renderItem={({ index }) => (
             <CarouselContent

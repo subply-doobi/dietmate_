@@ -8,6 +8,7 @@ import {
   IShippingPriceObj,
   IShippingPriceValues,
 } from "@/shared/utils/sumUp";
+import { StyleProp, ViewStyle } from "react-native";
 import styled from "styled-components/native";
 
 interface ISellerShippingText {
@@ -79,16 +80,14 @@ const SellerShippingText = ({
   const eSP = eShippingPrice === 0 ? `무료` : `${commaToNum(eShippingPrice)}원`;
 
   // textColors of eP and ESP when different from oP and oSP
-  const ePColor = ePrice === oPrice ? colors.textSub : colors.white;
+  const ePColor = ePrice === oPrice ? subTextColor : mainTextColor;
   const eSPColor =
-    eShippingPrice === oShippingPrice ? colors.textSub : colors.white;
+    eShippingPrice === oShippingPrice ? subTextColor : mainTextColor;
 
   return (
     <Col>
       <Row>
-        <Text style={{ fontWeight: "bold" }} mainTextColor={mainTextColor}>
-          {seller}
-        </Text>
+        <Text mainTextColor={mainTextColor}>{seller}</Text>
       </Row>
       <Row style={{ columnGap: 4, marginTop: 4 }}>
         <SubText subTextColor={subTextColor}>식품 :</SubText>
@@ -139,13 +138,14 @@ const SellerShippingText = ({
 export default SellerShippingText;
 
 const Text = styled(TextMain)<{ mainTextColor: string }>`
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
   color: ${({ mainTextColor }) => mainTextColor || colors.textMain};
 `;
 
 const SubText = styled(TextSub)<{ subTextColor: string }>`
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
   color: ${({ subTextColor }) => subTextColor || colors.textSub};
 `;

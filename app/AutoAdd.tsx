@@ -1,10 +1,7 @@
-import EdgeInfo from "@/components/common/summaryInfo/EdgeInfo";
-import BottomInfo from "@/components/common/summaryInfo/EdgeInfo";
 import Foodlist from "@/components/common/mainFoodlist/Foodlist";
 import {
   selectFilteredSortedProducts,
   setAvailableFoods,
-  setLastFilteredList,
 } from "@/features/reduxSlices/filteredPSlice";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
@@ -14,7 +11,6 @@ import colors from "@/shared/colors";
 import { AM_SELECTED_CATEGORY_IDX, SCREENWIDTH } from "@/shared/constants";
 import { useAsync } from "@/shared/hooks/asyncStateHooks";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { showProductSelectToast } from "@/shared/store/toastStore";
 import {
   Col,
   Container,
@@ -24,16 +20,18 @@ import {
 import { getRecentProducts } from "@/shared/utils/asyncStorage";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { flattenMenuArr } from "@/shared/utils/filter";
-import { sumUpDietFromDTOData, sumUpNutrients } from "@/shared/utils/sumUp";
 import {
   useFocusEffect,
   useLocalSearchParams,
   useNavigation,
-  useRouter,
 } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import styled from "styled-components/native";
+import {
+  closeBSAll,
+  setProductToAdd,
+} from "@/features/reduxSlices/bottomSheetSlice";
 
 const AutoAdd = () => {
   // navigation
@@ -46,12 +44,8 @@ const AutoAdd = () => {
     (state) => state.common.foodGroupForAutoMenu
   );
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-  const autoAddFoodForAdd = useAppSelector(
-    (state) => state.formula.autoAddFoodForAdd
-  );
-  const autoAddFoodForChange = useAppSelector(
-    (state) => state.formula.autoAddFoodForChange
-  );
+
+  const pToDel = useAppSelector((state) => state.bottomSheet.product.del);
   const products = useAppSelector(selectFilteredSortedProducts);
   const currentMenu = JSON.parse(useLocalSearchParams()?.menu as string);
 
@@ -98,8 +92,9 @@ const AutoAdd = () => {
   );
 
   useEffect(() => {
+    dispatch(setProductToAdd([]));
     navigation.setOptions({
-      headerTitle: !!autoAddFoodForChange ? "식품교체" : "식품추가",
+      headerTitle: !!pToDel[0] ? "식품교체" : "식품추가",
     });
     if (!bLData || !dTOData || !listOrderData || !likeData) {
       return;
@@ -111,12 +106,13 @@ const AutoAdd = () => {
     return () => clearTimeout(timer);
   }, [dTOData, bLData, listOrderData, likeData]);
 
-  useFocusEffect(() => {
-    if (!autoAddFoodForAdd) {
-      return;
-    }
-    showProductSelectToast();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        dispatch(closeBSAll());
+      };
+    }, [])
+  );
 
   if (isLoading || !isDelayOver) {
     return (

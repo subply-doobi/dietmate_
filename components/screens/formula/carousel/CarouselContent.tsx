@@ -29,7 +29,6 @@ interface ICarouselContent {
 
 const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
   // redux
-  const currentDietNo = useAppSelector((state) => state.common.currentDietNo);
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
   // react-query
@@ -37,11 +36,11 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
   const deleteDietMutation = useDeleteDiet();
 
   // useState
-  const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
   const [isCheckDelete, setIsCheckDelete] = useState(false);
 
   // etc
   const carouselDietNo = Object.keys(dTOData || {})[carouselIdx];
+  const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx] || "";
   const carouselMenu = dTOData?.[carouselDietNo]?.dietDetail || [];
   const isCurrent = currentFMCIdx === carouselIdx;
   const currentQty = dTOData?.[carouselDietNo]?.dietDetail?.[0]?.qty || 1;
@@ -140,19 +139,10 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
         </Col>
 
         {/* 전체선택, 선택삭제 */}
-        <SelectAllRow
-          selectedFoods={selectedFoods}
-          setSelectedFoods={setSelectedFoods}
-          carouselMenu={carouselMenu}
-        />
+        <SelectAllRow carouselMenu={carouselMenu} />
 
         {/* 메뉴 리스트 */}
-        <CarouselFoodList
-          data={carouselMenu}
-          carouselIdx={carouselIdx}
-          selectedFoods={selectedFoods}
-          setSelectedFoods={setSelectedFoods}
-        />
+        <CarouselFoodList data={carouselMenu} />
 
         {/* CTA */}
         <HorizontalSpace height={40} />

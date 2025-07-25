@@ -16,7 +16,6 @@ import { useListProduct } from "@/shared/api/queries/product";
 
 import { getMenuAcContent } from "@/shared/utils/menuAccordion";
 import {
-  setCurrentDiet,
   setFoodNeededArr,
   setMenuAcActive,
   setTotalFoodList,
@@ -50,16 +49,13 @@ const Diet = () => {
   // redux
   const dispatch = useAppDispatch();
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-  const currentDietNo = useAppSelector((state) => state.common.currentDietNo);
   const menuAcActive = useAppSelector((state) => state.common.menuAcActive);
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
-  const {
-    data: dTOData,
-    isLoading: isDTOLoading,
-    refetch: refetchDTOData,
-  } = useListDietTotalObj();
+  const { data: dTOData, refetch: refetchDTOData } = useListDietTotalObj();
+  const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx] || "";
   const { refetch: refetchLPData } = useListProduct(
     {
       dietNo: currentDietNo,
@@ -88,9 +84,9 @@ const Diet = () => {
       sumUpDietFromDTOData(dTOData);
     const isDietEmpty = menuNum === 0 || priceTotal === 0;
     const orderBtnText = isDietEmpty
-      ? `식단을 먼저 구성해봐요`
+      ? `공식을 먼저 만들어봐요`
       : `공식 계산하기 (${commaToNum(priceTotal + totalShippingPrice)}원)`;
-    const orderBtnStyle = isDietEmpty ? "inactive" : "active";
+    const orderBtnStyle = "active";
 
     // accordion
     const accordionContent = getMenuAcContent({
@@ -165,20 +161,19 @@ const Diet = () => {
 
   const updateSections = (activeSections: number[]) => {
     if (!dTOData) return;
-    const currentIdx = activeSections[0];
-    const currentDietNo = Object.keys(dTOData)[currentIdx];
-    const hasNoFood = dTOData[currentDietNo]?.dietDetail.length === 0;
-    currentDietNo && dispatch(setCurrentDiet(currentDietNo));
+    const activeIdx = activeSections[0];
+    const activeDietNo = Object.keys(dTOData)[activeIdx];
+    const hasNoFood = dTOData[activeDietNo]?.dietDetail.length === 0;
 
     if (hasNoFood) {
-      dispatch(setCurrentFMCIdx(currentIdx));
+      dispatch(setCurrentFMCIdx(activeIdx));
       router.push({ pathname: "/(tabs)/Formula" });
       return;
     }
     dispatch(setMenuAcActive(activeSections));
     if (activeSections.length === 0) return;
 
-    scrollToCurrentMenu(currentIdx);
+    scrollToCurrentMenu(activeIdx);
   };
 
   // render
@@ -223,7 +218,6 @@ const Diet = () => {
 
       {/* 주문 버튼 */}
       <CtaButton
-        disabled={isDietEmpty}
         btnStyle={orderBtnStyle}
         style={{
           width: SCREENWIDTH - 32,
@@ -233,6 +227,11 @@ const Diet = () => {
         }}
         btnText={orderBtnText}
         onPress={async () => {
+          if (isDietEmpty) {
+            router.push({ pathname: "/Formula" });
+            return;
+          }
+
           const refetchedDTOData = (await refetchDTOData()).data;
           const hasNoStock = checkNoStockPAll(refetchedDTOData);
           if (hasNoStock) {

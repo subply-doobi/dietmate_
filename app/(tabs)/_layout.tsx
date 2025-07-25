@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Platform,
   TouchableOpacity,
@@ -13,18 +13,52 @@ import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { tfDTOToDDA } from "@/shared/utils/dataTransform";
 import styled from "styled-components/native";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useListProduct } from "@/shared/api/queries/product";
+import { setTotalFoodList } from "@/features/reduxSlices/commonSlice";
+import { PRODUCTS } from "@/shared/api/keys";
+import { queryClient } from "@/shared/store/reactQueryStore";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  // redux
+  const dispatch = useAppDispatch();
+  const isTotalFoodListLoaded = useAppSelector(
+    (state) => state.common.totalFoodListIsLoaded
+  );
+  const initialSortFilterState = useAppSelector((state) => state.sortFilter);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
+  const initialDietNo = Object.keys(dTOData || {})[0] || "";
+  const { refetch: refetchLPData } = useListProduct(
+    {
+      dietNo: initialDietNo,
+      appliedSortFilter: initialSortFilterState.applied,
+    },
+    {
+      enabled: false,
+    }
+  );
 
   // useMemo
   const dietDetailAllData = useMemo(() => {
     const dietDetailAllData = dTOData ? tfDTOToDDA(dTOData) : [];
     return dietDetailAllData;
   }, [dTOData]);
+
+  useEffect(() => {
+    if (!dTOData) return;
+    if (isTotalFoodListLoaded) return;
+    if (initialDietNo === "") return;
+    const loadTotalFoodList = async () => {
+      const lPData = (await refetchLPData()).data;
+      if (!lPData) return;
+      dispatch(setTotalFoodList(lPData));
+      queryClient.removeQueries({ queryKey: [PRODUCTS, initialDietNo] });
+    };
+    loadTotalFoodList();
+  }, [dTOData, initialDietNo]);
 
   return (
     <Tabs
@@ -68,18 +102,6 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <Icon
               source={focused ? icons.formulaActive_36 : icons.formula_36}
-              size={36}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="Search"
-        options={{
-          title: "Search",
-          tabBarIcon: ({ focused }) => (
-            <Icon
-              source={focused ? icons.searchActive_36 : icons.search_36}
               size={36}
             />
           ),

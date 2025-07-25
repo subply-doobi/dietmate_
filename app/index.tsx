@@ -57,7 +57,7 @@ const Login = () => {
   }, []);
 
   return (
-    <Container>
+    <Container style={{ paddingHorizontal: 16 }}>
       {ENV.APP_VARIANT !== "production" && (
         <Col style={{ marginTop: 40, alignSelf: "center" }}>
           <TestTxt selectable={true}>

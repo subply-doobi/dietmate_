@@ -1,7 +1,7 @@
 {
   "name": "dietmate",
   "main": "expo-router/entry",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "scripts": {
     "start": "expo start",
     "dev": "set APP_VARIANT=development && npx expo start",

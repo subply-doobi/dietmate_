@@ -1,7 +1,8 @@
 // RN, expo
-import React from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
+import * as Updates from "expo-updates";
 
 // doobi
 import { version as appVersion } from "@/package.json";
@@ -19,7 +20,10 @@ import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { navigateByUserInfo } from "@/shared/utils/screens/login/navigateByUserInfo";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Platform } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
+import colors from "@/shared/colors";
+import styled from "styled-components/native";
+import { TextMain } from "@/shared/ui/styledComps";
 
 const loadSplash = new Promise((resolve) =>
   setTimeout(() => {
@@ -28,9 +32,15 @@ const loadSplash = new Promise((resolve) =>
 );
 
 const AppLoading = () => {
+  // eas update
+  const { isDownloading, isChecking } = Updates.useUpdates();
+
   // router
   const router = useRouter();
   const statusBarHeight = useSafeAreaInsets().top;
+
+  // useState
+  const [showEasUpdateIndicator, setShowEasUpdateIndicator] = useState(false);
 
   // redux
   const dispatch = useAppDispatch();
@@ -43,7 +53,7 @@ const AppLoading = () => {
   // useEffect 앱 로딩
   // 1. 스플래시 노출 2.앱 버전 확인 3. 자동로그인 4. 튜토리얼 모드 확인 5. 스플래시 숨김
   useEffect(() => {
-    // 앱 업데이트 확인
+    // 앱 업데이트 확인 (eas submit -> 스토어 연결)
     const checkIsUpToDate = async () => {
       const latestVersion = (await refetchLatestVersion()).data;
 
@@ -61,6 +71,18 @@ const AppLoading = () => {
       dispatch(openModal({ name: "appUpdateAlert" }));
       return false;
     };
+    // 앱 업데이트 확인 (eas update -> 앱 업데이트 후 자동 재시작)
+    const checkEasUpdate = async () => {
+      // expo update
+      try {
+        const update = await Updates.checkForUpdateAsync();
+        return update.isAvailable;
+      } catch (error) {
+        // You can also add an alert() to see the error message in case of an error when fetching updates.
+        console.log("eas update check failed:", error);
+        return false;
+      }
+    };
 
     // 토근 유효하다면 자동로그인
     const autoLogin = async (isAppUpToDate: boolean) => {
@@ -75,6 +97,19 @@ const AppLoading = () => {
 
       // 앱 업데이트 확인
       const isUpToDate = await checkIsUpToDate();
+      const isEasUpdateAvailable = await checkEasUpdate();
+      // eas update 필요하면 자동 재시작
+      if (isEasUpdateAvailable) {
+        await SplashScreen.hideAsync();
+        setShowEasUpdateIndicator(true);
+        try {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+          return;
+        } catch (error) {
+          console.log("eas update check failed:", error);
+        }
+      }
 
       // 자동로그인 (토큰 유효성 검사 및 )
       await autoLogin(isUpToDate);
@@ -83,11 +118,15 @@ const AppLoading = () => {
       const isTutorialMode = !(await getNotShowAgainList()).tutorial;
       // const isTutorialMode = false;
       isTutorialMode && dispatch(setTutorialStart());
+
+      // hide splash
+      await SplashScreen.hideAsync();
     };
 
-    init().finally(async () => {
-      SplashScreen.hideAsync();
-    });
+    init();
+    // init().finally(async () => {
+    //   SplashScreen.hideAsync();
+    // });
   }, []);
 
   // insets 설정
@@ -97,7 +136,31 @@ const AppLoading = () => {
     dispatch(setInsets({ insetTop }));
   }, [statusBarHeight]);
 
-  return <></>;
+  return showEasUpdateIndicator ? (
+    <Container>
+      <LoadingText>앱 업데이트 중...</LoadingText>
+      <ActivityIndicator size="small" color={colors.main} />
+    </Container>
+  ) : (
+    <></>
+  );
 };
 
 export default AppLoading;
+
+const Container = styled.View`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: ${colors.white};
+  justify-content: center;
+  align-items: center;
+`;
+
+const LoadingText = styled(TextMain)`
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+`;

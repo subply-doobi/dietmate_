@@ -159,7 +159,7 @@ export default CartSummary;
 
 const TotalSummaryContainer = styled.View`
   /* padding: 0px 16px 104px 16px; */
-  background-color: ${colors.white};
+  /* background-color: ${colors.white}; */
   padding-top: 40px;
 `;
 

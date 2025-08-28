@@ -6,6 +6,13 @@ expo install --fix
 # remove derived data
   rm -rf ~/Library/Developer/Xcode/DerivedData
 
+# clean up node_modules (+ package-lock)
+  rm -rf node_modules package-lock.json
+  
+  rmdir /s /q node_modules
+  del package-lock.json
+
+
 # SHA1 -> base64
   echo {SHA1} | xxd -r -p | openssl base64
 

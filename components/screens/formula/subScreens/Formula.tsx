@@ -92,7 +92,7 @@ const Formula = () => {
 
   useEffect(() => {
     if (!isFocused) return;
-    console.log("Formula subscreen isFocused", isFocused);
+    // console.log("Formula subscreen isFocused", isFocused);
 
     if (pToDel.length === 0) {
       dispatch(closeBS());

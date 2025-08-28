@@ -212,7 +212,11 @@ const Diet = () => {
         {/* 끼니 정보 요약 */}
         <CartSummary
           hasLowerShippingCta={true}
-          containerStyle={{ paddingHorizontal: 16, paddingBottom: 104 }}
+          containerStyle={{
+            paddingHorizontal: 16,
+            paddingBottom: 104,
+            backgroundColor: colors.white,
+          }}
         />
       </ScrollView>
 

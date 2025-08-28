@@ -64,7 +64,7 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
 
   const menuCardTitle =
     formulaStatus === "empty"
-      ? "새로운 공식을 기다리고 있어요"
+      ? "새로운 공식을 기다리고 있어요!"
       : formulaStatus === "inProgress"
       ? "만들던 공식이 있어요"
       : "계산할 공식이 있어요";

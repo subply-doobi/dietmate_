@@ -12,13 +12,13 @@ import {
 import { useUpdateDiet } from "@/shared/api/queries/diet";
 import { useDeleteOrder, useUpdateOrder } from "@/shared/api/queries/order";
 import { openModal } from "@/features/reduxSlices/modalSlice";
-import { setCurrentDiet } from "@/features/reduxSlices/commonSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { IIamportPayParams } from "@/shared/utils/screens/order/setPayData";
 import { PaymentRequest } from "@portone/browser-sdk/v2";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 
 const Payment = () => {
   // redux
@@ -62,7 +62,7 @@ const Payment = () => {
   const onPaymentSuccess = async () => {
     router.canDismiss() && router.dismissAll();
     router.replace({ pathname: "/OrderComplete" });
-    dispatch(setCurrentDiet(""));
+    dispatch(setCurrentFMCIdx(0));
     await updateDietMutation.mutateAsync({
       statusCd: "SP006005",
       orderNo,

@@ -23,7 +23,7 @@ import DSmallBtn from "@/shared/ui/DSmallBtn";
 import { showQtyChangeToast } from "@/shared/store/toastStore";
 
 interface ICarouselContent {
-  carouselRef: React.RefObject<ICarouselInstance>;
+  carouselRef: React.RefObject<ICarouselInstance | null>;
   carouselIdx: number;
 }
 

@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import colors from "@/shared/colors";
@@ -11,7 +11,6 @@ import { useListDietTotalObj } from "../../../shared/api/queries/diet";
 import { Icon } from "@/shared/ui/styledComps";
 import { icons } from "@/shared/iconSource";
 import CartSummary from "@/components/screens/diet/CartSummary";
-import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 
 interface IEdgeInfo {
   visible?: boolean;
@@ -86,7 +85,6 @@ const EdgeInfo = ({
           <CartSummary
             hasLowerShippingCta={true}
             containerStyle={{
-              backgroundColor: "",
               paddingHorizontal: 16,
               paddingTop: 32,
             }}
@@ -103,7 +101,6 @@ export default EdgeInfo;
 const Container = styled(Animated.View)`
   position: absolute;
   overflow: hidden;
-  z-index: 100;
   bottom: 0;
   left: 0;
   right: 0;

@@ -193,10 +193,14 @@ export const setPayParams = ({
   payParams_iamport: IIamportPayParams;
   payParams_doobi: IDoobiPayParams;
 } => {
+  const currentENV =
+    ENV.APP_VARIANT === "production" ? "" : `(${ENV.APP_VARIANT}) `;
   const payParams_iamport: IIamportPayParams = {
     storeId: ENV.STORE_ID_IAMPORT as string,
     paymentId: `paymentU${userData.userId}D${Date.now()}`,
-    orderName: `${MENU_NUM_LABEL[menuNum - 1]} 공식 (식품 ${productNum}개)`,
+    orderName: `${currentENV}${
+      MENU_NUM_LABEL[menuNum - 1]
+    } 공식 (식품 ${productNum}개)`,
     totalAmount: priceTotal + shippingPrice,
     currency: "CURRENCY_KRW",
     payMethod: paymentMethod,

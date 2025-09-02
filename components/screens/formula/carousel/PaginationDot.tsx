@@ -1,15 +1,14 @@
 import React, { useEffect, useMemo } from "react";
 import styled from "styled-components/native";
 import colors from "@/shared/colors";
-import { Icon, TextMain } from "@/shared/ui/styledComps";
+import { TextMain } from "@/shared/ui/styledComps";
 import { MENU_LABEL } from "@/shared/constants";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import Toast from "react-native-toast-message";
-import { useFocusEffect } from "expo-router";
+import Icon from "@/shared/ui/Icon";
 
 const PaginationDot = ({ index }: { index: number }) => {
   // redux
@@ -58,12 +57,19 @@ const PaginationDot = ({ index }: { index: number }) => {
     <PaginationDotView>
       <PaginationText>{text}</PaginationText>
       {isActive && (
-        <Icon source={icons.appIcon} size={16} style={{ marginRight: -3 }} />
+        <Icon
+          name="appIcon"
+          boxSize={16}
+          iconSize={16}
+          style={{ marginRight: -3 }}
+        />
       )}
       {isSatisfied && (
         <Icon
-          source={icons.checkboxCheckedGreen_24}
-          size={10}
+          name="check"
+          boxSize={12}
+          iconSize={10}
+          color={colors.success}
           style={{
             position: "absolute",
             right: -1,

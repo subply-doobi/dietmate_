@@ -1,9 +1,7 @@
 import styled from "styled-components/native";
-import { icons } from "../../../shared/iconSource";
 import {
   Col,
   ShadowView,
-  Icon,
   HorizontalSpace,
   TextMain,
 } from "../../../shared/ui/styledComps";
@@ -12,6 +10,7 @@ import colors from "../../../shared/colors";
 import { updateTotalCheckList } from "../../../shared/utils/asyncStorage";
 import { IFlattedOrderedProduct } from "@/shared/utils/screens/checklist/menuFlat";
 import { MENU_LABEL } from "@/shared/constants";
+import Icon from "@/shared/ui/Icon";
 
 interface IMenuBox {
   order: IFlattedOrderedProduct[][];
@@ -57,19 +56,29 @@ const MenuBox = ({ order, checklist, setChecklist }: IMenuBox) => {
                   {MENU_LABEL[idx]}{" "}
                   {menu[0].qtyIdx > 0 && `(${menu[0].qtyIdx + 1})`}
                 </CheckListTitle>
-                <Icon
-                  style={{
-                    position: "absolute",
-                    right: 16,
-                    top: 24,
-                    zIndex: 2,
-                  }}
-                  source={
-                    checklist.includes(menuNoAndQtyIdx)
-                      ? icons.checkRoundCheckedMain_24
-                      : icons.checkRoundEmpty_24
-                  }
-                />
+                {checklist.includes(menuNoAndQtyIdx) ? (
+                  <Icon
+                    name="checkCircle"
+                    color={colors.main}
+                    style={{
+                      position: "absolute",
+                      right: 16,
+                      top: 24,
+                      zIndex: 2,
+                    }}
+                  />
+                ) : (
+                  <Icon
+                    name="checkCircleUnchecked"
+                    color={colors.inactive}
+                    style={{
+                      position: "absolute",
+                      right: 16,
+                      top: 24,
+                      zIndex: 2,
+                    }}
+                  />
+                )}
                 <HorizontalSpace height={16} />
                 <FoodList menu={menu} />
                 {checklist.includes(menuNoAndQtyIdx) && <OpacityView />}

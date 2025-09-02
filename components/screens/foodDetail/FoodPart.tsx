@@ -1,18 +1,18 @@
-import {Image} from 'react-native';
-import styled from 'styled-components/native';
+import { Image } from "react-native";
+import styled from "styled-components/native";
 
 // react-query
-import {useListProductDetail} from '../../../shared/api/queries/product';
+import { useListProductDetail } from "../../../shared/api/queries/product";
 import {
   IProductData,
   IProductDetailData,
-} from '../../../shared/api/types/product';
-import {useEffect, useState} from 'react';
-import {SCREENWIDTH} from '../../../shared/constants';
-import {ActivityIndicator} from 'react-native';
-import colors from '../../../shared/colors';
-import {TextSub} from '../../../shared/ui/styledComps';
-import {icons} from '../../../shared/iconSource';
+} from "../../../shared/api/types/product";
+import { useEffect, useState } from "react";
+import { SCREENWIDTH } from "../../../shared/constants";
+import { ActivityIndicator } from "react-native";
+import colors from "../../../shared/colors";
+import { TextSub } from "../../../shared/ui/styledComps";
+import Icon from "@/shared/ui/Icon";
 
 interface IImageData {
   imageLink: string;
@@ -23,7 +23,7 @@ interface IImageData {
 
 const useGetImageSize = async (
   productDetailData: IProductDetailData[],
-  setImageData: React.Dispatch<React.SetStateAction<IImageData[]>>,
+  setImageData: React.Dispatch<React.SetStateAction<IImageData[]>>
 ) => {
   let imageData: IImageData[] = [];
 
@@ -40,24 +40,24 @@ const useGetImageSize = async (
               imageLink: item.imageLink,
               width: modWidth,
               height: modHeight,
-              result: 'success',
+              result: "success",
             },
           ];
           resolve();
         },
-        error => {
-          console.error('getSize error', error);
+        (error) => {
+          console.error("getSize error", error);
           imageData = [
             ...imageData,
             {
               imageLink: item.imageLink,
               width: SCREENWIDTH - 32,
               height: 24,
-              result: 'error',
+              result: "error",
             },
           ];
           resolve();
-        },
+        }
       );
     });
   }
@@ -66,14 +66,14 @@ const useGetImageSize = async (
 interface IFoodPart {
   productData: IProductData;
 }
-const FoodPart = ({productData}: IFoodPart) => {
+const FoodPart = ({ productData }: IFoodPart) => {
   // react-query
-  const {data: productDetailData} = useListProductDetail(
-    productData?.productNo,
+  const { data: productDetailData } = useListProductDetail(
+    productData?.productNo
   );
   // useState
   const [imageData, setImageData] = useState<
-    {imageLink: string; width: number; height: number; result: string}[]
+    { imageLink: string; width: number; height: number; result: string }[]
   >([]);
   const [imgLoading, setImgLoading] = useState(true);
 
@@ -88,19 +88,19 @@ const FoodPart = ({productData}: IFoodPart) => {
     <>
       {imgLoading && <ActivityIndicator color={colors.black} />}
       {imageData?.map((item, index) =>
-        item.result === 'success' ? (
+        item.result === "success" ? (
           <DetailImage
             key={index}
-            style={{width: item.width, height: item.height}}
-            source={{uri: item.imageLink}}
-            onError={() => console.log('DetailImage onError')}
+            style={{ width: item.width, height: item.height }}
+            source={{ uri: item.imageLink }}
+            onError={() => console.log("DetailImage onError")}
           />
         ) : (
           <ErrorBox>
-            <ImageErrorIcon source={icons.cancelRound_24} />
+            <Icon name="cancelCircle" iconSize={14} color={colors.textSub} />
             <ImageErrorMsg>이미지를 불러올 수 없습니다</ImageErrorMsg>
           </ErrorBox>
-        ),
+        )
       )}
     </>
   );

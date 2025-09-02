@@ -1,25 +1,20 @@
 import styled from "styled-components/native";
-import { Icon, TextSub } from "./styledComps";
-import { icons } from "../iconSource";
+import { TextSub } from "./styledComps";
 import colors from "../colors";
 import { TouchableOpacityProps } from "react-native";
+import Icon, { IconName } from "./Icon";
 
 interface IDSmallBtn extends TouchableOpacityProps {
   btnText: string;
-  iconSource?: string;
+  iconName?: IconName;
   iconSize?: number;
 }
-const DSmallBtn = ({ btnText, iconSource, iconSize, ...props }: IDSmallBtn) => {
+const DSmallBtn = ({ btnText, iconName, iconSize, ...props }: IDSmallBtn) => {
   const style = props.style || {};
   return (
     <Btn {...props} style={[style]}>
       <BtnText>{btnText}</BtnText>
-      {iconSource && (
-        <Icon
-          size={iconSize || 20}
-          source={iconSource || icons.arrowRight_20}
-        />
-      )}
+      {iconName && <Icon iconSize={iconSize} name={iconName} />}
     </Btn>
   );
 };

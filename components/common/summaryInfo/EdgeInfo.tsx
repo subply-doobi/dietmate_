@@ -8,9 +8,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useListDietTotalObj } from "../../../shared/api/queries/diet";
-import { Icon } from "@/shared/ui/styledComps";
-import { icons } from "@/shared/iconSource";
 import CartSummary from "@/components/screens/diet/CartSummary";
+import Icon, { IconName } from "@/shared/ui/Icon";
 
 interface IEdgeInfo {
   visible?: boolean;
@@ -60,14 +59,14 @@ const EdgeInfo = ({
     position,
   };
 
-  const iconSource =
+  const iconName: IconName =
     opened && direction === "top"
-      ? icons.arrowUp_20
+      ? "chevronUp"
       : opened && direction === "bottom"
-      ? icons.arrowDown_20
+      ? "chevronDown"
       : !opened && direction === "top"
-      ? icons.arrowDown_20
-      : icons.arrowUp_20;
+      ? "chevronDown"
+      : "chevronUp";
 
   if (!visible) {
     return null;
@@ -78,9 +77,11 @@ const EdgeInfo = ({
       <ToggleBox onPress={() => setOpened((prev) => !prev)}>
         <Box ref={ref}>
           <Icon
-            source={iconSource}
+            name={iconName}
             style={{ position: "absolute", alignSelf: "center", top: 4 }}
-            size={20}
+            boxSize={24}
+            iconSize={18}
+            color={colors.inactive}
           />
           <CartSummary
             hasLowerShippingCta={true}

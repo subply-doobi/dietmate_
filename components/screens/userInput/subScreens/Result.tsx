@@ -7,7 +7,6 @@ import styled from "styled-components/native";
 import { useListCode } from "@/shared/api/queries/code";
 import { Col, Row, TextMain } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
-import { icons } from "@/shared/iconSource";
 import { calculateManualCalorie } from "@/shared/utils/targetCalculation";
 import { ShadowView } from "@/shared/ui/styledComps";
 import {
@@ -176,7 +175,8 @@ const Result = () => {
       </Row>
       <AdditionalGuide
         style={{ marginTop: 40 }}
-        iconSource={icons.warning_24}
+        iconName="warningCircle"
+        iconColor={colors.warning}
         text={`근의공식에서 구성한 끼니 외 식사량이나,
 몸무게 변화에 따라 목표섭취량은 달라집니다.
 

@@ -3,7 +3,6 @@ import { Platform, ScrollView } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
-import { useHeaderHeight } from "@react-navigation/elements";
 
 // doobi
 import colors from "@/shared/colors";
@@ -12,71 +11,67 @@ import ListBtns from "@/shared/ui/ListBtns";
 import { link } from "@/shared/utils/linking";
 import { DEFAULT_BOTTOM_TAB_HEIGHT, INQUIRY_URL } from "@/shared/constants";
 import { openModal } from "@/features/reduxSlices/modalSlice";
-import { icons } from "@/shared/iconSource";
 import { useRouter } from "expo-router";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 
 const Mypage = () => {
   // navigation
-  const headerHeight = useHeaderHeight();
   const router = useRouter();
 
   // redux
   const dispatch = useAppDispatch();
 
-  // etc
-  // btns
   const myPageBtns = [
     {
       title: "이용방법",
       btnId: "Tutorial",
       onPress: () => dispatch(openModal({ name: "tutorialRestartAlert" })),
-      iconSource: icons.question_mypage_24,
+      iconName: "questionCircle_mp",
+      iconSize: 16,
     },
     {
       title: "목표변경",
       btnId: "TargeChange",
       onPress: () => router.push({ pathname: "/UserInput" }),
-      iconSource: icons.target_mypage_24,
+      iconName: "target_mp",
+      iconSize: 20,
     },
     {
       title: "추천코드",
       btnId: "recommendCode",
       onPress: () => router.push({ pathname: "/RecommendCode" }),
-      iconSource: icons.code_mypage_24,
-    },
-    {
-      title: "찜한상품",
-      btnId: "Likes",
-      onPress: () => router.push({ pathname: "/Likes" }),
-      iconSource: icons.heart_myPage_24,
+      iconName: "code_mp",
+      iconSize: 18,
     },
     {
       title: "주문내역",
       btnId: "OrderHistory",
       onPress: () => router.push({ pathname: "/OrderHistory" }),
-      iconSource: icons.card_mypage_24,
+      iconName: "card_mp",
+      iconSize: 20,
     },
     {
       title: "공지사항",
       btnId: "Notice",
       onPress: () => router.push({ pathname: "/Notice" }),
-      iconSource: icons.notice_mypage_24,
+      iconName: "notice_mp",
+      iconSize: 20,
     },
     {
       title: "계정설정",
       btnId: "Account",
       onPress: () => router.push({ pathname: "/Account" }),
-      iconSource: icons.account_mypage_24,
+      iconName: "account_mp",
+      iconSize: 20,
     },
     {
       title: "문의하기",
       btnId: "Inquiry",
       onPress: () => link(INQUIRY_URL),
-      iconSource: icons.chat_mypage_24,
+      iconName: "chat_mp",
+      iconSize: 18,
     },
   ];
-
   return (
     <Container
       style={{

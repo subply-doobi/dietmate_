@@ -1,6 +1,7 @@
 import colors from "@/shared/colors";
-import { Col, Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
-import { ImageSourcePropType, TouchableOpacityProps } from "react-native";
+import Icon from "@/shared/ui/Icon";
+import { Col, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import { TouchableOpacityProps } from "react-native";
 import styled from "styled-components/native";
 
 interface ISelectBtn extends TouchableOpacityProps {
@@ -8,7 +9,7 @@ interface ISelectBtn extends TouchableOpacityProps {
   isActive?: boolean;
   subText?: string;
   leftBar?: boolean;
-  iconSource?: ImageSourcePropType;
+  iconName?: string;
   iconDirection?: "left" | "right";
 }
 const SelectBtn = ({
@@ -16,7 +17,7 @@ const SelectBtn = ({
   isActive = true,
   subText,
   leftBar,
-  iconSource,
+  iconName,
   iconDirection = "left",
   ...props
 }: ISelectBtn) => {
@@ -33,12 +34,16 @@ const SelectBtn = ({
       ]}
     >
       <Row style={{ columnGap: 8 }}>
-        {iconSource && isIconLeft && <Icon source={iconSource} size={32} />}
+        {iconName && isIconLeft && (
+          <Icon name={iconName as any} boxSize={24} iconSize={20} />
+        )}
         <Col>
           <BtnText>{text}</BtnText>
           {subText && <BtnSubText>{subText}</BtnSubText>}
         </Col>
-        {iconSource && !isIconLeft && <Icon source={iconSource} size={40} />}
+        {iconName && !isIconLeft && (
+          <Icon name={iconName as any} boxSize={48} iconSize={40} />
+        )}
       </Row>
 
       {leftBar && <LeftBar />}

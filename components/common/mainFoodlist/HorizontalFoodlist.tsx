@@ -21,7 +21,6 @@ interface IProductCardSection {
   paddingHorizontal?: number;
   gap?: number;
   showPlatformNm?: boolean;
-  iconSource?: ImageSourcePropType;
 }
 
 const HorizontalFoodlist = ({

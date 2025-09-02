@@ -11,23 +11,19 @@ import {
   Col,
   Container,
   HorizontalSpace,
-  Icon,
   Row,
   TextMain,
   TextSub,
 } from "../shared/ui/styledComps";
 import colors from "../shared/colors";
-import { icons } from "../shared/iconSource";
 import { parseDate } from "../shared/utils/dateParsing";
 import { IFlattedOrderedProduct } from "../shared/utils/screens/checklist/menuFlat";
 import PieChart from "react-native-pie-chart";
-import DAlert from "../shared/ui/DAlert";
-import CommonAlertContent from "../components/modal/alert/CommonAlertContent";
-import { useDispatch, useSelector } from "react-redux";
-import { openModal, closeModal } from "../features/reduxSlices/modalSlice";
+import { useDispatch } from "react-redux";
+import { openModal } from "../features/reduxSlices/modalSlice";
 import MenuBox from "../components/screens/checklist/MenuBox";
-import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import Icon from "@/shared/ui/Icon";
 
 const Checklist = () => {
   // redux
@@ -97,14 +93,17 @@ const Checklist = () => {
             </CardTitle>
             {percentage === 100 ? (
               <Icon
-                style={{ marginLeft: 8, zIndex: 2 }}
-                source={icons.checkRoundCheckedMain_24}
+                name="checkCircle"
+                color={colors.main}
+                style={{ marginLeft: 8 }}
+                boxSize={24}
+                iconSize={20}
               />
             ) : (
               <Col
                 style={{
-                  width: 24,
-                  height: 24,
+                  width: 20,
+                  height: 20,
                   alignItems: "center",
                   justifyContent: "center",
                   marginLeft: 8,
@@ -112,7 +111,7 @@ const Checklist = () => {
               >
                 <PieChart
                   series={[numerator, denominator - numerator]}
-                  widthAndHeight={20}
+                  widthAndHeight={16}
                   style={{ zIndex: 2 }}
                   sliceColor={[colors.main, colors.white]}
                   coverRadius={0.6}
@@ -122,7 +121,7 @@ const Checklist = () => {
           </Row>
           <GoHistoryDetailBtn onPress={goToOrderHistoryDetail}>
             <TextGrey>주문전체정보</TextGrey>
-            <Icon size={20} source={icons.arrowRight_20} />
+            <Icon name="chevronRight" color={colors.textSub} iconSize={16} />
           </GoHistoryDetailBtn>
           <HorizontalSpace height={16} />
 

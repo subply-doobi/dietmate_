@@ -1,8 +1,5 @@
-import React from "react";
 import { Alert } from "react-native";
 import styled from "styled-components/native";
-
-import { icons } from "@/shared/iconSource";
 import {
   AccordionContentContainer,
   BtnCTA,
@@ -23,6 +20,8 @@ import { IAddressData } from "@/shared/api/types/address";
 import SquareInput from "@/shared/ui/SquareInput";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
+import Icon from "@/shared/ui/Icon";
+import colors from "@/shared/colors";
 
 const EntranceMethodContainer = () => {
   // redux
@@ -37,19 +36,21 @@ const EntranceMethodContainer = () => {
       <Col style={{ marginTop: 30 }} />
       {ENTRANCE_TYPE.map((e, i) => {
         return (
-          <Row key={i} style={{ marginBottom: 28 }}>
+          <Row key={i} style={{ marginBottom: 20 }}>
             <EntranceCheckBox
               onPress={() =>
                 dispatch(setValue({ name: "entranceType", value: e }))
               }
             >
-              <CheckIcon
-                source={
-                  entranceType.value === e
-                    ? icons.checkboxCheckedMain_24
-                    : icons.checkbox_24
+              <Icon
+                name={
+                  entranceType.value === e ? "checkbox" : "checkboxUnchecked"
                 }
-                style={{ marginRight: 10 }}
+                color={
+                  entranceType.value === e ? colors.main : colors.lineLight
+                }
+                boxSize={24}
+                iconSize={24}
               />
             </EntranceCheckBox>
             <EntranceCheckBoxText>{e}</EntranceCheckBoxText>
@@ -130,12 +131,15 @@ const Address = () => {
                 dispatch(setselectedAddrIdx(index));
               }}
             >
-              <CheckIcon
-                source={
-                  selectedAddrIdx === index
-                    ? icons.checkboxCheckedMain_24
-                    : icons.checkbox_24
+              <Icon
+                name={
+                  selectedAddrIdx === index ? "checkbox" : "checkboxUnchecked"
                 }
+                color={
+                  selectedAddrIdx === index ? colors.main : colors.lineLight
+                }
+                boxSize={24}
+                iconSize={24}
               />
               <Col>
                 <AddressBase>{ads.addr1}</AddressBase>
@@ -145,7 +149,7 @@ const Address = () => {
 
             {/* 배송지 수정 버튼 */}
             <EditBtn onPress={() => onAddrEditPress(ads)}>
-              <EditIcon source={icons.edit_24} />
+              <Icon name="edit" color={colors.textSub} />
             </EditBtn>
           </AddressBox>
           <HorizontalLine style={{ marginTop: 16 }} />
@@ -158,11 +162,10 @@ const Address = () => {
         onPress={() => onAddrAddPress()}
       >
         <Row>
-          <PlusSquareIcon
-            source={
-              listAddressData?.length === 0
-                ? icons.plusSquareActive_24
-                : icons.plusSquare_24
+          <Icon
+            name="plusSquare"
+            color={
+              listAddressData?.length === 0 ? colors.main : colors.inactive
             }
           />
           <AddressAddBtnText>배송지 추가</AddressAddBtnText>
@@ -225,7 +228,8 @@ const AddressAddBtn = styled(BtnCTA)`
 `;
 const AddressAddBtnText = styled(TextSub)`
   font-size: 14px;
-  margin-left: 8px;
+  line-height: 20px;
+  margin-left: 4px;
 `;
 
 const ContentTitle = styled(TextMain)`
@@ -235,5 +239,7 @@ const ContentTitle = styled(TextMain)`
 
 const EntranceCheckBoxText = styled(TextMain)`
   font-size: 14px;
+  line-height: 20px;
+  margin-left: 4px;
 `;
 const EntranceCheckBox = styled.TouchableOpacity``;

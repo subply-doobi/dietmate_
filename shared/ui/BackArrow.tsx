@@ -1,13 +1,7 @@
-import { Alert, TouchableOpacity, TouchableOpacityProps } from "react-native";
-import styled from "styled-components/native";
-
-import { icons } from "../iconSource";
-import { usePathname, useRouter } from "expo-router";
-
-const Back = styled.Image`
-  width: 24px;
-  height: 24px;
-`;
+import { TouchableOpacity, TouchableOpacityProps } from "react-native";
+import { useRouter } from "expo-router";
+import Icon from "./Icon";
+import colors from "../colors";
 
 const BackArrow = ({
   goBackFn,
@@ -32,7 +26,7 @@ const BackArrow = ({
         style,
       ]}
     >
-      <Back source={icons.back_24} />
+      <Icon name="arrowLeft" color={colors.black} boxSize={24} iconSize={20} />
     </TouchableOpacity>
   );
 };

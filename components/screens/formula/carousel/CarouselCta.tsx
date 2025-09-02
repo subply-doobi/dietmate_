@@ -15,15 +15,15 @@ import { IProductData } from "@/shared/api/types/product";
 import colors from "@/shared/colors";
 import { AM_SELECTED_CATEGORY_IDX, AM_PRICE_TARGET } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
 import CtaButton from "@/shared/ui/CtaButton";
-import { Col, Icon, Row, TextMain } from "@/shared/ui/styledComps";
+import { Col, Row, TextMain } from "@/shared/ui/styledComps";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { setGlobalLoading } from "@/features/reduxSlices/commonSlice";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { setProductToDel } from "@/features/reduxSlices/bottomSheetSlice";
+import Icon from "@/shared/ui/Icon";
 
 interface ICarouselCta {
   carouselMenu: IDietDetailData;
@@ -171,28 +171,14 @@ const CarouselCta = ({
 
   // etc
   const isCurrent = currentFMCIdx === carouselIdx;
-  const autoMenuBtnStyle = "border";
+  const autoMenuBtnStyle = isMenuFull ? "border" : "borderActive";
   // const autoMenuType = isMenuFull ? "overwrite" : "add";
-  const addBtnStyle = isMenuFull ? "border" : "borderActive";
-  const addBtnText = isMenuFull ? "영양이 충분해요" : "영양소에 맞게 추가";
-  const addBtnIconSource = isMenuFull
-    ? icons.formula_36
-    : icons.formulaActive_36;
+  const addBtnStyle = "border";
+  const addBtnText = isMenuFull ? "영양이 충분해요" : "식품 하나씩 추가";
 
   return (
     <>
       <BtnBox>
-        {/* AutoMenu btn */}
-        <CtaButton
-          btnStyle={autoMenuBtnStyle}
-          shadow={true}
-          style={{ width: 48, height: 48 }}
-          btnContent={() => <Icon source={icons.dice_36} size={32} />}
-          onPress={() =>
-            isMenuFull ? setShowCheckOverwrite(true) : setOneAutoMenu()
-          }
-        />
-
         {/* Add btn */}
         <CtaButton
           btnStyle={addBtnStyle}
@@ -204,14 +190,25 @@ const CarouselCta = ({
             fontSize: 14,
             color: isMenuFull ? colors.inactive : colors.textSub,
           }}
-          btnContent={() => (
-            <Icon
-              source={addBtnIconSource}
-              size={28}
-              style={{ marginLeft: -16 }}
-            />
-          )}
+          // btnContent={() => (
+          //   <Icon
+          //     name="calculator"
+          //     color={isMenuFull ? colors.inactive : colors.main}
+          //     style={{ marginLeft: -8 }}
+          //   />
+          // )}
           onPress={onCtaPress}
+        />
+
+        {/* AutoMenu btn */}
+        <CtaButton
+          btnStyle={autoMenuBtnStyle}
+          shadow={true}
+          style={{ width: 48, height: 48 }}
+          btnContent={() => <Icon name="calculator" color={colors.main} />}
+          onPress={() =>
+            isMenuFull ? setShowCheckOverwrite(true) : setOneAutoMenu()
+          }
         />
       </BtnBox>
       {globalLoading && isCurrent && (

@@ -1,17 +1,21 @@
+// RN, expo
 import { ActivityIndicator } from "react-native";
+import { forwardRef } from "react";
+
+// 3rd
+import { useRouter } from "expo-router";
+import styled from "styled-components/native";
+
+// doobi
 import {
   Col,
-  Icon,
   Row,
   ShadowView,
   TextMain,
   TextSub,
 } from "@/shared/ui/styledComps";
-import { icons } from "@/shared/iconSource";
 import colors from "@/shared/colors";
 import CtaButton from "@/shared/ui/CtaButton";
-import { forwardRef } from "react";
-import styled from "styled-components/native";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import {
   setFoodToOrder,
@@ -19,8 +23,8 @@ import {
 } from "@/features/reduxSlices/orderSlice";
 import { commaToNum } from "@/shared/utils/sumUp";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
-import { useRouter } from "expo-router";
-import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_NUM_LABEL } from "@/shared/constants";
+import Icon from "@/shared/ui/Icon";
 
 interface ICurrentDietCard {
   formulaStatus: string;
@@ -84,18 +88,18 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
         <Col>
           <Row style={{ justifyContent: "space-between" }}>
             <Row>
-              <Icon source={icons.warning_24} size={18} />
+              <Icon name="warningCircle" iconSize={16} color={colors.warning} />
               <CardTitle>{menuCardTitle}</CardTitle>
             </Row>
           </Row>
           {formulaStatus !== "empty" && (
             <Col style={{ marginTop: 24 }}>
               <Row>
-                <Icon source={icons.menu_24} />
+                <Icon name="food" color={colors.black} />
                 <CardDesc>"{MENU_NUM_LABEL[menuNum - 1]}" 공식</CardDesc>
               </Row>
               <Row style={{ marginTop: 8 }}>
-                <Icon source={icons.card_24} />
+                <Icon name="creditCard" color={colors.black} />
                 <CardDesc>{commaToNum(priceTotal)} 원</CardDesc>
               </Row>
             </Col>

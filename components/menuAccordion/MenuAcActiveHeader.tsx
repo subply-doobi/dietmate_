@@ -4,20 +4,20 @@
 import styled from "styled-components/native";
 
 // doobi
-import { Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import { Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 
 import { IBaseLineData } from "@/shared/api/types/baseLine";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { getNutrStatus, sumUpPrice, commaToNum } from "@/shared/utils/sumUp";
-import { icons } from "@/shared/iconSource";
 
 import colors from "@/shared/colors";
 import { MENU_LABEL } from "@/shared/constants";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 import { useMemo } from "react";
 import { useRouter } from "expo-router";
+import Icon from "@/shared/ui/Icon";
 
 interface IMenuAcActiveHeader {
   dietNo: string;
@@ -52,7 +52,7 @@ const MenuAcActiveHeader = ({ dietNo }: IMenuAcActiveHeader) => {
           router.push({ pathname: "/(tabs)/Formula" });
         }}
       >
-        <Icon source={icons.edit_24} />
+        <Icon name="edit" color={colors.inactive} />
       </EditBtn>
     </Box>
   );

@@ -1,23 +1,22 @@
 // 3rd
 import styled from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
 
 // doobi
 import {
   Col,
   HorizontalSpace,
-  Icon,
   Row,
   ShadowView,
   TextMain,
   TextSub,
 } from "@/shared/ui/styledComps";
-import { icons } from "@/shared/iconSource";
 import { commaToNum } from "@/shared/utils/sumUp";
 import LastOrderNutr from "./LastOrderNutr";
 import { IFlattedOrderedProduct } from "@/shared/utils/screens/checklist/menuFlat";
 import { useRouter } from "expo-router";
 import { MENU_LABEL } from "@/shared/constants";
+import colors from "@/shared/colors";
+import Icon from "@/shared/ui/Icon";
 
 interface ILastOrderCard {
   isOrderEmpty: boolean;
@@ -44,31 +43,31 @@ const LastOrderCard = ({
       >
         <Row style={{ justifyContent: "space-between" }}>
           <Row>
-            <Icon source={icons.cardActive_24} size={20} />
+            <Icon name="creditCard" color={colors.main} />
             <CardTitle>마지막 주문정보</CardTitle>
           </Row>
           <TargetChangeBtn
             onPress={() => router.push({ pathname: "/OrderHistory" })}
           >
             <SubText>주문전체정보</SubText>
-            <Icon size={20} source={icons.arrowRight_20} />
+            <Icon name="chevronRight" color={colors.textSub} />
           </TargetChangeBtn>
         </Row>
         <HorizontalSpace height={40} />
         <LastOrderNutr lastOrder={orderGroupedDataFlatten[0] || [[]]} />
         <Col style={{ marginTop: 24 }}>
           <Row>
-            <Icon source={icons.calendar_24} />
+            <Icon name="calendar" color={colors.black} />
             <CardDesc>{orderGroupedDataFlatten[0]?.[0]?.[0]?.buyDate}</CardDesc>
           </Row>
           <Row style={{ marginTop: 8 }}>
-            <Icon source={icons.menu_24} />
+            <Icon name="food" color={colors.black} iconSize={16} />
             <CardDesc>
               "{MENU_LABEL[orderGroupedDataFlatten[0].length - 1]}" 공식
             </CardDesc>
           </Row>
           <Row style={{ marginTop: 8 }}>
-            <Icon source={icons.card_24} />
+            <Icon name="creditCard" color={colors.black} />
             <CardDesc>
               {commaToNum(orderGroupedDataFlatten[0]?.[0]?.[0]?.orderPrice)} 원
             </CardDesc>

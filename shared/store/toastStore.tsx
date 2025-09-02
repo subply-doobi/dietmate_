@@ -1,5 +1,4 @@
 import FoodChangeToast from "@/components/toast/FoodChangeToast";
-import ProductSelectToast from "@/components/toast/ProductSelectToast";
 import QtyChangeToast from "@/components/toast/QtyChangeToast";
 import Toast, { ToastConfigParams } from "react-native-toast-message";
 import { MenuWithChangeAvailableFoods } from "../utils/screens/lowerShipping/changeAvailable";
@@ -57,9 +56,6 @@ export type IToastCustomConfigParams = ToastConfigParams<{
   menuWithChangeAvailableFoods?: MenuWithChangeAvailableFoods;
 }>;
 export const toastConfig = {
-  productSelect: (props: IToastCustomConfigParams) => (
-    <ProductSelectToast {...props} />
-  ),
   qtyChange: (props: IToastCustomConfigParams) => <QtyChangeToast {...props} />,
   foodChange: (props: IToastCustomConfigParams) => (
     <FoodChangeToast {...props} />

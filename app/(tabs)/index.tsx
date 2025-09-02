@@ -17,16 +17,10 @@ import { loadBaseLineData } from "@/features/reduxSlices/userInputSlice";
 import colors from "@/shared/colors";
 import { regroupByBuyDateAndDietNo } from "@/shared/utils/dataTransform";
 import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
-import { useListProduct } from "@/shared/api/queries/product";
 import { flatOrderMenuWithQty } from "@/shared/utils/screens/checklist/menuFlat";
-import { DEFAULT_BOTTOM_TAB_HEIGHT } from "@/shared/constants";
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
-import { queryClient } from "@/shared/store/reactQueryStore";
-import { PRODUCTS } from "@/shared/api/keys";
-import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
 
 import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
-import { setTotalFoodList } from "@/features/reduxSlices/commonSlice";
 
 import CurrentDietCard from "@/components/screens/home/CurrentDietCard";
 import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
@@ -34,7 +28,6 @@ import LastOrderCard from "@/components/screens/home/LastOrderCard";
 import Profile from "@/components/screens/home/Profile";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import CtaButton from "@/shared/ui/CtaButton";
-import { openBS } from "@/features/reduxSlices/bottomSheetSlice";
 
 const NewHome = () => {
   // navigation
@@ -49,13 +42,12 @@ const NewHome = () => {
 
   // useRef (튜토리얼 식단 구성하기 버튼 위치)
   const scrollRef = useRef<ScrollView | null>(null);
-  const ctaBtnRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
+  const ctaBtnRef = useRef<React.ComponentRef<typeof TouchableOpacity>>(null);
 
   // react-query
   // const { data: testErrData, refetch: throwErr } = useTestErrQuery();
   const { data: bLData } = useGetBaseLine();
   const { data: dTOData } = useListDietTotalObj();
-  const initialDietNo = Object.keys(dTOData || {})[0] || "";
   const deleteDietAllMutation = useDeleteDietAll();
   const { data: orderData } = useListOrder();
 
@@ -217,6 +209,10 @@ const NewHome = () => {
           btnStyle="active"
           btnText="test"
           onPress={() => {
+            router.push({
+              pathname: "/ErrorPage",
+              params: { errorCode: "999", msg: "errorTest" },
+            });
           }}
         /> */}
       </ScrollView>

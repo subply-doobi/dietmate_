@@ -3,9 +3,9 @@ import { Modal, ViewProps } from "react-native";
 import styled from "styled-components/native";
 
 import colors from "../colors";
-import { DALERT_WIDTH, SCREENWIDTH } from "../constants";
-import { Icon, Row, TextMain } from "./styledComps";
-import { icons } from "../iconSource";
+import { DALERT_WIDTH } from "../constants";
+import { Row, TextMain } from "./styledComps";
+import Icon from "./Icon";
 
 interface IDAlert extends ViewProps {
   alertShow: boolean;
@@ -78,7 +78,11 @@ const DAlert = ({
             )}
             {showTopCancel && (
               <TopCancelBtn onPress={() => onCancel && onCancel()}>
-                <Icon source={icons.cancelRound_24} />
+                <Icon
+                  name="cancelCircle"
+                  color={colors.textSub}
+                  iconSize={16}
+                />
               </TopCancelBtn>
             )}
           </PopUpContainer>
@@ -144,8 +148,8 @@ const CancelBtnText = styled(TextMain)`
 `;
 
 const TopCancelBtn = styled.TouchableOpacity`
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   position: absolute;
   top: 0;
   right: 0;

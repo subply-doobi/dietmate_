@@ -3,16 +3,11 @@ import styled from "styled-components/native";
 import RNRestart from "react-native-restart";
 
 // doobi
-import { icons } from "@/shared/iconSource";
-import {
-  Col,
-  Container,
-  Icon,
-  TextMain,
-  TextSub,
-} from "@/shared/ui/styledComps";
+import { Col, Container, TextMain, TextSub } from "@/shared/ui/styledComps";
+``;
 import colors from "@/shared/colors";
 import { useLocalSearchParams } from "expo-router";
+import Icon from "@/shared/ui/Icon";
 
 // 1. app splash 에서 버전 확인할 때 서버오류
 // 2. 로그인시 서버오류
@@ -31,11 +26,16 @@ const ErrorPage = () => {
   return (
     <Container style={{ alignItems: "center", justifyContent: "center" }}>
       <Col style={{ alignItems: "center" }}>
-        <Icon source={icons.networkError_80} size={64} />
+        <Icon
+          name="wifiOff"
+          color={colors.warning}
+          boxSize={64}
+          iconSize={56}
+        />
         <ErrorText>{msg}</ErrorText>
         <Sub>{subText}</Sub>
         <RestartBtn onPress={() => RNRestart.restart()}>
-          <Icon source={icons.initialize_24} />
+          <Icon name="refresh" color={colors.line} />
           <RestartText>재시작</RestartText>
         </RestartBtn>
       </Col>

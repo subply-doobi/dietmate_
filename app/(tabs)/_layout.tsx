@@ -7,8 +7,6 @@ import {
   View,
 } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Icon } from "@/shared/ui/styledComps";
-import { icons } from "@/shared/iconSource";
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { tfDTOToDDA } from "@/shared/utils/dataTransform";
@@ -18,6 +16,7 @@ import { useListProduct } from "@/shared/api/queries/product";
 import { setTotalFoodList } from "@/features/reduxSlices/commonSlice";
 import { PRODUCTS } from "@/shared/api/keys";
 import { queryClient } from "@/shared/store/reactQueryStore";
+import Icon from "@/shared/ui/Icon";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -87,10 +86,12 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "NewHome",
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
             <Icon
-              source={focused ? icons.mainActive_36 : icons.main_36}
-              size={36}
+              name={focused ? "home" : "homeOutline"}
+              boxSize={36}
+              iconSize={focused ? 24 : 22}
+              color={focused ? colors.main : colors.inactive}
             />
           ),
         }}
@@ -99,10 +100,12 @@ export default function TabLayout() {
         name="Formula"
         options={{
           title: "Formula",
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
             <Icon
-              source={focused ? icons.formulaActive_36 : icons.formula_36}
-              size={36}
+              name={focused ? "calculator" : "calculatorOutline"}
+              boxSize={36}
+              iconSize={focused ? 30 : 24}
+              color={focused ? colors.main : colors.inactive}
             />
           ),
         }}
@@ -110,14 +113,20 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Diet"
         options={{
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
             <CartIcon>
               <Icon
-                source={focused ? icons.cartActive_36 : icons.cart_36}
-                size={36}
+                name={focused ? "cart" : "cartOutline"}
+                boxSize={36}
+                iconSize={focused ? 28 : 24}
+                color={focused ? colors.main : colors.inactive}
               />
               {dietDetailAllData.length !== 0 && (
-                <Badge>
+                <Badge
+                  style={{
+                    backgroundColor: focused ? colors.main : colors.pink,
+                  }}
+                >
                   <BadgeText>{dietDetailAllData.length}</BadgeText>
                 </Badge>
               )}

@@ -1,6 +1,5 @@
 import colors from "@/shared/colors";
 import { ENV } from "@/shared/constants";
-import { icons } from "@/shared/iconSource";
 
 // Define the PAY_METHOD object with inferred types
 export type IPG = "kakaopay" | "smartro_v2";
@@ -28,8 +27,8 @@ export const PAY_METHOD = [
       {
         value: "kakaopay",
         label: "카카오페이",
-        iconSource: icons.kakaoPay,
-        iconSize: 40,
+        logoSource: require("@/shared/assets/otherServiceLogo/kakao_pay.png"),
+        logoSize: 40,
         btnActiveBg: colors.kakaoColor,
         textColor: colors.textMain,
       },
@@ -51,8 +50,8 @@ export const PAY_METHOD = [
       {
         value: "smartro_v2",
         label: "스마트로",
-        iconSource: null,
-        iconSize: 24,
+        logoSource: null,
+        logoSize: 24,
         btnActiveBg: colors.white,
         textColor: colors.textMain,
       },

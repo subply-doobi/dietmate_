@@ -9,10 +9,11 @@ import {
 import colors from "@/shared/colors";
 import { ENV } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
-import { Col, Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import Icon from "@/shared/ui/Icon";
+import { Col, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { Image } from "react-native";
 import styled from "styled-components/native";
 
 const ProductToDelSelect = () => {
@@ -86,10 +87,9 @@ const ProductToDelSelect = () => {
                 columnGap: 8,
               }}
             >
-              <Icon
+              <Image
                 source={{ uri: `${ENV.BASE_URL}${p.mainAttUrl}` }}
-                style={{ borderRadius: 4 }}
-                size={40}
+                style={{ borderRadius: 4, width: 40, height: 40 }}
               />
               <Row style={{ flex: 1, alignItems: "flex-start" }}>
                 <Col style={{ flex: 1 }}>
@@ -99,7 +99,7 @@ const ProductToDelSelect = () => {
                     {parseInt(p.protein)}g | {parseInt(p.fat)}g
                   </Nutr>
                 </Col>
-                <Icon source={icons.infoRoundWhite_24} size={20} />
+                <Icon name="infoCircle" color={colors.white} />
               </Row>
             </Row>
           </InfoBtn>

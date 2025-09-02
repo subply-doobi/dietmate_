@@ -9,29 +9,25 @@ import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 
 import colors from "@/shared/colors";
-import { icons } from "@/shared/iconSource";
 import {
   calculateCaloriesToNutr,
   calculateManualCalorie,
 } from "@/shared/utils/targetCalculation";
 import { ICodeData } from "@/shared/api/types/code";
 import { commaToNum } from "@/shared/utils/sumUp";
-import {
-  IUserInputState,
-  setValue,
-} from "@/features/reduxSlices/userInputSlice";
+import { setValue } from "@/features/reduxSlices/userInputSlice";
 import { SCREENWIDTH } from "@/shared/constants";
 
 import {
   Col,
   HorizontalSpace,
-  Icon,
   Row,
   TextMain,
   TextSub,
 } from "@/shared/ui/styledComps";
 import SquareInput from "@/shared/ui/SquareInput";
 import { ScrollView } from "react-native";
+import Icon from "@/shared/ui/Icon";
 
 const AcHeader = ({
   isActive,
@@ -44,15 +40,17 @@ const AcHeader = ({
     <AccordionHeader isActive={isActive}>
       <Row>
         <Icon
-          source={
-            isActive
-              ? icons.checkboxCheckedMain_24
-              : icons.checkboxCheckedGrey_24
-          }
+          name="checkbox"
+          color={isActive ? colors.main : colors.inactive}
+          boxSize={24}
+          iconSize={20}
         />
         <AccordionHeaderTitle isActive={isActive}>{title}</AccordionHeaderTitle>
       </Row>
-      <Icon source={isActive ? icons.arrowUpMain_20 : icons.arrowDown_20} />
+      <Icon
+        name={isActive ? "chevronUp" : "chevronDown"}
+        color={isActive ? colors.main : colors.line}
+      />
     </AccordionHeader>
   );
 };
@@ -139,8 +137,7 @@ const AcManualInputs = ({
     <Col style={{ width: SCREENWIDTH - 48, alignSelf: "center" }}>
       {baseLineData && Object.keys(baseLineData).length !== 0 && (
         <Row style={{ marginTop: 24 }}>
-          <Icon source={icons.warning_24} />
-
+          <Icon name="warningCircle" color={colors.warning} iconSize={16} />
           <CautionMsg>
             칼로리가 변경될 수 있어요 (기존설정:{" "}
             <CautionMsgRed>{calorie.value}kcal</CautionMsgRed>)
@@ -265,6 +262,7 @@ const AccordionHeaderTitle = styled.Text<{ isActive: boolean }>`
 const CautionMsg = styled(TextMain)`
   font-size: 12px;
   line-height: 17px;
+  margin-left: 4px;
 `;
 const CautionMsgRed = styled(TextMain)`
   font-size: 12px;

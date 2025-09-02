@@ -15,7 +15,7 @@ import { useRouter } from "expo-router";
 import { useCreateOrder } from "@/shared/api/queries/order";
 import { useListAddress } from "@/shared/api/queries/address";
 import { useGetUser } from "@/shared/api/queries/user";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useAppSelector } from "@/shared/hooks/reduxHooks";
 
 import {
   setCustomData,

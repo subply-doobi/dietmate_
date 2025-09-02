@@ -13,9 +13,8 @@ import Carousel, {
 // doobi
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { Icon, Row } from "@/shared/ui/styledComps";
+import { Row } from "@/shared/ui/styledComps";
 import { FORMULA_CAROUSEL_HEIGHT, SCREENWIDTH } from "@/shared/constants";
-import { icons } from "@/shared/iconSource";
 import CarouselContent from "../carousel/CarouselContent";
 import PaginationDot from "../carousel/PaginationDot";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
@@ -35,6 +34,7 @@ import {
   openBS,
   setProductToDel,
 } from "@/features/reduxSlices/bottomSheetSlice";
+import Icon from "@/shared/ui/Icon";
 
 const width = Dimensions.get("window").width;
 
@@ -162,7 +162,7 @@ const Formula = () => {
             onPress={onPressPagination}
           />
           <MoreBtn onPress={() => router.push("/FormulaMore")}>
-            <Icon source={icons.more_24} size={24} />
+            <Icon name="more" color={colors.textSub} />
           </MoreBtn>
         </Row>
 

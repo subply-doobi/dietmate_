@@ -4,11 +4,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export type IModalName =
   // alert
   // 끼니 추가삭제, 식품 삭제
-  | "menuDeleteAlert"
   | "menuDeleteAllAlert"
   | "menuCreateAlert"
   | "menuCreateNAAlert"
-  | "productDeleteAlert"
 
   // 자동구성
   | "autoMenuLoadingAlert"
@@ -43,8 +41,6 @@ export type IModalName =
   | "tutorialTPSStart" // 튜토리얼 시작
 
   // bottomSheet
-  | "filterBS"
-  | "sortBS"
   | "menuNumSelectBS";
 
 export interface IModalValues {

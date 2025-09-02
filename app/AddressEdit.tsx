@@ -9,7 +9,6 @@ import { OnCompleteParams } from "@actbase/react-daum-postcode/lib/types";
 
 // doobi
 import { setselectedAddrIdx } from "@/features/reduxSlices/orderSlice";
-import { icons } from "@/shared/iconSource";
 import { SCREENWIDTH } from "@/shared/constants";
 import {
   AlertContentContainer,
@@ -17,7 +16,6 @@ import {
   BtnText,
   Container,
   HorizontalSpace,
-  InputHeaderText,
   Row,
   StickyFooter,
   TextMain,
@@ -25,7 +23,6 @@ import {
 } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 
-import DAlert from "@/shared/ui/DAlert";
 import { useCreateAddress, useListAddress } from "@/shared/api/queries/address";
 import {
   useDeleteAddress,
@@ -34,9 +31,10 @@ import {
 
 import { setAddrBase, setValue } from "@/features/reduxSlices/userInputSlice";
 import DTextInput from "@/shared/ui/DTextInput";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import Icon from "@/shared/ui/Icon";
 
 const renderDeleteAlertContent = () => (
   <AlertContentContainer>
@@ -136,7 +134,6 @@ const AddressEdit = () => {
                           : selectedAddrIdx < addrIdx
                           ? selectedAddrIdx
                           : selectedAddrIdx - 1;
-
                       dispatch(
                         openModal({
                           name: "addressDeleteAlert",
@@ -148,7 +145,12 @@ const AddressEdit = () => {
                       );
                     }}
                   >
-                    <AddressDeleteIcon source={icons.cancelRound_24} />
+                    <Icon
+                      name="cancelCircle"
+                      color={colors.inactive}
+                      boxSize={24}
+                      iconSize={20}
+                    />
                   </AddressDeleteBtn>
                 )}
               </Row>
@@ -204,7 +206,7 @@ const AddressEdit = () => {
           onPress={() => setPostModalVisible(true)}
         >
           <BtnText style={{ color: colors.textSub, fontSize: 16 }}>
-            {hasAddrValue ? "주소 전체변경" : " + 주소 추가"}
+            {hasAddrValue ? "주소 검색" : " + 주소 추가"}
           </BtnText>
         </AddressEditBtn>
         <AddressConfirmBtn

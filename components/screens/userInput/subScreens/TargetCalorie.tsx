@@ -1,21 +1,16 @@
 import styled from "styled-components/native";
 import { setValue } from "@/features/reduxSlices/userInputSlice";
 import { RefObject, useEffect, useState } from "react";
-import {
-  Col,
-  HorizontalSpace,
-  Icon,
-  Row,
-  TextMain,
-} from "@/shared/ui/styledComps";
+import { Col, HorizontalSpace, Row, TextMain } from "@/shared/ui/styledComps";
 import ToggleButton from "@/shared/ui/ToggleButton";
-import { icons } from "@/shared/iconSource";
 import { useListCode } from "@/shared/api/queries/code";
 import SquareInput from "@/shared/ui/SquareInput";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { getRecommendedNutr } from "@/shared/utils/screens/userInput/targetByUserInfo";
 import { ScrollView } from "react-native";
+import Icon from "@/shared/ui/Icon";
+import colors from "@/shared/colors";
 
 const menuPerDayItem = [1, 2, 3, 4];
 const calorieOptionItem: {
@@ -107,7 +102,7 @@ const TargetCalorie = ({ scrollRef }: ITargetCalorie) => {
             )
           }
         >
-          <Icon source={icons.question_24} />
+          <Icon name="questionCircle" color={colors.warning} />
         </QuestionBtn>
       </Row>
 
@@ -138,7 +133,7 @@ const TargetCalorie = ({ scrollRef }: ITargetCalorie) => {
         onFocus={() =>
           setTimeout(() => {
             scrollRef?.current?.scrollToEnd({ animated: true });
-          }, 150)
+          }, 200)
         }
       />
     </Container>

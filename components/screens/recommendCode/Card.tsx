@@ -1,19 +1,26 @@
 import styled from "styled-components/native";
-import { Icon, Row, ShadowView, TextMain } from "@/shared/ui/styledComps";
-import { ImageSourcePropType, ViewProps } from "react-native";
+import { Row, ShadowView, TextMain } from "@/shared/ui/styledComps";
+import { ViewProps } from "react-native";
 import colors from "@/shared/colors";
+import Icon, { IconName } from "@/shared/ui/Icon";
 
 interface ICard extends ViewProps {
-  icon?: ImageSourcePropType;
+  iconName?: IconName;
   label: string;
   value?: string;
 }
-const Card = ({ icon, label, value, ...boxProps }: ICard) => {
+const Card = ({ iconName, label, value, ...boxProps }: ICard) => {
   return (
     <Box {...boxProps}>
       <Row>
         <Label>{label}</Label>
-        {icon && <Icon source={icon} style={{ marginLeft: 4 }} />}
+        {iconName && (
+          <Icon
+            name={iconName}
+            color={colors.success}
+            style={{ marginLeft: 4 }}
+          />
+        )}
       </Row>
       {value && (
         <Highlight>

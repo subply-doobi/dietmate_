@@ -8,10 +8,10 @@ import styled from "styled-components/native";
 // doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { setValue } from "@/features/reduxSlices/userInputSlice";
-import { icons } from "@/shared/iconSource";
 import AdditionalGuide from "../AdditionalGuide";
 import SquareInput from "@/shared/ui/SquareInput";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import colors from "@/shared/colors";
 
 interface IChangeCalorie {
   scrollRef: RefObject<ScrollView>;
@@ -42,7 +42,11 @@ const ChangeCalorie = ({ scrollRef }: IChangeCalorie) => {
 
   return (
     <Container>
-      <AdditionalGuide iconSource={icons.warning_24} text={text} />
+      <AdditionalGuide
+        iconName="warningCircle"
+        iconColor={colors.warning}
+        text={text}
+      />
       <SquareInput
         boxStyle={{ marginTop: 40 }}
         label={`한 끼 목표 칼로리 (기존 : ${

@@ -1,33 +1,21 @@
 import { FlatList } from "react-native";
 import React from "react";
 import { ENV, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
-import {
-  Icon,
-  TextMain,
-  TextSub,
-  VerticalSpace,
-} from "@/shared/ui/styledComps";
+import { TextMain, TextSub, VerticalSpace } from "@/shared/ui/styledComps";
 import styled from "styled-components/native";
-import {
-  IDietDetailData,
-  IDietDetailProductData,
-} from "@/shared/api/types/diet";
+import { IDietDetailData } from "@/shared/api/types/diet";
 import colors from "@/shared/colors";
-import { icons } from "@/shared/iconSource";
-import { IProductData, IProductDetailData } from "@/shared/api/types/product";
+import { IProductData } from "@/shared/api/types/product";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import {
   setProductToAdd,
   setProductToDel,
 } from "@/features/reduxSlices/lowerShippingSlice";
-import {
-  commaToNum,
-  IShippingPriceObj,
-  IShippingPriceValues,
-} from "@/shared/utils/sumUp";
+import { commaToNum, IShippingPriceObj } from "@/shared/utils/sumUp";
 import DTooltip from "@/shared/ui/DTooltip";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
+import Icon from "@/shared/ui/Icon";
 
 interface IFoodlistToMod {
   type: "del" | "add";
@@ -129,13 +117,10 @@ const FoodlistToMod = ({ type, foods, shippingPriceObj }: IFoodlistToMod) => {
             />
             {isSelected && (
               <Icon
-                source={
-                  type === "del"
-                    ? icons.deleteRoundWarning_24
-                    : icons.checkRoundCheckedGreen_24
-                }
-                size={16}
-                style={{ position: "absolute", top: 2, right: 2 }}
+                name={type === "del" ? "minus" : "plus"}
+                color={type === "del" ? colors.warning : colors.success}
+                iconSize={12}
+                style={{ position: "absolute", top: 0, right: 0 }}
               />
             )}
             <PlatformNm numberOfLines={1} ellipsizeMode="tail">
@@ -149,7 +134,7 @@ const FoodlistToMod = ({ type, foods, shippingPriceObj }: IFoodlistToMod) => {
               color={colors.blackOpacity70}
               reversed={true}
               customContent={() => (
-                <Icon source={icons.infoRoundWhite_24} size={20} />
+                <Icon name="infoCircle" iconSize={16} color={colors.white} />
               )}
               boxBottom={-2}
               boxRight={4}

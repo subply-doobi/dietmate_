@@ -1,9 +1,9 @@
 import styled from "styled-components/native";
 
 import { Image, ViewStyle } from "react-native";
-import { icons } from "../iconSource";
 import colors from "../colors";
 import { TextMain } from "./styledComps";
+import Icon from "./Icon";
 
 interface IDtooltip {
   color?: string;
@@ -81,7 +81,7 @@ const DTooltip = ({
             renderCustomIcon()
           ) : (
             <IconContainer>
-              <CheckBox source={icons.checkboxCheckedWhite_24} />
+              <Icon name="check" color={colors.white} />
             </IconContainer>
           )
         ) : null}

@@ -2,17 +2,14 @@
 import { Animated, ImageSourcePropType } from "react-native";
 
 // 3rd
-import styled from "styled-components/native";
 
 // doobi
 import { IProductData } from "@/shared/api/types/product";
 import {
-  ENV,
   MAIN_FOODLIST_HEADER_HEIGHT,
   SCREENWIDTH,
   SORT_FILTER_HEIGHT,
 } from "@/shared/constants";
-import { TextMain, TextSub } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import ListHeaderComponent from "./ListHeaderComponent";
 import ListFooterComponent from "./ListFooterComponent";
@@ -22,7 +19,6 @@ import ProductItem from "./ProductItem";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useIsFocused } from "@react-navigation/native";
 import {
-  closeBS,
   closeBSAll,
   openBS,
   snapBS,
@@ -37,7 +33,6 @@ interface IProductCardSection {
   itemSize?: number;
   gap?: number;
   showPlatformNm?: boolean;
-  iconSource?: ImageSourcePropType;
 }
 
 const Foodlist = ({
@@ -47,7 +42,6 @@ const Foodlist = ({
   itemSize = (SCREENWIDTH - 32 - 16) / 3,
   gap = 8,
   showPlatformNm = true,
-  iconSource,
 }: IProductCardSection) => {
   // navigation
   const isFocused = useIsFocused();

@@ -202,11 +202,6 @@ const Diet = () => {
             renderFooter={() => <HorizontalSpace height={20} />}
             onChange={updateSections}
           />
-
-          {/* 끼니추가 버튼 */}
-          {/* {dTOData && (
-            <AddMenuBtn onPress={onAddMenuPressed} dTOData={dTOData} />
-          )} */}
         </Col>
 
         {/* 끼니 정보 요약 */}

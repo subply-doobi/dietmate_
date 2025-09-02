@@ -7,7 +7,6 @@ import styled from "styled-components/native";
 // doobi
 import { IOrderedProduct } from "@/shared/api/types/order";
 import colors from "@/shared/colors";
-import { icons } from "@/shared/iconSource";
 import { commaToNum, sumUpNutrients } from "@/shared/utils/sumUp";
 import { Row, Col, VerticalLine, TextMain } from "@/shared/ui/styledComps";
 import { ENV } from "@/shared/constants";
@@ -15,8 +14,11 @@ import { ENV } from "@/shared/constants";
 const OrderedMenu = ({ order }: { order: IOrderedProduct[][] }) => {
   return (
     <Row>
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        <ArrowImage source={icons.arrowLeft_20} />
+      <ScrollView
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+      >
         {/* 주문 내 끼니 별 반복 */}
         {order.map((menu, menuIdx) => (
           <Col key={menuIdx}>
@@ -50,7 +52,6 @@ const OrderedMenu = ({ order }: { order: IOrderedProduct[][] }) => {
             </Row>
           </Col>
         ))}
-        <ArrowImage source={icons.arrowRight_20} />
       </ScrollView>
     </Row>
   );
@@ -68,10 +69,4 @@ const ThumbnailImage = styled.Image`
   width: 80px;
   height: 80px;
   border-radius: 2px;
-`;
-const ArrowImage = styled.Image`
-  align-self: center;
-  margin-top: 28px;
-  width: 20px;
-  height: 20px;
 `;

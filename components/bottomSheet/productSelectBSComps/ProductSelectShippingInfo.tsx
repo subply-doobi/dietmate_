@@ -4,17 +4,16 @@ import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useMemo } from "react";
 import styled from "styled-components/native";
-import SellerShippingText from "./SellerShippingText";
+import SellerShippingText from "../../toast/SellerShippingText";
 import { StyleProp, ViewStyle } from "react-native";
 
 interface IProductSelectShippingInfo {
   containerStyle?: StyleProp<ViewStyle>;
 }
-const ProductSelectTShippingInfo = ({
+const ProductSelectShippingInfo = ({
   containerStyle = {},
 }: IProductSelectShippingInfo) => {
   // redux
-  const bsNm = useAppSelector((state) => state.bottomSheet.bsNm);
   const { add: pToAdd, del: pToDel } = useAppSelector(
     (state) => state.bottomSheet.product
   );
@@ -53,7 +52,7 @@ const ProductSelectTShippingInfo = ({
   );
 };
 
-export default ProductSelectTShippingInfo;
+export default ProductSelectShippingInfo;
 
 const Box = styled.View`
   width: 100%;

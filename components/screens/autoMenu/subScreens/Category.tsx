@@ -3,12 +3,13 @@ import styled from "styled-components/native";
 import { TextMain } from "@/shared/ui/styledComps";
 import { BOTTOM_INDICATOR_IOS, SCREENWIDTH } from "@/shared/constants";
 import { useListCategory } from "@/shared/api/queries/category";
-import { icons } from "@/shared/iconSource";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setSelectedCategory } from "@/features/reduxSlices/autoMenuSlice";
 import { Platform } from "react-native";
 import CtaButton from "@/shared/ui/CtaButton";
 import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
+import Icon from "@/shared/ui/Icon";
+import colors from "@/shared/colors";
 
 const Category = () => {
   // redux
@@ -50,11 +51,12 @@ const Category = () => {
               dispatch(setSelectedCategory(modV));
             }}
           >
-            {selectedCategory[idx] ? (
-              <CheckboxImage source={icons.checkboxCheckedGreen_24} />
-            ) : (
-              <CheckboxImage source={icons.checkbox_24} />
-            )}
+            <Icon
+              name={selectedCategory[idx] ? "checkbox" : "checkboxUnchecked"}
+              color={selectedCategory[idx] ? colors.success : colors.lineLight}
+              boxSize={24}
+              iconSize={20}
+            />
             <CategoryText>{btn.categoryCdNm}</CategoryText>
           </CheckboxBtn>
         ))}
@@ -93,12 +95,8 @@ const CheckboxBtn = styled.TouchableOpacity`
   margin-bottom: 20px;
 `;
 
-const CheckboxImage = styled.Image`
-  width: 24px;
-  height: 24px;
-`;
-
 const CategoryText = styled(TextMain)`
-  margin-left: 10px;
+  margin-left: 4px;
   font-size: 14px;
+  line-height: 18px;
 `;

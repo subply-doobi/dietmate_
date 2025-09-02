@@ -1,20 +1,16 @@
+// 3rd
 import styled from "styled-components/native";
-import {
-  Container,
-  Icon,
-  Row,
-  ShadowView,
-  TextMain,
-} from "@/shared/ui/styledComps";
+
+// doobi
+import { Container, Row, ShadowView, TextMain } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
-import { icons } from "@/shared/iconSource";
 import CtaButton from "@/shared/ui/CtaButton";
 import { link } from "@/shared/utils/linking";
 import { INQUIRY_URL } from "@/shared/constants";
-import DAlert from "@/shared/ui/DAlert";
 import { useGetSuggestUser } from "@/shared/api/queries/suggest";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { openModal } from "@/features/reduxSlices/modalSlice";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+import Icon from "@/shared/ui/Icon";
 
 const MyBonus = () => {
   // redux
@@ -36,14 +32,14 @@ const MyBonus = () => {
         <QuestionBtn
           onPress={() => dispatch(openModal({ name: "myBonusGuideAlert" }))}
         >
-          <Icon source={icons.question_24} />
+          <Icon name="questionCircle" color={colors.warning} />
         </QuestionBtn>
         <Row>
-          <Icon source={icons.card_24} />
+          <Icon name="creditCard" color={colors.black} />
           <Desc>총 {suggestUserCnt}명</Desc>
         </Row>
         <Row style={{ marginTop: 4 }}>
-          <Icon source={icons.userRound_24} />
+          <Icon name="userCircle" color={colors.black} iconSize={16} />
           <Desc>05월 30,000원 이상 주문 {suggestPayCnt}회</Desc>
         </Row>
         <CtaButton

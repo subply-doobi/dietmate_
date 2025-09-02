@@ -1,8 +1,8 @@
-import styled from 'styled-components/native';
-import colors from '../colors';
-import {ViewProps} from 'react-native';
-import {Col, Icon, Row, TextMain, TextSub} from './styledComps';
-import {icons} from '../iconSource';
+import styled from "styled-components/native";
+import colors from "../colors";
+import { ViewProps } from "react-native";
+import { Col, Row, TextMain, TextSub } from "./styledComps";
+import Icon from "./Icon";
 
 interface IAccordionHeader extends ViewProps {
   title: string;
@@ -21,20 +21,21 @@ const DAccordionHeader = ({
 }: IAccordionHeader) => {
   return (
     <AccordionHeader {...props}>
-      <Row style={{justifyContent: 'space-between', flex: 1}}>
-        <Col style={{flex: 1}}>
+      <Row style={{ justifyContent: "space-between", flex: 1 }}>
+        <Col style={{ flex: 1 }}>
           <Title>{title}</Title>
           {customComponent &&
-            typeof customComponent === 'function' &&
+            typeof customComponent === "function" &&
             customComponent()}
           {!isActive && subTitle && <SubTitle>{subTitle}</SubTitle>}
         </Col>
-        {arrow &&
-          (isActive ? (
-            <Icon size={20} source={icons.arrowUp_20} />
-          ) : (
-            <Icon size={20} source={icons.arrowDown_20} />
-          ))}
+        {arrow && (
+          <Icon
+            name={isActive ? "chevronUp" : "chevronDown"}
+            color={colors.line}
+            iconSize={20}
+          />
+        )}
       </Row>
     </AccordionHeader>
   );

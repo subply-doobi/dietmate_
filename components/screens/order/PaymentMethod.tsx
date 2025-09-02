@@ -7,7 +7,6 @@ import styled from "styled-components/native";
 import colors from "@/shared/colors";
 import {
   AccordionContentContainer,
-  BtnCTA,
   HorizontalSpace,
   Icon,
   Row,
@@ -70,7 +69,7 @@ const PaymentMethod = () => {
             const borderColor = colors.lineLight;
             const color = item.textColor;
             const opacity = isActive ? 1 : 0.5;
-            const iconSize = item.iconSize;
+            const iconSize = item.logoSize;
             return (
               <MethodBtn
                 key={item.value}
@@ -79,9 +78,9 @@ const PaymentMethod = () => {
                   dispatch(setValue({ name: "pg", value: item.value }))
                 }
               >
-                {item.iconSource && (
+                {item.logoSource && (
                   <Icon
-                    source={item.iconSource}
+                    source={item.logoSource}
                     resizeMode="contain"
                     size={iconSize}
                   />

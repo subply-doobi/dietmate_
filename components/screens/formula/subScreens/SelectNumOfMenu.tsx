@@ -1,3 +1,11 @@
+// RN, expo
+import { useEffect, useState } from "react";
+
+// 3rd
+import styled from "styled-components/native";
+import ScrollPicker from "react-native-wheel-scrollview-picker";
+
+// doobi
 import {
   setCurrentFMCIdx,
   setFormulaProgress,
@@ -9,13 +17,10 @@ import {
 import colors from "@/shared/colors";
 import { MENU_LABEL } from "@/shared/constants";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
 import CtaButton from "@/shared/ui/CtaButton";
-import { Icon, Row, TextMain } from "@/shared/ui/styledComps";
+import Icon from "@/shared/ui/Icon";
+import { Row, TextMain } from "@/shared/ui/styledComps";
 import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
-import { useEffect, useState } from "react";
-import ScrollPicker from "react-native-wheel-scrollview-picker";
-import styled from "styled-components/native";
 
 const PICKER_DATA_ARR = [...MENU_LABEL];
 
@@ -63,8 +68,11 @@ const SelectNumOfMenu = () => {
           renderItem={(data, _, isSelected) => (
             <Row>
               <PickerItem isSelected={isSelected}>{data}</PickerItem>
-              <Icon source={icons.appIcon} size={isSelected ? 32 : 24} />
-              {isSelected || <WhiteOpacityBox />}
+              {isSelected ? (
+                <Icon name="appIcon" boxSize={36} iconSize={32} />
+              ) : (
+                <WhiteOpacityBox />
+              )}
             </Row>
           )}
           onValueChange={(data, selectedIndex) =>

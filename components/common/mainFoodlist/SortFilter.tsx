@@ -1,4 +1,4 @@
-import { openBS, closeBS } from "@/features/reduxSlices/bottomSheetSlice";
+import { openBS } from "@/features/reduxSlices/bottomSheetSlice";
 import {
   resetSortFilter,
   selectFilteredSortedProducts,
@@ -16,9 +16,9 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { categoryCodeToName, SORT_FILTER_HEIGHT } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
 import DTooltip from "@/shared/ui/DTooltip";
-import { Icon, TextMain, TextSub } from "@/shared/ui/styledComps";
+import Icon, { IconName } from "@/shared/ui/Icon";
+import { TextMain, TextSub } from "@/shared/ui/styledComps";
 import {
   commaToNum,
   getSortedShippingPriceObj,
@@ -116,15 +116,23 @@ const SortFilter = () => {
     random3: random3,
   };
 
-  const BTNS = [
+  interface IBtn {
+    id: string;
+    label: string;
+    isActive: boolean;
+    iconName: IconName | undefined;
+    iconSize: number;
+    iconColor: string;
+    onPress: () => void;
+  }
+  const BTNS: IBtn[] = [
     {
       id: "baseListType",
       label: baseListType === "availableFoods" ? "영양목표" : "전체",
       isActive: isActiveObj.baseListType,
-      iconSource: isActiveObj.baseListType
-        ? icons.targetActive_24
-        : icons.targetInactive_24,
+      iconName: "target",
       iconSize: 18,
+      iconColor: isActiveObj.baseListType ? colors.main : colors.textSub,
       onPress: () => dispatch(openBS("baseListTypeFilter")),
     },
     // 카테고리
@@ -132,8 +140,9 @@ const SortFilter = () => {
       id: "category",
       label: category ? categoryCodeToName[category] : "카테고리",
       isActive: isActiveObj.category,
-      iconSource: undefined,
-      iconSize: 20,
+      iconName: undefined,
+      iconSize: 18,
+      iconColor: isActiveObj.category ? colors.main : colors.textSub,
       onPress: () => {
         dispatch(openBS("categoryFilter"));
       },
@@ -143,8 +152,9 @@ const SortFilter = () => {
       id: "search",
       label: "",
       isActive: isActiveObj.search,
-      iconSource: isActiveObj.search ? icons.cancelLine_24 : icons.search_36,
-      iconSize: 24,
+      iconName: isActiveObj.search ? "cancelCircle" : "search",
+      iconSize: 16,
+      iconColor: isActiveObj.search ? colors.main : colors.textSub,
       onPress: () => {
         if (isActiveObj.search) {
           if (searchQuery.length > 0) {
@@ -165,10 +175,9 @@ const SortFilter = () => {
       id: "platformNm",
       label: platformNm.length === 0 ? "배송비 절약" : platformNm[0],
       isActive: isActiveObj.platformNm,
-      iconSource: isActiveObj.platformNm
-        ? icons.truckActive_24
-        : icons.truckInactive_24,
-      iconSize: 24,
+      iconName: "truck",
+      iconSize: 18,
+      iconColor: isActiveObj.platformNm ? colors.main : colors.textSub,
       onPress: () => {
         dispatch(openBS("platformFilter"));
         isTooltipShow && setIsTooltipShow(false);
@@ -179,10 +188,9 @@ const SortFilter = () => {
       id: "recentlyOpened",
       label: "최근 본",
       isActive: isActiveObj.recentlyOpened,
-      iconSource: isActiveObj.recentlyOpened
-        ? icons.eyeActive_24
-        : icons.eyeInactive_24,
-      iconSize: undefined,
+      iconName: "eye",
+      iconSize: 18,
+      iconColor: isActiveObj.recentlyOpened ? colors.main : colors.textSub,
       onPress: () => {
         dispatch(setRecentlyOpened(!recentlyOpened));
       },
@@ -192,8 +200,9 @@ const SortFilter = () => {
       id: "liked",
       label: "좋아요",
       isActive: isActiveObj.liked,
-      iconSource: isActiveObj.liked ? icons.heart_active_36 : icons.heart_36,
-      iconSize: 20,
+      iconName: isActiveObj.liked ? "heart" : "heartBorder",
+      iconSize: 16,
+      iconColor: isActiveObj.liked ? colors.main : colors.textSub,
       onPress: () => {
         dispatch(setLiked(!liked));
       },
@@ -203,25 +212,13 @@ const SortFilter = () => {
       id: "recentlyOrdered",
       label: "최근 주문",
       isActive: isActiveObj.recentlyOrdered,
-      iconSource: isActiveObj.recentlyOrdered
-        ? icons.cardActive_24
-        : icons.cardInactive_24,
-      iconSize: undefined,
+      iconName: "creditCard",
+      iconSize: 16,
+      iconColor: isActiveObj.recentlyOrdered ? colors.main : colors.textSub,
       onPress: () => {
         dispatch(setRecentlyOrdered(!recentlyOrdered));
       },
     },
-    // 무작위
-    // {
-    //   id: "random3",
-    //   label: "무작위 3개",
-    //   isActive: isActiveObj.random3,
-    //   iconSource: isActiveObj.random3 ? icons.dice_36_active : icons.dice_36,
-    //   iconSize: 24,
-    //   onPress: () => {
-    //     random3 ? dispatch(setRandom3(false)) : dispatch(setRandom3(true));
-    //   },
-    // },
     // 가격 정렬
     {
       id: "sort",
@@ -242,13 +239,14 @@ const SortFilter = () => {
           ? "가단비"
           : "정렬",
       isActive: isActiveObj.sortBy,
-      iconSource:
+      iconName:
         sortState === "Asc"
-          ? icons.sortAscending_24
+          ? "sortUp"
           : sortState === "Desc"
-          ? icons.sortDescending_24
-          : icons.sort_24,
-      iconSize: 18,
+          ? "sortDown"
+          : "sort",
+      iconSize: 14,
+      iconColor: isActiveObj.sortBy ? colors.main : colors.textSub,
       onPress: () => {
         dispatch(openBS("sort"));
       },
@@ -258,8 +256,9 @@ const SortFilter = () => {
       id: "resetSortFilter",
       label: "",
       isActive: false,
-      iconSource: icons.initialize_24,
-      iconSize: 20,
+      iconName: "refresh",
+      iconSize: 16,
+      iconColor: colors.textSub,
       onPress: () => {
         dispatch(resetSortFilter("availableFoods"));
       },
@@ -301,11 +300,13 @@ const SortFilter = () => {
               value={searchQuery}
             />
           )}
-          {btn.iconSource && (
+          {btn.iconName && (
             <Icon
-              source={btn.iconSource}
-              size={btn.iconSize || 20}
-              style={{ marginLeft: !!btn.iconSource && !!btn.label ? -6 : 0 }}
+              name={btn.iconName}
+              boxSize={20}
+              iconSize={btn.iconSize}
+              color={btn.iconColor}
+              style={{ marginLeft: !!btn.iconName && !!btn.label ? -6 : 0 }}
             />
           )}
           {btn.label && <BtnText>{btn.label}</BtnText>}

@@ -2,19 +2,26 @@
 import styled from "styled-components/native";
 
 // doobi
-import { Icon, TextMain } from "@/shared/ui/styledComps";
+import { TextMain } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
-import { ImageSourcePropType, ViewProps } from "react-native";
+import { ViewProps } from "react-native";
+import Icon, { IconName } from "@/shared/ui/Icon";
 
 interface IAdditionalGuide extends ViewProps {
-  iconSource: ImageSourcePropType;
+  iconName: IconName;
+  iconColor: string;
   text: string;
 }
 
-const AdditionalGuide = ({ iconSource, text, ...props }: IAdditionalGuide) => {
+const AdditionalGuide = ({
+  iconName,
+  iconColor,
+  text,
+  ...props
+}: IAdditionalGuide) => {
   return (
     <AdditionalGuideBox {...props}>
-      <Icon source={iconSource} />
+      <Icon name={iconName} color={iconColor} />
       <AdditionalGuideText>{text}</AdditionalGuideText>
     </AdditionalGuideBox>
   );
@@ -26,7 +33,6 @@ const AdditionalGuideBox = styled.View`
   width: 100%;
   background-color: ${colors.backgroundLight2};
   border-radius: 10px;
-
   padding: 16px;
 `;
 

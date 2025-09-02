@@ -7,14 +7,12 @@ import styled from "styled-components/native";
 //doobi util, redux, etc
 import colors from "@/shared/colors";
 import { setShippingPrice } from "@/features/reduxSlices/orderSlice";
-import { icons } from "@/shared/iconSource";
 import { commaToNum, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 
 //doobi Component
 import {
   HorizontalLine,
   HorizontalSpace,
-  Icon,
   Row,
   TextMain,
   TextSub,
@@ -27,6 +25,7 @@ import { useRouter } from "expo-router";
 import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
 import CtaButton from "@/shared/ui/CtaButton";
 import SellerShippingText from "@/components/toast/SellerShippingText";
+import Icon from "@/shared/ui/Icon";
 
 interface ICartSummary {
   containerStyle?: ViewStyle;
@@ -140,8 +139,9 @@ const CartSummary = ({
           }}
           btnContent={() => (
             <Icon
-              source={icons.truckInactive_24}
-              size={24}
+              name="truck"
+              color={colors.inactive}
+              iconSize={16}
               style={{ marginLeft: -8 }}
             />
           )}

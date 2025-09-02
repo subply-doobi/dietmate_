@@ -5,14 +5,14 @@ import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
 import {
   showFoodChangeToast,
   showQtyChangeToast,
 } from "@/shared/store/toastStore";
 import CtaButton from "@/shared/ui/CtaButton";
 import GuideTitle from "@/shared/ui/GuideTitle";
-import { Col, Container, Icon, Row, TextMain } from "@/shared/ui/styledComps";
+import Icon from "@/shared/ui/Icon";
+import { Col, Container, TextMain } from "@/shared/ui/styledComps";
 import { getAddDietStatusFrDTData } from "@/shared/utils/getDietAddStatus";
 import {
   checkNoFoodAvailable,
@@ -209,8 +209,8 @@ const LowerShipping = () => {
               btnText={"추가하기"}
               btnContent={() => (
                 <Icon
-                  source={icons.appIcon}
-                  size={28}
+                  name="appIcon"
+                  iconSize={28}
                   style={{ marginLeft: -12 }}
                 />
               )}

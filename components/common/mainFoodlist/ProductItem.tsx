@@ -1,4 +1,4 @@
-import { View, Text, ViewStyle, FlatList, Animated } from "react-native";
+import { ViewStyle, Animated } from "react-native";
 import React, { RefObject } from "react";
 import { IProductData } from "@/shared/api/types/product";
 import styled from "styled-components/native";
@@ -7,7 +7,7 @@ import {
   SCREENWIDTH,
   SERVICE_PRICE_PER_PRODUCT,
 } from "@/shared/constants";
-import { Icon, TextMain, TextSub } from "@/shared/ui/styledComps";
+import { TextMain, TextSub } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { commaToNum } from "@/shared/utils/sumUp";
@@ -18,7 +18,7 @@ import {
 } from "@/features/reduxSlices/bottomSheetSlice";
 import { selectFilteredSortedProducts } from "@/features/reduxSlices/filteredPSlice";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { icons } from "@/shared/iconSource";
+import Icon from "@/shared/ui/Icon";
 
 interface IProductCardItem {
   item: IProductData;
@@ -117,7 +117,7 @@ const ProductItem = ({
           display: isIncluded ? "flex" : "none",
         }}
       >
-        <Icon source={icons.cartWhite_40} size={20} />
+        <Icon name="cart" color={colors.white} boxSize={24} iconSize={18} />
       </OpacityBox>
     </Box>
   );

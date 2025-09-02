@@ -1,6 +1,6 @@
 // RN, expo
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Text, ScrollView, View, ActivityIndicator } from "react-native";
+import React, { useState, useEffect, useMemo } from "react";
+import { Text, ScrollView, View } from "react-native";
 
 // 3rd
 import styled from "styled-components/native";
@@ -19,7 +19,6 @@ import {
   TextSub,
   StickyFooter,
   Dot,
-  Icon,
 } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { IProductData } from "@/shared/api/types/product";
@@ -42,14 +41,8 @@ import {
   useListProductMark,
 } from "@/shared/api/queries/product";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import {
-  useFocusEffect,
-  useLocalSearchParams,
-  useNavigation,
-  useRouter,
-} from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 
-import { icons } from "@/shared/iconSource";
 import { commaToNum, sumUpPriceOfSeller } from "@/shared/utils/sumUp";
 import { tfDTOToDDA } from "@/shared/utils/dataTransform";
 import {
@@ -58,6 +51,7 @@ import {
 } from "@/shared/utils/screens/foodDetail/makeNutrTable";
 import { addToRecentProduct } from "@/shared/utils/asyncStorage";
 import { setProductToAdd } from "@/features/reduxSlices/bottomSheetSlice";
+import Icon from "@/shared/ui/Icon";
 
 interface IShowPart {
   clicked: string;
@@ -306,12 +300,10 @@ const FoodDetail = () => {
         <BtnBox>
           <LikeBtn onPress={handlePressLikeBtn}>
             <Icon
-              size={52}
-              style={{
-                backgroundColor: colors.whiteOpacity70,
-                borderRadius: 4,
-              }}
-              source={isIncludedInLike ? icons.likeActive_48 : icons.like_48}
+              name={isIncludedInLike ? "heart" : "heartBorder"}
+              color={colors.pink}
+              boxSize={52}
+              iconSize={40}
             />
           </LikeBtn>
           {!infoOnly && (
@@ -418,4 +410,8 @@ const LikeBtn = styled.Pressable`
   height: 52px;
   align-items: center;
   justify-content: center;
+  background-color: ${colors.whiteOpacity70};
+  border-radius: 4px;
+  border-width: 0.5px;
+  border-color: ${colors.lineLight};
 `;

@@ -1,5 +1,4 @@
 import styled from "styled-components/native";
-import { icons } from "@/shared/iconSource";
 import {
   AccordionContentContainer,
   Col,
@@ -16,7 +15,8 @@ import Address from "@/components/screens/order/Address";
 import FoodToOrder from "@/components/screens/order/FoodToOrder";
 import Orderer from "@/components/screens/order/Orderer";
 import PaymentMethod from "@/components/screens/order/PaymentMethod";
-import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_NUM_LABEL } from "@/shared/constants";
+import Icon from "@/shared/ui/Icon";
 
 interface IGetOrderAccordionContent {
   menuNum: number;
@@ -58,7 +58,7 @@ export const getOrderAccordionContent = ({
               <Col style={{ flex: 1 }}>
                 <AccordionHeaderTitle>공식</AccordionHeaderTitle>
               </Col>
-              <UpDownArrow source={icons.arrowUp_20} />
+              <Icon name="chevronUp" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           inActiveHeader: (
@@ -73,7 +73,7 @@ export const getOrderAccordionContent = ({
                   </Row>
                 </HeaderSubTitleBox>
               </Col>
-              <UpDownArrow source={icons.arrowDown_20} />
+              <Icon name="chevronDown" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           content: <FoodToOrder />,
@@ -84,7 +84,7 @@ export const getOrderAccordionContent = ({
               <Col style={{ flex: 1 }}>
                 <AccordionHeaderTitle>주문자</AccordionHeaderTitle>
               </Col>
-              <UpDownArrow source={icons.arrowUp_20} />
+              <Icon name="chevronUp" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           inActiveHeader: (
@@ -101,7 +101,7 @@ export const getOrderAccordionContent = ({
                   )}
                 </HeaderSubTitleBox>
               </Col>
-              <UpDownArrow source={icons.arrowDown_20} />
+              <Icon name="chevronDown" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           content: <Orderer />,
@@ -112,7 +112,7 @@ export const getOrderAccordionContent = ({
               <Col style={{ flex: 1 }}>
                 <AccordionHeaderTitle>배송지</AccordionHeaderTitle>
               </Col>
-              <UpDownArrow source={icons.arrowUp_20} />
+              <Icon name="chevronUp" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           inActiveHeader: (
@@ -135,7 +135,7 @@ export const getOrderAccordionContent = ({
                   )}
                 </HeaderSubTitleBox>
               </Col>
-              <UpDownArrow source={icons.arrowDown_20} />
+              <Icon name="chevronDown" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           content: <Address />,
@@ -146,7 +146,7 @@ export const getOrderAccordionContent = ({
               <Col style={{ flex: 1 }}>
                 <AccordionHeaderTitle>결제수단</AccordionHeaderTitle>
               </Col>
-              <UpDownArrow source={icons.arrowUp_20} />
+              <Icon name="chevronUp" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           inActiveHeader: (
@@ -166,7 +166,7 @@ export const getOrderAccordionContent = ({
                   </HeaderSubTitle>
                 </HeaderSubTitleBox>
               </Col>
-              <UpDownArrow source={icons.arrowDown_20} />
+              <Icon name="chevronDown" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           content: <PaymentMethod />,
@@ -177,7 +177,7 @@ export const getOrderAccordionContent = ({
               <Col style={{ flex: 1 }}>
                 <AccordionHeaderTitle>결제금액</AccordionHeaderTitle>
               </Col>
-              <UpDownArrow source={icons.arrowUp_20} />
+              <Icon name="chevronUp" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           inActiveHeader: (
@@ -191,7 +191,7 @@ export const getOrderAccordionContent = ({
                   </HeaderSubTitle>
                 </HeaderSubTitleBox>
               </Col>
-              <UpDownArrow source={icons.arrowDown_20} />
+              <Icon name="chevronDown" color={colors.line} iconSize={20} />
             </AccordionHeader>
           ),
           content: (

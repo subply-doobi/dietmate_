@@ -12,7 +12,6 @@ import {
 } from "@/features/reduxSlices/filteredPSlice";
 import colors from "@/shared/colors";
 import { SORT_LIST } from "@/shared/constants";
-import { icons } from "@/shared/iconSource";
 import DTooltip from "@/shared/ui/DTooltip";
 import {
   BtnCTA,
@@ -23,6 +22,7 @@ import {
   TextMain,
 } from "@/shared/ui/styledComps";
 import { closeBS } from "@/features/reduxSlices/bottomSheetSlice";
+import Icon from "@/shared/ui/Icon";
 
 const sortTooltipText: {
   [key: string]: string;
@@ -45,9 +45,6 @@ const SortBSComp = () => {
     : sortBy?.endsWith("Desc")
     ? "Desc"
     : "";
-  console.log("SortBSComp");
-  console.log("currentSortNm:", currentSortNm);
-  console.log("sortState:", sortState);
 
   // useState
   const [sortTooltipShow, setSortTooltipShow] = useState("");
@@ -58,7 +55,6 @@ const SortBSComp = () => {
 
   // fn
   const onSortBtnPress = (sortName: string) => {
-    console.log("onSortBtnPress:", sortName);
     if (tempSortState.sortNm !== sortName) {
       // 정렬 상태가 변경되면 초기화
       setTempSortState({
@@ -119,15 +115,27 @@ const SortBSComp = () => {
             >
               <SortRow>
                 <Text isActive={isActive}>{btnLabel}</Text>
-                <Image
-                  source={
-                    isActive && tempSortState.sortState === "Asc"
-                      ? icons.sortAscending_24
-                      : isActive && tempSortState.sortState === "Desc"
-                      ? icons.sortDescending_24
-                      : icons.sort_24
-                  }
-                />
+                <IconBox>
+                  <Icon
+                    name="sort"
+                    iconSize={16}
+                    color={colors.inactive}
+                    style={{ position: "absolute", right: 0 }}
+                  />
+                  {btn.name === tempSortState.sortNm &&
+                    tempSortState.sortState !== "" && (
+                      <Icon
+                        name={
+                          tempSortState.sortState === "Asc"
+                            ? "sortUp"
+                            : "sortDown"
+                        }
+                        iconSize={16}
+                        color={colors.main}
+                        style={{ position: "absolute", right: 0 }}
+                      />
+                    )}
+                </IconBox>
               </SortRow>
 
               {/* 가칼비, 가단비 툴팁 */}
@@ -193,7 +201,7 @@ const Button = styled.Pressable`
   height: 58px;
   justify-content: center;
 `;
-const Image = styled.Image`
+const IconBox = styled.View`
   width: 24px;
   height: 24px;
   position: absolute;

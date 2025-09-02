@@ -1,7 +1,5 @@
-import { icons } from "@/shared/iconSource";
 import {
   Row,
-  Icon,
   HorizontalSpace,
   TextMain,
   TextSub,
@@ -12,6 +10,7 @@ import styled from "styled-components/native";
 import colors from "@/shared/colors";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useRouter } from "expo-router";
+import Icon from "@/shared/ui/Icon";
 
 const Profile = () => {
   // navigation
@@ -33,7 +32,12 @@ const Profile = () => {
           </SubText>
         </Col>
         <MypageBtn onPress={() => router.push("/Mypage")}>
-          <Icon source={icons.mypage_36} size={36} />
+          <Icon
+            name="account_mp"
+            boxSize={36}
+            iconSize={32}
+            color={colors.textSub}
+          />
         </MypageBtn>
       </Row>
       <HighlightBox>
@@ -44,7 +48,7 @@ const Profile = () => {
           }
         >
           <SubText>목표변경</SubText>
-          <Icon size={20} source={icons.arrowRight_20} />
+          <Icon name="chevronRight" iconSize={20} />
         </TargetChangeBtn>
       </HighlightBox>
       <HorizontalSpace height={16} />

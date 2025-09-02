@@ -117,14 +117,6 @@ export default function RootLayout() {
                     ),
                   }}
                 />
-                <Stack.Screen
-                  name="ManualAdd"
-                  options={{ headerShown: true, headerTitle: "식품선택" }}
-                />
-                <Stack.Screen
-                  name="Change"
-                  options={{ headerShown: true, headerTitle: "식품변경" }}
-                />
 
                 {/* 배송비절약  */}
                 <Stack.Screen
@@ -147,14 +139,6 @@ export default function RootLayout() {
                       fontWeight: "bold",
                       color: colors.textMain,
                     },
-                  }}
-                />
-                {/* 좋아요 식품 */}
-                <Stack.Screen
-                  name="Likes"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "찜한 상품",
                   }}
                 />
                 {/* 식품상세 */}

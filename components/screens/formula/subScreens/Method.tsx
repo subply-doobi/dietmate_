@@ -1,7 +1,5 @@
 import styled from "styled-components/native";
 import SelectBtn from "../SelectBtn";
-import { icons } from "@/shared/iconSource";
-import { ScrollView } from "react-native";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { MENU_LABEL } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
@@ -36,14 +34,14 @@ const Method = () => {
       text: `자동으로 ${MENU_LABEL[numOfMenu - 1] || ""} 공식만들기`,
       subText:
         "극도로 귀찮으신 분들을 위해 근의공식이\n자동으로 목표영양을 모두 맞춘 공식을 만들게요",
-      iconSource: undefined,
+      iconName: undefined,
       onPress: () => dispatch(setFormulaProgress(progress.concat("AMSelect"))),
     },
     {
       text: "한 근씩 공식만들기 (추천)",
       subText:
         "한 근씩 식품을 추가하면서 \n목표영양을 채우도록 근의공식이 도와줄게요",
-      iconSource: icons.appIcon,
+      iconName: "appIcon",
       onPress: () => dispatch(setFormulaProgress(progress.concat("Formula"))),
     },
   ];
@@ -55,7 +53,7 @@ const Method = () => {
             key={index}
             text={item.text}
             subText={item.subText}
-            iconSource={item.iconSource}
+            iconName={item.iconName}
             leftBar={index === 2}
             onPress={item.onPress}
             iconDirection="right"

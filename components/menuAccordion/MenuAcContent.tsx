@@ -4,27 +4,20 @@ import {
   Col,
   HorizontalLine,
   HorizontalSpace,
-  Icon,
   TextMain,
 } from "@/shared/ui/styledComps";
 
-import {
-  commaToNum,
-  sumUpDietFromDTOData,
-  sumUpPrice,
-} from "@/shared/utils/sumUp";
+import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useDispatch } from "react-redux";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import MenuNumSelect from "@/components/common/cart/MenuNumSelect";
 import FoodList from "./FoodList";
 import CtaButton from "@/shared/ui/CtaButton";
-import { icons } from "@/shared/iconSource";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 import { useRouter } from "expo-router";
-import { useMemo } from "react";
-import { MENU_NUM_LABEL } from "@/shared/constants";
+import Icon from "@/shared/ui/Icon";
 
 interface IMenuAcContent {
   dietNo: string;
@@ -67,7 +60,9 @@ const MenuAcContent = ({ dietNo }: IMenuAcContent) => {
           style={{ marginTop: 24 }}
           btnStyle="border"
           btnText="식품이 더 필요해요"
-          btnContent={() => <Icon source={icons.plusRoundSmall_24} size={18} />}
+          btnContent={() => (
+            <Icon name="plusCircle" color={colors.main} iconSize={16} />
+          )}
           onPress={() => {
             dispatch(setCurrentFMCIdx(idx));
             router.push({ pathname: "/(tabs)/Formula" });

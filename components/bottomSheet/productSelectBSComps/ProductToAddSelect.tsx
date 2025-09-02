@@ -1,6 +1,6 @@
 import NutrientsProgress from "@/components/common/nutrient/NutrientsProgress";
-import ProductSelectFoodlist from "@/components/toast/ProductSelectTFoodlist";
-import ProductSelectTShippingInfo from "@/components/toast/ProductSelectTShippingInfo";
+import ProductSelectFoodlist from "@/components/bottomSheet/productSelectBSComps/ProductSelectFoodlist";
+import ProductSelectTShippingInfo from "@/components/bottomSheet/productSelectBSComps/ProductSelectShippingInfo";
 import {
   closeBS,
   deleteBSProduct,
@@ -18,12 +18,11 @@ import { IDietDetailProductData } from "@/shared/api/types/diet";
 import colors from "@/shared/colors";
 import { ENV, MENU_LABEL, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
+import Icon from "@/shared/ui/Icon";
 import {
   Col,
   HorizontalLine,
   HorizontalSpace,
-  Icon,
   Row,
   TextMain,
   TextSub,
@@ -35,7 +34,7 @@ import {
 import { commaToNum } from "@/shared/utils/sumUp";
 import { usePathname, useRouter } from "expo-router";
 import { useEffect } from "react";
-import { TouchableOpacity } from "react-native";
+import { Image, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
 /**
@@ -165,18 +164,18 @@ const ProductToAddSelect = () => {
       >
         {pathNm !== "/AutoAdd" && (
           <LRBtn onPress={onArrowLeftPress} style={{ marginLeft: -12 }}>
-            <Icon source={icons.arrowLeft_20} size={20} />
+            <Icon name="chevronLeft" color={colors.textSub} />
           </LRBtn>
         )}
         <LRBtn onPress={() => router.push("/(tabs)/Formula")}>
           <Row style={{ columnGap: 2 }}>
             <ProductNm style={{ fontWeight: 600 }}>{MenuLabel}</ProductNm>
-            <Icon source={icons.appIcon} size={20} />
+            <Icon name="appIcon" iconSize={20} />
           </Row>
         </LRBtn>
         {pathNm !== "/AutoAdd" && (
           <LRBtn onPress={onArrowRightPress} style={{ marginRight: -12 }}>
-            <Icon source={icons.arrowRight_20} size={20} />
+            <Icon name="chevronRight" color={colors.textSub} />
           </LRBtn>
         )}
       </Row>
@@ -194,10 +193,9 @@ const ProductToAddSelect = () => {
           {!!pToAdd[0] && (
             <CtaRow>
               <InfoBtn onPress={onPressInfo}>
-                <Icon
+                <Image
                   source={{ uri: `${ENV.BASE_URL}${pToAdd[0].mainAttUrl}` }}
-                  style={{ borderRadius: 4 }}
-                  size={52}
+                  style={{ borderRadius: 4, width: 52, height: 52 }}
                 />
                 <Col style={{ flex: 1 }}>
                   {!!pToDel[0] && (
@@ -228,14 +226,14 @@ const ProductToAddSelect = () => {
               {bsValue.index === 1 && (
                 <CTA onPress={onPressAdd}>
                   <Icon
-                    source={
+                    name={
                       isIncluded
-                        ? icons.deleteRoundWhite_24
+                        ? "cancelCircle"
                         : pToDel[0]
-                        ? icons.changeRoundWhite_24
-                        : icons.plusRoundWhite_24
+                        ? "changeCircle"
+                        : "plusCircle"
                     }
-                    size={24}
+                    color={colors.white}
                   />
                 </CTA>
               )}
@@ -249,9 +247,9 @@ const ProductToAddSelect = () => {
                 }
               >
                 <Icon
-                  source={icons.more_24}
-                  size={16}
+                  name="more"
                   style={{ alignSelf: "center" }}
+                  color={colors.inactive}
                 />
               </TouchableOpacity>
             )}

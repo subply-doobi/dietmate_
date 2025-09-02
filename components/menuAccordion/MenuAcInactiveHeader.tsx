@@ -9,7 +9,7 @@ import styled from "styled-components/native";
 import { IBaseLineData } from "@/shared/api/types/baseLine";
 import { IDietTotalObjData } from "@/shared/api/types/diet";
 import DTooltip from "@/shared/ui/DTooltip";
-import { Col, Icon, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import { Col, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
 
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 
@@ -17,11 +17,11 @@ import { commaToNum, getNutrStatus, sumUpPrice } from "@/shared/utils/sumUp";
 import { checkNoStockP } from "@/shared/utils/productStatusCheck";
 
 import colors from "@/shared/colors";
-import { icons } from "@/shared/iconSource";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { ENV, MENU_LABEL } from "@/shared/constants";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 import { useRouter } from "expo-router";
+import Icon from "@/shared/ui/Icon";
 
 interface IMenuAcInactiveHeader {
   controllable?: boolean;
@@ -185,7 +185,7 @@ const MenuAcInactiveHeader = ({
                   router.push({ pathname: "/(tabs)/Formula" });
                 }}
               >
-                <Icon source={icons.plusGrey_24} size={16} />
+                <Icon name="plus" color={colors.textSub} iconSize={12} />
               </PlusBtn>
             )}
           </ThumnailBox>
@@ -209,7 +209,7 @@ const MenuAcInactiveHeader = ({
             router.push({ pathname: "/(tabs)/Formula" });
           }}
         >
-          <Icon source={icons.edit_24} />
+          <Icon name="edit" color={colors.textSub} />
         </EditBtn>
       )}
       {hasNoStockP && <OpacityBox />}

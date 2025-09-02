@@ -7,7 +7,6 @@ import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import { MENU_LABEL } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
 import { Container } from "@/shared/ui/styledComps";
 import { getAddDietStatusFrDTData } from "@/shared/utils/getDietAddStatus";
 import { useRouter } from "expo-router";
@@ -45,7 +44,7 @@ const FormulaMore = () => {
           {
             text: `자동으로 ${numOfMenuLabel} 공식 만들기`,
             subText: "",
-            iconSource: icons.calculateBlack_32,
+            iconName: "calculator",
             isActive: true,
             onPress: () => {
               router.back();
@@ -55,7 +54,7 @@ const FormulaMore = () => {
           {
             text: `${numOfMenuLabel} 모두 삭제하기`,
             subText: "",
-            iconSource: icons.deleteRoundBlack_32,
+            iconName: "cancelCircle",
             isActive: true,
             onPress: () => {
               dispatch(openModal({ name: "menuDeleteAllAlert" }));
@@ -64,7 +63,7 @@ const FormulaMore = () => {
           {
             text: isAddMenuActive ? "한 근 추가하기" : addBtnText,
             subText: addBtnSubText,
-            iconSource: icons.plusRoundBlack_32,
+            iconName: "plusCircle",
             isActive: isAddMenuActive,
             onPress: () => {
               createDietMutation.mutate({ setDietNo: true });
@@ -84,7 +83,7 @@ const FormulaMore = () => {
             key={idx}
             text={item.text}
             subText={item.subText}
-            iconSource={item.iconSource}
+            iconName={item.iconName}
             disabled={!item.isActive}
             isActive={item.isActive}
             onPress={item.onPress}

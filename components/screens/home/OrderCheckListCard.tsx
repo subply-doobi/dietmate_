@@ -4,23 +4,22 @@ import { useEffect, useState } from "react";
 // 3rd
 import PieChart from "react-native-pie-chart";
 import styled from "styled-components/native";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 
 // doobi
 import {
   Col,
   HorizontalSpace,
-  Icon,
   Row,
   ShadowView,
   TextMain,
 } from "../../../shared/ui/styledComps";
 import colors from "../../../shared/colors";
-import { icons } from "../../../shared/iconSource";
 import { parseDate } from "../../../shared/utils/dateParsing";
 import { IFlattedOrderedProduct } from "../../../shared/utils/screens/checklist/menuFlat";
 import { getTotalChecklist } from "../../../shared/utils/asyncStorage";
 import { useRouter } from "expo-router";
+import Icon from "@/shared/ui/Icon";
 
 interface IOrderChecklistCard {
   isOrderEmpty: boolean;
@@ -74,11 +73,10 @@ const OrderChecklistCard = ({
       }}
     >
       <Row>
-        {isOrderEmpty ? (
-          <Icon source={icons.warning_24} />
-        ) : (
-          <Icon source={icons.checkRoundCheckedGreen_24} size={18} />
-        )}
+        <Icon
+          name={isOrderEmpty ? "warningCircle" : "checkCircle"}
+          color={isOrderEmpty ? colors.warning : colors.success}
+        />
         <CardTitle>{checklistCardTitle}</CardTitle>
       </Row>
 
@@ -119,14 +117,17 @@ const OrderChecklistCard = ({
 
                     {percentage === 100 ? (
                       <Icon
-                        style={{ marginLeft: 8, zIndex: 2 }}
-                        source={icons.checkRoundCheckedMain_24}
+                        name="checkCircle"
+                        color={colors.main}
+                        style={{ marginLeft: 8 }}
+                        boxSize={24}
+                        iconSize={20}
                       />
                     ) : (
                       <Col
                         style={{
-                          width: 24,
-                          height: 24,
+                          width: 20,
+                          height: 20,
                           alignItems: "center",
                           justifyContent: "center",
                           marginLeft: 8,
@@ -134,7 +135,7 @@ const OrderChecklistCard = ({
                       >
                         <PieChart
                           series={[numerator, denominator - numerator]}
-                          widthAndHeight={20}
+                          widthAndHeight={16}
                           style={{ zIndex: 2 }}
                           sliceColor={[colors.main, colors.white]}
                           coverRadius={0.6}
@@ -151,7 +152,9 @@ const OrderChecklistCard = ({
       {orderGroupedDataFlatten.length > 4 && (
         <LoadMoreBtn onPress={() => setShowEveryList((v) => !v)}>
           <Icon
-            source={showEveryList ? icons.arrowUp_20 : icons.arrowDown_20}
+            name={showEveryList ? "chevronUp" : "chevronDown"}
+            color={colors.main}
+            style={{ marginLeft: 8 }}
           />
         </LoadMoreBtn>
       )}

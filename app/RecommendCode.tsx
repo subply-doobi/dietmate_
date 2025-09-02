@@ -2,22 +2,12 @@ import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
 import ListBtns from "@/shared/ui/ListBtns";
 
 import { useGetUser } from "@/shared/api/queries/user";
-import {
-  useCreateSuggestUser,
-  useGetSuggestUser,
-  useGetSuggestUserExistYn,
-  useUpdateSuggestUser,
-} from "@/shared/api/queries/suggest";
-import { useState } from "react";
-import DAlert from "@/shared/ui/DAlert";
 
 import { setValue } from "@/features/reduxSlices/userInputSlice";
-import { icons } from "@/shared/iconSource";
-import { openModal, closeModal } from "@/features/reduxSlices/modalSlice";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { openModal } from "@/features/reduxSlices/modalSlice";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
 import Card from "@/components/screens/recommendCode/Card";
-import CodeAlertContent from "@/components/screens/recommendCode/CodeAlertContent";
 
 const RecommendCode = () => {
   // redux
@@ -64,7 +54,7 @@ const RecommendCode = () => {
           label="친구 코드 등록 완료"
           value={userData?.suggestFromCd}
           style={{ marginTop: 24, height: 48 }}
-          icon={icons.checkRoundCheckedGreen_24}
+          iconName="checkCircle"
         />
       )}
       <HorizontalSpace height={64} />

@@ -2,25 +2,23 @@ import NutrientsProgress from "@/components/common/nutrient/NutrientsProgress";
 import { useDeleteDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { FORMULA_CAROUSEL_HEIGHT, MENU_LABEL } from "@/shared/constants";
-import { icons } from "@/shared/iconSource";
 import {
   Col,
   HorizontalSpace,
-  Icon,
   Row,
   TextMain,
   TextSub,
 } from "@/shared/ui/styledComps";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ICarouselInstance } from "react-native-reanimated-carousel";
 import styled from "styled-components/native";
 import SelectAllRow from "./SelectAllRow";
 import CarouselCta from "./CarouselCta";
 import CarouselFoodList from "./CarouselFoodList";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
-import MenuNumSelect from "@/components/common/cart/MenuNumSelect";
 import DSmallBtn from "@/shared/ui/DSmallBtn";
 import { showQtyChangeToast } from "@/shared/store/toastStore";
+import Icon from "@/shared/ui/Icon";
 
 interface ICarouselContent {
   carouselRef: React.RefObject<ICarouselInstance | null>;
@@ -64,7 +62,7 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
   };
 
   return (
-    <MenuCard key={carouselIdx}>
+    <MenuCard>
       <Box>
         {/* 근 삭제 알럿 대체 */}
         {isCheckDelete && (
@@ -127,9 +125,9 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
         </Row>
 
         {/* 삭제 버튼 */}
-        {!isCheckDelete && (
+        {currentFMCIdx === carouselIdx && !isCheckDelete && (
           <MenuDeleteBtn onPress={() => isCurrent && setIsCheckDelete(true)}>
-            <Icon source={icons.deleteRound_18} size={18} />
+            <Icon name="cancelCircle" color={colors.textSub} iconSize={16} />
           </MenuDeleteBtn>
         )}
 

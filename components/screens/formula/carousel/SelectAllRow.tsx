@@ -1,11 +1,9 @@
-import {
-  openBS,
-  setProductToDel,
-} from "@/features/reduxSlices/bottomSheetSlice";
+import { setProductToDel } from "@/features/reduxSlices/bottomSheetSlice";
 import { IDietDetailData } from "@/shared/api/types/diet";
+import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
-import { Icon, Row, TextMain } from "@/shared/ui/styledComps";
+import Icon from "@/shared/ui/Icon";
+import { Row, TextMain } from "@/shared/ui/styledComps";
 import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
 import styled from "styled-components/native";
 
@@ -36,11 +34,10 @@ const SelectAllRow = ({ carouselMenu }: ISelectAllRow) => {
         }}
       >
         <SelectAllCheckbox>
-          {isCheckedAll ? (
-            <Icon source={icons.checkboxCheckedGreen_24} />
-          ) : (
-            <Icon source={icons.checkbox_24} />
-          )}
+          <Icon
+            name={isCheckedAll ? "checkbox" : "checkboxUnchecked"}
+            color={isCheckedAll ? colors.green : colors.lineLight}
+          />
         </SelectAllCheckbox>
 
         <SelectAllText>전체 선택</SelectAllText>

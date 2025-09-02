@@ -1,35 +1,37 @@
-import styled from 'styled-components/native';
-import {Col, HorizontalLine, Icon, Row, TextMain} from './styledComps';
-import {icons} from '../iconSource';
-import {ImageSourcePropType} from 'react-native';
+import styled from "styled-components/native";
+import { Col, HorizontalLine, Row, TextMain } from "./styledComps";
+import Icon from "./Icon";
+import colors from "../colors";
 
 interface IPageBtn {
   btns: {
     title: string;
     btnId: string;
     onPress: Function;
-    iconSource?: ImageSourcePropType;
+    iconName?: string;
+    iconSize?: number;
   }[];
 }
 
-const ListBtns = ({btns}: IPageBtn) => {
+const ListBtns = ({ btns }: IPageBtn) => {
   return (
     <>
       {btns.map((item, index) => (
         <Col key={item.btnId}>
           <Btn onPress={() => item.onPress()}>
-            <Row style={{justifyContent: 'space-between'}}>
+            <Row style={{ justifyContent: "space-between" }}>
               <Row>
-                {item.iconSource && (
+                {item.iconName && (
                   <Icon
-                    size={24}
-                    source={item.iconSource}
-                    style={{marginRight: 12}}
+                    boxSize={24}
+                    iconSize={item.iconSize || 18}
+                    name={item.iconName as any}
+                    style={{ marginRight: 12 }}
                   />
                 )}
                 <PageBtnText>{item.title}</PageBtnText>
               </Row>
-              <RightArrow source={icons.arrowRight_20} />
+              <Icon name="chevronRight" color={colors.textSub} />
             </Row>
           </Btn>
           {btns.length - 1 !== index && <HorizontalLine />}

@@ -227,13 +227,13 @@ export const NUTR_ERROR_RANGE: INutrErrorRange = {
 };
 
 export const SORT_LIST = [
-  // { id: 1, label: "탄수화물", name: "carb" },
-  // { id: 3, label: "지방", name: "fat" },
   { id: 0, label: "가격", name: "price" },
   { id: 1, label: "칼로리", name: "calorie" },
-  { id: 2, label: "단백질", name: "protein" },
-  { id: 3, label: "가칼비", name: "priceCalorieCompare" },
-  { id: 4, label: "가단비", name: "priceProteinCompare" },
+  { id: 2, label: "탄수화물", name: "carb" },
+  { id: 3, label: "단백질", name: "protein" },
+  { id: 4, label: "지방", name: "fat" },
+  // { id: 5, label: "가칼비", name: "priceCalorieCompare" },
+  // { id: 6, label: "가단비", name: "priceProteinCompare" },
 ];
 
 export const FILTER_LIST = [

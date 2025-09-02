@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 import colors from "@/shared/colors";
 import { TextMain } from "@/shared/ui/styledComps";
-import { icons } from "@/shared/iconSource";
+import Icon from "@/shared/ui/Icon";
 
 interface IMenuNumSelect {
   action: "openModal" | "setQty";
@@ -41,7 +41,7 @@ const MenuNumSelect = ({
         disabled={isPlusMinusBtnDisabled}
         onPress={() => !!setQty && setQty((v) => (v <= 1 ? v : v - 1))}
       >
-        <PlusMinusImg source={icons.minusGrey_24} />
+        <Icon name="minus" color={colors.textSub} />
       </PlusMinusBtn>
       <MenuNoBox>
         <MenuNo>{currentQty}</MenuNo>
@@ -51,7 +51,7 @@ const MenuNumSelect = ({
         disabled={isPlusMinusBtnDisabled || isMaxQty}
         onPress={() => !!setQty && setQty((v) => v + 1)}
       >
-        {isMaxQty || <PlusMinusImg source={icons.plusGrey_24} />}
+        {isMaxQty || <Icon name="plus" color={colors.textSub} />}
       </PlusMinusBtn>
     </Box>
   );

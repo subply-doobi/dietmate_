@@ -1,8 +1,8 @@
 import { resetSortFilter } from "@/features/reduxSlices/filteredPSlice";
 import colors from "@/shared/colors";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
-import { icons } from "@/shared/iconSource";
-import { Col, Icon, TextSub } from "@/shared/ui/styledComps";
+import Icon from "@/shared/ui/Icon";
+import { Col, TextSub } from "@/shared/ui/styledComps";
 import styled from "styled-components/native";
 
 const ListEmptyComponent = () => {
@@ -13,7 +13,7 @@ const ListEmptyComponent = () => {
       <Col>
         <Text>해당하는 식품이 없어요</Text>
       </Col>
-      <Icon source={icons.initialize_24} size={20} />
+      <Icon name="refresh" color={colors.textSub} />
     </Box>
   );
 };

@@ -7,9 +7,9 @@ import styled from "styled-components/native";
 // doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import colors from "@/shared/colors";
-import { Col, Icon, TextMain, TextSub } from "@/shared/ui/styledComps";
-import { icons } from "@/shared/iconSource";
+import { Col, TextMain, TextSub } from "@/shared/ui/styledComps";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
+import Icon from "@/shared/ui/Icon";
 
 const ChangeResult = () => {
   // react-query
@@ -105,7 +105,7 @@ const ChangeResult = () => {
             <PrevValue>{item.title}</PrevValue>
             <PrevValue style={{ marginTop: 2 }}>{item.prev}</PrevValue>
           </Col>
-          <Icon source={icons.arrowRight_20} />
+          <Icon name="chevronRight" color={colors.line} iconSize={20} />
           <Col style={{ flex: 1, marginLeft: 16 }}>
             <CurrValue>{item.curr} </CurrValue>
           </Col>

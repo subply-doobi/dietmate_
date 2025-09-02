@@ -197,7 +197,6 @@ const Formula = () => {
             />
           )}
         />
-        <EdgeInfo visible={priceTotal > 0} />
 
         {isAllSuccess && (
           <CtaButton
@@ -214,6 +213,8 @@ const Formula = () => {
             onPress={() => router.push("/(tabs)/Diet")}
           />
         )}
+
+        <EdgeInfo visible={priceTotal > 0} />
         {isAllSuccess && (
           <DTooltip
             tooltipShow={isAllSuccess}

@@ -105,6 +105,7 @@ const Container = styled(Animated.View)`
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 20;
 `;
 
 const ToggleBox = styled(Pressable)`

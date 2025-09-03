@@ -1,6 +1,7 @@
-// RN
+// RN, expo
 import { useEffect, useMemo, useRef } from "react";
 import { Platform, ScrollView, TouchableOpacity } from "react-native";
+import { reloadAsync } from "expo-updates";
 
 // 3rd
 import { useIsFocused } from "@react-navigation/native";
@@ -213,6 +214,13 @@ const NewHome = () => {
               pathname: "/ErrorPage",
               params: { errorCode: "999", msg: "errorTest" },
             });
+          }}
+        /> */}
+        {/* <CtaButton
+          btnStyle="active"
+          btnText="test"
+          onPress={() => {
+            reloadAsync();
           }}
         /> */}
       </ScrollView>

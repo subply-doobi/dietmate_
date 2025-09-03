@@ -1,5 +1,7 @@
+// RN, expo
+import { reloadAsync } from "expo-updates";
+
 // 3rd
-import RNRestart from "react-native-restart";
 import NetInfo from "@react-native-community/netinfo";
 
 // doobi util
@@ -12,8 +14,7 @@ import { setTutorialStart } from "../../features/reduxSlices/commonSlice";
 import { openModal } from "../../features/reduxSlices/modalSlice";
 import { router } from "expo-router";
 import { ENV } from "../constants";
-import { Alert } from "react-native";
-import { closeBS, closeBSAll } from "@/features/reduxSlices/bottomSheetSlice";
+import { closeBSAll } from "@/features/reduxSlices/bottomSheetSlice";
 
 // 에러 -> 에러코드
 // null -> 네트워크 없음
@@ -106,7 +107,7 @@ const ErrAlertActionByCode: ICodeToErrorAction = {
   500: () => {
     store.getState().common.isTutorialMode &&
       store.dispatch(setTutorialStart());
-    RNRestart.Restart();
+    reloadAsync();
   },
   401: () => {
     // 튜토리얼모드초기화 + 로그인화면이동 + queryCache clean

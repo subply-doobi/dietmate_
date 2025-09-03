@@ -1,6 +1,8 @@
+// RN, expo
+import { reloadAsync } from "expo-updates";
+
 // 3rd
 import styled from "styled-components/native";
-import RNRestart from "react-native-restart";
 
 // doobi
 import { Col, Container, TextMain, TextSub } from "@/shared/ui/styledComps";
@@ -34,7 +36,7 @@ const ErrorPage = () => {
         />
         <ErrorText>{msg}</ErrorText>
         <Sub>{subText}</Sub>
-        <RestartBtn onPress={() => RNRestart.restart()}>
+        <RestartBtn onPress={() => reloadAsync()}>
           <Icon name="refresh" color={colors.line} />
           <RestartText>재시작</RestartText>
         </RestartBtn>

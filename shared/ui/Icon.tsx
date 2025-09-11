@@ -197,12 +197,12 @@ const iconMap = {
     name: "refresh",
   },
   heart: {
-    kind: MaterialIcons,
-    name: "favorite",
+    kind: Ionicons,
+    name: "heart-sharp",
   },
   heartBorder: {
-    kind: MaterialIcons,
-    name: "favorite-border",
+    kind: Ionicons,
+    name: "heart-outline",
   },
   creditCard: {
     kind: MaterialIcons,
@@ -235,6 +235,10 @@ const iconMap = {
   edit: {
     kind: MaterialIcons,
     name: "edit",
+  },
+  setting: {
+    kind: Ionicons,
+    name: "settings-outline",
   },
 };
 

@@ -34,20 +34,20 @@ const PaginationDot = ({ index }: { index: number }) => {
     return nutrStatus;
   }, [dTOData]);
 
-  useEffect(() => {
-    if (
-      nutrStatus === "satisfied" &&
-      currentFMCIdx === index &&
-      formulaProgress.includes("Formula")
-    ) {
-      Toast.show({
-        type: "success",
-        text1: "현재 근이 완료되었어요",
-        position: "bottom",
-        visibilityTime: 2000,
-      });
-    }
-  }, [nutrStatus]);
+  // useEffect(() => {
+  //   if (
+  //     nutrStatus === "satisfied" &&
+  //     currentFMCIdx === index &&
+  //     formulaProgress.includes("Formula")
+  //   ) {
+  //     Toast.show({
+  //       type: "success",
+  //       text1: "현재 근이 완료되었어요",
+  //       position: "bottom",
+  //       visibilityTime: 2000,
+  //     });
+  //   }
+  // }, [nutrStatus]);
 
   const isActive = currentFMCIdx === index;
   const text = isActive ? MENU_LABEL[index].slice(0, -2) : MENU_LABEL[index];

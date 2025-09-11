@@ -39,12 +39,11 @@ const ProductItem = ({
   // redux
   const dispatch = useAppDispatch();
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
-  const productToAdd = useAppSelector((state) => state.bottomSheet.product.add);
-  const products = useAppSelector(selectFilteredSortedProducts);
-  const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
+  const pToAdd = useAppSelector((state) => state.bottomSheet.product.add);
   const bsIndex = useAppSelector(
     (state) => state.bottomSheet.currentValue.index
   );
+  const products = useAppSelector(selectFilteredSortedProducts);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
@@ -55,23 +54,25 @@ const ProductItem = ({
   );
 
   // etc
-  const isSelected = productToAdd[0]?.productNo === item.productNo;
+  const isSelected = pToAdd[0]?.productNo === item.productNo;
 
   const onItemPressed = () => {
+    console.log("ProductItem onItemPressed: ", { isSelected, bsIndex });
     if (isSelected) {
-      dispatch(snapBS({ index: 0, bsNm: "productToAddSelect" }));
       setTimeout(() => {
         dispatch(setProductToAdd([]));
+        dispatch(snapBS({ index: 0, bsNm: "productToAddSelect" }));
       }, 150);
       return;
     }
-    bsIndex < 0 && dispatch(openBS("productToAddSelect"));
+
+    // bsIndex < 0 && dispatch(openBS("productToAddSelect"));
     const idx = products.findIndex(
       (product) => product.productNo === item.productNo
     );
     const i = Math.floor(idx / 2);
     dispatch(setProductToAdd([item]));
-    bsIndex < 1 && dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
+    // bsIndex < 1 && dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
     !!flatListRef &&
       setTimeout(() => {
         flatListRef.current?.scrollToIndex({
@@ -79,6 +80,17 @@ const ProductItem = ({
           viewPosition: 0.2,
         });
       }, 200);
+
+    if (bsIndex < 0) {
+      dispatch(openBS("productToAddSelect"));
+      dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
+      return;
+    }
+
+    if (bsIndex < 1) {
+      dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
+      return;
+    }
   };
 
   return (

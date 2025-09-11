@@ -49,11 +49,40 @@ const bottomSheetSlice = createSlice({
     // payload 없는 경우 : 기존 bsNmArr[lastIdx] open
     // payload 있는 경우 : bsNmArr에 추가하거나 맨 뒤로 옮겨서 open
     openBS: (state, action: PayloadAction<IBSNm>) => {
+      if (
+        state.bsNmArr[state.bsNmArr.length - 1] === action.payload &&
+        state.currentValue.index >= 0
+      ) {
+        return;
+      }
       state.actionQueue.push({
         type: "open",
         bsNm: action.payload,
       });
+    },
 
+    // bsNm에 따라 bsConfig 변경되기 때문에 bs 닫히기 전에 config 변경되면 디자인 깨짐
+    // closeBS의 경우에는 닫힌게 확인이 된 후 bsNm 제거
+    // (GlobalBSM.tsx에서 actionQueue 처리 -> onChange 후에 bsNm 제거)
+    closeBS: (state) => {
+      if (state.actionQueue[state.actionQueue.length - 1]?.type === "close") {
+        return;
+      }
+      state.actionQueue.push({
+        type: "close",
+      });
+    },
+    closeBSAll: (state) => {
+      if (
+        state.actionQueue[state.actionQueue.length - 1]?.type === "closeAll"
+      ) {
+        return;
+      }
+      state.actionQueue.push({
+        type: "closeAll",
+      });
+    },
+    addBSNm: (state, action: PayloadAction<IBSNm>) => {
       if (!state.bsNmArr.includes(action.payload)) {
         state.bsNmArr.push(action.payload);
         return;
@@ -64,24 +93,9 @@ const bottomSheetSlice = createSlice({
       );
       state.bsNmArr = [...filteredArr, action.payload];
     },
-
-    // bsNm에 따라 bsConfig 변경되기 때문에 bs 닫히기 전에 config 변경되면 디자인 깨짐
-    // closeBS의 경우에는 닫힌게 확인이 된 후 bsNm 제거
-    // (GlobalBSM.tsx에서 actionQueue 처리 -> onChange 후에 bsNm 제거)
-    // payload 없는 경우 : 현재 bsNmArr[lastIdx] close
-    // payload 있는 경우 : bsNmArr에서 해당 bsNm 제거
-    closeBS: (state) => {
-      state.actionQueue.push({
-        type: "close",
-      });
-    },
-    closeBSAll: (state) => {
-      state.actionQueue.push({
-        type: "closeAll",
-      });
-    },
     removeBSNm: (state, action: PayloadAction<IBSNm>) => {
       const bsNm = action.payload;
+      console.log("------ bsSlice removeBSNm: ", bsNm);
       state.bsNmArr = state.bsNmArr.filter((name) => name !== bsNm);
     },
     removeAllBsNm: (state) => {
@@ -139,6 +153,7 @@ export const {
   openBS,
   closeBS,
   closeBSAll,
+  addBSNm,
   removeBSNm,
   removeAllBsNm,
   snapBS,

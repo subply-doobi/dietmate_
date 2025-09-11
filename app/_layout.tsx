@@ -96,7 +96,16 @@ export default function RootLayout() {
                     headerTitle: "",
                   }}
                 />
-                {/* 남은 영양 식품 추가 */}
+                {/* AutoMenu settings */}
+                <Stack.Screen
+                  name="AmSettings"
+                  options={{
+                    headerShown: true,
+                    headerTitle: "자동공식 설정",
+                  }}
+                />
+
+                {/* 식품 하나씩 추가 */}
                 <Stack.Screen
                   name="AutoAdd"
                   options={{

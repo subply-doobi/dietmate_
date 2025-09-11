@@ -1,10 +1,10 @@
+import { useRef, useCallback, useEffect, useState, useMemo, JSX } from "react";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import { useRef, useCallback, useEffect, useState, useMemo } from "react";
 import { SCREENHEIGHT } from "@/shared/constants";
 import CategoryFilterBSComp from "./sortFilterBSComps/CategoryFilterBSComp";
 import BaseListTypeFilterBSComp from "./sortFilterBSComps/BaseListTypeFilterBSComp";
@@ -19,6 +19,7 @@ import {
   removeBSNm,
   removeAllBsNm,
   resetBSActionQueue,
+  addBSNm,
 } from "@/features/reduxSlices/bottomSheetSlice";
 
 import colors from "@/shared/colors";
@@ -27,7 +28,15 @@ import ProductToAddSelect from "./productSelectBSComps/ProductToAddSelect";
 import ProductToDelSelect from "./productSelectBSComps/ProductToDelSelect";
 import { usePathname } from "expo-router";
 
-// configType
+// --- Custom Hook for latest ref ---
+function useLatestRef<T>(value: T) {
+  const ref = useRef(value);
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref;
+}
+
 interface IBSConfig {
   renderBackdrop?: (props: any) => JSX.Element;
   bsBackgroundColor: string;
@@ -83,6 +92,7 @@ const bsConfigByName: Partial<Record<IBSNm, IBSConfig>> = {
   productToAddSelect: {
     ...bsOpacityConfig,
     maxDynamicContentSize: SCREENHEIGHT * 0.8,
+    enablePanDownToClose: false,
     snapPoints: [
       24 - 8 + 32 + 12 + 52 + 16,
       24 - 8 + 32 + 12 + 52 + 16 + 24 + 52 + 16,
@@ -91,57 +101,41 @@ const bsConfigByName: Partial<Record<IBSNm, IBSConfig>> = {
 };
 
 const GlobalBSM = () => {
-  // navigation
   const pathName = usePathname();
-
-  // redux
   const dispatch = useAppDispatch();
   const { bsNmArr, actionQueue, currentValue } = useAppSelector(
     (state) => state.bottomSheet
   );
-  const action: IBSAction = actionQueue[0];
-  const bsIdx = bsNmArr.length - 1;
-  const currentBsNm = bsNmArr[bsIdx];
 
-  // useState
-  const [bsConfig, setBsConfig] = useState<IBSConfig>(bsBasicConfig);
+  // --- Latest value refs ---
+  const actionQueueRef = useLatestRef(actionQueue);
+  const currentValueRef = useLatestRef(currentValue);
+  const currentBsNm = bsNmArr[bsNmArr.length - 1];
+  const currentBsNmRef = useLatestRef(currentBsNm);
 
-  // useMemo
-  const { tempConfig } = useMemo(() => {
+  // --- State and refs ---
+  const [bsConfig, setBsConfig] = useState(bsBasicConfig);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // --- Memoized config for current bottom sheet ---
+  const tempConfig = useMemo(() => {
     const temp = bsConfigByName[currentBsNm] || bsBasicConfig;
-    const tempConfig: IBSConfig = {
+    return {
       ...temp,
       bottomInset:
         pathName === "/Search" && currentBsNm === "productToAddSelect" ? 48 : 0,
     };
-    return { tempConfig };
-  }, [bsNmArr]);
+  }, [bsNmArr, pathName, currentBsNm]);
 
-  // ref
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
+  // --- Effects ---
   useEffect(() => {
-    // closed on mount
+    // Close on mount
     bottomSheetModalRef.current?.close();
   }, []);
 
-  // useEffect
-  // bs action queue 처리
-  // 1. action queue 첫 번째 부터 처리 후 해당 실행성공하면 onChange에서 action dequeue
-  // 2. bs 상태 변하지 않았을 때 (==onChange 실행 안 될 경우) action dequeue
-  // 3. 혹시 오류로 actionQueue 2개 초과해서 쌓이면 reset
   useEffect(() => {
-    if (actionQueue.length > 2) {
-      dispatch(resetBSActionQueue());
-      return;
-    }
-
+    // Present if needed when bsNmArr changes
     const isOpen = currentValue.index >= 0;
-
-    if (!bottomSheetModalRef.current) {
-      return;
-    }
-
     if (actionQueue.length === 0 && !isOpen && bsNmArr.length !== 0) {
       setTimeout(() => {
         setBsConfig(tempConfig);
@@ -149,47 +143,49 @@ const GlobalBSM = () => {
       }, 500);
       return;
     }
+  }, [bsNmArr]);
 
-    if (actionQueue.length === 0) {
+  useEffect(() => {
+    if (actionQueue.length > 2) {
+      dispatch(resetBSActionQueue());
       return;
     }
+    const isOpen = currentValue.index >= 0;
+    if (!bottomSheetModalRef.current) return;
+    if (actionQueue.length === 0) return;
 
+    const action: IBSAction = actionQueue[0];
     let shouldDequeue = false;
     switch (action.type) {
-      case "open": {
-        if (isOpen && bsNmArr.length === 1) {
+      case "open":
+        if (isOpen && bsNmArr.length > 0 && currentBsNm === action.bsNm) {
           shouldDequeue = true;
           break;
         }
-
-        if (isOpen && bsNmArr.length > 1) {
+        if (isOpen && bsNmArr.length > 0 && currentBsNm !== action.bsNm) {
+          dispatch(addBSNm(action.bsNm));
           bottomSheetModalRef.current.close();
-          setTimeout(() => {
-            bottomSheetModalRef.current?.present();
-          }, 200);
+          setTimeout(
+            () => setBsConfig(bsConfigByName[action.bsNm] || bsBasicConfig),
+            300
+          );
+          setTimeout(() => bottomSheetModalRef.current?.present(), 500);
         }
-
         if (!isOpen) {
-          setBsConfig(tempConfig);
-          setTimeout(() => {
-            bottomSheetModalRef.current?.present();
-          }, 200);
+          dispatch(addBSNm(action.bsNm));
+          setBsConfig(bsConfigByName[action.bsNm] || bsBasicConfig);
+          setTimeout(() => bottomSheetModalRef.current?.present(), 200);
         }
-
         break;
-      }
-      case "close": {
-        // close
+      case "close":
         if (!isOpen) {
-          // already closed
+          dispatch(removeBSNm(currentBsNm));
           shouldDequeue = true;
           break;
         }
         bottomSheetModalRef.current.close();
         break;
-      }
-      case "closeAll": {
-        // close all
+      case "closeAll":
         if (!isOpen) {
           dispatch(removeAllBsNm());
           shouldDequeue = true;
@@ -197,114 +193,81 @@ const GlobalBSM = () => {
         }
         bottomSheetModalRef.current.close();
         break;
-      }
-      case "snapToIndex": {
-        // snap to index
+      case "snapToIndex":
         if (!isOpen || currentBsNm !== action.bsNm) {
-          // not open or not the correct bottom sheet
           shouldDequeue = true;
           break;
         }
         if (isOpen && currentValue.index === action.index) {
-          // Already at the target index, no need to snap.
           shouldDequeue = true;
           break;
         }
-
         bottomSheetModalRef.current.snapToIndex(action.index);
         break;
-      }
-      case "expand": {
-        // expand
+      case "expand":
         if (!isOpen || currentBsNm !== action.bsNm) {
-          // not open or not the correct bottom sheet
           shouldDequeue = true;
           break;
         }
         bottomSheetModalRef.current.expand();
         break;
-      }
     }
-    if (shouldDequeue) {
-      dispatch(dequeueBSAction());
-    }
-  }, [
-    bsNmArr,
-    actionQueue,
-    currentValue.index,
-    currentValue.position,
-    dispatch,
-  ]);
+    if (shouldDequeue) dispatch(dequeueBSAction());
+  }, [actionQueue, dispatch, currentValue.index]);
 
-  // fn
-  // Modal state change handler
+  // --- Handlers ---
   const onChange = useCallback(
     (index: number, position: number) => {
+      const latestActionQueue = actionQueueRef.current;
+      const latestCurrentValue = currentValueRef.current;
+      const latestCurrentBsNm = currentBsNmRef.current;
       const changeType =
-        currentValue.index < 0 && index >= 0
+        latestCurrentValue.index < 0 && index >= 0
           ? "open"
-          : currentValue.index >= 0 && index < 0
+          : latestCurrentValue.index >= 0 && index < 0
           ? "close"
-          : currentValue.index >= 0 &&
+          : latestCurrentValue.index >= 0 &&
             index >= 0 &&
-            currentValue.position !== position
+            latestCurrentValue.position !== position
           ? "heightChange"
           : "none";
-      // Always update currentValue in Redux
       dispatch(setCurrentValue({ index, position }));
-      console.log("GlobalBSM onChange", changeType);
-      // Determine if the action was successful based on previous and current state
       let shouldDequeue = false;
-
       switch (changeType) {
         case "open":
-          if (actionQueue.length < 1) break;
-          if (actionQueue[0]?.type === "open") {
-            shouldDequeue = true;
-          }
+          if (latestActionQueue[0]?.type === "open") shouldDequeue = true;
           break;
         case "close":
-          setTimeout(() => {
-            setBsConfig(bsBasicConfig);
-          }, 300);
-          if (actionQueue.length < 1) {
-            dispatch(removeBSNm(currentBsNm));
-          }
-          if (actionQueue[0]?.type === "close") {
+          if (latestActionQueue.length === 0)
+            dispatch(removeBSNm(latestCurrentBsNm));
+          if (latestActionQueue[0]?.type === "open") break;
+          if (latestActionQueue[0]?.type === "close") {
             shouldDequeue = true;
-            dispatch(removeBSNm(currentBsNm));
+            dispatch(removeBSNm(latestCurrentBsNm));
           }
-          if (actionQueue[0]?.type === "closeAll") {
+          if (latestActionQueue[0]?.type === "closeAll") {
             shouldDequeue = true;
             dispatch(removeAllBsNm());
           }
-          if (actionQueue[0]?.type === "open") {
-            shouldDequeue = true;
-          }
-
           break;
         case "heightChange":
           if (
-            actionQueue.length > 0 &&
-            (actionQueue[0]?.type === "snapToIndex" ||
-              actionQueue[0]?.type === "expand")
+            latestActionQueue.length > 0 &&
+            (latestActionQueue[0]?.type === "snapToIndex" ||
+              latestActionQueue[0]?.type === "expand")
           ) {
             shouldDequeue = true;
           }
           break;
         default:
-        // No action needed for "none" or other cases
+        // No action needed
       }
-
-      if (shouldDequeue) {
-        dispatch(dequeueBSAction());
-      }
+      if (shouldDequeue) dispatch(dequeueBSAction());
     },
-    [actionQueue, currentValue, dispatch]
+    [dispatch]
   );
 
-  const onDismiss = () => {};
-
+  // --- Render ---
   return (
     <BottomSheetModal
       ref={bottomSheetModalRef}
@@ -316,7 +279,7 @@ const GlobalBSM = () => {
       maxDynamicContentSize={bsConfig.maxDynamicContentSize}
       backdropComponent={bsConfig.renderBackdrop}
       enablePanDownToClose={bsConfig.enablePanDownToClose}
-      onDismiss={onDismiss}
+      onDismiss={() => {}}
       backgroundStyle={{
         backgroundColor: bsConfig.bsBackgroundColor,
       }}

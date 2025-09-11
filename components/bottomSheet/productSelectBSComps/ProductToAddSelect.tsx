@@ -110,7 +110,7 @@ const ProductToAddSelect = () => {
     if (!pToAdd) {
       return;
     }
-    dispatch(closeBS());
+    // dispatch(closeBS());
 
     await addToRecentProduct(pToAdd[0]?.productNo);
     const recentlyOpenedFoodsPNoArr = await getRecentProducts();

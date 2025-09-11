@@ -1,5 +1,6 @@
 // RN, expo
-import React, { SetStateAction, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { getAutoMenuData } from "@/shared/utils/asyncStorage";
 import { ActivityIndicator } from "react-native";
 
 // 3rd
@@ -37,8 +38,37 @@ const Processing = () => {
   const dispatch = useAppDispatch();
   const { totalFoodList, foodGroupForAutoMenu, medianCalorie, isTutorialMode } =
     useAppSelector((state) => state.common);
-  const { selectedDietNo, selectedCategory, wantedCompany, priceSliderValue } =
-    useAppSelector((state) => state.autoMenu);
+
+  // Local state for asyncStorage values (grouped)
+  const [autoMenuState, setAutoMenuState] = useState({
+    selectedCategoryIdx: [] as number[],
+    priceSliderValue: [] as number[],
+    wantedCompany: "",
+  });
+  const selectedDietNo = useAppSelector(
+    (state) => state.autoMenu.selectedDietNo
+  );
+
+  // Load from AsyncStorage on mount
+  useEffect(() => {
+    (async () => {
+      const data = await getAutoMenuData();
+      console.log("Processing: getAutoMenuData: ", data);
+      setAutoMenuState({
+        selectedCategoryIdx: data?.selectedCategory
+          ? data.selectedCategory.reduce(
+              (acc: number[], cur: boolean, idx: number) => {
+                if (cur) acc.push(idx);
+                return acc;
+              },
+              []
+            )
+          : [],
+        priceSliderValue: data?.priceSliderValue ?? [],
+        wantedCompany: data?.wantedCompany ?? "",
+      });
+    })();
+  }, []);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -46,13 +76,7 @@ const Processing = () => {
   const deleteDietDetailMutation = useDeleteDietDetail();
   const createDietDetailMutation = useCreateDietDetail();
 
-  // memo
-  const selectedCategoryIdx = useMemo(() => {
-    return selectedCategory.reduce((acc, cur, idx) => {
-      if (cur) acc.push(idx);
-      return acc;
-    }, [] as number[]);
-  }, [selectedCategory]);
+  // selectedCategoryIdx is now from state above
 
   // etc
   const isFormulaPage = pathname.includes("/Formula");
@@ -97,9 +121,9 @@ const Processing = () => {
         foodGroupForAutoMenu,
         initialMenu: [],
         baseLine: bLData,
-        selectedCategoryIdx,
-        priceTarget: priceSliderValue,
-        wantedPlatform: wantedCompany,
+        selectedCategoryIdx: autoMenuState.selectedCategoryIdx,
+        priceTarget: autoMenuState.priceSliderValue,
+        wantedPlatform: autoMenuState.wantedCompany,
         menuNum: selectedDietNo.length,
       }).then((res) => res);
       return data;

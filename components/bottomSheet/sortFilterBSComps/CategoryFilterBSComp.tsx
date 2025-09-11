@@ -1,8 +1,3 @@
-import BottomSheet, {
-  useBottomSheet,
-  useBottomSheetModal,
-} from "@gorhom/bottom-sheet";
-import CategoryFilter from "../../screens/search/CategoryFilter";
 import styled from "styled-components/native";
 import {
   Col,
@@ -14,6 +9,7 @@ import colors from "@/shared/colors";
 import { categoryCode } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setCategory } from "@/features/reduxSlices/filteredPSlice";
+import { closeBS } from "@/features/reduxSlices/bottomSheetSlice";
 
 const CategoryFilterBSComp = () => {
   // redux
@@ -24,19 +20,14 @@ const CategoryFilterBSComp = () => {
 
   const categoryArr = Object.keys(categoryCode);
 
-  // bottomSheet
-  const { dismiss, dismissAll } = useBottomSheetModal();
-
   // fn
   const selectCategory = (
     c: "" | "CG001" | "CG002" | "CG003" | "CG004" | "CG005" | "CG006"
   ) => {
-    if (c === category) {
-      dismiss();
-      return;
+    if (c !== category) {
+      dispatch(setCategory(c));
     }
-    dispatch(setCategory(c));
-    dismiss();
+    dispatch(closeBS());
   };
 
   return (

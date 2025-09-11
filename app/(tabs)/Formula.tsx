@@ -9,7 +9,6 @@ import * as Progress from "react-native-progress";
 
 // doobi
 import colors from "@/shared/colors";
-import BackArrow from "@/shared/ui/BackArrow";
 import GuideTitle from "@/shared/ui/GuideTitle";
 import { Container } from "@/shared/ui/styledComps";
 import { getPageItem } from "@/shared/utils/screens/formula/contentByPages";

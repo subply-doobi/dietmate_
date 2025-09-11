@@ -21,9 +21,11 @@ import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { setGlobalLoading } from "@/features/reduxSlices/commonSlice";
 import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { setProductToDel } from "@/features/reduxSlices/bottomSheetSlice";
 import Icon from "@/shared/ui/Icon";
+import { getAutoMenuData } from "@/shared/utils/asyncStorage";
+import { setAMSettingProgress } from "@/features/reduxSlices/autoMenuSlice";
 
 interface ICarouselCta {
   carouselMenu: IDietDetailData;
@@ -50,6 +52,31 @@ const CarouselCta = ({
 
   // useState
   const [showCheckOverwrite, setShowCheckOverwrite] = useState(false);
+  const [autoMenuState, setAutoMenuState] = useState({
+    selectedCategoryIdx: AM_SELECTED_CATEGORY_IDX,
+    priceSliderValue: AM_PRICE_TARGET,
+    wantedCompany: "",
+  });
+
+  // useEffect
+  useEffect(() => {
+    (async () => {
+      const data = await getAutoMenuData();
+      setAutoMenuState({
+        selectedCategoryIdx: data?.selectedCategory
+          ? data.selectedCategory.reduce(
+              (acc: number[], cur: boolean, idx: number) => {
+                if (cur) acc.push(idx);
+                return acc;
+              },
+              []
+            )
+          : [],
+        priceSliderValue: data?.priceSliderValue ?? [],
+        wantedCompany: data?.wantedCompany ?? "",
+      });
+    })();
+  }, []);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -139,9 +166,9 @@ const CarouselCta = ({
           foodGroupForAutoMenu,
           initialMenu: isMenuFull ? [] : carouselMenu,
           baseLine: bLData,
-          selectedCategoryIdx: AM_SELECTED_CATEGORY_IDX,
-          priceTarget: AM_PRICE_TARGET,
-          wantedPlatform: "",
+          selectedCategoryIdx: autoMenuState.selectedCategoryIdx,
+          priceTarget: autoMenuState.priceSliderValue,
+          wantedPlatform: autoMenuState.wantedCompany,
           menuNum: 1,
         }
       );
@@ -179,6 +206,20 @@ const CarouselCta = ({
   return (
     <>
       <BtnBox>
+        {/* AutoMenu setting */}
+        <CtaButton
+          btnStyle="border"
+          shadow={true}
+          style={{ height: 48, width: 48 }}
+          // btnText={addBtnText}
+          btnContent={() => <Icon name="setting" color={colors.textSub} />}
+          onPress={() => {
+            dispatch(setAMSettingProgress(["AMCategory"]));
+            router.push({
+              pathname: "/AmSettings",
+            });
+          }}
+        />
         {/* Add btn */}
         <CtaButton
           btnStyle={addBtnStyle}
@@ -204,8 +245,19 @@ const CarouselCta = ({
         <CtaButton
           btnStyle={autoMenuBtnStyle}
           shadow={true}
-          style={{ width: 48, height: 48 }}
-          btnContent={() => <Icon name="calculator" color={colors.main} />}
+          style={{ flex: 1, height: 48 }}
+          btnContent={() => (
+            <Icon
+              name="calculator"
+              color={colors.main}
+              style={{ marginLeft: -8 }}
+            />
+          )}
+          btnText="자동 구성"
+          btnTextStyle={{
+            fontSize: 14,
+            color: colors.textSub,
+          }}
           onPress={() =>
             isMenuFull ? setShowCheckOverwrite(true) : setOneAutoMenu()
           }

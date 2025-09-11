@@ -1,3 +1,4 @@
+import { closeBS } from "@/features/reduxSlices/bottomSheetSlice";
 import { setPlatformNm } from "@/features/reduxSlices/filteredPSlice";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
@@ -8,7 +9,6 @@ import {
   getSortedShippingPriceObj,
   commaToNum,
 } from "@/shared/utils/sumUp";
-import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useMemo } from "react";
 import styled from "styled-components/native";
 
@@ -44,11 +44,9 @@ const PlatformFilterBSComp = () => {
 
   console.log("PlatformFilterBSComp");
 
-  const { dismiss } = useBottomSheetModal();
-
   // fn
   const selectPlatform = (platform: string) => {
-    dismiss();
+    dispatch(closeBS());
     if (platformNm[0] === platform) {
       return;
     }

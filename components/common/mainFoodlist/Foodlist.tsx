@@ -1,5 +1,5 @@
 // RN, expo
-import { Animated, ImageSourcePropType } from "react-native";
+import { Animated } from "react-native";
 
 // 3rd
 
@@ -13,16 +13,11 @@ import {
 import colors from "@/shared/colors";
 import ListHeaderComponent from "./ListHeaderComponent";
 import ListFooterComponent from "./ListFooterComponent";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import ListEmptyComponent from "./ListEmptyComponent";
 import ProductItem from "./ProductItem";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useIsFocused } from "@react-navigation/native";
-import {
-  closeBSAll,
-  openBS,
-  snapBS,
-} from "@/features/reduxSlices/bottomSheetSlice";
 
 interface IProductCardSection {
   title?: string;
@@ -43,16 +38,6 @@ const Foodlist = ({
   gap = 8,
   showPlatformNm = true,
 }: IProductCardSection) => {
-  // navigation
-  const isFocused = useIsFocused();
-
-  // redux
-  const currentValue = useAppSelector(
-    (state) => state.bottomSheet.currentValue
-  );
-  const pToAdd = useAppSelector((state) => state.bottomSheet.product.add);
-  const dispatch = useAppDispatch();
-
   const numColumns = horizontalScroll
     ? 1
     : Math.floor(SCREENWIDTH / (itemSize + gap * 2));
@@ -60,21 +45,6 @@ const Foodlist = ({
   const scrollY = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<Animated.FlatList<IProductData>>(null);
   const headerHideHeight = MAIN_FOODLIST_HEADER_HEIGHT - SORT_FILTER_HEIGHT;
-
-  useEffect(() => {
-    if (!isFocused) {
-      dispatch(closeBSAll());
-      return;
-    }
-
-    if (currentValue.index < 0 && pToAdd.length > 0) {
-      dispatch(openBS("productToAddSelect"));
-      dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
-      setTimeout(() => {
-        flatListRef.current?.scrollToOffset({ offset: 1, animated: false });
-      }, 100);
-    }
-  }, [isFocused]);
 
   return (
     <>

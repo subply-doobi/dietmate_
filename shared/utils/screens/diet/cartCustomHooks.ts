@@ -1,10 +1,10 @@
-import {useEffect, useReducer, Reducer, useCallback} from 'react';
+import { useEffect, useReducer, Reducer, useCallback } from "react";
 
 // Define the different actions our reducer can handle
 const ACTIONS = {
-  INIT: 'INIT',
-  SUCCESS: 'SUCCESS',
-  ERROR: 'ERROR',
+  INIT: "INIT",
+  SUCCESS: "SUCCESS",
+  ERROR: "ERROR",
 } as const;
 
 type State<T> = {
@@ -15,15 +15,15 @@ type State<T> = {
 };
 
 type Action<T> =
-  | {type: typeof ACTIONS.INIT}
-  | {type: typeof ACTIONS.SUCCESS; payload: T}
-  | {type: typeof ACTIONS.ERROR};
+  | { type: typeof ACTIONS.INIT }
+  | { type: typeof ACTIONS.SUCCESS; payload: T }
+  | { type: typeof ACTIONS.ERROR };
 
 // Define our reducer function
 const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
   switch (action.type) {
     case ACTIONS.INIT:
-      return {...state, isLoading: true, isError: false};
+      return { ...state, isLoading: true, isError: false };
     case ACTIONS.SUCCESS:
       return {
         ...state,
@@ -32,7 +32,7 @@ const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
         data: action.payload,
       };
     case ACTIONS.ERROR:
-      return {...state, isLoading: false, isError: true};
+      return { ...state, isLoading: false, isError: true };
     default:
       throw new Error();
   }
@@ -47,22 +47,25 @@ export const useAsync = <T>({
   autoRun?: false;
   deps?: any[];
 }) => {
-  const [state, dispatch] = useReducer<Reducer<State<T>, Action<T>>>(reducer, {
-    isLoading: false,
-    isSuccess: false,
-    isError: false,
-    data: null,
-  });
+  const [state, dispatch] = useReducer(
+    reducer as Reducer<State<T>, Action<T>>,
+    {
+      isLoading: false,
+      isSuccess: false,
+      isError: false,
+      data: null,
+    }
+  );
 
   const execute = useCallback(async () => {
-    dispatch({type: ACTIONS.INIT});
+    dispatch({ type: ACTIONS.INIT });
     try {
       setTimeout(async () => {
         const data = await asyncFunction();
-        dispatch({type: ACTIONS.SUCCESS, payload: data});
+        dispatch({ type: ACTIONS.SUCCESS, payload: data });
       }, 1200);
     } catch (error) {
-      dispatch({type: ACTIONS.ERROR});
+      dispatch({ type: ACTIONS.ERROR });
     }
   }, [asyncFunction]);
 
@@ -71,5 +74,5 @@ export const useAsync = <T>({
     execute();
   }, [deps]);
 
-  return {...state, execute};
+  return { ...state, execute };
 };

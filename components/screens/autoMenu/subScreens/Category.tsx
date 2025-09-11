@@ -1,21 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import { TextMain } from "@/shared/ui/styledComps";
 import { BOTTOM_INDICATOR_IOS, SCREENWIDTH } from "@/shared/constants";
 import { useListCategory } from "@/shared/api/queries/category";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { setSelectedCategory } from "@/features/reduxSlices/autoMenuSlice";
+import { setAMSettingProgress } from "@/features/reduxSlices/autoMenuSlice";
 import { Platform } from "react-native";
 import CtaButton from "@/shared/ui/CtaButton";
 import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 import Icon from "@/shared/ui/Icon";
 import colors from "@/shared/colors";
+import { getAutoMenuData, saveAutoMenuData } from "@/shared/utils/asyncStorage";
+import { usePathname } from "expo-router";
 
 const Category = () => {
+  // navigation
+  const pathname = usePathname();
+
   // redux
   const dispatch = useAppDispatch();
-  const selectedCategory = useAppSelector(
-    (state) => state.autoMenu.selectedCategory
+  // local state for selectedCategory
+  const [selectedCategory, setSelectedCategory] = useState<boolean[]>([]);
+  const amSettingProgress = useAppSelector(
+    (state) => state.autoMenu.settingProgress
   );
   const progress = useAppSelector((state) => state.formula.formulaProgress);
 
@@ -23,13 +30,23 @@ const Category = () => {
   const { data: categoryData } = useListCategory();
 
   // useEffect
+  // Load from AsyncStorage on mount, or set default if not present
   useEffect(() => {
-    categoryData &&
-      dispatch(
-        setSelectedCategory(
-          Array.from({ length: categoryData?.length }, () => true)
-        )
-      );
+    (async () => {
+      if (categoryData) {
+        const data = await getAutoMenuData();
+        if (
+          data?.selectedCategory &&
+          data.selectedCategory.length === categoryData.length
+        ) {
+          setSelectedCategory(data.selectedCategory);
+        } else {
+          setSelectedCategory(
+            Array.from({ length: categoryData.length }, () => true)
+          );
+        }
+      }
+    })();
   }, [categoryData]);
 
   // etc
@@ -45,10 +62,11 @@ const Category = () => {
         {categoryData?.map((btn, idx) => (
           <CheckboxBtn
             key={btn.categoryCd}
-            onPress={() => {
+            onPress={async () => {
               const modV = [...selectedCategory];
               modV[idx] = modV[idx] ? false : true;
-              dispatch(setSelectedCategory(modV));
+              setSelectedCategory(modV);
+              await saveAutoMenuData({ selectedCategory: modV });
             }}
           >
             <Icon
@@ -65,9 +83,14 @@ const Category = () => {
         btnStyle={isCTAActive ? "active" : "inactive"}
         style={{ position: "absolute", bottom: insetBottom + 8 }}
         btnText="다음"
-        onPress={() =>
-          dispatch(setFormulaProgress(progress.concat("AMCompany")))
-        }
+        onPress={async () => {
+          pathname.includes("Formula")
+            ? dispatch(setFormulaProgress(progress.concat("AMCompany")))
+            : dispatch(
+                setAMSettingProgress(amSettingProgress.concat("AMCompany"))
+              );
+          await saveAutoMenuData({ selectedCategory });
+        }}
       />
     </Container>
   );

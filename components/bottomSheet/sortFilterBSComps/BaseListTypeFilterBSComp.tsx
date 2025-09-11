@@ -7,7 +7,6 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { Col, HorizontalLine, TextMain } from "@/shared/ui/styledComps";
-import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { usePathname, useRouter } from "expo-router";
 import styled from "styled-components/native";
 
@@ -34,9 +33,6 @@ const BaseListTypeFilterBSComp = () => {
   const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx];
   const dDData = dTOData?.[currentDietNo]?.dietDetail || [];
 
-  // bottomSheet
-  const { dismiss } = useBottomSheetModal();
-
   const selectBaseListType = (type: "totalFoodList" | "availableFoods") => {
     dispatch(closeBS());
     if (pathName === "/Search" && type === "availableFoods") {
@@ -49,11 +45,11 @@ const BaseListTypeFilterBSComp = () => {
     }
 
     if (type === baseListType) {
-      dismiss();
+      dispatch(closeBS());
       return;
     }
     dispatch(setBaseListType(type));
-    dismiss();
+    dispatch(closeBS());
   };
 
   return (

@@ -160,3 +160,47 @@ export const getRecentProducts = async (): Promise<string[]> => {
     return [];
   }
 };
+
+// automenu settings
+export type AutoMenuStorageData = {
+  selectedCategory: boolean[];
+  wantedCompany: string;
+  priceSliderValue: number[];
+};
+const STORAGE_KEY = "autoMenuSliceData";
+export const saveAutoMenuData = async (data: Partial<AutoMenuStorageData>) => {
+  try {
+    const prev = await AsyncStorage.getItem(STORAGE_KEY);
+    const prevData: Partial<AutoMenuStorageData> = prev ? JSON.parse(prev) : {};
+    const newData: Partial<AutoMenuStorageData> = { ...prevData, ...data };
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+    return true;
+  } catch (e) {
+    console.error("Failed to save autoMenu data:", e);
+    return false;
+  }
+};
+
+// Get all data
+export const getAutoMenuData = async (): Promise<
+  Partial<AutoMenuStorageData>
+> => {
+  try {
+    const value = await AsyncStorage.getItem(STORAGE_KEY);
+    return value ? JSON.parse(value) : {};
+  } catch (e) {
+    console.error("Failed to load autoMenu data:", e);
+    return {};
+  }
+};
+
+// Remove all data
+export const removeAutoMenuData = async () => {
+  try {
+    await AsyncStorage.removeItem(STORAGE_KEY);
+    return true;
+  } catch (e) {
+    console.error("Failed to remove autoMenu data:", e);
+    return false;
+  }
+};

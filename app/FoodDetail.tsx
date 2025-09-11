@@ -303,7 +303,7 @@ const FoodDetail = () => {
               name={isIncludedInLike ? "heart" : "heartBorder"}
               color={colors.pink}
               boxSize={52}
-              iconSize={40}
+              iconSize={isIncludedInLike ? 40 : 36}
             />
           </LikeBtn>
           {!infoOnly && (

@@ -20,22 +20,22 @@ import {
 import { getRecentProducts } from "@/shared/utils/asyncStorage";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { flattenMenuArr } from "@/shared/utils/filter";
-import {
-  useFocusEffect,
-  useLocalSearchParams,
-  useNavigation,
-} from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 import {
   closeBSAll,
+  openBS,
   setProductToAdd,
+  snapBS,
 } from "@/features/reduxSlices/bottomSheetSlice";
+import { useIsFocused } from "@react-navigation/native";
 
 const AutoAdd = () => {
   // navigation
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
   // redux
   const dispatch = useAppDispatch();
@@ -45,7 +45,13 @@ const AutoAdd = () => {
   );
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
 
+  const pToAdd = useAppSelector((state) => state.bottomSheet.product.add);
   const pToDel = useAppSelector((state) => state.bottomSheet.product.del);
+  const bsIndex = useAppSelector(
+    (state) => state.bottomSheet.currentValue.index
+  );
+  const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
+  const currentBsNm = bsNmArr[bsNmArr.length - 1] || "";
   const products = useAppSelector(selectFilteredSortedProducts);
   const currentMenu = JSON.parse(useLocalSearchParams()?.menu as string);
 
@@ -106,13 +112,12 @@ const AutoAdd = () => {
     return () => clearTimeout(timer);
   }, [dTOData, bLData, listOrderData, likeData]);
 
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        dispatch(closeBSAll());
-      };
-    }, [])
-  );
+  useEffect(() => {
+    if (!isFocused) {
+      dispatch(closeBSAll());
+      return;
+    }
+  }, [isFocused]);
 
   if (isLoading || !isDelayOver) {
     return (

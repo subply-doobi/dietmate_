@@ -1,7 +1,6 @@
 // RN, expo
 import { useEffect, useMemo, useRef } from "react";
 import { Platform, ScrollView, TouchableOpacity } from "react-native";
-import { reloadAsync } from "expo-updates";
 
 // 3rd
 import { useIsFocused } from "@react-navigation/native";
@@ -29,6 +28,7 @@ import LastOrderCard from "@/components/screens/home/LastOrderCard";
 import Profile from "@/components/screens/home/Profile";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import CtaButton from "@/shared/ui/CtaButton";
+import { removeAutoMenuData } from "@/shared/utils/asyncStorage";
 
 const NewHome = () => {
   // navigation
@@ -216,13 +216,13 @@ const NewHome = () => {
             });
           }}
         /> */}
-        {/* <CtaButton
+        <CtaButton
           btnStyle="active"
           btnText="test"
-          onPress={() => {
-            reloadAsync();
+          onPress={async () => {
+            await removeAutoMenuData();
           }}
-        /> */}
+        />
       </ScrollView>
     </Container>
   );

@@ -1,3 +1,4 @@
+import { JSX } from "react";
 import Select from "@/components/screens/autoMenu/subScreens/Select";
 import Category from "@/components/screens/autoMenu/subScreens/Category";
 import Company from "@/components/screens/autoMenu/subScreens/Company";

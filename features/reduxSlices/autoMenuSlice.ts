@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+type SettingProgressNm = "AMCategory" | "AMCompany" | "AMPrice";
 interface AutoMenuState {
+  settingProgress: SettingProgressNm[];
   selectedDietNo: string[];
   selectedCategory: boolean[];
   wantedCompany: string;
@@ -8,6 +10,7 @@ interface AutoMenuState {
 }
 
 const initialState: AutoMenuState = {
+  settingProgress: [],
   selectedDietNo: [],
   selectedCategory: [],
   wantedCompany: "",
@@ -18,6 +21,9 @@ const autoMenuSlice = createSlice({
   name: "autoMenu",
   initialState,
   reducers: {
+    setAMSettingProgress(state, action: PayloadAction<SettingProgressNm[]>) {
+      state.settingProgress = action.payload;
+    },
     setSelectedDietNo(state, action: PayloadAction<string[]>) {
       state.selectedDietNo = action.payload;
     },
@@ -34,6 +40,7 @@ const autoMenuSlice = createSlice({
 });
 
 export const {
+  setAMSettingProgress,
   setSelectedDietNo,
   setSelectedCategory,
   setWantedCompany,

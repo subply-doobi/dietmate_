@@ -45,8 +45,8 @@ const AutoAdd = () => {
   );
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
 
-  const pToAdd = useAppSelector((state) => state.bottomSheet.product.add);
-  const pToDel = useAppSelector((state) => state.bottomSheet.product.del);
+  const pToAdd = useAppSelector((state) => state.bottomSheet.bsData.pToAdd);
+  const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
   const bsIndex = useAppSelector(
     (state) => state.bottomSheet.currentValue.index
   );
@@ -117,7 +117,10 @@ const AutoAdd = () => {
       dispatch(closeBSAll());
       return;
     }
-  }, [isFocused]);
+    bsIndex < 0 && dispatch(openBS("productToAddSelect"));
+    pToAdd.length > 0 &&
+      dispatch(snapBS({ bsNm: "productToAddSelect", index: 1 }));
+  }, [isFocused, pToAdd]);
 
   if (isLoading || !isDelayOver) {
     return (

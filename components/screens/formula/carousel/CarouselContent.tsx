@@ -15,10 +15,13 @@ import styled from "styled-components/native";
 import SelectAllRow from "./SelectAllRow";
 import CarouselCta from "./CarouselCta";
 import CarouselFoodList from "./CarouselFoodList";
-import { useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import DSmallBtn from "@/shared/ui/DSmallBtn";
-import { showQtyChangeToast } from "@/shared/store/toastStore";
 import Icon from "@/shared/ui/Icon";
+import {
+  openBS,
+  setLSQtyChange,
+} from "@/features/reduxSlices/bottomSheetSlice";
 
 interface ICarouselContent {
   carouselRef: React.RefObject<ICarouselInstance | null>;
@@ -27,6 +30,7 @@ interface ICarouselContent {
 
 const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
   // redux
+  const dispatch = useAppDispatch();
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
   // react-query
@@ -118,7 +122,8 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
                 paddingRight: 8,
               }}
               onPress={() => {
-                showQtyChangeToast({ menuIdx: carouselIdx });
+                dispatch(setLSQtyChange({ menuIdx: currentFMCIdx }));
+                dispatch(openBS("QtyChange"));
               }}
             />
           )}

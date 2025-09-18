@@ -4,7 +4,7 @@ import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useMemo } from "react";
 import styled from "styled-components/native";
-import SellerShippingText from "../../toast/SellerShippingText";
+import SellerShippingText from "../../common/summaryInfo/SellerShippingText";
 import { StyleProp, ViewStyle } from "react-native";
 
 interface IProductSelectShippingInfo {
@@ -14,8 +14,8 @@ const ProductSelectShippingInfo = ({
   containerStyle = {},
 }: IProductSelectShippingInfo) => {
   // redux
-  const { add: pToAdd, del: pToDel } = useAppSelector(
-    (state) => state.bottomSheet.product
+  const { pToAdd, pToDel } = useAppSelector(
+    (state) => state.bottomSheet.bsData
   );
 
   // react-query

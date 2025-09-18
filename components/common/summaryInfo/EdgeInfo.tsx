@@ -84,7 +84,7 @@ const EdgeInfo = ({
             color={colors.inactive}
           />
           <CartSummary
-            hasLowerShippingCta={true}
+            // hasLowerShippingCta={true}
             containerStyle={{
               paddingHorizontal: 16,
               paddingTop: 32,

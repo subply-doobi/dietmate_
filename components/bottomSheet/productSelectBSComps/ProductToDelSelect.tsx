@@ -22,7 +22,7 @@ const ProductToDelSelect = () => {
 
   // redux
   const dispatch = useAppDispatch();
-  const pToDel = useAppSelector((state) => state.bottomSheet.product.del);
+  const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
 
   // react-query

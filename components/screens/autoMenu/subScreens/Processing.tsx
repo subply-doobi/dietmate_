@@ -87,11 +87,11 @@ const Processing = () => {
   });
   const autoMenuType = nutrStatus === "notEnough" ? "add" : "overwrite";
 
-  // 자동구성 customHook
+  // useAsync for makeAutoMenu3, but only execute when all dependencies are loaded
   const {
     data: autoMenuResult,
-    isError,
     isLoading,
+    isError,
     isSuccess,
     execute,
   } = useAsync<{
@@ -105,7 +105,11 @@ const Processing = () => {
     };
   }>({
     asyncFunction: async () => {
-      if (!bLData || !dTOData)
+      if (
+        !bLData ||
+        !dTOData ||
+        autoMenuState.selectedCategoryIdx.length === 0
+      ) {
         return {
           recommendedMenu: [],
           resultSummaryObj: {
@@ -116,7 +120,8 @@ const Processing = () => {
             isBudgetExceeded: false,
           },
         };
-      const data = await makeAutoMenu3({
+      }
+      return await makeAutoMenu3({
         medianCalorie,
         foodGroupForAutoMenu,
         initialMenu: [],
@@ -125,15 +130,32 @@ const Processing = () => {
         priceTarget: autoMenuState.priceSliderValue,
         wantedPlatform: autoMenuState.wantedCompany,
         menuNum: selectedDietNo.length,
-      }).then((res) => res);
-      return data;
+      });
     },
-    deps: [],
+    autoRun: false,
+    deps: [
+      bLData,
+      dTOData,
+      autoMenuState,
+      medianCalorie,
+      foodGroupForAutoMenu,
+      selectedDietNo.length,
+    ],
   });
 
+  // Only execute when all dependencies are loaded
   useEffect(() => {
-    execute();
-  }, []);
+    if (bLData && dTOData && autoMenuState.selectedCategoryIdx.length > 0) {
+      execute();
+    }
+  }, [
+    bLData,
+    dTOData,
+    autoMenuState,
+    medianCalorie,
+    foodGroupForAutoMenu,
+    selectedDietNo.length,
+  ]);
 
   // overwriteDiet (한끼니 자동구성 재시도, 전체 자동구성)
   useEffect(() => {
@@ -147,7 +169,6 @@ const Processing = () => {
       return;
 
     const overwriteDiet = async () => {
-      // selectedMenu 에 대한 각 productNo
       let productToDeleteList: { dietNo: string; productNo: string }[] = [];
       selectedDietNo.forEach((dietNo) => {
         dTOData[dietNo].dietDetail.forEach((p) =>
@@ -157,8 +178,6 @@ const Processing = () => {
           })
         );
       });
-
-      // 추가할 각 product 및 dietNo
       const productToAddList: { dietNo: string; food: IProductData }[] = [];
       autoMenuResult?.recommendedMenu.forEach((menu, idx) => {
         menu.forEach((product) => {
@@ -168,8 +187,6 @@ const Processing = () => {
           });
         });
       });
-
-      // 한꺼번에 삭제/추가할 mutation list
       const deleteMutations = productToDeleteList.map((p) =>
         deleteDietDetailMutation.mutateAsync({
           dietNo: p.dietNo,
@@ -182,9 +199,7 @@ const Processing = () => {
           dietNo: p.dietNo,
         })
       );
-
       try {
-        // 자동구성할 끼니 (선택된 끼니) 초기화 및 자동구성된 식품 각 끼니에 추가
         await Promise.all(deleteMutations);
         await Promise.all(createMutations);
       } catch (e) {
@@ -199,7 +214,6 @@ const Processing = () => {
         isBudgetExceeded &&
         dispatch(openModal({ name: "autoMenuOverPriceAlert" }));
     };
-
     overwriteDiet();
   }, [isSuccess]);
 
@@ -215,7 +229,6 @@ const Processing = () => {
       return;
 
     const addMenu = async () => {
-      // 추가할 각 product 및 dietNo
       const productToAddList: { dietNo: string; food: IProductData }[] = [];
       autoMenuResult?.recommendedMenu.forEach((menu, idx) => {
         menu.forEach((product) => {
@@ -225,16 +238,13 @@ const Processing = () => {
           });
         });
       });
-      // 한꺼번에 추가할 mutation list
       const createMutations = productToAddList.map((p) =>
         createDietDetailMutation.mutateAsync({
           food: p.food,
           dietNo: p.dietNo,
         })
       );
-
       try {
-        // 자동구성된 식품 각 끼니에 추가
         await Promise.all(createMutations);
       } catch (e) {
         console.log("남은영양 식품 추가 중 오류: ", e);
@@ -248,9 +258,17 @@ const Processing = () => {
         isBudgetExceeded &&
         dispatch(openModal({ name: "autoMenuOverPriceAlert" }));
     };
-
     addMenu();
   }, [isSuccess]);
+
+  console.log(
+    "Processing: isLoading:",
+    isLoading,
+    " isError:",
+    isError,
+    "autoMenuResult:",
+    autoMenuResult
+  );
 
   if (isError) {
     return <Error />;

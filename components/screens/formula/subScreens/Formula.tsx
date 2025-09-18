@@ -32,7 +32,7 @@ import DTooltip from "@/shared/ui/DTooltip";
 import {
   closeBS,
   openBS,
-  setProductToDel,
+  resetBSData,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import Icon from "@/shared/ui/Icon";
 
@@ -48,7 +48,7 @@ const Formula = () => {
   const modalSeq = useAppSelector((state) => state.modal.modalSeq);
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-  const pToDel = useAppSelector((state) => state.bottomSheet.product.del);
+  const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -185,9 +185,7 @@ const Formula = () => {
           onSnapToItem={(index) => {
             dispatch(setCurrentFMCIdx(index));
           }}
-          onScrollStart={() =>
-            pToDel.length > 0 && dispatch(setProductToDel([]))
-          }
+          onScrollStart={() => pToDel.length > 0 && dispatch(resetBSData())}
           onProgressChange={paginationValue}
           renderItem={({ index }) => (
             <CarouselContent

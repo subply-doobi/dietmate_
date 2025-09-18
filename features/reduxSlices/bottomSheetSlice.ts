@@ -10,7 +10,9 @@ export type IBSNm =
   | "sort"
   // product select
   | "productToAddSelect"
-  | "productToDelSelect";
+  | "productToDelSelect"
+  // lower shipping
+  | "QtyChange";
 
 export type IBSAction =
   | { type: "open"; bsNm: IBSNm }
@@ -23,10 +25,12 @@ interface BottomSheetState {
   bsNmArr: IBSNm[];
   actionQueue: IBSAction[];
   currentValue: { index: number; position: number };
-  // product select
-  product: {
-    add: (IProductData | IDietDetailProductData)[];
-    del: (IProductData | IDietDetailProductData)[];
+  bsData: {
+    pToAdd: (IProductData | IDietDetailProductData)[];
+    pToDel: (IProductData | IDietDetailProductData)[];
+    qtyChange: {
+      menuIdx: number;
+    };
   };
 }
 
@@ -34,10 +38,10 @@ const initialState: BottomSheetState = {
   bsNmArr: [],
   actionQueue: [],
   currentValue: { index: -1, position: 0 },
-  // product select
-  product: {
-    add: [],
-    del: [],
+  bsData: {
+    pToAdd: [],
+    pToDel: [],
+    qtyChange: { menuIdx: 0 },
   },
 };
 
@@ -95,7 +99,6 @@ const bottomSheetSlice = createSlice({
     },
     removeBSNm: (state, action: PayloadAction<IBSNm>) => {
       const bsNm = action.payload;
-      console.log("------ bsSlice removeBSNm: ", bsNm);
       state.bsNmArr = state.bsNmArr.filter((name) => name !== bsNm);
     },
     removeAllBsNm: (state) => {
@@ -123,25 +126,37 @@ const bottomSheetSlice = createSlice({
       state,
       action: PayloadAction<(IProductData | IDietDetailProductData)[]>
     ) => {
-      state.product.add = action.payload;
+      state.bsData.pToAdd = action.payload;
     },
     setProductToDel: (
       state,
       action: PayloadAction<(IProductData | IDietDetailProductData)[]>
     ) => {
-      state.product.del = action.payload;
+      state.bsData.pToDel = action.payload;
     },
     deleteBSProduct: (state) => {
-      state.product = {
-        add: [],
-        del: [],
-      };
+      state.bsData.pToAdd = [];
+      state.bsData.pToDel = [];
     },
     setCurrentValue: (
       state,
       action: PayloadAction<{ index: number; position: number }>
     ) => {
       state.currentValue = action.payload;
+    },
+
+    // lower shipping bottom sheet
+    setLSQtyChange: (
+      state,
+      action: PayloadAction<{
+        menuIdx: number;
+      }>
+    ) => {
+      state.bsData.qtyChange.menuIdx = action.payload.menuIdx;
+    },
+
+    resetBSData: (state) => {
+      state.bsData = initialState.bsData;
     },
   },
 });
@@ -150,6 +165,7 @@ export const {
   setProductToAdd,
   setProductToDel,
   deleteBSProduct,
+  resetBSData,
   openBS,
   closeBS,
   closeBSAll,
@@ -161,5 +177,7 @@ export const {
   dequeueBSAction,
   resetBSActionQueue,
   setCurrentValue,
+  // lower shipping bottom sheet
+  setLSQtyChange,
 } = bottomSheetSlice.actions;
 export default bottomSheetSlice.reducer;

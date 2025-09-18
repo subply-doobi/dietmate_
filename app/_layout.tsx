@@ -24,7 +24,6 @@ import { INQUIRY_URL } from "@/shared/constants";
 import { BtnSmall, BtnSmallText } from "@/shared/ui/styledComps";
 import AppLoading from "@/components/appLoading/AppLoading";
 import ModalComponent from "@/components/modal/ModalComponent";
-import { toastConfig } from "@/shared/store/toastStore";
 import { setAutoAddFood } from "@/features/reduxSlices/formulaSlice";
 import {
   BottomSheetModal,
@@ -251,7 +250,7 @@ export default function RootLayout() {
               {/* <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         > */}
-              <Toast config={toastConfig} />
+              <Toast />
 
               {/* bottomSheet */}
               <GlobalBSM />

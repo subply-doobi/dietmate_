@@ -27,6 +27,7 @@ import { StyleProp, ViewStyle } from "react-native";
 import ProductToAddSelect from "./productSelectBSComps/ProductToAddSelect";
 import ProductToDelSelect from "./productSelectBSComps/ProductToDelSelect";
 import { usePathname } from "expo-router";
+import QtyChangeBSComp from "./lowershippingBSComp/QtyChangeBSComp";
 
 // --- Custom Hook for latest ref ---
 function useLatestRef<T>(value: T) {
@@ -58,6 +59,9 @@ const bsCompByName: Record<IBSNm, JSX.Element> = {
   // product select
   productToAddSelect: <ProductToAddSelect />,
   productToDelSelect: <ProductToDelSelect />,
+
+  // lower shipping
+  QtyChange: <QtyChangeBSComp />,
 };
 
 const bsBasicConfig: IBSConfig = {
@@ -98,6 +102,7 @@ const bsConfigByName: Partial<Record<IBSNm, IBSConfig>> = {
       24 - 8 + 32 + 12 + 52 + 16 + 24 + 52 + 16,
     ],
   },
+  QtyChange: { ...bsOpacityConfig, maxDynamicContentSize: SCREENHEIGHT * 0.9 },
 };
 
 const GlobalBSM = () => {

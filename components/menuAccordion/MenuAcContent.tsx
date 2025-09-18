@@ -18,6 +18,10 @@ import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 import { useRouter } from "expo-router";
 import Icon from "@/shared/ui/Icon";
+import {
+  openBS,
+  setLSQtyChange,
+} from "@/features/reduxSlices/bottomSheetSlice";
 
 interface IMenuAcContent {
   dietNo: string;
@@ -43,12 +47,14 @@ const MenuAcContent = ({ dietNo }: IMenuAcContent) => {
   // fn
   const onMenuNoSelectPress = () => {
     if (isEmpty) return;
-    dispatch(
-      openModal({
-        name: "menuNumSelectBS",
-        values: { dietNoToNumControl: dietNo },
-      })
-    );
+    // dispatch(
+    //   openModal({
+    //     name: "menuNumSelectBS",
+    //     values: { dietNoToNumControl: dietNo },
+    //   })
+    // );
+    dispatch(setLSQtyChange({ menuIdx: idx }));
+    dispatch(openBS("QtyChange"));
   };
 
   return (

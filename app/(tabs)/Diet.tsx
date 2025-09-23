@@ -206,7 +206,7 @@ const Diet = () => {
 
         {/* 끼니 정보 요약 */}
         <CartSummary
-          hasLowerShippingCta={true}
+          hasLowerShippingCta={false}
           containerStyle={{
             paddingHorizontal: 16,
             paddingBottom: 104,

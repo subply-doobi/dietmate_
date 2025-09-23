@@ -39,7 +39,7 @@ const ProductItem = ({
   // redux
   const dispatch = useAppDispatch();
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
-  const pToAdd = useAppSelector((state) => state.bottomSheet.product.add);
+  const pToAdd = useAppSelector((state) => state.bottomSheet.bsData.pToAdd);
   const bsIndex = useAppSelector(
     (state) => state.bottomSheet.currentValue.index
   );

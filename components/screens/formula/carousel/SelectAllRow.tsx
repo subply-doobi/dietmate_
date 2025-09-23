@@ -13,7 +13,7 @@ interface ISelectAllRow {
 const SelectAllRow = ({ carouselMenu }: ISelectAllRow) => {
   // redux
   const dispatch = useAppDispatch();
-  const pToDel = useAppSelector((state) => state.bottomSheet.product.del);
+  const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
 
   const isMenuEmpty = carouselMenu.length === 0;
   const isCheckedAll = !isMenuEmpty && pToDel.length === carouselMenu.length;

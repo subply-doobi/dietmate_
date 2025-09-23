@@ -22,7 +22,7 @@ interface ICarouselFoodList {
 const CarouselFoodList = ({ data }: ICarouselFoodList) => {
   // redux
   const dispatch = useAppDispatch();
-  const pToDel = useAppSelector((state) => state.bottomSheet.product.del);
+  const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
 
   // ref
   const flatListRef = useRef<FlatList<IDietDetailProductData>>(null);

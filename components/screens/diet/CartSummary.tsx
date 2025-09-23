@@ -24,7 +24,7 @@ import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useRouter } from "expo-router";
 import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
 import CtaButton from "@/shared/ui/CtaButton";
-import SellerShippingText from "@/components/toast/SellerShippingText";
+import SellerShippingText from "@/components/common/summaryInfo/SellerShippingText";
 import Icon from "@/shared/ui/Icon";
 
 interface ICartSummary {

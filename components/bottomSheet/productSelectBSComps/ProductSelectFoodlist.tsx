@@ -18,8 +18,8 @@ const ProductSelectFoodlist = ({ foods }: { foods: IDietDetailData }) => {
 
   // redux
   const dispatch = useAppDispatch();
-  const { add: pToAdd, del: pToDel } = useAppSelector(
-    (state) => state.bottomSheet.product
+  const { pToAdd, pToDel } = useAppSelector(
+    (state) => state.bottomSheet.bsData
   );
 
   const onItemPressed = async (productNo: string) => {

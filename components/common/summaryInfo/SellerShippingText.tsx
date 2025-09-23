@@ -3,12 +3,7 @@ import { IProductData } from "@/shared/api/types/product";
 import colors from "@/shared/colors";
 import { SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 import { Col, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
-import {
-  commaToNum,
-  IShippingPriceObj,
-  IShippingPriceValues,
-} from "@/shared/utils/sumUp";
-import { StyleProp, ViewStyle } from "react-native";
+import { commaToNum, IShippingPriceObj } from "@/shared/utils/sumUp";
 import styled from "styled-components/native";
 
 interface ISellerShippingText {

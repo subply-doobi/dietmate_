@@ -1,9 +1,11 @@
 import colors from "@/shared/colors";
 import { MENU_LABEL } from "@/shared/constants";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
+
 import {
-  showFoodChangeToast,
-  showQtyChangeToast,
-} from "@/shared/store/toastStore";
+  setLSQtyChange,
+  openBS,
+} from "@/features/reduxSlices/bottomSheetSlice";
 import CtaButton from "@/shared/ui/CtaButton";
 import { Row, TextMain } from "@/shared/ui/styledComps";
 import styled from "styled-components/native";
@@ -15,6 +17,7 @@ interface IMenuToMod {
   type: "qtyOnly" | "foodOnly" | "qtyRecommended" | "both";
 }
 const MenuToMod = ({ menuArr, type }: IMenuToMod) => {
+  const dispatch = useAppDispatch();
   if (!menuArr || menuArr.length === 0) return null;
 
   return (
@@ -31,9 +34,6 @@ const MenuToMod = ({ menuArr, type }: IMenuToMod) => {
                 ( x{menu.dietDetailData[0]?.qty} )
               </CardSubTitle>
             )}
-            {/* <CardTitle style={{ position: "absolute", right: 0 }}>
-              {commaToNum(menu.currentDietPrice)}원
-            </CardTitle> */}
           </Row>
 
           {/* 식품 리스트 */}
@@ -46,9 +46,9 @@ const MenuToMod = ({ menuArr, type }: IMenuToMod) => {
                 btnStyle={type === "foodOnly" ? "borderActive" : "border"}
                 style={{ flex: 1, height: 48 }}
                 btnText="식품 변경"
-                onPress={() =>
-                  showFoodChangeToast({ menuWithChangeAvailableFoods: menu })
-                }
+                onPress={() => {
+                  // Food change functionality removed
+                }}
               />
             )}
             {type !== "foodOnly" && (
@@ -57,7 +57,10 @@ const MenuToMod = ({ menuArr, type }: IMenuToMod) => {
                 btnTextStyle={{ color: colors.textSub }}
                 style={{ flex: 1, height: 48 }}
                 btnText="근수 변경"
-                onPress={() => showQtyChangeToast({ menuIdx: menu.index })}
+                onPress={() => {
+                  dispatch(setLSQtyChange({ menuIdx: menu.index }));
+                  dispatch(openBS("QtyChange"));
+                }}
               />
             )}
           </BtnRow>
@@ -70,7 +73,7 @@ const MenuToMod = ({ menuArr, type }: IMenuToMod) => {
 export default MenuToMod;
 
 const Container = styled.View`
-  width: 99%;
+  /* width: 99%; */
   margin-top: 24px;
   row-gap: 40px;
 `;

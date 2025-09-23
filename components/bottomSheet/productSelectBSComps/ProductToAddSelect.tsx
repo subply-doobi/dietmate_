@@ -57,8 +57,8 @@ const ProductToAddSelect = () => {
   // redux
   const dispatch = useAppDispatch();
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
-  const { add: pToAdd, del: pToDel } = useAppSelector(
-    (state) => state.bottomSheet.product
+  const { pToAdd, pToDel } = useAppSelector(
+    (state) => state.bottomSheet.bsData
   );
   const bsValue = useAppSelector((state) => state.bottomSheet.currentValue);
   // react-query
@@ -124,9 +124,6 @@ const ProductToAddSelect = () => {
   };
 
   const onPressAdd = () => {
-    if (pathNm !== "/Search") {
-      router.back();
-    }
     setTimeout(async () => {
       if (isIncluded) {
         deleteDietDetailMutation.mutate({
@@ -147,8 +144,11 @@ const ProductToAddSelect = () => {
     }, 10);
     dispatch(deleteBSProduct());
     setTimeout(() => {
-      dispatch(snapBS({ index: 0, bsNm: "productToAddSelect" }));
-    }, 150);
+      dispatch(closeBS());
+      if (pathNm !== "/Search") {
+        router.back();
+      }
+    }, 250);
   };
 
   return (

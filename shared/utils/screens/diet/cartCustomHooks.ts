@@ -23,7 +23,7 @@ type Action<T> =
 const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
   switch (action.type) {
     case ACTIONS.INIT:
-      return { ...state, isLoading: true, isError: false };
+      return { ...state, isLoading: true, isError: false, isSuccess: false };
     case ACTIONS.SUCCESS:
       return {
         ...state,
@@ -57,16 +57,16 @@ export const useAsync = <T>({
     }
   );
 
-  const execute = useCallback(async () => {
+  const execute = useCallback(() => {
     dispatch({ type: ACTIONS.INIT });
-    try {
-      setTimeout(async () => {
+    setTimeout(async () => {
+      try {
         const data = await asyncFunction();
         dispatch({ type: ACTIONS.SUCCESS, payload: data });
-      }, 1200);
-    } catch (error) {
-      dispatch({ type: ACTIONS.ERROR });
-    }
+      } catch (error) {
+        dispatch({ type: ACTIONS.ERROR });
+      }
+    }, 1200);
   }, [asyncFunction]);
 
   useEffect(() => {

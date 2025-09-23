@@ -5,10 +5,6 @@ import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import {
-  showFoodChangeToast,
-  showQtyChangeToast,
-} from "@/shared/store/toastStore";
 import CtaButton from "@/shared/ui/CtaButton";
 import GuideTitle from "@/shared/ui/GuideTitle";
 import Icon from "@/shared/ui/Icon";
@@ -26,7 +22,7 @@ import {
   ILowerShippingMenuObj,
   sumUpDietFromDTOData,
 } from "@/shared/utils/sumUp";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useEffect, useMemo } from "react";
 import { ActivityIndicator, ScrollView } from "react-native";
 import Toast from "react-native-toast-message";
@@ -39,14 +35,8 @@ const LowerShipping = () => {
   // redux
   const dispatch = useAppDispatch();
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-  const toastType = useAppSelector((state) => state.lowerShipping.toastType);
-  const qtyChangeMenuIdx = useAppSelector(
-    (state) => state.lowerShipping.toastData.qtyChange.menuIdx
-  );
-  const foodChangeMenuWCA = useAppSelector(
-    (state) =>
-      state.lowerShipping.toastData.foodChange.menuWithChangeAvailableFoods
-  );
+  const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
+  console.log("LowerShipping: bsNmArr:", bsNmArr);
 
   // react-query
   const createDietMutation = useCreateDiet();
@@ -156,18 +146,6 @@ const LowerShipping = () => {
       totalShippingPrice,
     };
   }, [dTOData]);
-
-  useFocusEffect(() => {
-    if (!toastType) {
-      return;
-    }
-    if (toastType === "foodChange") {
-      showFoodChangeToast({ menuWithChangeAvailableFoods: foodChangeMenuWCA });
-    }
-    if (toastType === "qtyChange") {
-      showQtyChangeToast({ menuIdx: qtyChangeMenuIdx });
-    }
-  });
 
   // useEffect
   useEffect(() => {

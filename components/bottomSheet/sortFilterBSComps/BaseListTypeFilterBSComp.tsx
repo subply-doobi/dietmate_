@@ -26,7 +26,7 @@ const BaseListTypeFilterBSComp = () => {
   const baseListType = useAppSelector(
     (state) => state.filteredProduct.filter.baseListType
   );
-  const pToAdd = useAppSelector((state) => state.bottomSheet.product.add);
+  const pToAdd = useAppSelector((state) => state.bottomSheet.bsData.pToAdd);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();

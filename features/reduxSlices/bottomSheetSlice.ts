@@ -12,15 +12,17 @@ export type IBSNm =
   // product select
   | "productToAddSelect"
   | "productToDelSelect"
-  // lower shipping
-  | "QtyChange";
+  // menu qty change
+  | "qtyChange"
+  // formula summary
+  | "summaryInfo";
 
 export type IBSAction =
-  | { type: "open"; bsNm: IBSNm }
-  | { type: "close"; bsNm?: IBSNm }
-  | { type: "closeAll" }
-  | { type: "snapToIndex"; index: number; bsNm: IBSNm }
-  | { type: "expand"; bsNm: IBSNm };
+  | { type: "open"; bsNm: IBSNm; from?: string }
+  | { type: "close"; bsNm?: IBSNm; from?: string }
+  | { type: "closeAll"; from?: string }
+  | { type: "snapToIndex"; index: number; bsNm: IBSNm; from?: string }
+  | { type: "expand"; bsNm: IBSNm; from?: string };
 
 interface BottomSheetState {
   bsNmArr: IBSNm[];
@@ -72,125 +74,128 @@ const bottomSheetSlice = createSlice({
     // 	2. bsNm 있는 경우
     // 		1. 맨 위인데 닫힌 경우
     // 		2. 다른 bs 아래에 있는 경우
-    openBS: (state, action: PayloadAction<IBSNm>) => {
-      const target = action.payload;
+    openBS: (
+      state,
+      action: PayloadAction<{ bsNm: IBSNm; from?: string; option?: "reset" }>
+    ) => {
+      const { bsNm, from, option } = action.payload;
       const top = peekStack(state.bsNmArr);
-      const isOpen = state.currentValue.index >= 0;
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
       // if duplicate action, do nothing
-      if (
-        lastAction?.type === "open" &&
-        "bsNm" in lastAction &&
-        lastAction.bsNm === target
-      ) {
+      if (lastAction?.type === "open" && lastAction.bsNm === bsNm) {
         return;
       }
-
-      // If already open, do nothing
-      if (top === target && isOpen) return;
 
       // If another is open, queue close and open
-      if (isOpen && state.bsNmArr.length > 0) {
-        state.actionQueue.push({ type: "close", bsNm: top });
-        state.actionQueue.push({ type: "open", bsNm: target });
-        state.bsNmArr = pushStack(
-          removeFromStack(state.bsNmArr, target),
-          target
-        );
+      if (state.bsNmArr.length > 0 && top !== bsNm) {
+        state.actionQueue.push({ type: "close", bsNm: top, from });
+        state.actionQueue.push({ type: "open", bsNm: bsNm, from });
+        state.bsNmArr =
+          option === "reset"
+            ? [bsNm]
+            : pushStack(removeFromStack(state.bsNmArr, bsNm), bsNm);
         return;
       }
 
-      // If exists but not open
-      if (top === target && !isOpen) {
-        state.actionQueue.push({ type: "open", bsNm: target });
-        return;
-      }
-
-      // If exists under different bs but not open
-      if (state.bsNmArr.includes(target) && !isOpen) {
-        state.bsNmArr = pushStack(
-          removeFromStack(state.bsNmArr, target),
-          target
-        );
-        state.actionQueue.push({ type: "open", bsNm: target });
-        return;
-      }
-
-      // If doesn't exist and not open
-      if (!isOpen) {
-        state.actionQueue.push({ type: "open", bsNm: target });
-        state.bsNmArr = pushStack(state.bsNmArr, target);
-        return;
-      }
+      // default
+      state.actionQueue.push({ type: "open", bsNm: bsNm, from });
+      state.bsNmArr =
+        option === "reset"
+          ? [bsNm]
+          : pushStack(removeFromStack(state.bsNmArr, bsNm), bsNm);
+      return;
     },
-    closeBS: (state) => {
-      // if duplicate action, do nothing
+    closeBS: (state, action: PayloadAction<{ bsNm: IBSNm; from?: string }>) => {
+      const from = action?.payload.from;
+      const bsNm = action?.payload.bsNm;
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
-      if (lastAction?.type === "close") return;
+      const isTop = peekStack(state.bsNmArr) === bsNm;
 
-      const isOpen = state.currentValue.index >= 0;
-      // If not open, do nothing
-      if (!isOpen) return;
+      if (lastAction?.type === "close" && lastAction.bsNm === bsNm) return;
       if (state.bsNmArr.length === 0) return;
 
-      // If only one is open
-      if (state.bsNmArr.length === 1) {
-        state.bsNmArr = [];
-        state.actionQueue.push({ type: "close" });
-        return;
-      }
+      if (!state.bsNmArr.includes(bsNm)) return;
 
-      // If multiple are open, close the top and open the one below
-      const top = peekStack(state.bsNmArr);
-      state.bsNmArr = removeFromStack(state.bsNmArr, top);
-      state.actionQueue.push({ type: "close" });
-      state.actionQueue.push({ type: "open", bsNm: peekStack(state.bsNmArr)! });
+      state.bsNmArr = removeFromStack(state.bsNmArr, bsNm);
+      if (!isTop) return;
+      state.actionQueue.push({ type: "close", bsNm, from });
+      // If it was the top, open the new top if any
+      if (isTop && state.bsNmArr.length > 0) {
+        state.actionQueue.push({
+          type: "open",
+          bsNm: peekStack(state.bsNmArr)!,
+          from,
+        });
+      }
     },
-    closeBSAll: (state) => {
+    closeBSAll: (
+      state,
+      action: PayloadAction<{ from?: string } | undefined>
+    ) => {
+      const from =
+        action?.payload && typeof action.payload === "object"
+          ? action.payload.from
+          : undefined;
       // if duplicate action, do nothing
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
       if (lastAction?.type === "closeAll") return;
-      const isOpen = state.currentValue.index >= 0;
       state.bsNmArr = [];
-      if (!isOpen) return;
-      state.actionQueue.push({ type: "closeAll" });
+      state.actionQueue.push({ type: "closeAll", from });
     },
-    closeBSWOAction: (state) => {
+    closeBSWOAction: (
+      state,
+      action: PayloadAction<{ from?: string } | undefined>
+    ) => {
+      const from =
+        action?.payload && typeof action.payload === "object"
+          ? action.payload.from
+          : undefined;
       const top = peekStack(state.bsNmArr);
-      console.log("closeBSWOAction: ", { top, bsNmArr: state.bsNmArr });
       state.bsNmArr = removeFromStack(state.bsNmArr, top);
       state.bsNmArr.length > 0 &&
         state.actionQueue.push({
           type: "open",
           bsNm: peekStack(state.bsNmArr)!,
+          from,
         });
     },
-    snapBS: (state, action: PayloadAction<{ index: number; bsNm: IBSNm }>) => {
+
+    snapBS: (
+      state,
+      action: PayloadAction<{ index: number; bsNm: IBSNm; from?: string }>
+    ) => {
       // if duplicate action, do nothing
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
       if (lastAction?.type === "snapToIndex") return;
 
-      // if already at the target index, do nothing
-      const { index, bsNm } = action.payload;
-      const isOpen = state.currentValue.index >= 0;
-      const isCurrentBs = peekStack(state.bsNmArr) === bsNm;
-      const isAtIndex = state.currentValue.index === index;
-      if (isOpen && isCurrentBs && isAtIndex) return;
+      // if not current bs, do nothing
+      const top = peekStack(state.bsNmArr);
+      if (top !== action.payload.bsNm) return;
 
-      state.actionQueue.push({ type: "snapToIndex", index, bsNm });
+      const { index, bsNm, from } = action.payload;
+      state.actionQueue.push({ type: "snapToIndex", index, bsNm, from });
     },
-    expandBS: (state, action: PayloadAction<{ bsNm: IBSNm }>) => {
+    expandBS: (
+      state,
+      action: PayloadAction<{ bsNm: IBSNm; from?: string }>
+    ) => {
+      console.log("[bottomSheetSlice/expandBS]", action.payload);
       // if duplicate action, do nothing
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
       if (lastAction?.type === "expand") return;
 
+      // if not current bs, do nothing
+      const top = peekStack(state.bsNmArr);
+      if (top !== action.payload.bsNm) return;
+
       // if already expanded, do nothing
       const snapPoints = bsConfigByName[action.payload.bsNm]?.snapPoints;
       const maxIndex = snapPoints ? snapPoints.length - 1 : 0;
-      if (state.currentValue.index === maxIndex) return;
+      console.log("maxIndex:", maxIndex);
+      if (state.currentValue.index > maxIndex) return;
 
-      const { bsNm } = action.payload;
-      state.actionQueue.push({ type: "expand", bsNm });
+      const { bsNm, from } = action.payload;
+      state.actionQueue.push({ type: "expand", bsNm, from });
     },
     dequeueBSAction: (state) => {
       if (state.actionQueue.length > 0) {

@@ -13,6 +13,7 @@ interface ISellerShippingText {
   productToAdd?: IProductData;
   mainTextColor?: string;
   subTextColor?: string;
+  simplified?: boolean;
 }
 const SellerShippingText = ({
   shippingPriceObj,
@@ -21,6 +22,7 @@ const SellerShippingText = ({
   productToAdd,
   mainTextColor = colors.textMain,
   subTextColor = colors.textSub,
+  simplified = false,
 }: ISellerShippingText) => {
   const priceToDel =
     productToDel?.platformNm === seller
@@ -84,29 +86,31 @@ const SellerShippingText = ({
       <Row>
         <Text mainTextColor={mainTextColor}>{seller}</Text>
       </Row>
-      <Row style={{ columnGap: 4, marginTop: 4 }}>
-        <SubText subTextColor={subTextColor}>식품 :</SubText>
-        {/* 기존 금액 */}
-        {oPrice && (
-          <SubText
-            subTextColor={subTextColor}
-            style={{ textDecorationLine: "line-through" }}
-          >
-            {oP}
-          </SubText>
-        )}
-        {/* 예상 금액 */}
-        {
-          <SubText
-            subTextColor={subTextColor}
-            style={{
-              color: ePColor,
-            }}
-          >
-            {eP}
-          </SubText>
-        }
-      </Row>
+      {!simplified && (
+        <Row style={{ columnGap: 4, marginTop: 4 }}>
+          <SubText subTextColor={subTextColor}>식품 :</SubText>
+          {/* 기존 금액 */}
+          {oPrice && (
+            <SubText
+              subTextColor={subTextColor}
+              style={{ textDecorationLine: "line-through" }}
+            >
+              {oP}
+            </SubText>
+          )}
+          {/* 예상 금액 */}
+          {
+            <SubText
+              subTextColor={subTextColor}
+              style={{
+                color: ePColor,
+              }}
+            >
+              {eP}
+            </SubText>
+          }
+        </Row>
+      )}
       {ePrice > 0 && (
         <Row style={{ columnGap: 4 }}>
           <SubText subTextColor={subTextColor}>배송비:</SubText>

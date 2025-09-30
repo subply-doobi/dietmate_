@@ -123,7 +123,9 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
               }}
               onPress={() => {
                 dispatch(setLSQtyChange({ menuIdx: currentFMCIdx }));
-                dispatch(openBS("QtyChange"));
+                dispatch(
+                  openBS({ bsNm: "qtyChange", from: "CarouselContent.tsx" })
+                );
               }}
             />
           )}

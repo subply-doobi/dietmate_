@@ -32,12 +32,14 @@ interface ICartSummary {
   mainTextColor?: string;
   subTextColor?: string;
   hasLowerShippingCta?: boolean;
+  simplified?: boolean;
 }
 const CartSummary = ({
   containerStyle,
   hasLowerShippingCta,
   mainTextColor,
   subTextColor,
+  simplified,
 }: ICartSummary) => {
   // navigation
   const router = useRouter();
@@ -102,20 +104,21 @@ const CartSummary = ({
         //식품사별 가격, 배송비 합계
         return (
           <View key={index}>
-            <HorizontalSpace height={24} />
+            <HorizontalSpace height={16} />
             <SellerShippingText
               seller={seller}
               shippingPriceObj={shippingPriceObj}
               mainTextColor={mainTextColor}
               subTextColor={subTextColor}
+              simplified={simplified}
             />
           </View>
         );
       })}
 
-      <HorizontalLine style={{ marginTop: 24 }} />
+      <HorizontalLine style={{ marginTop: 16 }} />
 
-      <Row style={{ marginTop: 24, justifyContent: "space-between" }}>
+      <Row style={{ marginTop: 16, justifyContent: "space-between" }}>
         <SummaryText $color={mainTextColor}>
           상품 가격 (총 {productNum}개)
         </SummaryText>

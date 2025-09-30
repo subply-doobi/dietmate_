@@ -54,7 +54,7 @@ const MenuAcContent = ({ dietNo }: IMenuAcContent) => {
     //   })
     // );
     dispatch(setLSQtyChange({ menuIdx: idx }));
-    dispatch(openBS("QtyChange"));
+    dispatch(openBS({ bsNm: "qtyChange", from: "MenuAcContent.tsx" }));
   };
 
   return (

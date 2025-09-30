@@ -42,11 +42,11 @@ const PlatformFilterBSComp = () => {
     };
   }, [dTOData]);
 
-  console.log("PlatformFilterBSComp");
-
   // fn
   const selectPlatform = (platform: string) => {
-    dispatch(closeBS());
+    dispatch(
+      closeBS({ bsNm: "platformFilter", from: "PlatformFilterBSComp.tsx" })
+    );
     if (platformNm[0] === platform) {
       return;
     }
@@ -63,7 +63,6 @@ const PlatformFilterBSComp = () => {
         //   notFree[0]?.remainPrice
         // )}원 더 담으면 무료배송`;
         const obj = shippingPriceObj[item.value];
-        console.log("obj", obj);
         let shippingText = "";
         if (!obj) {
           shippingText = "(아직 담은 식품이 없어요)";

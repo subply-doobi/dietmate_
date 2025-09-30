@@ -133,7 +133,10 @@ const SortFilter = () => {
       iconName: "target",
       iconSize: 18,
       iconColor: isActiveObj.baseListType ? colors.main : colors.textSub,
-      onPress: () => dispatch(openBS("baseListTypeFilter")),
+      onPress: () =>
+        dispatch(
+          openBS({ bsNm: "baseListTypeFilter", from: "SortFilter.tsx" })
+        ),
     },
     // 카테고리
     {
@@ -144,7 +147,7 @@ const SortFilter = () => {
       iconSize: 18,
       iconColor: isActiveObj.category ? colors.main : colors.textSub,
       onPress: () => {
-        dispatch(openBS("categoryFilter"));
+        dispatch(openBS({ bsNm: "categoryFilter", from: "SortFilter.tsx" }));
       },
     },
     // 검색
@@ -179,7 +182,7 @@ const SortFilter = () => {
       iconSize: 18,
       iconColor: isActiveObj.platformNm ? colors.main : colors.textSub,
       onPress: () => {
-        dispatch(openBS("platformFilter"));
+        dispatch(openBS({ bsNm: "platformFilter", from: "SortFilter.tsx" }));
         isTooltipShow && setIsTooltipShow(false);
       },
     },
@@ -248,7 +251,7 @@ const SortFilter = () => {
       iconSize: 14,
       iconColor: isActiveObj.sortBy ? colors.main : colors.textSub,
       onPress: () => {
-        dispatch(openBS("sort"));
+        dispatch(openBS({ bsNm: "sort", from: "SortFilter.tsx" }));
       },
     },
     // 초기화

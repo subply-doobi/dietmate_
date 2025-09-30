@@ -25,7 +25,7 @@ const ListBtns = ({ btns }: IPageBtn) => {
                   <Icon
                     boxSize={24}
                     iconSize={item.iconSize || 18}
-                    name={item.iconName as any}
+                    name={item.iconName}
                     style={{ marginRight: 12 }}
                   />
                 )}

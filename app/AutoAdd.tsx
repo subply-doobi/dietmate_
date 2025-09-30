@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 import {
+  closeBS,
   closeBSAll,
   openBS,
   setProductToAdd,
@@ -97,7 +98,6 @@ const AutoAdd = () => {
   );
 
   useEffect(() => {
-    dispatch(setProductToAdd([]));
     navigation.setOptions({
       headerTitle: !!pToDel[0] ? "식품교체" : "식품추가",
     });
@@ -113,13 +113,23 @@ const AutoAdd = () => {
 
   useEffect(() => {
     if (!isFocused) {
-      dispatch(closeBSAll());
+      dispatch(closeBSAll({ from: "AutoAdd.tsx" }));
       return;
     }
-    bsIndex < 0 && dispatch(openBS("productToAddSelect"));
+    dispatch(openBS({ bsNm: "productToAddSelect", from: "AutoAdd.tsx" }));
     pToAdd.length > 0 &&
-      dispatch(snapBS({ bsNm: "productToAddSelect", index: 1 }));
-  }, [isFocused, pToAdd, bsNmArr]);
+      dispatch(
+        snapBS({ bsNm: "productToAddSelect", index: 1, from: "AutoAdd.tsx" })
+      );
+  }, [isFocused]);
+
+  useEffect(() => {
+    return () => {
+      // Formula - AutoAdd are in different Nav stacks
+      dispatch(closeBSAll({ from: "AutoAdd.tsx" }));
+      dispatch(setProductToAdd([]));
+    };
+  }, []);
 
   if (isLoading || !isDelayOver) {
     return (

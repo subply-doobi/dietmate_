@@ -110,7 +110,6 @@ const ProductToAddSelect = () => {
     if (!pToAdd) {
       return;
     }
-    // dispatch(closeBS());
 
     await addToRecentProduct(pToAdd[0]?.productNo);
     const recentlyOpenedFoodsPNoArr = await getRecentProducts();
@@ -144,7 +143,9 @@ const ProductToAddSelect = () => {
     }, 10);
     dispatch(deleteBSProduct());
     setTimeout(() => {
-      dispatch(closeBS());
+      dispatch(
+        closeBS({ bsNm: "productToAddSelect", from: "ProductToAddSelect.tsx" })
+      );
       if (pathNm !== "/Search") {
         router.back();
       }
@@ -243,7 +244,12 @@ const ProductToAddSelect = () => {
             {bsValue.index === 1 && (
               <TouchableOpacity
                 onPress={() =>
-                  dispatch(expandBS({ bsNm: "productToAddSelect" }))
+                  dispatch(
+                    expandBS({
+                      bsNm: "productToAddSelect",
+                      from: "ProductToAddSelect.tsx",
+                    })
+                  )
                 }
               >
                 <Icon

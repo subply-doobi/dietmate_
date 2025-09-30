@@ -209,19 +209,6 @@ const EditBtn = styled.TouchableOpacity`
   align-items: center;
 `;
 
-const CheckIcon = styled.Image`
-  width: 24px;
-  height: 24px;
-`;
-const EditIcon = styled.Image`
-  width: 24px;
-  height: 24px;
-`;
-const PlusSquareIcon = styled.Image`
-  width: 24px;
-  height: 24px;
-`;
-
 const AddressAddBtn = styled(BtnCTA)`
   height: 48px;
   margin-top: 16px;

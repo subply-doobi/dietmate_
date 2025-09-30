@@ -59,7 +59,9 @@ const MenuToMod = ({ menuArr, type }: IMenuToMod) => {
                 btnText="근수 변경"
                 onPress={() => {
                   dispatch(setLSQtyChange({ menuIdx: menu.index }));
-                  dispatch(openBS("QtyChange"));
+                  dispatch(
+                    openBS({ bsNm: "qtyChange", from: "MenuToMod.tsx" })
+                  );
                 }}
               />
             )}

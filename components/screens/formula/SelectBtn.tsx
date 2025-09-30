@@ -35,14 +35,14 @@ const SelectBtn = ({
     >
       <Row style={{ columnGap: 8 }}>
         {iconName && isIconLeft && (
-          <Icon name={iconName as any} boxSize={24} iconSize={20} />
+          <Icon name={iconName} boxSize={24} iconSize={20} />
         )}
         <Col>
           <BtnText>{text}</BtnText>
           {subText && <BtnSubText>{subText}</BtnSubText>}
         </Col>
         {iconName && !isIconLeft && (
-          <Icon name={iconName as any} boxSize={48} iconSize={40} />
+          <Icon name={iconName} boxSize={48} iconSize={40} />
         )}
       </Row>
 

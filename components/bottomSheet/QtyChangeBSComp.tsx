@@ -89,7 +89,7 @@ const QtyChangeBSComp = () => {
         qty: String(qty),
       });
     }
-    dispatch(closeBS());
+    dispatch(closeBS({ bsNm: "qtyChange", from: "QtyChangeBSComp.tsx" }));
   };
 
   return (
@@ -178,7 +178,11 @@ const QtyChangeBSComp = () => {
           }}
           btnTextStyle={{ color: colors.textSub }}
           btnText="취소"
-          onPress={() => dispatch(closeBS())}
+          onPress={() =>
+            dispatch(
+              closeBS({ bsNm: "qtyChange", from: "QtyChangeBSComp.tsx" })
+            )
+          }
         />
         <CtaButton
           btnStyle="border"

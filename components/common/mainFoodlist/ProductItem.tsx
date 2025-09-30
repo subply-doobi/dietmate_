@@ -57,21 +57,33 @@ const ProductItem = ({
   const isSelected = pToAdd[0]?.productNo === item.productNo;
 
   const onItemPressed = () => {
-    console.log("ProductItem onItemPressed: ", { isSelected, bsIndex });
     if (isSelected) {
-      setTimeout(() => {
-        dispatch(setProductToAdd([]));
-        dispatch(snapBS({ index: 0, bsNm: "productToAddSelect" }));
-      }, 150);
+      dispatch(setProductToAdd([]));
+      dispatch(
+        snapBS({
+          index: 0,
+          bsNm: "productToAddSelect",
+          from: "ProductItem.tsx",
+        })
+      );
       return;
     }
+
+    dispatch(setProductToAdd([item]));
+    bsIndex === 0 &&
+      dispatch(
+        snapBS({
+          index: 1,
+          bsNm: "productToAddSelect",
+          from: "ProductItem.tsx",
+        })
+      );
 
     // bsIndex < 0 && dispatch(openBS("productToAddSelect"));
     const idx = products.findIndex(
       (product) => product.productNo === item.productNo
     );
     const i = Math.floor(idx / 2);
-    dispatch(setProductToAdd([item]));
     // bsIndex < 1 && dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
     !!flatListRef &&
       setTimeout(() => {
@@ -80,17 +92,6 @@ const ProductItem = ({
           viewPosition: 0.2,
         });
       }, 200);
-
-    if (bsIndex < 0) {
-      dispatch(openBS("productToAddSelect"));
-      dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
-      return;
-    }
-
-    if (bsIndex < 1) {
-      dispatch(snapBS({ index: 1, bsNm: "productToAddSelect" }));
-      return;
-    }
   };
 
   return (

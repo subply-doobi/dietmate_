@@ -23,7 +23,9 @@ const ProductSelectFoodlist = ({ foods }: { foods: IDietDetailData }) => {
   );
 
   const onItemPressed = async (productNo: string) => {
-    dispatch(closeBS());
+    dispatch(
+      closeBS({ bsNm: "productToAddSelect", from: "ProductSelectFoodlist.tsx" })
+    );
 
     await addToRecentProduct(pToAdd[0]?.productNo);
     const recentlyOpenedFoodsPNoArr = await getRecentProducts();

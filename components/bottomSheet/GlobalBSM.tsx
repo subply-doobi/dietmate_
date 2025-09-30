@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect, useState, useMemo, JSX } from "react";
+import { useRef, useEffect, useState, JSX } from "react";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import {
   BottomSheetBackdrop,
@@ -19,13 +19,15 @@ import {
   closeBSWOAction,
   resetBSActionQueue,
 } from "@/features/reduxSlices/bottomSheetSlice";
+import QtyChangeBSComp from "./QtyChangeBSComp";
 
 import colors from "@/shared/colors";
 import { StyleProp, ViewStyle } from "react-native";
 import ProductToAddSelect from "./productSelectBSComps/ProductToAddSelect";
 import ProductToDelSelect from "./productSelectBSComps/ProductToDelSelect";
 import { usePathname } from "expo-router";
-import QtyChangeBSComp from "./lowershippingBSComp/QtyChangeBSComp";
+import SummaryInfoBSComp from "./summaryInfoBSComp/SummaryInfoBSComp";
+import SummaryInfoHeaderBSComp from "./summaryInfoBSComp/SummaryInfoHeaderBSComp";
 
 interface IBSConfig {
   renderBackdrop?: (props: any) => JSX.Element;
@@ -38,6 +40,10 @@ interface IBSConfig {
   bottomInset?: number;
 }
 
+const bsHeaderByName: Partial<Record<IBSNm, JSX.Element>> = {
+  summaryInfo: <SummaryInfoHeaderBSComp />,
+};
+
 const bsCompByName: Record<IBSNm, JSX.Element> = {
   // sort and filter
   baseListTypeFilter: <BaseListTypeFilterBSComp />,
@@ -49,8 +55,11 @@ const bsCompByName: Record<IBSNm, JSX.Element> = {
   productToAddSelect: <ProductToAddSelect />,
   productToDelSelect: <ProductToDelSelect />,
 
-  // lower shipping
-  QtyChange: <QtyChangeBSComp />,
+  // menu qty change
+  qtyChange: <QtyChangeBSComp />,
+
+  // formula summary
+  summaryInfo: <SummaryInfoBSComp />,
 };
 
 const bsBasicConfig: IBSConfig = {
@@ -91,7 +100,14 @@ export const bsConfigByName: Partial<Record<IBSNm, IBSConfig>> = {
       24 - 8 + 32 + 12 + 52 + 16 + 24 + 52 + 16,
     ],
   },
-  QtyChange: { ...bsOpacityConfig, maxDynamicContentSize: SCREENHEIGHT * 0.9 },
+  qtyChange: { ...bsOpacityConfig, maxDynamicContentSize: SCREENHEIGHT * 0.9 },
+  summaryInfo: {
+    ...bsOpacityConfig,
+    maxDynamicContentSize: SCREENHEIGHT * 0.82,
+    bottomInset: 48,
+    enablePanDownToClose: false,
+    snapPoints: [72],
+  },
 };
 
 const GlobalBSM = () => {
@@ -102,10 +118,6 @@ const GlobalBSM = () => {
     (state) => state.bottomSheet
   );
   const currentBsNm = bsNmArr[bsNmArr.length - 1];
-  console.log("---------- GlobalBSM ----------");
-  console.log("bsNmArr: ", bsNmArr);
-  console.log("actionQueue: ", actionQueue);
-  console.log("currentValue: ", currentValue);
   const [configNm, setConfigNm] = useState<IBSNm | undefined>(undefined);
   const action: IBSAction = actionQueue[0] || undefined;
   const bsConfig = bsConfigByName[configNm!] || bsBasicConfig;
@@ -130,46 +142,75 @@ const GlobalBSM = () => {
   }, [currentValue]);
 
   useEffect(() => {
+    // console.log("----- GlobalBSM useEffect action ------");
+    // console.log("bsNmArr:", bsNmArr);
+    // console.log("action:", action);
+    // console.log("actionQueue:", JSON.stringify(actionQueue, null, 2));
+    // console.log("currentValue:", currentValue);
+    // console.log("---------------------------------------");
+
     if (!bottomSheetModalRef.current) return;
     if (!action) return;
 
-    // if too many actions in queue unexpectedly, reset queue
     if (actionQueue.length > 4) {
       dispatch(resetBSActionQueue());
       return;
     }
-    console.log("Processing action: ", action);
     let isForceDequeue = false;
     switch (action.type) {
-      case "open":
-        setConfigNm(action.bsNm);
+      case "open": {
+        setTimeout(() => {
+          setConfigNm(action.bsNm);
+        }, 0);
         setTimeout(() => {
           bottomSheetModalRef.current?.present();
-        }, 150);
+        }, 50);
+        // If already open, manually dequeue
+        if (currentBsNm === action.bsNm && currentValue.index >= 0) {
+          isForceDequeue = true;
+        }
         break;
-      case "close":
+      }
+      case "close": {
         bottomSheetModalRef.current?.close();
+        // If already closed, manually dequeue
+        if (currentValue.index < 0) {
+          isForceDequeue = true;
+        }
         break;
-      case "closeAll":
+      }
+      case "closeAll": {
         bottomSheetModalRef.current?.close();
+        // If already closed, manually dequeue
+        if (currentValue.index < 0) {
+          isForceDequeue = true;
+        }
         break;
-      case "snapToIndex":
+      }
+      case "snapToIndex": {
         if (currentBsNm !== action.bsNm) {
           isForceDequeue = true;
           break;
         }
-        bottomSheetModalRef.current?.snapToIndex(action.index);
+        // If already at the target index, manually dequeue
+        if (currentValue.index === action.index) {
+          isForceDequeue = true;
+        } else {
+          bottomSheetModalRef.current?.snapToIndex(action.index);
+        }
         break;
-      case "expand":
+      }
+      case "expand": {
         if (currentBsNm !== action.bsNm) {
           isForceDequeue = true;
           break;
         }
         bottomSheetModalRef.current?.expand();
         break;
+      }
     }
-    isForceDequeue && dispatch(dequeueBSAction());
-  }, [dispatch, actionQueue, bsNmArr]);
+    if (isForceDequeue) dispatch(dequeueBSAction());
+  }, [dispatch, actionQueue, bsNmArr, currentValue]);
 
   // --- Handlers ---
   const onChange = (index: number, position: number) => {
@@ -195,7 +236,7 @@ const GlobalBSM = () => {
           shouldDequeue = true;
           break;
         }
-        dispatch(closeBSWOAction());
+        dispatch(closeBSWOAction({ from: "GlobalBSM.tsx" }));
         break;
       case "heightChange":
         if (action?.type === "snapToIndex" || action?.type === "expand")
@@ -207,7 +248,7 @@ const GlobalBSM = () => {
     }
     // dequeue
     if (shouldDequeue) {
-      console.log("onChange Dequeue", action);
+      // console.log("onChange Dequeue", bsNmArr, action);
       dispatch(dequeueBSAction());
     }
   };
@@ -230,6 +271,7 @@ const GlobalBSM = () => {
       }}
       onChange={onChange}
     >
+      {bsHeaderByName[configNm!] || <></>}
       <BottomSheetScrollView>
         {bsCompByName[configNm!] || <></>}
       </BottomSheetScrollView>

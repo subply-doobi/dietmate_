@@ -27,10 +27,10 @@ import {
 import CtaButton from "@/shared/ui/CtaButton";
 import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import EdgeInfo from "@/components/common/summaryInfo/EdgeInfo";
 import DTooltip from "@/shared/ui/DTooltip";
 import {
   closeBS,
+  closeBSAll,
   openBS,
   resetBSData,
 } from "@/features/reduxSlices/bottomSheetSlice";
@@ -48,7 +48,9 @@ const Formula = () => {
   const modalSeq = useAppSelector((state) => state.modal.modalSeq);
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
+  const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
   const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
+  const pToAdd = useAppSelector((state) => state.bottomSheet.bsData.pToAdd);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -91,17 +93,32 @@ const Formula = () => {
   }, [dTOData]);
 
   useEffect(() => {
-    if (!isFocused) return;
-    // console.log("Formula subscreen isFocused", isFocused);
-
-    if (pToDel.length === 0) {
-      dispatch(closeBS());
+    if (isFocused) {
+      pToDel.length > 0
+        ? dispatch(
+            openBS({
+              bsNm: "productToDelSelect",
+              from: "Formula.tsx",
+              option: "reset",
+            })
+          )
+        : dispatch(
+            openBS({
+              bsNm: "summaryInfo",
+              from: "Formula.tsx",
+              option: "reset",
+            })
+          );
       return;
     }
 
-    setTimeout(() => {
-      dispatch(openBS("productToDelSelect"));
-    }, 100);
+    // dispatch(closeBSAll({ from: "Formula.tsx" }));
+    bsNmArr.includes("summaryInfo") &&
+      dispatch(closeBS({ bsNm: "summaryInfo", from: "Formula.tsx" }));
+
+    bsNmArr.includes("productToDelSelect") &&
+      dispatch(closeBS({ bsNm: "productToDelSelect", from: "Formula.tsx" }));
+    return;
   }, [pToDel, isFocused]);
 
   // etc
@@ -212,7 +229,7 @@ const Formula = () => {
           />
         )}
 
-        <EdgeInfo visible={priceTotal > 0} />
+        {/* <EdgeInfo visible={priceTotal > 0} /> */}
         {isAllSuccess && (
           <DTooltip
             tooltipShow={isAllSuccess}

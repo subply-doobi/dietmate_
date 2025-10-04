@@ -88,15 +88,18 @@ const CartSummary = ({
     Object.keys(regroupedBySeller).length === 0 ? null : (
     //장바구니 하단에 보여지는 총 끼니 수, 상품 수, 금액
     <TotalSummaryContainer style={[containerStyle]}>
-      <Row style={{ justifyContent: "space-between" }}>
-        <SummaryText $color={mainTextColor}>
-          공식에 전체 {MENU_NUM_LABEL[menuNum - 1]}이 있어요
-        </SummaryText>
-        <SummaryValue $color={mainTextColor}>
-          근 당{" "}
-          {menuNum === 0 ? 0 : commaToNum(Math.floor(priceTotal / menuNum))} 원
-        </SummaryValue>
-      </Row>
+      {!simplified && (
+        <Row style={{ justifyContent: "space-between" }}>
+          <SummaryText $color={mainTextColor}>
+            공식에 전체 {MENU_NUM_LABEL[menuNum - 1]}이 있어요
+          </SummaryText>
+          <SummaryValue $color={mainTextColor}>
+            근 당{" "}
+            {menuNum === 0 ? 0 : commaToNum(Math.floor(priceTotal / menuNum))}{" "}
+            원
+          </SummaryValue>
+        </Row>
+      )}
       <HorizontalLine style={{ marginTop: 8 }} />
 
       {/* 식품사별로 그룹핑 */}
@@ -118,20 +121,24 @@ const CartSummary = ({
 
       <HorizontalLine style={{ marginTop: 16 }} />
 
-      <Row style={{ marginTop: 16, justifyContent: "space-between" }}>
-        <SummaryText $color={mainTextColor}>
-          상품 가격 (총 {productNum}개)
-        </SummaryText>
-        <SummaryValue $color={mainTextColor}>
-          {commaToNum(priceTotal)} 원
-        </SummaryValue>
-      </Row>
-      <Row style={{ marginTop: 2, justifyContent: "space-between" }}>
-        <SummmaryTextSub $color={subTextColor}>배송비 합계</SummmaryTextSub>
-        <SummaryValueSub $color={subTextColor}>
-          {commaToNum(totalShippingPrice)} 원
-        </SummaryValueSub>
-      </Row>
+      {!simplified && (
+        <Row style={{ marginTop: 16, justifyContent: "space-between" }}>
+          <SummaryText $color={mainTextColor}>
+            상품 가격 (총 {productNum}개)
+          </SummaryText>
+          <SummaryValue $color={mainTextColor}>
+            {commaToNum(priceTotal)} 원
+          </SummaryValue>
+        </Row>
+      )}
+      {!simplified && (
+        <Row style={{ marginTop: 2, justifyContent: "space-between" }}>
+          <SummmaryTextSub $color={subTextColor}>배송비 합계</SummmaryTextSub>
+          <SummaryValueSub $color={subTextColor}>
+            {commaToNum(totalShippingPrice)} 원
+          </SummaryValueSub>
+        </Row>
+      )}
       {totalShippingPrice > 0 && hasLowerShippingCta && (
         <CtaButton
           btnStyle="borderActive"

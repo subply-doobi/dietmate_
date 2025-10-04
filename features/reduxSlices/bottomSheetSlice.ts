@@ -1,5 +1,9 @@
+// Utility: Convert dTOData to dietQtyMap
 import { bsConfigByName } from "@/components/bottomSheet/GlobalBSM";
-import { IDietDetailProductData } from "@/shared/api/types/diet";
+import {
+  IDietDetailProductData,
+  IDietTotalObjData,
+} from "@/shared/api/types/diet";
 import { IProductData, IProductDetailData } from "@/shared/api/types/product";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -25,16 +29,19 @@ export type IBSAction =
   | { type: "expand"; bsNm: IBSNm; from?: string };
 
 interface BottomSheetState {
-  bsNmArr: IBSNm[];
-  actionQueue: IBSAction[];
-  currentValue: { index: number; position: number };
   bsData: {
     pToAdd: (IProductData | IDietDetailProductData)[];
     pToDel: (IProductData | IDietDetailProductData)[];
     qtyChange: {
       menuIdx: number;
     };
+    dietQtyMap: Record<string, number>;
+    changedDietNoArr: string[];
+    originalDietQtyMap?: Record<string, number>; // for change comparison
   };
+  bsNmArr: IBSNm[];
+  actionQueue: IBSAction[];
+  currentValue: { index: number; position: number };
 }
 
 // --- Stack helpers ---
@@ -48,6 +55,20 @@ function peekStack(stack: IBSNm[]) {
   return stack[stack.length - 1];
 }
 
+// Converts dTOData to dietQtyMap
+function getDietQtyMapFromDTO(
+  dTOData?: IDietTotalObjData
+): Record<string, number> {
+  if (!dTOData) return {};
+  const nextQtyMap: Record<string, number> = {};
+  Object.keys(dTOData).forEach((dietNo) => {
+    const dietDetail = dTOData[dietNo]?.dietDetail || [];
+    const qtyNums = dietDetail.map((d: any) => parseInt(d.qty));
+    nextQtyMap[dietNo] = qtyNums.length === 0 ? 1 : qtyNums[0];
+  });
+  return nextQtyMap;
+}
+
 const initialState: BottomSheetState = {
   bsNmArr: [],
   actionQueue: [],
@@ -56,6 +77,8 @@ const initialState: BottomSheetState = {
     pToAdd: [],
     pToDel: [],
     qtyChange: { menuIdx: 0 },
+    dietQtyMap: {},
+    changedDietNoArr: [],
   },
 };
 
@@ -63,17 +86,6 @@ const bottomSheetSlice = createSlice({
   name: "bottomSheet",
   initialState,
   reducers: {
-    // bs action
-    // 1. 열린 경우
-    // 	1. 다른 bs
-    // 	2. 같은 bs
-    // 2. 닫힌 경우
-    // 	1. bsNm 없는 경우
-    // 		1. 다른 bsNm도 없는 경우
-    // 		2. 다른 bs 있는데 닫힌 경우가 있나?
-    // 	2. bsNm 있는 경우
-    // 		1. 맨 위인데 닫힌 경우
-    // 		2. 다른 bs 아래에 있는 경우
     openBS: (
       state,
       action: PayloadAction<{ bsNm: IBSNm; from?: string; option?: "reset" }>
@@ -243,24 +255,72 @@ const bottomSheetSlice = createSlice({
     resetBSData: (state) => {
       state.bsData = initialState.bsData;
     },
+
+    // --- summaryInfoBSComp diet qty logic ---
+    setDietQtyMap: (
+      state,
+      action: PayloadAction<IDietTotalObjData | undefined>
+    ) => {
+      // Accepts dTOData as payload, converts to dietQtyMap
+      const newMap = getDietQtyMapFromDTO(action.payload);
+      state.bsData.dietQtyMap = newMap;
+      state.bsData.originalDietQtyMap = { ...newMap };
+      state.bsData.changedDietNoArr = [];
+    },
+    plusQty: (state, action: PayloadAction<{ dietNo: string }>) => {
+      const { dietNo } = action.payload;
+      const cur = state.bsData.dietQtyMap[dietNo] ?? 1;
+      if (cur >= 10) return;
+      const totalMenu = Object.values(state.bsData.dietQtyMap).reduce(
+        (a, b) => Number(a) + Number(b),
+        0
+      );
+      if (totalMenu >= 10) return;
+      state.bsData.dietQtyMap[dietNo] = cur + 1;
+      // Compare with originalDietQtyMap
+      const original = state.bsData.originalDietQtyMap || {};
+      state.bsData.changedDietNoArr = Object.keys(
+        state.bsData.dietQtyMap
+      ).filter((dNo) => state.bsData.dietQtyMap[dNo] !== (original[dNo] ?? 1));
+    },
+    minusQty: (state, action: PayloadAction<{ dietNo: string }>) => {
+      const { dietNo } = action.payload;
+      const cur = state.bsData.dietQtyMap[dietNo] ?? 1;
+      if (cur <= 1) return;
+      state.bsData.dietQtyMap[dietNo] = cur - 1;
+      // Compare with originalDietQtyMap
+      const original = state.bsData.originalDietQtyMap || {};
+      state.bsData.changedDietNoArr = Object.keys(
+        state.bsData.dietQtyMap
+      ).filter((dNo) => state.bsData.dietQtyMap[dNo] !== (original[dNo] ?? 1));
+    },
   },
 });
 
 export const {
-  setProductToAdd,
-  setProductToDel,
-  deleteBSProduct,
-  resetBSData,
+  // bs actions
   openBS,
   closeBS,
   closeBSAll,
   closeBSWOAction,
   snapBS,
   expandBS,
+
+  // bs value in onChange
+  setCurrentValue,
+
+  // action queue
   dequeueBSAction,
   resetBSActionQueue,
-  setCurrentValue,
-  // lower shipping bottom sheet
+
+  // bsData
   setLSQtyChange,
+  setDietQtyMap,
+  plusQty,
+  minusQty,
+  setProductToAdd,
+  setProductToDel,
+  deleteBSProduct,
+  resetBSData,
 } = bottomSheetSlice.actions;
 export default bottomSheetSlice.reducer;

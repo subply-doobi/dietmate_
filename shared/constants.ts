@@ -77,13 +77,13 @@ export const PLAY_STORE_URL = "market://details?id=com.subply.dietmate";
 export const APP_STORE_URL =
   "itms-apps://itunes.apple.com/us/app//id6472628268";
 export const MENU_LABEL = [
-  "한 근",
-  "두 근",
-  "세 근",
-  "네 근",
-  "다섯 근",
-  "여섯 근",
-  "일곱 근",
+  "근 1",
+  "근 2",
+  "근 3",
+  "근 4",
+  "근 5",
+  "근 6",
+  "근 7",
 ];
 export const MENU_NUM_LABEL = [
   "한 근",

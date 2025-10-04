@@ -209,6 +209,9 @@ const NewHome = () => {
         {/* <CtaButton
           btnStyle="active"
           btnText="test"
+          onPress={async () => {
+            await removeAutoMenuData();
+          }}
           onPress={() => {
             router.push({
               pathname: "/ErrorPage",
@@ -216,13 +219,6 @@ const NewHome = () => {
             });
           }}
         /> */}
-        <CtaButton
-          btnStyle="active"
-          btnText="test"
-          onPress={async () => {
-            await removeAutoMenuData();
-          }}
-        />
       </ScrollView>
     </Container>
   );

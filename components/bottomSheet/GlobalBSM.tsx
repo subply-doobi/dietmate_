@@ -5,7 +5,7 @@ import {
   BottomSheetModal,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import { SCREENHEIGHT } from "@/shared/constants";
+import { DEFAULT_BOTTOM_TAB_HEIGHT, SCREENHEIGHT } from "@/shared/constants";
 import CategoryFilterBSComp from "./sortFilterBSComps/CategoryFilterBSComp";
 import BaseListTypeFilterBSComp from "./sortFilterBSComps/BaseListTypeFilterBSComp";
 import PlatformFilterBSComp from "./sortFilterBSComps/PlatformFilterBSComp";
@@ -28,12 +28,14 @@ import ProductToDelSelect from "./productSelectBSComps/ProductToDelSelect";
 import { usePathname } from "expo-router";
 import SummaryInfoBSComp from "./summaryInfoBSComp/SummaryInfoBSComp";
 import SummaryInfoHeaderBSComp from "./summaryInfoBSComp/SummaryInfoHeaderBSComp";
+import SummaryInfoFooterBSComp from "./summaryInfoBSComp/SummaryInfoFooterBSComp";
 
 interface IBSConfig {
   renderBackdrop?: (props: any) => JSX.Element;
   bsBackgroundColor: string;
   index?: number;
   snapPoints?: Array<string | number>;
+  enableDynamicSizing?: boolean;
   maxDynamicContentSize?: number;
   handleIndicatorStyle: StyleProp<ViewStyle>;
   enablePanDownToClose?: boolean;
@@ -42,6 +44,10 @@ interface IBSConfig {
 
 const bsHeaderByName: Partial<Record<IBSNm, JSX.Element>> = {
   summaryInfo: <SummaryInfoHeaderBSComp />,
+};
+
+const bsFooterByName: Partial<Record<IBSNm, JSX.Element>> = {
+  summaryInfo: <SummaryInfoFooterBSComp />,
 };
 
 const bsCompByName: Record<IBSNm, JSX.Element> = {
@@ -75,6 +81,7 @@ const bsBasicConfig: IBSConfig = {
   index: undefined,
   handleIndicatorStyle: {},
   snapPoints: undefined,
+  enableDynamicSizing: true,
   maxDynamicContentSize: SCREENHEIGHT * 0.6,
   enablePanDownToClose: true,
 };
@@ -85,6 +92,7 @@ const bsOpacityConfig: IBSConfig = {
   handleIndicatorStyle: { backgroundColor: colors.white },
   index: undefined,
   snapPoints: undefined,
+  enableDynamicSizing: true,
   maxDynamicContentSize: SCREENHEIGHT * 0.6,
   enablePanDownToClose: true,
 };
@@ -103,10 +111,11 @@ export const bsConfigByName: Partial<Record<IBSNm, IBSConfig>> = {
   qtyChange: { ...bsOpacityConfig, maxDynamicContentSize: SCREENHEIGHT * 0.9 },
   summaryInfo: {
     ...bsOpacityConfig,
-    maxDynamicContentSize: SCREENHEIGHT * 0.82,
+    enableDynamicSizing: false,
+    maxDynamicContentSize: undefined,
     bottomInset: 48,
     enablePanDownToClose: false,
-    snapPoints: [72],
+    snapPoints: [72, SCREENHEIGHT - 136],
   },
 };
 
@@ -260,7 +269,7 @@ const GlobalBSM = () => {
       bottomInset={bsConfig.bottomInset}
       index={0}
       snapPoints={bsConfig.snapPoints}
-      enableDynamicSizing={true}
+      enableDynamicSizing={bsConfig.enableDynamicSizing}
       handleIndicatorStyle={bsConfig.handleIndicatorStyle}
       maxDynamicContentSize={bsConfig.maxDynamicContentSize}
       backdropComponent={bsConfig.renderBackdrop}
@@ -275,6 +284,7 @@ const GlobalBSM = () => {
       <BottomSheetScrollView>
         {bsCompByName[configNm!] || <></>}
       </BottomSheetScrollView>
+      {bsFooterByName[configNm!] || <></>}
     </BottomSheetModal>
   );
 };

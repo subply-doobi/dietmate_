@@ -35,6 +35,12 @@ import {
   resetBSData,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import Icon from "@/shared/ui/Icon";
+import { checkNoStockPAll } from "@/shared/utils/productStatusCheck";
+import { openModal } from "@/features/reduxSlices/modalSlice";
+import { setTotalFoodList } from "@/features/reduxSlices/commonSlice";
+import { setFoodToOrder } from "@/features/reduxSlices/orderSlice";
+import { useListProduct } from "@/shared/api/queries/product";
+import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
 
 const width = Dimensions.get("window").width;
 
@@ -54,17 +60,27 @@ const Formula = () => {
 
   // react-query
   const { data: bLData } = useGetBaseLine();
-  const { data: dTOData } = useListDietTotalObj();
+  const { data: dTOData, refetch: refetchDTOData } = useListDietTotalObj();
+  const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx] || "";
+  const { refetch: refetchLPData } = useListProduct(
+    {
+      dietNo: currentDietNo,
+      appliedSortFilter: initialSortFilterState.applied,
+    },
+    {
+      enabled: false,
+    }
+  );
   const menuArr = Object.keys(dTOData || {});
 
   // useMemo
-  const { isAllSuccess, priceTotal } = useMemo(() => {
+  const { isAllSuccess, menuNum, priceTotal } = useMemo(() => {
     if (!dTOData)
       return {
         isAllSuccess: false,
         priceTotal: 0,
       };
-    const { priceTotal } = sumUpDietFromDTOData(dTOData);
+    const { menuNum, priceTotal } = sumUpDietFromDTOData(dTOData);
     const isSuccessArr = Object.values(dTOData).map((item) => {
       const { dietDetail } = item;
       const isSuccess = getNutrStatus({
@@ -75,7 +91,7 @@ const Formula = () => {
       return isSuccess;
     });
     const isAllSuccess = isSuccessArr.every((item) => item === "satisfied");
-    return { isAllSuccess, priceTotal };
+    return { isAllSuccess, menuNum, priceTotal };
   }, [dTOData]);
 
   // useRef
@@ -216,7 +232,7 @@ const Formula = () => {
         {isAllSuccess && (
           <CtaButton
             btnStyle="active"
-            btnText="공식 확인하기"
+            btnText="공식 계산하기"
             style={{
               position: "absolute",
               bottom: 76,
@@ -225,7 +241,23 @@ const Formula = () => {
               width: SCREENWIDTH - 32,
               zIndex: 0,
             }}
-            onPress={() => router.push("/(tabs)/Diet")}
+            onPress={async () => {
+              if (menuNum === 0 || priceTotal === 0) {
+                return;
+              }
+
+              const refetchedDTOData = (await refetchDTOData()).data;
+              const hasNoStock = checkNoStockPAll(refetchedDTOData);
+              if (hasNoStock) {
+                dispatch(openModal({ name: "noStockAlert" }));
+                // 전체 식품이 바뀐 경우이므로 totalFoodList도 업데이트 필요함
+                const data = (await refetchLPData()).data;
+                !!data && dispatch(setTotalFoodList(data));
+                return;
+              }
+              !!dTOData && dispatch(setFoodToOrder(dTOData));
+              router.push({ pathname: "/Order" });
+            }}
           />
         )}
 

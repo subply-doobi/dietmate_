@@ -50,20 +50,21 @@ const PaginationDot = ({ index }: { index: number }) => {
   // }, [nutrStatus]);
 
   const isActive = currentFMCIdx === index;
-  const text = isActive ? MENU_LABEL[index].slice(0, -2) : MENU_LABEL[index];
+  const text = isActive ? MENU_LABEL[index].slice(-2) : MENU_LABEL[index];
+  console.log("PaginationDot text: ", `"${text}"`);
   const isSatisfied = nutrStatus === "satisfied";
 
   return (
     <PaginationDotView>
-      <PaginationText>{text}</PaginationText>
       {isActive && (
         <Icon
           name="appIcon"
-          boxSize={16}
-          iconSize={16}
-          style={{ marginRight: -3 }}
+          boxSize={18}
+          iconSize={18}
+          style={{ marginLeft: -4, marginRight: -4 }}
         />
       )}
+      <PaginationText>{text}</PaginationText>
       {isSatisfied && (
         <Icon
           name="check"

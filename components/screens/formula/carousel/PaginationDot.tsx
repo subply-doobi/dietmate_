@@ -7,16 +7,12 @@ import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import Toast from "react-native-toast-message";
 import Icon from "@/shared/ui/Icon";
 
 const PaginationDot = ({ index }: { index: number }) => {
   // redux
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-  const formulaProgress = useAppSelector(
-    (state) => state.formula.formulaProgress
-  );
 
   // react-query
   const { data: bLData } = useGetBaseLine();

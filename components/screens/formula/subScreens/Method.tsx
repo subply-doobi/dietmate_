@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 import SelectBtn from "../SelectBtn";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { MENU_LABEL } from "@/shared/constants";
+import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useEffect } from "react";
 import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
@@ -31,7 +31,7 @@ const Method = () => {
   // etc
   const METHOD_BTN = [
     {
-      text: `자동으로 ${MENU_LABEL[numOfMenu - 1] || ""} 공식만들기`,
+      text: `자동으로 ${MENU_NUM_LABEL[numOfMenu - 1] || ""} 공식만들기`,
       subText:
         "극도로 귀찮으신 분들을 위해 근의공식이\n자동으로 목표영양을 모두 맞춘 공식을 만들게요",
       iconName: undefined,

@@ -29,6 +29,7 @@ import { usePathname } from "expo-router";
 import SummaryInfoBSComp from "./summaryInfoBSComp/SummaryInfoBSComp";
 import SummaryInfoHeaderBSComp from "./summaryInfoBSComp/SummaryInfoHeaderBSComp";
 import SummaryInfoFooterBSComp from "./summaryInfoBSComp/SummaryInfoFooterBSComp";
+import { ScrollView } from "react-native-gesture-handler";
 
 interface IBSConfig {
   renderBackdrop?: (props: any) => JSX.Element;
@@ -133,6 +134,8 @@ const GlobalBSM = () => {
 
   // --- refs ---
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const bottomSheetScrollViewRef = useRef<ScrollView>(null);
+  const pathname = usePathname();
   const actionQueueRef = useRef(actionQueue);
   const currentValueRef = useRef(currentValue);
 
@@ -217,6 +220,20 @@ const GlobalBSM = () => {
         bottomSheetModalRef.current?.expand();
         break;
       }
+      case "scrollTo": {
+        if (currentBsNm !== action.bsNm) {
+          isForceDequeue = true;
+          break;
+        }
+        bottomSheetScrollViewRef.current?.scrollTo({
+          x: action.x || 0,
+          y: action.y || 0,
+          animated: action.animated !== false,
+        });
+        // Immediately dequeue scroll actions since they don't have a completion callback
+        isForceDequeue = true;
+        break;
+      }
     }
     if (isForceDequeue) dispatch(dequeueBSAction());
   }, [dispatch, actionQueue, bsNmArr, currentValue]);
@@ -281,7 +298,7 @@ const GlobalBSM = () => {
       onChange={onChange}
     >
       {bsHeaderByName[configNm!] || <></>}
-      <BottomSheetScrollView>
+      <BottomSheetScrollView ref={bottomSheetScrollViewRef}>
         {bsCompByName[configNm!] || <></>}
       </BottomSheetScrollView>
       {bsFooterByName[configNm!] || <></>}

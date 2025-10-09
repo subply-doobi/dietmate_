@@ -11,7 +11,6 @@ import { Col } from "@/shared/ui/styledComps";
 import { plusQty, minusQty } from "@/features/reduxSlices/bottomSheetSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import DietCard from "./DietCard";
-import TotalsSection from "./TotalsSection";
 
 const SummaryInfoBSComp = () => {
   // redux

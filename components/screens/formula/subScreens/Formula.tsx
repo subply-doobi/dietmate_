@@ -13,7 +13,7 @@ import Carousel, {
 // doobi
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { Row } from "@/shared/ui/styledComps";
+import { Row, TextMain } from "@/shared/ui/styledComps";
 import { FORMULA_CAROUSEL_HEIGHT, SCREENWIDTH } from "@/shared/constants";
 import CarouselContent from "../carousel/CarouselContent";
 import PaginationDot from "../carousel/PaginationDot";
@@ -23,6 +23,11 @@ import { useIsFocused } from "@react-navigation/native";
 import {
   setCurrentFMCIdx,
   setFormulaProgress,
+  dequeueCarouselAction,
+  resetCarouselActionQueue,
+  scrollCarouselTo,
+  scrollCarouselNext,
+  scrollCarouselPrev,
 } from "@/features/reduxSlices/formulaSlice";
 import CtaButton from "@/shared/ui/CtaButton";
 import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
@@ -57,6 +62,9 @@ const Formula = () => {
   const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
   const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
   const pToAdd = useAppSelector((state) => state.bottomSheet.bsData.pToAdd);
+  const carouselActionQueue = useAppSelector(
+    (state) => state.formula.carouselActionQueue
+  );
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -109,6 +117,9 @@ const Formula = () => {
   }, [dTOData]);
 
   useEffect(() => {
+    if (menuNum === 0 && priceTotal === 0) {
+      return;
+    }
     if (isFocused) {
       pToDel.length > 0
         ? dispatch(
@@ -136,6 +147,42 @@ const Formula = () => {
       dispatch(closeBS({ bsNm: "productToDelSelect", from: "Formula.tsx" }));
     return;
   }, [pToDel, isFocused]);
+
+  // Carousel action queue handler
+  useEffect(() => {
+    if (!carouselRef.current) return;
+    if (carouselActionQueue.length === 0) return;
+
+    const action = carouselActionQueue[0];
+    if (!action) return;
+
+    // Prevent queue overflow
+    if (carouselActionQueue.length > 4) {
+      dispatch(resetCarouselActionQueue());
+      return;
+    }
+
+    switch (action.type) {
+      case "scrollTo": {
+        carouselRef.current.scrollTo({
+          count: action.index - paginationValue.value,
+          animated: action.animated !== false,
+        });
+        break;
+      }
+      case "scrollToNext": {
+        carouselRef.current.next({ animated: action.animated !== false });
+        break;
+      }
+      case "scrollToPrev": {
+        carouselRef.current.prev({ animated: action.animated !== false });
+        break;
+      }
+    }
+
+    // Dequeue the action immediately since carousel actions don't have completion callbacks
+    dispatch(dequeueCarouselAction());
+  }, [dispatch, carouselActionQueue, paginationValue.value]);
 
   // etc
   const onPressPagination = (index: number) => {
@@ -198,7 +245,6 @@ const Formula = () => {
             <Icon name="more" color={colors.textSub} />
           </MoreBtn>
         </Row>
-
         <Carousel
           mode="parallax"
           modeConfig={{

@@ -15,14 +15,14 @@ import {
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
-import { MENU_LABEL } from "@/shared/constants";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import CtaButton from "@/shared/ui/CtaButton";
 import Icon from "@/shared/ui/Icon";
 import { Row, TextMain } from "@/shared/ui/styledComps";
 import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
 
-const PICKER_DATA_ARR = [...MENU_LABEL];
+const PICKER_DATA_ARR = [...MENU_NUM_LABEL];
 
 const SelectNumOfMenu = () => {
   // redux

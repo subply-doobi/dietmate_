@@ -110,25 +110,6 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
             <Title>{MENU_LABEL[carouselIdx]}</Title>
             {Number(currentQty) > 1 && <SubTitle>( x{currentQty} )</SubTitle>}
           </Row>
-          {carouselMenu.length > 0 && (
-            <DSmallBtn
-              btnText="근수 변경"
-              style={{
-                borderWidth: 1,
-                borderColor: colors.lineLight,
-                paddingTop: 8,
-                paddingBottom: 8,
-                paddingLeft: 8,
-                paddingRight: 8,
-              }}
-              onPress={() => {
-                dispatch(setLSQtyChange({ menuIdx: currentFMCIdx }));
-                dispatch(
-                  openBS({ bsNm: "qtyChange", from: "CarouselContent.tsx" })
-                );
-              }}
-            />
-          )}
         </Row>
 
         {/* 삭제 버튼 */}

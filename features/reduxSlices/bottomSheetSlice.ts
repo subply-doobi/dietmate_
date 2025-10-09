@@ -26,7 +26,15 @@ export type IBSAction =
   | { type: "close"; bsNm?: IBSNm; from?: string }
   | { type: "closeAll"; from?: string }
   | { type: "snapToIndex"; index: number; bsNm: IBSNm; from?: string }
-  | { type: "expand"; bsNm: IBSNm; from?: string };
+  | { type: "expand"; bsNm: IBSNm; from?: string }
+  | {
+      type: "scrollTo";
+      x?: number;
+      y?: number;
+      animated?: boolean;
+      bsNm: IBSNm;
+      from?: string;
+    };
 
 interface BottomSheetState {
   bsData: {
@@ -209,6 +217,23 @@ const bottomSheetSlice = createSlice({
       const { bsNm, from } = action.payload;
       state.actionQueue.push({ type: "expand", bsNm, from });
     },
+    scrollToBS: (
+      state,
+      action: PayloadAction<{
+        x?: number;
+        y?: number;
+        animated?: boolean;
+        bsNm: IBSNm;
+        from?: string;
+      }>
+    ) => {
+      // if not current bs, do nothing
+      const top = peekStack(state.bsNmArr);
+      if (top !== action.payload.bsNm) return;
+
+      const { x = 0, y = 0, animated = true, bsNm, from } = action.payload;
+      state.actionQueue.push({ type: "scrollTo", x, y, animated, bsNm, from });
+    },
     dequeueBSAction: (state) => {
       if (state.actionQueue.length > 0) {
         state.actionQueue.shift();
@@ -305,6 +330,7 @@ export const {
   closeBSWOAction,
   snapBS,
   expandBS,
+  scrollToBS,
 
   // bs value in onChange
   setCurrentValue,

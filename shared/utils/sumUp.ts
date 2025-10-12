@@ -104,6 +104,14 @@ export const checkEveryMenuEmpty = (dTOData: IDietTotalObjData) => {
   return false;
 };
 
+export const getEmptyMenuNum = (dTOData: IDietTotalObjData) => {
+  const dietNoArr = Object.keys(dTOData);
+  const emptyMenuNum = dietNoArr.reduce((acc, cur) => {
+    return dTOData[cur].dietDetail.length === 0 ? acc + 1 : acc;
+  }, 0);
+  return emptyMenuNum;
+};
+
 export const sumUpPriceOfSeller = (
   dietDetailAllData: IDietDetailAllData | undefined,
   seller: string

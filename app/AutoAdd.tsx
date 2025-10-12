@@ -2,6 +2,7 @@ import Foodlist from "@/components/common/mainFoodlist/Foodlist";
 import {
   selectFilteredSortedProducts,
   setAvailableFoods,
+  setInitialSortFilter,
 } from "@/features/reduxSlices/filteredPSlice";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
@@ -37,6 +38,13 @@ const AutoAdd = () => {
   // navigation
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  const params = useLocalSearchParams();
+  const currentMenu = JSON.parse(params?.menu as string);
+  const initialFilter = params?.initialSortFilter
+    ? JSON.parse(params.initialSortFilter as string)
+    : undefined;
+
+  console.log("AutoAdd: initialFilter: ", initialFilter);
 
   // redux
   const dispatch = useAppDispatch();
@@ -48,12 +56,7 @@ const AutoAdd = () => {
 
   const pToAdd = useAppSelector((state) => state.bottomSheet.bsData.pToAdd);
   const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
-  const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
-  const bsIndex = useAppSelector(
-    (state) => state.bottomSheet.currentValue.index
-  );
   const products = useAppSelector(selectFilteredSortedProducts);
-  const currentMenu = JSON.parse(useLocalSearchParams()?.menu as string);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -92,6 +95,7 @@ const AutoAdd = () => {
           likeData: likeData || [],
         })
       );
+      initialFilter && dispatch(setInitialSortFilter(initialFilter));
 
       return recommendedMenu;
     }

@@ -132,6 +132,16 @@ const filteredPSlice = createSlice({
     setRecentlyOpenedFoodsPNoArr: (state, action: PayloadAction<string[]>) => {
       state.recentOpenedFoodsPNoArr = action.payload;
     },
+    setInitialSortFilter: (
+      state,
+      action: PayloadAction<Partial<sortFilterStateInClient["filter"]>>
+    ) => {
+      state.filter = {
+        ...state.filter,
+        ...action.payload,
+      };
+      state.lastAppliedFilter = "baseListType";
+    },
     setBaseListType: (
       state,
       action: PayloadAction<"totalFoodList" | "availableFoods">
@@ -424,6 +434,7 @@ export const selectFilteredSortedProducts = createSelector(
 export const {
   setAvailableFoods,
   setRecentlyOpenedFoodsPNoArr,
+  setInitialSortFilter,
   setBaseListType,
   setCategory,
   setSortBy,

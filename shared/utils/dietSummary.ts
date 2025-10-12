@@ -9,8 +9,12 @@ export interface PlatformSummary {
   changedTotalPrice: number;
   originalShippingPrice: number; // 0 if free
   changedShippingPrice: number; // 0 if free
-  originalRemainToFree: number; // 0 if already free
-  changedRemainToFree: number; // 0 if already free
+  /**
+   * Amount remaining to reach free shipping. Negative means total exceeds freeShippingPrice.
+   * Zero means exactly at threshold. Positive means amount left to reach free shipping.
+   */
+  originalRemainToFree: number;
+  changedRemainToFree: number;
   hasChanges: boolean;
 }
 
@@ -47,7 +51,7 @@ export interface FoodChange {
  * @param dietQtyMap - Optional: map of dietNo to new qty (if not provided, use product qty)
  * @param foodChangeMap - Optional: map of dietNo to {delete, add} food change
  */
-export function computePlatformSummaries(
+export function getPlatformSummaries(
   dTOData: IDietTotalObjData | undefined,
   dietQtyMap?: Record<string, number>,
   foodChangeMap?: Record<string, FoodChange>
@@ -111,20 +115,18 @@ export function computePlatformSummaries(
       const originalFree =
         thresholdBasedFree && originalTotal >= freeShippingPrice;
       const originalShip = originalFree ? 0 : shippingPrice;
+      // Remain can be negative if total exceeds freeShippingPrice
       const originalRemain = thresholdBasedFree
-        ? originalFree
-          ? 0
-          : Math.max(0, freeShippingPrice - originalTotal)
+        ? freeShippingPrice - originalTotal
         : 0; // No free threshold when policy is 'N'
 
       // Changed shipping (follow policy)
       const changedFree =
         thresholdBasedFree && changedTotal >= freeShippingPrice;
       const changedShip = changedFree ? 0 : shippingPrice;
+      // Remain can be negative if total exceeds freeShippingPrice
       const changedRemain = thresholdBasedFree
-        ? changedFree
-          ? 0
-          : Math.max(0, freeShippingPrice - changedTotal)
+        ? freeShippingPrice - changedTotal
         : 0; // No free threshold when policy is 'N'
 
       const hasChanges =
@@ -146,7 +148,43 @@ export function computePlatformSummaries(
   );
 
   const collator = new Intl.Collator("ko", { sensitivity: "base" });
-  return summaries.sort((a, b) => collator.compare(a.platformNm, b.platformNm));
+  // Sort by lowest positive remain-to-free first (only where shipping is not free),
+  // then by lower shipping price, then by name as a final tie-breaker.
+  return summaries.sort((a, b) => {
+    const aIsCandidate =
+      a.changedShippingPrice > 0 && a.changedRemainToFree > 0;
+    const bIsCandidate =
+      b.changedShippingPrice > 0 && b.changedRemainToFree > 0;
+
+    // Candidates (need more to reach free) come before non-candidates
+    if (aIsCandidate !== bIsCandidate) return aIsCandidate ? -1 : 1;
+
+    // If both are candidates, sort by remain ascending
+    if (aIsCandidate && bIsCandidate) {
+      if (a.changedRemainToFree !== b.changedRemainToFree) {
+        return a.changedRemainToFree - b.changedRemainToFree;
+      }
+      // Tie-breaker: lower shipping price first
+      if (a.changedShippingPrice !== b.changedShippingPrice) {
+        return a.changedShippingPrice - b.changedShippingPrice;
+      }
+      // Final tie-breaker: name
+      return collator.compare(a.platformNm, b.platformNm);
+    }
+
+    // Both are non-candidates (already free):
+    // Sort by changedRemainToFree descending (closer to zero first, most negative last)
+    if (!aIsCandidate && !bIsCandidate) {
+      if (a.changedRemainToFree !== b.changedRemainToFree) {
+        return b.changedRemainToFree - a.changedRemainToFree;
+      }
+      // Final tie-breaker: name
+      return collator.compare(a.platformNm, b.platformNm);
+    }
+
+    // Fallback (should not hit)
+    return 0;
+  });
 }
 
 export interface SummaryTotals {
@@ -158,38 +196,39 @@ export interface SummaryTotals {
   changedGrandTotal: number; // products + shipping
   menuNumTotal: number;
 }
-
-// Convenience helper to compute grand totals from the same inputs
-export function computeSummaryTotals(
+/**
+ * Aggregates summary totals from platform summaries and menu data in a single loop.
+ * @param summaries - Array of PlatformSummary
+ * @param dTOData - Diet data from server
+ * @param dietQtyMap - Optional: map of dietNo to new qty
+ */
+export function getSummaryTotalsFromSummaries(
+  summaries: PlatformSummary[],
   dTOData: IDietTotalObjData | undefined,
-  dietQtyMap?: Record<string, number>,
-  foodChangeMap?: Record<string, FoodChange>
+  dietQtyMap?: Record<string, number>
 ): SummaryTotals {
-  const summaries = computePlatformSummaries(
-    dTOData,
-    dietQtyMap,
-    foodChangeMap
-  );
-  const originalProductsTotal = summaries.reduce(
-    (acc, s) => acc + s.originalTotalPrice,
-    0
-  );
-  const changedProductsTotal = summaries.reduce(
-    (acc, s) => acc + s.changedTotalPrice,
-    0
-  );
-  const originalShippingTotal = summaries.reduce(
-    (acc, s) => acc + s.originalShippingPrice,
-    0
-  );
-  const changedShippingTotal = summaries.reduce(
-    (acc, s) => acc + s.changedShippingPrice,
-    0
-  );
-  const menuNumTotal = Object.keys(dTOData || {}).reduce(
-    (acc, dietNo) => acc + (dietQtyMap?.[dietNo] || 0),
-    0
-  );
+  let originalProductsTotal = 0;
+  let changedProductsTotal = 0;
+  let originalShippingTotal = 0;
+  let changedShippingTotal = 0;
+  // menuNumTotal: sum of all menu quantities (from dTOData)
+  let menuNumTotal = 0;
+
+  for (let i = 0; i < summaries.length; i++) {
+    const s = summaries[i];
+    originalProductsTotal += s.originalTotalPrice;
+    changedProductsTotal += s.changedTotalPrice;
+    originalShippingTotal += s.originalShippingPrice;
+    changedShippingTotal += s.changedShippingPrice;
+  }
+  if (dTOData) {
+    for (const dietNo of Object.keys(dTOData)) {
+      menuNumTotal +=
+        dietQtyMap?.[dietNo] ||
+        parseInt(dTOData[dietNo]?.dietDetail[0]?.qty) ||
+        0;
+    }
+  }
   return {
     originalProductsTotal,
     changedProductsTotal,
@@ -199,4 +238,22 @@ export function computeSummaryTotals(
     changedGrandTotal: changedProductsTotal + changedShippingTotal,
     menuNumTotal,
   };
+}
+
+// Convenience helper to compute grand totals from the same inputs
+export function getSummaryTotals(
+  dTOData: IDietTotalObjData | undefined,
+  dietQtyMap?: Record<string, number>,
+  foodChangeMap?: Record<string, FoodChange>
+): SummaryTotals {
+  const summaries = getPlatformSummaries(dTOData, dietQtyMap, foodChangeMap);
+  return getSummaryTotalsFromSummaries(summaries, dTOData, dietQtyMap);
+}
+
+// ---- Lowest remain helpers ----
+
+export interface LowestRemainResult {
+  platformNm: string;
+  remain: number; // strictly > 0
+  summary: PlatformSummary;
 }

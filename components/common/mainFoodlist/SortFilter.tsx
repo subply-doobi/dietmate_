@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import DTooltip from "@/shared/ui/DTooltip";
 import Icon, { IconName } from "@/shared/ui/Icon";
 import { TextMain, TextSub } from "@/shared/ui/styledComps";
+import { getPlatformSummaries } from "@/shared/utils/dietSummary";
 import {
   commaToNum,
   getSortedShippingPriceObj,
@@ -59,6 +60,9 @@ const SortFilter = () => {
   const lastAppliedFilter = useAppSelector(
     (state) => state.filteredProduct.lastAppliedFilter
   );
+  console.log("SortFilter");
+  console.log("lastAppliedFilter: ", lastAppliedFilter);
+  console.log("platformNm: ", platformNm);
   const products = useAppSelector(selectFilteredSortedProducts);
 
   // useState
@@ -81,19 +85,28 @@ const SortFilter = () => {
   const { data: dTOData } = useListDietTotalObj();
 
   // useMemo
-  const { firstTargetSeller, tooltipText, priceTotal } = useMemo(() => {
+  const { firstTargetSeller, tooltipText } = useMemo(() => {
     if (!dTOData) return { firstTargetSeller: "", tooltipText: "" };
-    const { shippingPriceObj, priceTotal } = sumUpDietFromDTOData(dTOData);
-    const { free, notFree } = getSortedShippingPriceObj(shippingPriceObj);
-    const firstTargetSeller = notFree[0]?.platformNm || "";
+    // const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
+    // const { free, notFree } = getSortedShippingPriceObj(shippingPriceObj);
+    // const firstTargetSeller = notFree[0]?.platformNm || "";
+
+    const platformSummaries = getPlatformSummaries(dTOData);
+
+    console.log(
+      "platformSummaries: ",
+      JSON.stringify(platformSummaries, null, 2)
+    );
+    const firstTargetSeller = platformSummaries[0]?.platformNm || "";
+    const remainToFree = platformSummaries[0]?.changedRemainToFree || 0;
+
     const tooltipText = `"${firstTargetSeller}" 무료배송까지 ${commaToNum(
-      notFree[0]?.remainPrice
+      remainToFree
     )}원`;
 
     return {
       firstTargetSeller,
       tooltipText,
-      priceTotal,
     };
   }, [dTOData]);
 

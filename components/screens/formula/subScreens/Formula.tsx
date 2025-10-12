@@ -13,8 +13,8 @@ import Carousel, {
 // doobi
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { Row, TextMain } from "@/shared/ui/styledComps";
-import { FORMULA_CAROUSEL_HEIGHT, SCREENWIDTH } from "@/shared/constants";
+import { Row } from "@/shared/ui/styledComps";
+import { SCREENWIDTH } from "@/shared/constants";
 import CarouselContent from "../carousel/CarouselContent";
 import PaginationDot from "../carousel/PaginationDot";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
@@ -25,9 +25,6 @@ import {
   setFormulaProgress,
   dequeueCarouselAction,
   resetCarouselActionQueue,
-  scrollCarouselTo,
-  scrollCarouselNext,
-  scrollCarouselPrev,
 } from "@/features/reduxSlices/formulaSlice";
 import CtaButton from "@/shared/ui/CtaButton";
 import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";

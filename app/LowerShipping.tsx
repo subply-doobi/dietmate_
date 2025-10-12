@@ -194,7 +194,7 @@ const LowerShipping = () => {
               )}
               onPress={async () => {
                 dispatch(setCurrentFMCIdx(Object.keys(dTOData || {}).length));
-                await createDietMutation.mutateAsync({ setDietNo: true });
+                await createDietMutation.mutateAsync();
                 setTimeout(() => {
                   router.push("/(tabs)/Formula");
                 }, 100);

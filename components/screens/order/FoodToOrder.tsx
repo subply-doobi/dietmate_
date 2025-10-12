@@ -44,7 +44,7 @@ const FoodsInOneDiet = ({ dietNo }: FoodInOneDietProps) => {
 
   const idx = Object.keys(foodToOrder).findIndex((key) => key === dietNo);
   const dDData = foodToOrder?.[dietNo]?.dietDetail ?? [];
-  const dDDataBySeller = regroupDDataBySeller(dDData);
+  const { regrouped: dDDataBySeller } = regroupDDataBySeller(dDData);
   const platformNmArr = Object.keys(dDDataBySeller);
 
   if (!foodToOrder) {

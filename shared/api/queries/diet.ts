@@ -27,7 +27,7 @@ export const useCreateDiet = (options?: IMutationOptions) => {
   const dispatch = useDispatch();
   const mutation = useMutation({
     mutationFn: () => mutationFn(CREATE_DIET, "put"),
-    onSuccess: (data, { setDietNo }: { setDietNo?: boolean }, context) => {
+    onSuccess: (data) => {
       options?.onSuccess && options?.onSuccess(data);
 
       // 장바구니 accordion 기존 끼니는 닫아주기

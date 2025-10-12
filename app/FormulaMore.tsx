@@ -66,7 +66,7 @@ const FormulaMore = () => {
             iconName: "plusCircle",
             isActive: isAddMenuActive,
             onPress: () => {
-              createDietMutation.mutate({ setDietNo: true });
+              createDietMutation.mutate();
               dispatch(setCurrentFMCIdx(numOfMenu));
               router.back();
             },

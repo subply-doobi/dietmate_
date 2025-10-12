@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 import styled from "styled-components/native";
 import colors from "@/shared/colors";
 import {
-  computePlatformSummaries,
-  PlatformSummary,
+  getPlatformSummaries,
+  getSummaryTotalsFromSummaries,
 } from "@/shared/utils/dietSummary";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
@@ -14,7 +14,7 @@ import {
   TextMain,
   TextSub,
 } from "@/shared/ui/styledComps";
-import { computeSummaryTotals } from "@/shared/utils/dietSummary";
+
 import { MENU_NUM_LABEL } from "@/shared/constants";
 
 interface DietPlatformSummaryProps {
@@ -53,15 +53,20 @@ export default function DietPlatformSummary({
   const { data: dTOData } = useListDietTotalObj();
   const dietQtyMap = useAppSelector((s) => s.bottomSheet.bsData.dietQtyMap);
 
-  const summaries = useMemo<PlatformSummary[]>(() => {
-    return computePlatformSummaries(dTOData, dietQtyMap);
+  const { summaries, totals } = useMemo(() => {
+    const summaries = getPlatformSummaries(dTOData, dietQtyMap);
+    const totals = getSummaryTotalsFromSummaries(
+      summaries,
+      dTOData,
+      dietQtyMap
+    );
+
+    return {
+      summaries,
+      totals,
+    };
   }, [dTOData, dietQtyMap]);
 
-  // Totals logic from TotalsSection
-  const totals = useMemo(
-    () => computeSummaryTotals(dTOData, dietQtyMap),
-    [dTOData, dietQtyMap]
-  );
   const hasProductsChange =
     Math.round(totals.changedProductsTotal) !==
     Math.round(totals.originalProductsTotal);

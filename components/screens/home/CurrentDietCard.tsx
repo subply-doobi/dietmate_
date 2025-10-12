@@ -53,7 +53,7 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
       return;
     }
     if (formulaStatus === "inProgress") {
-      router.push({ pathname: "/(tabs)/Diet" });
+      router.push({ pathname: "/(tabs)/Formula" });
       return;
     }
 

@@ -9,17 +9,41 @@ import { IProductData } from "../api/types/product";
 interface IRegroupedData {
   [key: string]: IDietDetailData;
 }
-export const regroupDDataBySeller = (dDData: IDietDetailData | undefined) =>
-  !dDData
-    ? {}
-    : dDData.reduce((acc: IRegroupedData, cur) => {
-        const key = cur.platformNm;
-        if (!acc[key]) {
-          acc[key] = [];
-        }
-        acc[key].push(cur);
-        return acc;
-      }, {});
+export const regroupDDataBySeller = (
+  dDData: IDietDetailData | undefined,
+  sellers?: string[]
+) => {
+  if (!dDData)
+    return {
+      regrouped: {} as IRegroupedData,
+      sellers: [],
+    };
+  const regrouped: IRegroupedData = {};
+  dDData.forEach((p) => {
+    const key = p.platformNm;
+    if (!regrouped[key]) {
+      regrouped[key] = [];
+    }
+    regrouped[key].push(p);
+  });
+
+  const sellerInMenuArr = Object.keys(regrouped);
+  if (!sellers) {
+    return { regrouped, sellers: sellerInMenuArr };
+  }
+  const filteredSellers = sellers.filter((s) => sellerInMenuArr.includes(s));
+  return { regrouped, sellers: filteredSellers };
+};
+// !dDData
+//   ? {}
+//   : dDData.reduce((acc: IRegroupedData, cur) => {
+//       const key = cur.platformNm;
+//       if (!acc[key]) {
+//         acc[key] = [];
+//       }
+//       acc[key].push(cur);
+//       return acc;
+//     }, {});
 
 // 다른 끼니에 같은 productNo 식품 있어도 그냥 추가
 // <- 식품사별 금액만 계산할 것이라서 이후 식품을 보여준다면 중복상품qty 조절 필요함

@@ -52,7 +52,7 @@ const QtyChangeBSComp = () => {
     const dietNoArr = Object.keys(dTOData || {});
     const dietNo = dietNoArr[menuIdx] || "";
     const dDData = dTOData?.[dietNo]?.dietDetail || [];
-    const regroupedBySeller = regroupDDataBySeller(dDData);
+    const { regrouped: regroupedBySeller } = regroupDDataBySeller(dDData);
     const { shippingPriceObj, menuNum } = sumUpDietFromDTOData(dTOData);
     const maxQty =
       MENU_NUM_LABEL.length - menuNum + parseInt(dDData[0]?.qty || "1");
@@ -113,7 +113,7 @@ const QtyChangeBSComp = () => {
       <Col style={{ rowGap: 24 }}>
         {platformNmArr.map((seller, idx) => {
           const dQty = qty - currentQty;
-          const dPrice = dQty * sumUpPrice(regroupedBySeller[seller]);
+          const dPrice = dQty * sumUpPrice(regroupedBySeller?.[seller]);
           const oPrice = shippingPriceObj[seller].price;
           const oSPrice = shippingPriceObj[seller].shippingPrice;
           const freeshippingPrice = shippingPriceObj[seller].freeShippingPrice;

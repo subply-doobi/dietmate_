@@ -1,18 +1,29 @@
-import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
 import { regroupDDataBySeller } from "@/shared/utils/dataTransform";
 import {
   IDietDetailProductData,
   IDietTotalObjData,
 } from "@/shared/api/types/diet";
 import styled from "styled-components/native";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { MENU_LABEL } from "@/shared/constants";
-import { Col } from "@/shared/ui/styledComps";
+import { Col, TextSub } from "@/shared/ui/styledComps";
 import { plusQty, minusQty } from "@/features/reduxSlices/bottomSheetSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import DietCard from "./DietCard";
+import colors from "@/shared/colors";
+import { commaToNum, getEmptyMenuNum } from "@/shared/utils/sumUp";
+import {
+  getPlatformSummaries,
+  getSummaryTotalsFromSummaries,
+} from "@/shared/utils/dietSummary";
+import { useRouter } from "expo-router";
+import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 
 const SummaryInfoBSComp = () => {
+  // navigation
+  const router = useRouter();
+
   // redux
   const dispatch = useAppDispatch();
   const dietQtyMap = useAppSelector(
@@ -24,32 +35,58 @@ const SummaryInfoBSComp = () => {
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
+  const createDietMutation = useCreateDiet();
 
   // useMemo
-  const dietEntries = useMemo(() => {
+  const {
+    dietEntries,
+    emptyMenuNum,
+    firstTargetSeller,
+    remainToFree,
+    totalMenuNum,
+  } = useMemo(() => {
     if (!dTOData)
-      return [] as Array<{
-        dietNo: string;
-        label: string;
-        regrouped: Record<string, IDietDetailProductData[]>;
-        sellers: string[];
-        qtyNums: number[]; // raw qty numbers per product
-      }>;
+      return {
+        dietEntries: [] as Array<{
+          dietNo: string;
+          label: string;
+          regrouped: Record<string, IDietDetailProductData[]>;
+          sellers: string[];
+        }>,
+        emptyMenuNum: undefined,
+      };
+    const emptyMenuNum = getEmptyMenuNum(dTOData);
+    const summaryArr = getPlatformSummaries(dTOData);
+    const totals = getSummaryTotalsFromSummaries(summaryArr, dTOData);
+    const sellers = summaryArr.map((s) => s.platformNm);
+    const totalMenuNum = totals.menuNumTotal;
+    console.log("SummaryInfoBSComp totalMenuNum: ", totalMenuNum);
+
+    const firstTargetSeller = summaryArr[0]?.platformNm || "";
+    const remainToFree = summaryArr[0]?.changedRemainToFree || 0;
+
     const keys = Object.keys(dTOData);
-    return keys.map((dietNo, idx) => {
+    const dietEntries = keys.map((dietNo, idx) => {
       const dietDetail =
         (dTOData as IDietTotalObjData)[dietNo]?.dietDetail || [];
-      const regrouped = regroupDDataBySeller(dietDetail);
-      const sellers = Object.keys(regrouped);
-      const qtyNums = dietDetail.map((d) => parseInt(d.qty));
+      const { regrouped, sellers: filteredSellers } = regroupDDataBySeller(
+        dietDetail,
+        sellers
+      );
       return {
         dietNo,
         label: MENU_LABEL[idx] || `식단 ${idx + 1}`,
         regrouped,
-        sellers,
-        qtyNums,
+        sellers: filteredSellers,
       };
     });
+    return {
+      dietEntries,
+      emptyMenuNum,
+      firstTargetSeller,
+      remainToFree,
+      totalMenuNum,
+    };
   }, [dTOData]);
 
   const handleMinus = (dietNo: string) => {
@@ -58,6 +95,20 @@ const SummaryInfoBSComp = () => {
   const handlePlus = (dietNo: string) => {
     dispatch(plusQty({ dietNo }));
   };
+
+  const addFirstTargetSeller = useCallback(async () => {
+    if (!firstTargetSeller) return;
+    const res = await createDietMutation.mutateAsync();
+    console.log("Created diet:", res);
+    dispatch(setCurrentFMCIdx(totalMenuNum - 1));
+    router.push({
+      pathname: "/AutoAdd",
+      params: {
+        menu: JSON.stringify([]),
+        initialSortFilter: JSON.stringify({ platformNm: [firstTargetSeller] }),
+      },
+    });
+  }, [firstTargetSeller]);
 
   return (
     <Container>
@@ -76,6 +127,25 @@ const SummaryInfoBSComp = () => {
           />
         ))}
       </Col>
+      {emptyMenuNum !== undefined &&
+        emptyMenuNum === 0 &&
+        totalMenuNum < MENU_LABEL.length &&
+        changedDietNoArr.length === 0 &&
+        firstTargetSeller && (
+          <NewMenuBtn onPress={addFirstTargetSeller}>
+            <BtnText>
+              새로운 근에{" "}
+              <BtnText style={{ color: colors.green }}>
+                "{firstTargetSeller}"
+              </BtnText>{" "}
+              식품 추가해서 배송비 줄이기
+            </BtnText>
+            <BtnText style={{ color: colors.textSub }}>
+              ({commaToNum(remainToFree)}원 더 담으면 "{firstTargetSeller}"
+              무료배송)
+            </BtnText>
+          </NewMenuBtn>
+        )}
     </Container>
   );
 };
@@ -85,4 +155,24 @@ export default SummaryInfoBSComp;
 const Container = styled.View`
   width: 100%;
   padding: 40px 16px 56px 16px;
+`;
+
+const NewMenuBtn = styled.TouchableOpacity`
+  width: 100%;
+  height: 52 px;
+  background-color: ${colors.blackOpacity50};
+  margin-top: 40px;
+  padding: 24px 16px;
+  border-radius: 4px;
+  border-width: 1px;
+  border-color: ${colors.line};
+  align-items: center;
+  justify-content: center;
+`;
+
+const BtnText = styled(TextSub)`
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  color: ${colors.white};
 `;

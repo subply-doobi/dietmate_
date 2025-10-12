@@ -70,7 +70,7 @@ const ProductToAddSelect = () => {
   const numOfMenu = Object.keys(dTOData || {}).length;
   const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx] || "";
   const currentMenu = dTOData?.[currentDietNo]?.dietDetail || [];
-  const MenuLabel = MENU_LABEL[currentFMCIdx].slice(0, -2);
+  const MenuLabel = MENU_LABEL[currentFMCIdx].slice(2);
   const isIncluded = currentMenu.some(
     (m) => m.productNo === pToAdd[0]?.productNo
   );
@@ -170,8 +170,8 @@ const ProductToAddSelect = () => {
         )}
         <LRBtn onPress={() => router.push("/(tabs)/Formula")}>
           <Row style={{ columnGap: 2 }}>
-            <ProductNm style={{ fontWeight: 600 }}>{MenuLabel}</ProductNm>
             <Icon name="appIcon" iconSize={20} />
+            <ProductNm style={{ fontWeight: 600 }}>{MenuLabel}</ProductNm>
           </Row>
         </LRBtn>
         {pathNm !== "/AutoAdd" && (

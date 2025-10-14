@@ -1,18 +1,12 @@
 import { setAMSettingProgress } from "@/features/reduxSlices/autoMenuSlice";
-import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import BackArrow from "@/shared/ui/BackArrow";
 import GuideTitle from "@/shared/ui/GuideTitle";
 import Icon from "@/shared/ui/Icon";
 import { Container } from "@/shared/ui/styledComps";
-import { getAutoMenuData } from "@/shared/utils/asyncStorage";
-import {
-  getPageItem,
-  PAGES,
-} from "@/shared/utils/screens/formula/contentByPages";
+import { getPageItem } from "@/shared/utils/screens/formula/contentByPages";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { BackHandler, Pressable } from "react-native";
 import * as Progress from "react-native-progress";
 import styled from "styled-components/native";

@@ -26,7 +26,6 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 import {
-  closeBS,
   closeBSAll,
   openBS,
   setProductToAdd,
@@ -43,8 +42,6 @@ const AutoAdd = () => {
   const initialFilter = params?.initialSortFilter
     ? JSON.parse(params.initialSortFilter as string)
     : undefined;
-
-  console.log("AutoAdd: initialFilter: ", initialFilter);
 
   // redux
   const dispatch = useAppDispatch();

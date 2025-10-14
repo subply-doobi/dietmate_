@@ -16,12 +16,7 @@ import SelectAllRow from "./SelectAllRow";
 import CarouselCta from "./CarouselCta";
 import CarouselFoodList from "./CarouselFoodList";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import DSmallBtn from "@/shared/ui/DSmallBtn";
 import Icon from "@/shared/ui/Icon";
-import {
-  openBS,
-  setLSQtyChange,
-} from "@/features/reduxSlices/bottomSheetSlice";
 
 interface ICarouselContent {
   carouselRef: React.RefObject<ICarouselInstance | null>;

@@ -5,7 +5,11 @@ import {
   BottomSheetModal,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import { DEFAULT_BOTTOM_TAB_HEIGHT, SCREENHEIGHT } from "@/shared/constants";
+import {
+  DEFAULT_BOTTOM_TAB_HEIGHT,
+  NUTRIENT_PROGRESS_HEIGHT,
+  SCREENHEIGHT,
+} from "@/shared/constants";
 import CategoryFilterBSComp from "./sortFilterBSComps/CategoryFilterBSComp";
 import BaseListTypeFilterBSComp from "./sortFilterBSComps/BaseListTypeFilterBSComp";
 import PlatformFilterBSComp from "./sortFilterBSComps/PlatformFilterBSComp";
@@ -19,7 +23,6 @@ import {
   closeBSWOAction,
   resetBSActionQueue,
 } from "@/features/reduxSlices/bottomSheetSlice";
-import QtyChangeBSComp from "./QtyChangeBSComp";
 
 import colors from "@/shared/colors";
 import { StyleProp, ViewStyle } from "react-native";
@@ -62,9 +65,6 @@ const bsCompByName: Record<IBSNm, JSX.Element> = {
   productToAddSelect: <ProductToAddSelect />,
   productToDelSelect: <ProductToDelSelect />,
 
-  // menu qty change
-  qtyChange: <QtyChangeBSComp />,
-
   // formula summary
   summaryInfo: <SummaryInfoBSComp />,
 };
@@ -105,11 +105,10 @@ export const bsConfigByName: Partial<Record<IBSNm, IBSConfig>> = {
     maxDynamicContentSize: SCREENHEIGHT * 0.8,
     enablePanDownToClose: false,
     snapPoints: [
-      24 - 8 + 32 + 12 + 52 + 16,
-      24 - 8 + 32 + 12 + 52 + 16 + 24 + 52 + 16,
+      24 - 8 + 32 + 12 + 52 + 16 + NUTRIENT_PROGRESS_HEIGHT,
+      24 - 8 + 32 + 12 + 52 + 16 + 24 + 52 + 16 + NUTRIENT_PROGRESS_HEIGHT,
     ],
   },
-  qtyChange: { ...bsOpacityConfig, maxDynamicContentSize: SCREENHEIGHT * 0.9 },
   summaryInfo: {
     ...bsOpacityConfig,
     enableDynamicSizing: false,

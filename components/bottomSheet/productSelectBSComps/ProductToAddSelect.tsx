@@ -168,7 +168,7 @@ const ProductToAddSelect = () => {
             <Icon name="chevronLeft" color={colors.textSub} />
           </LRBtn>
         )}
-        <LRBtn onPress={() => router.push("/(tabs)/Formula")}>
+        <LRBtn>
           <Row style={{ columnGap: 2 }}>
             <Icon name="appIcon" iconSize={20} />
             <ProductNm style={{ fontWeight: 600 }}>{MenuLabel}</ProductNm>
@@ -180,6 +180,12 @@ const ProductToAddSelect = () => {
           </LRBtn>
         )}
       </Row>
+
+      {/* 영양정보 */}
+      <NutrientsProgress
+        dietDetailData={expectedMenu}
+        textColor={colors.textSub}
+      />
 
       {/* 현재 근 식품 확인 */}
       <HorizontalSpace height={12} />
@@ -266,13 +272,6 @@ const ProductToAddSelect = () => {
               containerStyle={{ marginLeft: 2, marginTop: 12 }}
             />
           )}
-
-          {/* 영양정보 */}
-          <HorizontalSpace height={24} />
-          <NutrientsProgress
-            dietDetailData={expectedMenu}
-            textColor={colors.textSub}
-          />
 
           {/* 식품추가 버튼 */}
           <CTA

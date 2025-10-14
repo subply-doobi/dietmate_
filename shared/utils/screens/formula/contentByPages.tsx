@@ -35,7 +35,7 @@ export const PAGES: IPages = [
     progress: 0,
     header: "근수 선택",
     name: "SelectNumOfMenu",
-    title: "몇 끼를 공식으로 만들지\n결정해주세요",
+    title: "몇 가지 끼니를 공식으로\n만들 지 결정해주세요",
     subTitle:
       "하루에 한 근(끼)만이라도 간편하게!\n나만의 식단으로 평일 5일 (다섯 근!)을 추천해요",
     render: () => <SelectNumOfMenu />,

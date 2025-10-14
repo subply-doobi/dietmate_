@@ -98,6 +98,19 @@ export const MENU_NUM_LABEL = [
   "열 근",
 ];
 
+export const MENU_KIND_LABEL = [
+  "한 가지",
+  "두 가지",
+  "세 가지",
+  "네 가지",
+  "다섯 가지",
+  "여섯 가지",
+  "일곱 가지",
+  "여덟 가지",
+  "아홉 가지",
+  "열 가지",
+];
+
 // autoMenu constants
 export const AM_SELECTED_CATEGORY_IDX = [0, 1, 2, 3, 4, 5];
 export const AM_PRICE_TARGET = [6000, 12000];

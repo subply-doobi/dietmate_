@@ -1,11 +1,11 @@
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { useAppSelector } from "@/shared/hooks/reduxHooks";
-import { sumUpDietFromDTOData } from "@/shared/utils/sumUp";
 import { useMemo } from "react";
 import styled from "styled-components/native";
 import SellerShippingText from "../../common/summaryInfo/SellerShippingText";
 import { StyleProp, ViewStyle } from "react-native";
+import { getPlatformSummaries } from "@/shared/utils/dietSummary";
 
 interface IProductSelectShippingInfo {
   containerStyle?: StyleProp<ViewStyle>;
@@ -14,6 +14,7 @@ const ProductSelectShippingInfo = ({
   containerStyle = {},
 }: IProductSelectShippingInfo) => {
   // redux
+  const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const { pToAdd, pToDel } = useAppSelector(
     (state) => state.bottomSheet.bsData
   );
@@ -21,11 +22,24 @@ const ProductSelectShippingInfo = ({
   // react-query
   const { data: dTOData } = useListDietTotalObj();
 
+  const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx] || "";
+
   // useMemo
-  const { shippingPriceObj } = useMemo(() => {
-    const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
-    return { shippingPriceObj };
-  }, [dTOData]);
+  const { platformSummary } = useMemo(() => {
+    console.log("ProductSelectShippingInfo useMemo called");
+    console.log("pToAdd:", pToAdd);
+    console.log("pToDel:", pToDel);
+    const foodChangeMap = {
+      [currentDietNo]: { delete: pToDel[0], add: pToAdd[0] },
+    };
+    const platformSummary = getPlatformSummaries(
+      dTOData,
+      undefined,
+      foodChangeMap
+    );
+
+    return { platformSummary };
+  }, [dTOData, pToAdd, pToDel]);
 
   // etc
   // relevantSellerNmArr no dupicates, no undefined values
@@ -34,16 +48,22 @@ const ProductSelectShippingInfo = ({
       [pToAdd[0]?.platformNm, pToDel[0]?.platformNm].filter(Boolean) as string[]
     )
   );
+  console.log(
+    "ProductSelectShippingInfo relevantSellerNmArr:",
+    relevantSellerNmArr
+  );
+  console.log(
+    "ProductSelectShippingInfo platformSummary:",
+    JSON.stringify(platformSummary, null, 2)
+  );
 
   return (
     <Box style={[containerStyle]}>
       {relevantSellerNmArr.map((seller, idx) => (
         <SellerShippingText
           key={idx}
-          shippingPriceObj={shippingPriceObj}
+          platformSummary={platformSummary.find((p) => p.platformNm === seller)}
           seller={seller}
-          productToAdd={pToAdd[0]}
-          productToDel={pToDel[0]}
           mainTextColor={colors.white}
           subTextColor={colors.textSub}
         />

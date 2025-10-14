@@ -47,7 +47,7 @@ const PaginationDot = ({ index }: { index: number }) => {
 
   const isActive = currentFMCIdx === index;
   const text = isActive ? MENU_LABEL[index].slice(-2) : MENU_LABEL[index];
-  console.log("PaginationDot text: ", `"${text}"`);
+
   const isSatisfied = nutrStatus === "satisfied";
 
   return (

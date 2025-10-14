@@ -17,10 +17,6 @@ import {
 import colors from "@/shared/colors";
 import CtaButton from "@/shared/ui/CtaButton";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import {
-  setFoodToOrder,
-  setShippingPrice,
-} from "@/features/reduxSlices/orderSlice";
 import { commaToNum } from "@/shared/utils/sumUp";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { MENU_NUM_LABEL } from "@/shared/constants";
@@ -36,9 +32,6 @@ interface ICurrentDietCard {
 const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
   const { formulaStatus, ctaBtnText, menuNum, priceTotal, totalShippingPrice } =
     p;
-
-  // redux
-  const dispatch = useAppDispatch();
 
   // navigation
   const router = useRouter();
@@ -58,8 +51,6 @@ const CurrentDietCard = forwardRef((p: ICurrentDietCard, ctaBtnRef) => {
     }
 
     if (!dTOData) return;
-    dispatch(setFoodToOrder(dTOData));
-    dispatch(setShippingPrice(totalShippingPrice));
     router.push({ pathname: "/Order" });
   };
 

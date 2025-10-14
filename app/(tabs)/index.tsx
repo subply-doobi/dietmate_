@@ -16,7 +16,7 @@ import { useListOrder } from "@/shared/api/queries/order";
 import { loadBaseLineData } from "@/features/reduxSlices/userInputSlice";
 import colors from "@/shared/colors";
 import { regroupByBuyDateAndDietNo } from "@/shared/utils/dataTransform";
-import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
+import { getNutrStatus } from "@/shared/utils/sumUp";
 import { flatOrderMenuWithQty } from "@/shared/utils/screens/checklist/menuFlat";
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 
@@ -27,8 +27,9 @@ import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
 import LastOrderCard from "@/components/screens/home/LastOrderCard";
 import Profile from "@/components/screens/home/Profile";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import CtaButton from "@/shared/ui/CtaButton";
-import { removeAutoMenuData } from "@/shared/utils/asyncStorage";
+// import CtaButton from "@/shared/ui/CtaButton";
+// import { removeAutoMenuData } from "@/shared/utils/asyncStorage";
+import { getSummaryTotals } from "@/shared/utils/dietSummary";
 
 const NewHome = () => {
   // navigation
@@ -78,9 +79,11 @@ const NewHome = () => {
         };
       }
 
-      // 총 끼니 수, 상품 수, 금액 계산
-      const { menuNum, priceTotal, totalShippingPrice } =
-        sumUpDietFromDTOData(dTOData);
+      const {
+        menuNumTotal: menuNum,
+        changedProductsTotal: priceTotal,
+        changedShippingTotal: totalShippingPrice,
+      } = getSummaryTotals(dTOData);
 
       const isSuccessArr = Object.values(dTOData).map((item) => {
         const { dietDetail } = item;
@@ -206,17 +209,22 @@ const NewHome = () => {
 
         <HorizontalSpace height={40} />
 
+        {/* test btn */}
         {/* <CtaButton
           btnStyle="active"
           btnText="test"
-          onPress={async () => {
-            await removeAutoMenuData();
-          }}
           onPress={() => {
-            router.push({
-              pathname: "/ErrorPage",
-              params: { errorCode: "999", msg: "errorTest" },
-            });
+            // async test
+            // onPress={async () => {
+            //   await removeAutoMenuData();
+            // }}
+            // errorpage test
+            // router.push({
+            //   pathname: "/ErrorPage",
+            //   params: { errorCode: "999", msg: "errorTest" },
+            // });
+            // react-query error test
+            // throwErr();
           }}
         /> */}
       </ScrollView>

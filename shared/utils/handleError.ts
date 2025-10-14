@@ -69,7 +69,8 @@ const errorActionByCode: ICodeToErrorAction = {
 
 // 에러코드 -> 액션
 const runErrorActionByCode = (code: IErrorCode | undefined | null) => {
-  console.log("runErrorActionByCode: ", code);
+  // console.log("runErrorActionByCode: ", code);
+  store.dispatch(closeBSAll());
   // undefined -> nothing
   if (code === undefined) return;
 
@@ -100,7 +101,6 @@ const runErrorActionByCode = (code: IErrorCode | undefined | null) => {
 // ErrorAlert 띄우는 경우 확인버튼 눌렀을 때 실행할 함수
 const commonAlertAction = () => {
   queryClient.invalidateQueries();
-  store.dispatch(closeBSAll());
 };
 
 const ErrAlertActionByCode: ICodeToErrorAction = {
@@ -122,12 +122,12 @@ const ErrAlertActionByCode: ICodeToErrorAction = {
 export const runErrAlertActionByCode = (
   code: IErrorCode | undefined | null
 ) => {
+  commonAlertAction();
   if (!code) return;
   if (ErrAlertActionByCode[code]) {
     ErrAlertActionByCode[code]();
     return;
   }
-  commonAlertAction();
 };
 
 // 에러 핸들러

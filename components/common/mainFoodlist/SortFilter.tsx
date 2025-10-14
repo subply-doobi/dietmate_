@@ -20,21 +20,14 @@ import DTooltip from "@/shared/ui/DTooltip";
 import Icon, { IconName } from "@/shared/ui/Icon";
 import { TextMain, TextSub } from "@/shared/ui/styledComps";
 import { getPlatformSummaries } from "@/shared/utils/dietSummary";
-import {
-  commaToNum,
-  getSortedShippingPriceObj,
-  sumUpDietFromDTOData,
-} from "@/shared/utils/sumUp";
-import { useBottomSheet, useBottomSheetModal } from "@gorhom/bottom-sheet";
-import { useLocalSearchParams, usePathname } from "expo-router";
+import { commaToNum } from "@/shared/utils/sumUp";
+import { usePathname } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, TextInput } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 
 const SortFilter = () => {
   // navigation
-  // const autoAddType = useLocalSearchParams()?.type;
   const pathName = usePathname();
 
   // redux
@@ -60,9 +53,6 @@ const SortFilter = () => {
   const lastAppliedFilter = useAppSelector(
     (state) => state.filteredProduct.lastAppliedFilter
   );
-  console.log("SortFilter");
-  console.log("lastAppliedFilter: ", lastAppliedFilter);
-  console.log("platformNm: ", platformNm);
   const products = useAppSelector(selectFilteredSortedProducts);
 
   // useState
@@ -87,16 +77,8 @@ const SortFilter = () => {
   // useMemo
   const { firstTargetSeller, tooltipText } = useMemo(() => {
     if (!dTOData) return { firstTargetSeller: "", tooltipText: "" };
-    // const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
-    // const { free, notFree } = getSortedShippingPriceObj(shippingPriceObj);
-    // const firstTargetSeller = notFree[0]?.platformNm || "";
 
     const platformSummaries = getPlatformSummaries(dTOData);
-
-    console.log(
-      "platformSummaries: ",
-      JSON.stringify(platformSummaries, null, 2)
-    );
     const firstTargetSeller = platformSummaries[0]?.platformNm || "";
     const remainToFree = platformSummaries[0]?.changedRemainToFree || 0;
 

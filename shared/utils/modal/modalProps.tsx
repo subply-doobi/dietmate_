@@ -1,3 +1,4 @@
+import React from "react";
 import {
   closeModal,
   IModalName,
@@ -25,7 +26,6 @@ import {
   useDeleteDietDetail,
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
-import CreateDietAlert from "@/components/screens/diet/CreateDietAlert";
 import {
   setMenuAcActive,
   setTutorialEnd,
@@ -55,16 +55,8 @@ import { ViewStyle } from "react-native";
 import CalGuideAlertContent from "@/components/modal/alert/CalGuideAlertContent";
 import DTooltip from "@/shared/ui/DTooltip";
 import CtaButton from "@/shared/ui/CtaButton";
-import { sumUpDietFromDTOData } from "../sumUp";
-import { FlatList } from "react-native";
-import { IProductData } from "@/shared/api/types/product";
-import MenuNumSelectContent from "@/components/common/cart/MenuNumSelectContent";
-import React from "react";
-import { Animated } from "react-native";
-import {
-  setCurrentFMCIdx,
-  setFormulaProgress,
-} from "@/features/reduxSlices/formulaSlice";
+import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
+import { getSummaryTotals } from "../dietSummary";
 
 interface IModalProps {
   [key: string]: {
@@ -93,17 +85,13 @@ export const useModalProps = () => {
   );
 
   const friendCd = useAppSelector((state) => state.userInput.friendCd);
-  const { isTutorialMode, tutorialProgress, autoMenuStatus } = useAppSelector(
+  const { isTutorialMode, tutorialProgress } = useAppSelector(
     (state) => state.common
   );
   const modalState = useAppSelector((state) => state.modal);
   const modalSeq = modalState.modalSeq;
   const currentModalNm =
     modalSeq.length > 0 ? modalSeq[modalSeq.length - 1] : "";
-
-  // modalValues
-  const dietNoToDelete =
-    modalState.values.menuDeleteAlert?.dietNoToDel || ("" as string);
 
   // navigation
   const router = useRouter();
@@ -132,19 +120,14 @@ export const useModalProps = () => {
 
   // useMemo
   const fixedHeaderHeight = useMemo(() => headerHeight, []);
-  const {
-    menuNum,
-    productNum,
-    priceTotal,
-    totalShippingPrice,
-    addDietStatus,
-    addDietNAText,
-    addDietNASubtext,
-    ctaBtnText,
-  } = useMemo(() => {
+  const { ctaBtnText } = useMemo(() => {
     // 총 끼니 수, 상품 수, 금액 계산
-    const { menuNum, productNum, priceTotal, totalShippingPrice } =
-      sumUpDietFromDTOData(dTOData);
+    const {
+      menuNumTotal: menuNum,
+      productNumTotal: productNum,
+      changedProductsTotal: priceTotal,
+      changedShippingTotal: totalShippingPrice,
+    } = getSummaryTotals(dTOData);
     const {
       status: addDietStatus,
       text: addDietNAText,
@@ -179,26 +162,7 @@ export const useModalProps = () => {
       dispatch(openModal({ name: "tutorialCompleteAlert" }));
       return;
     }
-
-    if (autoMenuStatus.isLoading) {
-      dispatch(openModal({ name: "autoMenuLoadingAlert" }));
-      return;
-    }
-
-    if (autoMenuStatus.isError) {
-      dispatch(closeModal({ name: "autoMenuLoadingAlert" }));
-      dispatch(openModal({ name: "autoMenuErrorAlert" }));
-      return;
-    }
-
-    if (autoMenuStatus.isSuccess) {
-      dispatch(closeModal({ name: "autoMenuLoadingAlert" }));
-    }
-  }, [isTutorialMode, tutorialProgress, autoMenuStatus]);
-
-  // useRef
-  const flatListRef = useRef<FlatList<IProductData> | null>(null);
-  const scrollY = useRef(new Animated.Value(0)).current;
+  }, [isTutorialMode, tutorialProgress]);
 
   // actions
   const commonClose = useCallback((name: IModalName) => {
@@ -228,97 +192,14 @@ export const useModalProps = () => {
     return { menuDeleteAllAlert };
   }, [dTOData]);
 
-  const { menuCreateAlert } = useMemo(() => {
-    // console.log("modalProps: menuCreateAlert memo");
-    const menuCreateAlert = {
-      numOfBtn: isCreating
-        ? 0
-        : isTutorialMode && tutorialProgress === "AddMenu"
-        ? 1
-        : 2,
-      contentDelay: 0,
-      confirmLabel: "추가",
-      onConfirm: async () => {
-        setIsCreating(true);
-        await createDietCntMutation.mutateAsync({
-          dietCnt: String(numOfCreateDiet),
-        });
-        isTutorialMode && dispatch(setTutorialProgress("AddFood"));
-        setIsCreating(false);
-        commonClose("menuCreateAlert");
-        dispatch(setCurrentFMCIdx(0));
-        isTutorialMode &&
-          setTimeout(() => {
-            dispatch(setMenuAcActive([0]));
-          }, 200);
-      },
-      onCancel: () => commonClose("menuCreateAlert"),
-      renderContent: () => (
-        <CreateDietAlert
-          numOfCreateDiet={numOfCreateDiet}
-          setNumOfCreateDiet={setNumOfCreateDiet}
-          isCreating={isCreating}
-        />
-      ),
-    } as IModalProps["menuCreateAlert"];
-    return { menuCreateAlert };
-  }, [isCreating, isTutorialMode, tutorialProgress, numOfCreateDiet]);
-
-  const { menuCreateNAAlert } = useMemo(() => {
-    // console.log("modalProps: menuCreateNAAlert memo");
-    const menuCreateNAAlert = {
-      numOfBtn: 1,
-      contentDelay: 0,
-      confirmLabel: "확인",
-      onConfirm: () => {
-        commonClose("menuCreateNAAlert");
-      },
-      onCancel: () => commonClose("menuCreateNAAlert"),
-      renderContent: () => (
-        <CommonAlertContent text={addDietNAText} subText={addDietNASubtext} />
-      ),
-    } as IModalProps["menuCreateNAAlert"];
-    return { menuCreateNAAlert };
-  }, [addDietNAText]);
-
   const {
-    autoMenuLoadingAlert,
-    autoMenuErrorAlert,
     autoMenuOverPriceAlert,
     tutorialCompleteAlert,
-    tutorialFoodLimitAlert,
     tutorialRestartAlert,
     myBonusGuideAlert,
     targetCalorieGuideAlert,
   } = useMemo(() => {
     // console.log("modalProps: autoMenuAlert memo");
-    const autoMenuLoadingAlert = {
-      numOfBtn: 0,
-      contentDelay: 0,
-      confirmLabel: "확인",
-      onConfirm: () => {
-        commonClose("autoMenuLoadingAlert");
-      },
-      onCancel: () => commonClose("autoMenuLoadingAlert"),
-      renderContent: () => <LoadingAlertContent />,
-    } as IModalProps["autoMenuLoadingAlert"];
-
-    const autoMenuErrorAlert = {
-      numOfBtn: 1,
-      contentDelay: 0,
-      confirmLabel: "확인",
-      onConfirm: () => {
-        commonClose("autoMenuErrorAlert");
-      },
-      onCancel: () => commonClose("autoMenuErrorAlert"),
-      renderContent: () => (
-        <CommonAlertContent
-          text={"자동구성 오류가 발생했어요"}
-          subText={"재시도 후에도 오류가 지속되면\n문의 부탁드립니다"}
-        />
-      ),
-    } as IModalProps["autoMenuErrorAlert"];
-
     const autoMenuOverPriceAlert = {
       numOfBtn: 1,
       contentDelay: 0,
@@ -352,22 +233,6 @@ export const useModalProps = () => {
         />
       ),
     } as IModalProps["tutorialCompleteAlert"];
-
-    const tutorialFoodLimitAlert = {
-      numOfBtn: 1,
-      contentDelay: 0,
-      confirmLabel: "확인",
-      onConfirm: () => {
-        commonClose("tutorialFoodLimitAlert");
-      },
-      onCancel: () => commonClose("tutorialFoodLimitAlert"),
-      renderContent: () => (
-        <CommonAlertContent
-          text={"지금은 식품을\n하나만 추가할게요"}
-          subText={"튜토리얼이 끝나면\n자유롭게 식품을 추가할 수 있어요"}
-        />
-      ),
-    } as IModalProps["tutorialFoodLimitAlert"];
 
     const tutorialRestartAlert = {
       numOfBtn: 2,
@@ -415,11 +280,8 @@ export const useModalProps = () => {
     } as IModalProps["targetCalorieGuideAlert"];
 
     return {
-      autoMenuLoadingAlert,
-      autoMenuErrorAlert,
       autoMenuOverPriceAlert,
       tutorialCompleteAlert,
-      tutorialFoodLimitAlert,
       tutorialRestartAlert,
       myBonusGuideAlert,
       targetCalorieGuideAlert,
@@ -445,26 +307,6 @@ export const useModalProps = () => {
     } as IModalProps["payFailAlert"];
     return { payFailAlert };
   }, [modalState.values.payFailAlert?.payFailMsg]);
-
-  const { payUrlAlert } = useMemo(() => {
-    // console.log("modalProps: payUrlAlert memo");
-    const payUrlAlert = {
-      numOfBtn: 1,
-      contentDelay: 0,
-      confirmLabel: "확인",
-      onConfirm: () => {
-        commonClose("payUrlAlert");
-      },
-      onCancel: () => commonClose("payUrlAlert"),
-      renderContent: () => (
-        <CommonAlertContent
-          text={"앱이 설치되어있는지 확인해주세요"}
-          subText="문제가 계속되면 문의 바랍니다"
-        />
-      ),
-    } as IModalProps["payUrlAlert"];
-    return { payUrlAlert };
-  }, []);
 
   const { appUpdateAlert } = useMemo(() => {
     // console.log("modalProps: appUpdateAlert memo");
@@ -580,42 +422,6 @@ export const useModalProps = () => {
     return { addressDeleteAlert };
   }, [modalState.values.addressDeleteAlert.addressNoToDel]);
 
-  const { noProductAlert } = useMemo(() => {
-    const noProductAlert = {
-      numOfBtn: 1,
-      contentDelay: 0,
-      confirmLabel: "확인",
-      onConfirm: () => {
-        if (isTutorialMode && tutorialProgress === "ChangeFood") {
-          dispatch(setTutorialProgress("AutoMenu"));
-          router.back();
-        }
-        commonClose("noProductAlert");
-      },
-      onCancel: () => commonClose("noProductAlert"),
-      renderContent: () => {
-        if (modalState.values.noProductAlert?.screen !== "Change") {
-          return (
-            <CommonAlertContent text="해당 필터에 적용되는 상품이 없어요" />
-          );
-        }
-        return isTutorialMode && tutorialProgress === "ChangeFood" ? (
-          <CommonAlertContent
-            text="해당 식품과 비슷한 상품이 없어요"
-            subText="지금은 다음으로 넘어갈게요!"
-          />
-        ) : (
-          <CommonAlertContent text="해당 식품과 비슷한 상품이 없어요" />
-        );
-      },
-    } as IModalProps["noProductAlert"];
-    return { noProductAlert };
-  }, [
-    isTutorialMode,
-    tutorialProgress,
-    modalState.values.noProductAlert?.screen,
-  ]);
-
   const { changeTargetAlert, noStockAlert, orderEmptyAlert } = useMemo(() => {
     // console.log("modalProps: changeTargetAlert memo");
     const changeTargetAlert = {
@@ -721,33 +527,17 @@ export const useModalProps = () => {
     isTutorialMode,
   ]);
 
-  // BottomSheet
-  const { menuNumSelectBS } = useMemo(() => {
-    // console.log("modalProps: filterBS/sortBS/menuNumSelectBS memo");
-    const menuNumSelectBS = {
-      onCancel: () => commonClose("menuNumSelectBS"),
-      renderContent: () => <MenuNumSelectContent />,
-    } as IModalProps["menuNumSelectBS"];
-
-    return { menuNumSelectBS };
-  }, []);
-
   // modal props obj
   const modalProps = {
     // alert
     // 끼니 추가삭제, 식품 삭제
     menuDeleteAllAlert,
-    menuCreateAlert,
-    menuCreateNAAlert,
 
     // 자동구성
-    autoMenuLoadingAlert,
-    autoMenuErrorAlert,
     autoMenuOverPriceAlert,
 
     // 튜토리얼
     tutorialCompleteAlert,
-    tutorialFoodLimitAlert,
     tutorialRestartAlert,
 
     // 정보
@@ -756,7 +546,6 @@ export const useModalProps = () => {
 
     // 결제
     payFailAlert,
-    payUrlAlert,
 
     // 기타
     appUpdateAlert,
@@ -764,16 +553,12 @@ export const useModalProps = () => {
     friendCdAlert,
     accountWithdrawalAlert,
     addressDeleteAlert,
-    noProductAlert,
     changeTargetAlert,
     noStockAlert,
     orderEmptyAlert,
 
     // transparentScreen (action 없음)
     tutorialTPSStart,
-
-    // BottomSheet (action 없음)
-    menuNumSelectBS,
   };
 
   let numOfBtn = 0 as 0 | 1 | 2;
@@ -784,7 +569,6 @@ export const useModalProps = () => {
   let onCancel = undefined;
   let onConfirm = undefined;
   let renderAlertContent = undefined;
-  let renderBSContent = undefined;
   let style = undefined;
   let renderTPSContent = undefined;
 
@@ -799,7 +583,6 @@ export const useModalProps = () => {
       onCancel,
       onConfirm,
       renderAlertContent,
-      renderBSContent,
       renderTPSContent,
     };
   } else if (currentModalNm.endsWith("Alert")) {
@@ -810,10 +593,6 @@ export const useModalProps = () => {
     onConfirm = modalProps[currentModalNm]?.onConfirm;
     onCancel = modalProps[currentModalNm]?.onCancel;
     renderAlertContent = modalProps[currentModalNm]?.renderContent;
-  } else if (currentModalNm.endsWith("BS")) {
-    renderBSContent = modalProps[currentModalNm]?.renderContent;
-    onCancel = modalProps[currentModalNm]?.onCancel;
-    contentHeightBS = modalProps[currentModalNm]?.contentHeight;
   } else {
     contentDelay = modalProps[currentModalNm]?.contentDelay || 0;
     renderTPSContent = modalProps[currentModalNm]?.renderContent;
@@ -831,7 +610,6 @@ export const useModalProps = () => {
     onCancel,
     onConfirm,
     renderAlertContent,
-    renderBSContent,
     renderTPSContent,
   };
 };

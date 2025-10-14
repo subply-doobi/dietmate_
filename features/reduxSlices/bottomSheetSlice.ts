@@ -4,7 +4,7 @@ import {
   IDietDetailProductData,
   IDietTotalObjData,
 } from "@/shared/api/types/diet";
-import { IProductData, IProductDetailData } from "@/shared/api/types/product";
+import { IProductData } from "@/shared/api/types/product";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type IBSNm =
@@ -16,8 +16,6 @@ export type IBSNm =
   // product select
   | "productToAddSelect"
   | "productToDelSelect"
-  // menu qty change
-  | "qtyChange"
   // formula summary
   | "summaryInfo";
 
@@ -38,11 +36,8 @@ export type IBSAction =
 
 interface BottomSheetState {
   bsData: {
-    pToAdd: (IProductData | IDietDetailProductData)[];
-    pToDel: (IProductData | IDietDetailProductData)[];
-    qtyChange: {
-      menuIdx: number;
-    };
+    pToAdd: IProductData[];
+    pToDel: IDietDetailProductData[];
     dietQtyMap: Record<string, number>;
     changedDietNoArr: string[];
     originalDietQtyMap?: Record<string, number>; // for change comparison
@@ -84,7 +79,6 @@ const initialState: BottomSheetState = {
   bsData: {
     pToAdd: [],
     pToDel: [],
-    qtyChange: { menuIdx: 0 },
     dietQtyMap: {},
     changedDietNoArr: [],
   },
@@ -244,15 +238,12 @@ const bottomSheetSlice = createSlice({
     },
 
     // product select
-    setProductToAdd: (
-      state,
-      action: PayloadAction<(IProductData | IDietDetailProductData)[]>
-    ) => {
+    setProductToAdd: (state, action: PayloadAction<IProductData[]>) => {
       state.bsData.pToAdd = action.payload;
     },
     setProductToDel: (
       state,
-      action: PayloadAction<(IProductData | IDietDetailProductData)[]>
+      action: PayloadAction<IDietDetailProductData[]>
     ) => {
       state.bsData.pToDel = action.payload;
     },
@@ -266,17 +257,6 @@ const bottomSheetSlice = createSlice({
     ) => {
       state.currentValue = action.payload;
     },
-
-    // lower shipping bottom sheet
-    setLSQtyChange: (
-      state,
-      action: PayloadAction<{
-        menuIdx: number;
-      }>
-    ) => {
-      state.bsData.qtyChange.menuIdx = action.payload.menuIdx;
-    },
-
     resetBSData: (state) => {
       state.bsData = initialState.bsData;
     },
@@ -340,7 +320,6 @@ export const {
   resetBSActionQueue,
 
   // bsData
-  setLSQtyChange,
   setDietQtyMap,
   plusQty,
   minusQty,

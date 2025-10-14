@@ -307,8 +307,6 @@ const CarouselCta = ({
   );
 };
 
-/* <LoadingAlertContent /> */
-
 export default CarouselCta;
 
 const BtnBox = styled.View`

@@ -11,24 +11,29 @@ import {
 import colors from "@/shared/colors";
 import { commaToNum } from "@/shared/utils/sumUp";
 import { regroupDDataBySeller } from "@/shared/utils/dataTransform";
-import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { ENV, MENU_LABEL } from "@/shared/constants";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { IDietDetailData } from "@/shared/api/types/diet";
 
 const FoodToOrder = () => {
   // redux
-  const { foodToOrder } = useAppSelector((state) => state.order);
+  const { data: dTOData, isLoading } = useListDietTotalObj();
 
-  if (!foodToOrder) {
+  if (isLoading) {
     return <ActivityIndicator />;
   }
   return (
     <AccordionContentContainer style={{ rowGap: 40 }}>
-      {foodToOrder &&
-        Object.keys(foodToOrder).map((dietNo, index) => {
-          if (foodToOrder[dietNo].dietDetail.length > 0)
+      {dTOData &&
+        Object.keys(dTOData).map((dietNo, index) => {
+          if (dTOData[dietNo].dietDetail.length > 0)
             return (
               <Col key={`${dietNo}-${index}`}>
-                <FoodsInOneDiet dietNo={dietNo} />
+                <FoodsInOneDiet
+                  idx={index}
+                  dietNo={dietNo}
+                  dDData={dTOData[dietNo]?.dietDetail || []}
+                />
               </Col>
             );
         })}
@@ -36,26 +41,23 @@ const FoodToOrder = () => {
   );
 };
 interface FoodInOneDietProps {
+  idx: number;
   dietNo: string;
+  dDData: IDietDetailData;
 }
-const FoodsInOneDiet = ({ dietNo }: FoodInOneDietProps) => {
-  //redux
-  const { foodToOrder } = useAppSelector((state) => state.order);
-
-  const idx = Object.keys(foodToOrder).findIndex((key) => key === dietNo);
-  const dDData = foodToOrder?.[dietNo]?.dietDetail ?? [];
+const FoodsInOneDiet = ({ idx, dietNo, dDData }: FoodInOneDietProps) => {
   const { regrouped: dDDataBySeller } = regroupDDataBySeller(dDData);
   const platformNmArr = Object.keys(dDDataBySeller);
 
-  if (!foodToOrder) {
+  if (!dDData) {
     return <ActivityIndicator />;
   }
 
   return (
     <Col>
-      {foodToOrder && (
+      {dDData && (
         <View>
-          <MenuTitle>{`${MENU_LABEL[idx]} ( x${foodToOrder[dietNo].dietDetail[0]?.qty} )`}</MenuTitle>
+          <MenuTitle>{`${MENU_LABEL[idx]} ( x${dDData[0]?.qty} )`}</MenuTitle>
           <HorizontalLine
             style={{ marginTop: 8, backgroundColor: colors.line }}
           />

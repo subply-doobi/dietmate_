@@ -3,12 +3,13 @@ import colors from "@/shared/colors";
 import styled from "styled-components/native";
 import { Image } from "react-native";
 import Icon from "@/shared/ui/Icon";
-import { ENV } from "@/shared/constants";
+import { ENV, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { snapBS } from "@/features/reduxSlices/bottomSheetSlice";
 import { scrollCarouselTo } from "@/features/reduxSlices/formulaSlice";
+import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
 
 interface DietCardProps {
   dietNo: string;
@@ -37,6 +38,7 @@ const DietCard = ({
   // react-query
   const { data: dTOData } = useListDietTotalObj();
   const menuIdx = Object.keys(dTOData || {}).indexOf(dietNo);
+  const menuPrice = sumUpPrice(dTOData?.[dietNo]?.dietDetail || []);
 
   const isEmpty = sellers.length === 0;
   const moveToMenu = () => {
@@ -65,6 +67,9 @@ const DietCard = ({
         </QtyBtn>
         <MenuBtn onPress={moveToMenu}>
           <DietTitle>{label}</DietTitle>
+          <QtyValue style={{ color: colors.textSub }}>{`(${commaToNum(
+            menuPrice
+          )}원)`}</QtyValue>
           <QtyValue isChanged={isChanged}>{`x${qty}`}</QtyValue>
         </MenuBtn>
         <QtyBtn onPress={() => onPlus(dietNo)} disabled={isEmpty}>
@@ -104,7 +109,12 @@ const DietCard = ({
                       <ProductName numberOfLines={1} ellipsizeMode="tail">
                         {p.productNm}
                       </ProductName>
-                      <Price>{Number(p.price).toLocaleString()}원</Price>
+                      <Price>
+                        {(
+                          Number(p.price) + SERVICE_PRICE_PER_PRODUCT
+                        ).toLocaleString()}
+                        원
+                      </Price>
                     </Col>
                   </ProductRow>
                 ))}
@@ -188,7 +198,7 @@ const Price = styled(TextSub)`
 const MenuBtn = styled.TouchableOpacity`
   flex-direction: row;
   column-gap: 8px;
-  align-items: center;
+  align-items: flex-end;
 `;
 
 const EmptyBtn = styled.TouchableOpacity`

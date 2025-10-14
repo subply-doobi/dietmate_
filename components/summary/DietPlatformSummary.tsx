@@ -89,90 +89,98 @@ export default function DietPlatformSummary({
           return (
             <Col key={s.platformNm} style={{ rowGap: 4 }}>
               {/* 1st line: platformNm */}
-              <Row style={{ alignItems: "center" }}>
-                <Label size={textSize} style={{ color: colors.white }}>
-                  {s.platformNm}
-                </Label>
-              </Row>
+              <Label size={textSize} style={{ color: colors.white }}>
+                {s.platformNm}
+              </Label>
               {/* 2nd line: 식품 : price */}
               <Col>
-                <Row style={{ alignItems: "center" }}>
-                  <Label
-                    size={textSize}
-                    style={{
-                      color: baseTextColor,
-                      minWidth: 40,
-                      marginRight: 8,
-                    }}
-                  >
-                    식품 :
-                  </Label>
-                  {priceChanged && (
-                    <Strike size={textSize}>
-                      {Math.round(s.originalTotalPrice).toLocaleString()}원
-                    </Strike>
-                  )}
-                  <Value
-                    size={textSize}
-                    highlight={priceChanged}
-                    style={
-                      highlightColor
-                        ? {
-                            color: priceChanged
-                              ? highlightColor
-                              : baseTextColor,
-                          }
-                        : undefined
-                    }
-                  >
-                    {Math.round(s.changedTotalPrice).toLocaleString()}원
-                  </Value>
-                </Row>
-                {/* 3rd line: 배송비 : shippingPrice (~원 더 구매시 무료) */}
-                <Row style={{ alignItems: "center" }}>
-                  <Label
-                    size={textSize}
-                    style={{
-                      color: baseTextColor,
-                      minWidth: 40,
-                      marginRight: 8,
-                    }}
-                  >
-                    배송비 :
-                  </Label>
-                  {shipChanged && (
-                    <Strike size={textSize}>
-                      {s.originalShippingPrice === 0
+                <Row
+                  style={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Row style={{ alignItems: "center" }}>
+                    <Label
+                      size={textSize}
+                      style={{
+                        color: baseTextColor,
+                        // minWidth: 40,
+                        marginRight: 8,
+                      }}
+                    >
+                      식품 :
+                    </Label>
+                    {priceChanged && (
+                      <Strike size={textSize}>
+                        {Math.round(s.originalTotalPrice).toLocaleString()}원
+                      </Strike>
+                    )}
+                    <Value
+                      size={textSize}
+                      highlight={priceChanged}
+                      style={
+                        highlightColor
+                          ? {
+                              color: priceChanged
+                                ? highlightColor
+                                : baseTextColor,
+                            }
+                          : undefined
+                      }
+                    >
+                      {Math.round(s.changedTotalPrice).toLocaleString()}원
+                    </Value>
+                  </Row>
+                  {/* 3rd line: 배송비 : shippingPrice (~원 더 구매시 무료) */}
+                  <Row style={{ alignItems: "center" }}>
+                    <Label
+                      size={textSize}
+                      style={{
+                        color: baseTextColor,
+                        // minWidth: 40,
+                      }}
+                    >
+                      배송비:{" "}
+                    </Label>
+                    {shipChanged && (
+                      <Strike size={textSize}>
+                        {s.originalShippingPrice === 0
+                          ? "무료"
+                          : `${Math.round(
+                              s.originalShippingPrice
+                            ).toLocaleString()}원`}
+                      </Strike>
+                    )}
+                    <Value
+                      size={textSize}
+                      highlight={shipChanged}
+                      style={
+                        highlightColor
+                          ? {
+                              color: shipChanged
+                                ? highlightColor
+                                : baseTextColor,
+                            }
+                          : undefined
+                      }
+                    >
+                      {s.changedShippingPrice === 0
                         ? "무료"
                         : `${Math.round(
-                            s.originalShippingPrice
+                            s.changedShippingPrice
                           ).toLocaleString()}원`}
-                    </Strike>
-                  )}
-                  <Value
-                    size={textSize}
-                    highlight={shipChanged}
-                    style={
-                      highlightColor
-                        ? {
-                            color: shipChanged ? highlightColor : baseTextColor,
-                          }
-                        : undefined
-                    }
-                  >
-                    {s.changedShippingPrice === 0
-                      ? "무료"
-                      : `${Math.round(
-                          s.changedShippingPrice
-                        ).toLocaleString()}원`}
-                  </Value>
-                  {/* Remain to Free - only show if shipping is not already free and remain > 0 */}
-                  {s.changedShippingPrice > 0 && s.changedRemainToFree > 0 && (
-                    <Label size={textSize} dim style={{ marginLeft: 8 }}>
-                      ({Math.round(s.changedRemainToFree).toLocaleString()}원 더
-                      구매시 무료)
-                    </Label>
-                  )}
+                    </Value>
+                    {/* Remain to Free - only show if shipping is not already free and remain > 0 */}
+                    {s.changedShippingPrice > 0 &&
+                      s.changedRemainToFree > 0 && (
+                        <Label size={textSize} dim>
+                          {" "}
+                          ({Math.round(s.changedRemainToFree).toLocaleString()}
+                          원 더 구매시 무료)
+                        </Label>
+                      )}
+                  </Row>
                 </Row>
               </Col>
             </Col>

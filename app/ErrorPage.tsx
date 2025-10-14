@@ -6,7 +6,6 @@ import styled from "styled-components/native";
 
 // doobi
 import { Col, Container, TextMain, TextSub } from "@/shared/ui/styledComps";
-``;
 import colors from "@/shared/colors";
 import { useLocalSearchParams } from "expo-router";
 import Icon from "@/shared/ui/Icon";

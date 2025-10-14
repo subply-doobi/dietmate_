@@ -45,11 +45,6 @@ export interface ICommonState {
   menuAcActive: number[];
   isTutorialMode: boolean;
   tutorialProgress: ITutorialProgress;
-  autoMenuStatus: {
-    isLoading: boolean;
-    isSuccess: boolean;
-    isError: boolean;
-  };
 }
 
 const initialState: ICommonState = {
@@ -75,11 +70,6 @@ const initialState: ICommonState = {
   menuAcActive: [],
   isTutorialMode: false,
   tutorialProgress: "",
-  autoMenuStatus: {
-    isLoading: false,
-    isSuccess: false,
-    isError: false,
-  },
 };
 
 export const commonSlice = createSlice({
@@ -149,16 +139,6 @@ export const commonSlice = createSlice({
       state.isTutorialMode = false;
       state.tutorialProgress = "";
     },
-    setAutoMenuStatus: (
-      state,
-      action: PayloadAction<{
-        isLoading?: boolean;
-        isSuccess?: boolean;
-        isError?: boolean;
-      }>
-    ) => {
-      state.autoMenuStatus = { ...state.autoMenuStatus, ...action.payload };
-    },
   },
 });
 
@@ -172,6 +152,5 @@ export const {
   setTutorialStart,
   setTutorialEnd,
   setTutorialProgress,
-  setAutoMenuStatus,
 } = commonSlice.actions;
 export default commonSlice.reducer;

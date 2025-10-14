@@ -60,7 +60,6 @@ const SummaryInfoBSComp = () => {
     const totals = getSummaryTotalsFromSummaries(summaryArr, dTOData);
     const sellers = summaryArr.map((s) => s.platformNm);
     const totalMenuNum = totals.menuNumTotal;
-    console.log("SummaryInfoBSComp totalMenuNum: ", totalMenuNum);
 
     const firstTargetSeller = summaryArr[0]?.platformNm || "";
     const remainToFree = summaryArr[0]?.changedRemainToFree || 0;
@@ -99,7 +98,6 @@ const SummaryInfoBSComp = () => {
   const addFirstTargetSeller = useCallback(async () => {
     if (!firstTargetSeller) return;
     const res = await createDietMutation.mutateAsync();
-    console.log("Created diet:", res);
     dispatch(setCurrentFMCIdx(totalMenuNum - 1));
     router.push({
       pathname: "/AutoAdd",

@@ -1,18 +1,17 @@
 import {
+  IDietDetailData,
   IDietDetailProductData,
   IDietTotalObjData,
 } from "@/shared/api/types/diet";
+import { SERVICE_PRICE_PER_PRODUCT } from "../constants";
+import { IProductData } from "../api/types/product";
 
 export interface PlatformSummary {
   platformNm: string;
   originalTotalPrice: number;
   changedTotalPrice: number;
-  originalShippingPrice: number; // 0 if free
-  changedShippingPrice: number; // 0 if free
-  /**
-   * Amount remaining to reach free shipping. Negative means total exceeds freeShippingPrice.
-   * Zero means exactly at threshold. Positive means amount left to reach free shipping.
-   */
+  originalShippingPrice: number;
+  changedShippingPrice: number;
   originalRemainToFree: number;
   changedRemainToFree: number;
   hasChanges: boolean;
@@ -41,8 +40,8 @@ function pickPlatformPolicy(items: IDietDetailProductData[]) {
 }
 
 export interface FoodChange {
-  delete?: string; // productNo to delete
-  add?: IDietDetailProductData; // product to add
+  delete?: IDietDetailProductData; // product to delete
+  add?: IProductData; // product to add
 }
 
 /**
@@ -56,50 +55,108 @@ export function getPlatformSummaries(
   dietQtyMap?: Record<string, number>,
   foodChangeMap?: Record<string, FoodChange>
 ): PlatformSummary[] {
-  if (!dTOData) return [];
+  // If no data and no food changes, return empty
+  if (!dTOData && !foodChangeMap) return [];
 
   // Group items by platformNm
   const byPlatform: Record<string, IDietDetailProductData[]> = {};
 
-  Object.values(dTOData).forEach(({ dietNo, dietDetail }) => {
-    (dietDetail || []).forEach((item) => {
-      const platform = item.platformNm || "";
-      if (!byPlatform[platform]) byPlatform[platform] = [];
-      byPlatform[platform].push(item);
+  // Add existing items from dTOData if available
+  if (dTOData) {
+    Object.values(dTOData).forEach(({ dietNo, dietDetail }) => {
+      (dietDetail || []).forEach((item) => {
+        const platform = item.platformNm || "";
+        if (!byPlatform[platform]) byPlatform[platform] = [];
+        byPlatform[platform].push(item);
+      });
     });
-  });
+  }
+
+  // Handle food changes to add items to platforms even if dTOData is empty
+  if (foodChangeMap) {
+    Object.entries(foodChangeMap).forEach(([dietNo, change]) => {
+      if (change.add) {
+        const platform = change.add.platformNm || "";
+        if (!byPlatform[platform]) byPlatform[platform] = [];
+
+        const currentDietQty = dietQtyMap?.[dietNo]
+          ? String(dietQtyMap[dietNo])
+          : dTOData?.[dietNo]?.dietDetail[0]?.qty || "1";
+
+        const addItem = {
+          ...change.add,
+          dietNo,
+          qty: currentDietQty,
+          dietSeq: "",
+          statusCd: "",
+          statusNm: "",
+        };
+
+        // Add the item to the platform for processing
+        byPlatform[platform].push(addItem);
+      }
+    });
+  }
 
   const platformEntries = Object.entries(byPlatform);
   const summaries: PlatformSummary[] = platformEntries.map(
     ([platformNm, items]) => {
-      // --- Original total: always use product qty ---
+      // Filter out items that were only added via foodChangeMap for original calculation
+      const originalItems = dTOData
+        ? items.filter((item) => {
+            // Check if this item exists in the original dTOData
+            if (!dTOData) return false;
+            return Object.values(dTOData).some(({ dietDetail }) =>
+              dietDetail?.some(
+                (originalItem) => originalItem.productNo === item.productNo
+              )
+            );
+          })
+        : [];
+
+      // --- Original total: only use items that existed in dTOData ---
       let originalTotal = 0;
-      items.forEach((item) => {
-        const price = toNumber(item.price, 0);
+      originalItems.forEach((item) => {
+        const price = toNumber(item.price, 0) + SERVICE_PRICE_PER_PRODUCT;
         const qty = toNumber(item.qty, 1);
         originalTotal += price * qty;
       });
 
       // --- Changed total: apply dietQtyMap and foodChangeMap if present ---
       let changedTotal = 0;
-      // 1. Start with all items
-      let changedItems = [...items];
-      // 2. Apply food change: for each dietNo, if both delete and add, swap
+      // 1. Start with original items
+      let changedItems = [...originalItems];
+
+      // 2. Apply food changes
       if (foodChangeMap) {
         Object.entries(foodChangeMap).forEach(([dietNo, change]) => {
-          if (change.delete && change.add) {
-            // Remove the item with productNo == delete
+          // Remove item if delete is specified
+          if (change.delete) {
             changedItems = changedItems.filter(
-              (it) => it.dietNo !== dietNo || it.productNo !== change.delete
+              (it) =>
+                it.dietNo !== dietNo ||
+                it.productNo !== change.delete?.productNo
             );
-            // Add the new food (with correct dietNo)
-            changedItems.push({ ...change.add, dietNo });
+          }
+          // Add item if add is specified
+          if (change.add) {
+            const currentDietQty = dietQtyMap?.[dietNo]
+              ? String(dietQtyMap[dietNo])
+              : dTOData?.[dietNo]?.dietDetail[0]?.qty || "1";
+            changedItems.push({
+              ...change.add,
+              dietNo,
+              qty: currentDietQty,
+              dietSeq: "",
+              statusCd: "",
+              statusNm: "",
+            });
           }
         });
       }
       // 3. Apply qty changes if present
       changedItems.forEach((item) => {
-        const price = toNumber(item.price, 0);
+        const price = toNumber(item.price, 0) + SERVICE_PRICE_PER_PRODUCT;
         const originalQty = toNumber(item.qty, 1);
         const changedQty =
           dietQtyMap && item.dietNo in dietQtyMap
@@ -108,8 +165,11 @@ export function getPlatformSummaries(
         changedTotal += price * changedQty;
       });
 
+      // Use changed items if no original items (for policy calculation)
+      const policyItems =
+        originalItems.length > 0 ? originalItems : changedItems;
       const { shippingPrice, freeShippingPrice, thresholdBasedFree } =
-        pickPlatformPolicy(items);
+        pickPlatformPolicy(policyItems);
 
       // Original shipping (follow policy)
       const originalFree =
@@ -195,6 +255,7 @@ export interface SummaryTotals {
   originalGrandTotal: number; // products + shipping
   changedGrandTotal: number; // products + shipping
   menuNumTotal: number;
+  productNumTotal: number;
 }
 /**
  * Aggregates summary totals from platform summaries and menu data in a single loop.
@@ -213,6 +274,7 @@ export function getSummaryTotalsFromSummaries(
   let changedShippingTotal = 0;
   // menuNumTotal: sum of all menu quantities (from dTOData)
   let menuNumTotal = 0;
+  let productNumTotal = 0;
 
   for (let i = 0; i < summaries.length; i++) {
     const s = summaries[i];
@@ -227,6 +289,10 @@ export function getSummaryTotalsFromSummaries(
         dietQtyMap?.[dietNo] ||
         parseInt(dTOData[dietNo]?.dietDetail[0]?.qty) ||
         0;
+
+      for (const p of dTOData[dietNo]?.dietDetail || []) {
+        productNumTotal += dietQtyMap?.[dietNo] ?? parseInt(p.qty) ?? 0;
+      }
     }
   }
   return {
@@ -237,6 +303,7 @@ export function getSummaryTotalsFromSummaries(
     originalGrandTotal: originalProductsTotal + originalShippingTotal,
     changedGrandTotal: changedProductsTotal + changedShippingTotal,
     menuNumTotal,
+    productNumTotal,
   };
 }
 

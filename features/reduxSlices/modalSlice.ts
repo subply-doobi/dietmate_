@@ -1,21 +1,15 @@
-import { store } from "@/shared/store/reduxStore";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type IModalName =
   // alert
   // 끼니 추가삭제, 식품 삭제
   | "menuDeleteAllAlert"
-  | "menuCreateAlert"
-  | "menuCreateNAAlert"
 
   // 자동구성
-  | "autoMenuLoadingAlert"
-  | "autoMenuErrorAlert"
   | "autoMenuOverPriceAlert"
 
   // 튜토리얼
   | "tutorialCompleteAlert"
-  | "tutorialFoodLimitAlert"
   | "tutorialRestartAlert"
 
   // 정보
@@ -24,7 +18,6 @@ export type IModalName =
 
   // 결제
   | "payFailAlert" // 결제 실패
-  | "payUrlAlert" // 결제 url 오류 (해당 앱url 실행 불가)
 
   // 기타
   | "appUpdateAlert" // 앱업데이트
@@ -32,33 +25,21 @@ export type IModalName =
   | "friendCdAlert" // 친구코드 오류
   | "accountWithdrawalAlert" // 계정삭제
   | "addressDeleteAlert" // 주소삭제
-  | "noProductAlert" // 상품없음
   | "changeTargetAlert" // 체크리스트 완료 후 목표 설정
   | "noStockAlert" // 구매직전 재고 없음
   | "orderEmptyAlert" // 주문내역 없음
 
   // transparentScreen
-  | "tutorialTPSStart" // 튜토리얼 시작
-
-  // bottomSheet
-  | "menuNumSelectBS";
+  | "tutorialTPSStart"; // 튜토리얼 시작
 
 export interface IModalValues {
   // alert
   requestErrorAlert: { code?: number | null; msg?: string };
-  menuDeleteAlert: { dietNoToDel?: string };
-  productDeleteAlert: {
-    productNoToDelArr?: string[];
-    dietNoToProductDel?: string;
-  };
   addressDeleteAlert: { addressNoToDel?: string; nextAddrIdx?: number };
-  noProductAlert: { screen?: string };
   payFailAlert: { payFailMsg?: string };
   targetCalorieGuideAlert: { menuPerDay?: number };
   // transparentScreen
   tutorialTPSStart: { tutorialStartCTABtnPy?: number; insetTop?: number };
-  // bottomSheet
-  menuNumSelectBS: { dietNoToNumControl?: string };
 }
 
 export type IModalValue = IModalValues[keyof IModalValues];
@@ -74,29 +55,15 @@ const initialState: IModalState = {
       code: null,
       msg: "",
     },
-    menuDeleteAlert: {
-      dietNoToDel: "",
-    },
-    productDeleteAlert: {
-      productNoToDelArr: [],
-      dietNoToProductDel: "",
-    },
     addressDeleteAlert: {
       addressNoToDel: "",
       nextAddrIdx: 0,
-    },
-    noProductAlert: {
-      screen: "",
     },
     payFailAlert: {
       payFailMsg: "",
     },
     targetCalorieGuideAlert: {
       menuPerDay: 3,
-    },
-    // BottomSheet
-    menuNumSelectBS: {
-      dietNoToNumControl: "",
     },
     // tutorialTPS
     tutorialTPSStart: {

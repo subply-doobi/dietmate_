@@ -27,7 +27,7 @@ import {
   resetCarouselActionQueue,
 } from "@/features/reduxSlices/formulaSlice";
 import CtaButton from "@/shared/ui/CtaButton";
-import { getNutrStatus, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
+import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import DTooltip from "@/shared/ui/DTooltip";
 import {
@@ -40,9 +40,9 @@ import Icon from "@/shared/ui/Icon";
 import { checkNoStockPAll } from "@/shared/utils/productStatusCheck";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { setTotalFoodList } from "@/features/reduxSlices/commonSlice";
-import { setFoodToOrder } from "@/features/reduxSlices/orderSlice";
 import { useListProduct } from "@/shared/api/queries/product";
 import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
+import { getSummaryTotals } from "@/shared/utils/dietSummary";
 
 const width = Dimensions.get("window").width;
 
@@ -55,10 +55,13 @@ const Formula = () => {
   const dispatch = useAppDispatch();
   const modalSeq = useAppSelector((state) => state.modal.modalSeq);
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
+  const formulaProgress = useAppSelector(
+    (state) => state.formula.formulaProgress
+  );
+  const currentFMProgress = formulaProgress[formulaProgress.length - 1];
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
   const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
   const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
-  const pToAdd = useAppSelector((state) => state.bottomSheet.bsData.pToAdd);
   const carouselActionQueue = useAppSelector(
     (state) => state.formula.carouselActionQueue
   );
@@ -85,7 +88,9 @@ const Formula = () => {
         isAllSuccess: false,
         priceTotal: 0,
       };
-    const { menuNum, priceTotal } = sumUpDietFromDTOData(dTOData);
+    const { menuNumTotal: menuNum, changedProductsTotal: priceTotal } =
+      getSummaryTotals(dTOData);
+
     const isSuccessArr = Object.values(dTOData).map((item) => {
       const { dietDetail } = item;
       const isSuccess = getNutrStatus({
@@ -114,7 +119,7 @@ const Formula = () => {
   }, [dTOData]);
 
   useEffect(() => {
-    if (menuNum === 0 && priceTotal === 0) {
+    if (currentFMProgress !== "Formula") {
       return;
     }
     if (isFocused) {
@@ -298,13 +303,11 @@ const Formula = () => {
                 !!data && dispatch(setTotalFoodList(data));
                 return;
               }
-              !!dTOData && dispatch(setFoodToOrder(dTOData));
               router.push({ pathname: "/Order" });
             }}
           />
         )}
 
-        {/* <EdgeInfo visible={priceTotal > 0} /> */}
         {isAllSuccess && (
           <DTooltip
             tooltipShow={isAllSuccess}

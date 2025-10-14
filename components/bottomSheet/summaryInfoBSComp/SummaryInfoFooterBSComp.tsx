@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import CartSummary from "@/components/screens/diet/CartSummary";
 import { setDietQtyMap } from "@/features/reduxSlices/bottomSheetSlice";
 import {
   useListDietTotalObj,

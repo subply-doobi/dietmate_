@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import styled from "styled-components/native";
 import colors from "@/shared/colors";
 import {
+  FoodChange,
   getPlatformSummaries,
   getSummaryTotalsFromSummaries,
 } from "@/shared/utils/dietSummary";
@@ -51,21 +52,57 @@ export default function DietPlatformSummary({
   baseTextColor = colors.white,
 }: DietPlatformSummaryProps) {
   const { data: dTOData } = useListDietTotalObj();
-  const dietQtyMap = useAppSelector((s) => s.bottomSheet.bsData.dietQtyMap);
+  const dietQtyMap = useAppSelector(
+    (s) => s.bottomSheet.bsData.summaryInfo.dietQtyMap
+  );
+  const changedDietNoArr = useAppSelector(
+    (s) => s.bottomSheet.bsData.summaryInfo.changedDietNoArr
+  );
+  const selectedPMap = useAppSelector(
+    (state) => state.bottomSheet.bsData.summaryInfo.selectedPMap
+  );
+
+  const selectedPDietNo: string | undefined = Object.keys(selectedPMap)[0];
 
   const { summaries, totals } = useMemo(() => {
-    const summaries = getPlatformSummaries(dTOData, dietQtyMap);
+    let foodChangeMap: Record<string, FoodChange> | undefined = undefined;
+    if (!!selectedPDietNo) {
+      const pToRemove = selectedPMap[selectedPDietNo]?.pToRemove?.product;
+      const pToAdd = selectedPMap[selectedPDietNo]?.pToAdd?.product;
+      foodChangeMap = {
+        [selectedPDietNo]: {
+          delete: pToRemove,
+          add: pToAdd,
+        },
+      };
+    }
+
+    console.log("=== DietPlatformSummary Debug ===");
+    console.log("changedDietNoArr:", changedDietNoArr);
+    console.log("dietQtyMap:", dietQtyMap);
+    console.log("selectedPDietNo:", selectedPDietNo);
+    console.log("foodChangeMap:", JSON.stringify(foodChangeMap, null, 2));
+
+    const summaries = getPlatformSummaries(
+      dTOData,
+      changedDietNoArr.length > 0 ? dietQtyMap : undefined,
+      foodChangeMap
+    );
+    console.log(
+      "DietPlatformSummary summaries:",
+      JSON.stringify(summaries, null, 2)
+    );
     const totals = getSummaryTotalsFromSummaries(
       summaries,
       dTOData,
-      dietQtyMap
+      changedDietNoArr.length > 0 ? dietQtyMap : undefined
     );
 
     return {
       summaries,
       totals,
     };
-  }, [dTOData, dietQtyMap]);
+  }, [dTOData, dietQtyMap, changedDietNoArr, selectedPMap]);
 
   const hasProductsChange =
     Math.round(totals.changedProductsTotal) !==
@@ -86,6 +123,7 @@ export default function DietPlatformSummary({
             Math.round(s.originalTotalPrice);
           const shipChanged =
             s.changedShippingPrice !== s.originalShippingPrice;
+          const removed = (s as any).removed === true;
           return (
             <Col key={s.platformNm} style={{ rowGap: 4 }}>
               {/* 1st line: platformNm */}
@@ -116,21 +154,23 @@ export default function DietPlatformSummary({
                         {Math.round(s.originalTotalPrice).toLocaleString()}원
                       </Strike>
                     )}
-                    <Value
-                      size={textSize}
-                      highlight={priceChanged}
-                      style={
-                        highlightColor
-                          ? {
-                              color: priceChanged
-                                ? highlightColor
-                                : baseTextColor,
-                            }
-                          : undefined
-                      }
-                    >
-                      {Math.round(s.changedTotalPrice).toLocaleString()}원
-                    </Value>
+                    {!removed && (
+                      <Value
+                        size={textSize}
+                        highlight={priceChanged}
+                        style={
+                          highlightColor
+                            ? {
+                                color: priceChanged
+                                  ? highlightColor
+                                  : baseTextColor,
+                              }
+                            : undefined
+                        }
+                      >
+                        {Math.round(s.changedTotalPrice).toLocaleString()}원
+                      </Value>
+                    )}
                   </Row>
                   {/* 3rd line: 배송비 : shippingPrice (~원 더 구매시 무료) */}
                   <Row style={{ alignItems: "center" }}>
@@ -152,27 +192,30 @@ export default function DietPlatformSummary({
                             ).toLocaleString()}원`}
                       </Strike>
                     )}
-                    <Value
-                      size={textSize}
-                      highlight={shipChanged}
-                      style={
-                        highlightColor
-                          ? {
-                              color: shipChanged
-                                ? highlightColor
-                                : baseTextColor,
-                            }
-                          : undefined
-                      }
-                    >
-                      {s.changedShippingPrice === 0
-                        ? "무료"
-                        : `${Math.round(
-                            s.changedShippingPrice
-                          ).toLocaleString()}원`}
-                    </Value>
+                    {!removed && (
+                      <Value
+                        size={textSize}
+                        highlight={shipChanged}
+                        style={
+                          highlightColor
+                            ? {
+                                color: shipChanged
+                                  ? highlightColor
+                                  : baseTextColor,
+                              }
+                            : undefined
+                        }
+                      >
+                        {s.changedShippingPrice === 0
+                          ? "무료"
+                          : `${Math.round(
+                              s.changedShippingPrice
+                            ).toLocaleString()}원`}
+                      </Value>
+                    )}
                     {/* Remain to Free - only show if shipping is not already free and remain > 0 */}
-                    {s.changedShippingPrice > 0 &&
+                    {!removed &&
+                      s.changedShippingPrice > 0 &&
                       s.changedRemainToFree > 0 && (
                         <Label size={textSize} dim>
                           {" "}

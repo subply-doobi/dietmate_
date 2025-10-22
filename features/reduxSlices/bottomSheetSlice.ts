@@ -6,6 +6,7 @@ import {
 } from "@/shared/api/types/diet";
 import { IProductData } from "@/shared/api/types/product";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { CtaDecisionDetail } from "@/shared/utils/ctaDecision";
 
 export type IBSNm =
   // sort and filter
@@ -38,9 +39,20 @@ interface BottomSheetState {
   bsData: {
     pToAdd: IProductData[];
     pToDel: IDietDetailProductData[];
-    dietQtyMap: Record<string, number>;
-    changedDietNoArr: string[];
-    originalDietQtyMap?: Record<string, number>; // for change comparison
+    summaryInfo: {
+      dietQtyMap: Record<string, number>; // menu : qty
+      originalDietQtyMap: Record<string, number>; // menu : qty
+      changedDietNoArr: string[];
+      ctaDecisions: Record<string, CtaDecisionDetail>; // menu : decisionDetail
+      selectedPMap: Record<
+        string,
+        {
+          pToRemove: { dietNo: string; product: IDietDetailProductData } | null;
+          pToAdd: { dietNo: string; product: IProductData } | null;
+        }
+      >; // menu : {pToRemove, pToAdd}
+      pChangeStep: "standBy" | "showCandidates";
+    };
   };
   bsNmArr: IBSNm[];
   actionQueue: IBSAction[];
@@ -79,8 +91,14 @@ const initialState: BottomSheetState = {
   bsData: {
     pToAdd: [],
     pToDel: [],
-    dietQtyMap: {},
-    changedDietNoArr: [],
+    summaryInfo: {
+      dietQtyMap: {},
+      originalDietQtyMap: {},
+      changedDietNoArr: [],
+      ctaDecisions: {},
+      selectedPMap: {},
+      pChangeStep: "standBy",
+    },
   },
 };
 
@@ -261,43 +279,138 @@ const bottomSheetSlice = createSlice({
       state.bsData = initialState.bsData;
     },
 
+    // --- summaryInfo selection ---
+    setSummaryInfoPToRemove: (
+      state,
+      action: PayloadAction<{
+        dietNo: string;
+        product: IDietDetailProductData;
+      } | null>
+    ) => {
+      state.bsData.summaryInfo.pChangeStep = "standBy";
+      if (!action.payload) {
+        // Clear all selections
+        state.bsData.summaryInfo.selectedPMap = {};
+        return;
+      }
+      const { dietNo, product } = action.payload;
+      // Clear other menus' selections and set this one
+      state.bsData.summaryInfo.selectedPMap = {
+        [dietNo]: {
+          pToRemove: { dietNo, product },
+          pToAdd: null,
+        },
+      };
+    },
+    setSummaryInfoPToAdd: (
+      state,
+      action: PayloadAction<{
+        dietNo: string;
+        product: IProductData;
+      } | null>
+    ) => {
+      const originalDietNo: string | undefined = Object.keys(
+        state.bsData.summaryInfo.selectedPMap
+      )[0];
+      if (!originalDietNo) return;
+      if (!action.payload) {
+        state.bsData.summaryInfo.selectedPMap[originalDietNo].pToAdd = null;
+        return;
+      }
+      const { dietNo, product } = action.payload;
+      if (dietNo !== originalDietNo) return;
+
+      const isSamePSelected =
+        state.bsData.summaryInfo.selectedPMap[originalDietNo].pToAdd?.product
+          .productNo === product.productNo;
+
+      if (isSamePSelected) {
+        // Deselect if same product selected
+        state.bsData.summaryInfo.selectedPMap[originalDietNo].pToAdd = null;
+        return;
+      }
+
+      state.bsData.summaryInfo.selectedPMap[originalDietNo].pToAdd = {
+        dietNo,
+        product,
+      };
+    },
+
     // --- summaryInfoBSComp diet qty logic ---
-    setDietQtyMap: (
+    syncDietQtyMap: (
       state,
       action: PayloadAction<IDietTotalObjData | undefined>
     ) => {
       // Accepts dTOData as payload, converts to dietQtyMap
       const newMap = getDietQtyMapFromDTO(action.payload);
-      state.bsData.dietQtyMap = newMap;
-      state.bsData.originalDietQtyMap = { ...newMap };
-      state.bsData.changedDietNoArr = [];
+      state.bsData.summaryInfo.dietQtyMap = newMap;
+      state.bsData.summaryInfo.originalDietQtyMap = { ...newMap };
+      state.bsData.summaryInfo.changedDietNoArr = [];
+    },
+    setDietQtyMap: (state, action: PayloadAction<Record<string, number>>) => {
+      const qtyMapToApply = action.payload;
+      state.bsData.summaryInfo.dietQtyMap = {
+        ...state.bsData.summaryInfo.dietQtyMap,
+        ...qtyMapToApply,
+      };
+      // Compare with originalDietQtyMap
+      const original = state.bsData.summaryInfo.originalDietQtyMap || {};
+      state.bsData.summaryInfo.changedDietNoArr = Object.keys(
+        state.bsData.summaryInfo.dietQtyMap
+      ).filter(
+        (dNo) =>
+          state.bsData.summaryInfo.dietQtyMap[dNo] !== (original[dNo] ?? 1)
+      );
     },
     plusQty: (state, action: PayloadAction<{ dietNo: string }>) => {
       const { dietNo } = action.payload;
-      const cur = state.bsData.dietQtyMap[dietNo] ?? 1;
+      const cur = state.bsData.summaryInfo.dietQtyMap[dietNo] ?? 1;
       if (cur >= 10) return;
-      const totalMenu = Object.values(state.bsData.dietQtyMap).reduce(
-        (a, b) => Number(a) + Number(b),
-        0
-      );
+      const totalMenu = Object.values(
+        state.bsData.summaryInfo.dietQtyMap
+      ).reduce((a, b) => Number(a) + Number(b), 0);
       if (totalMenu >= 10) return;
-      state.bsData.dietQtyMap[dietNo] = cur + 1;
+      state.bsData.summaryInfo.dietQtyMap[dietNo] = cur + 1;
       // Compare with originalDietQtyMap
-      const original = state.bsData.originalDietQtyMap || {};
-      state.bsData.changedDietNoArr = Object.keys(
-        state.bsData.dietQtyMap
-      ).filter((dNo) => state.bsData.dietQtyMap[dNo] !== (original[dNo] ?? 1));
+      const original = state.bsData.summaryInfo.originalDietQtyMap || {};
+      state.bsData.summaryInfo.changedDietNoArr = Object.keys(
+        state.bsData.summaryInfo.dietQtyMap
+      ).filter(
+        (dNo) =>
+          state.bsData.summaryInfo.dietQtyMap[dNo] !== (original[dNo] ?? 1)
+      );
     },
     minusQty: (state, action: PayloadAction<{ dietNo: string }>) => {
       const { dietNo } = action.payload;
-      const cur = state.bsData.dietQtyMap[dietNo] ?? 1;
+      const cur = state.bsData.summaryInfo.dietQtyMap[dietNo] ?? 1;
       if (cur <= 1) return;
-      state.bsData.dietQtyMap[dietNo] = cur - 1;
+      state.bsData.summaryInfo.dietQtyMap[dietNo] = cur - 1;
       // Compare with originalDietQtyMap
-      const original = state.bsData.originalDietQtyMap || {};
-      state.bsData.changedDietNoArr = Object.keys(
-        state.bsData.dietQtyMap
-      ).filter((dNo) => state.bsData.dietQtyMap[dNo] !== (original[dNo] ?? 1));
+      const original = state.bsData.summaryInfo.originalDietQtyMap || {};
+      state.bsData.summaryInfo.changedDietNoArr = Object.keys(
+        state.bsData.summaryInfo.dietQtyMap
+      ).filter(
+        (dNo) =>
+          state.bsData.summaryInfo.dietQtyMap[dNo] !== (original[dNo] ?? 1)
+      );
+    },
+    // Lower shipping CTA decisions per menu
+    setLoweringCtaDecision: (
+      state,
+      action: PayloadAction<Record<string, CtaDecisionDetail>>
+    ) => {
+      state.bsData.summaryInfo.ctaDecisions = action.payload || {};
+    },
+    setPChangeStep: (
+      state,
+      action: PayloadAction<"standBy" | "showCandidates">
+    ) => {
+      state.bsData.summaryInfo.pChangeStep = action.payload;
+    },
+    resetLoweringCta: (state) => {
+      state.bsData.summaryInfo.ctaDecisions = {};
+      state.bsData.summaryInfo.pChangeStep = "standBy";
+      state.bsData.summaryInfo.selectedPMap = {};
     },
   },
 });
@@ -320,12 +433,18 @@ export const {
   resetBSActionQueue,
 
   // bsData
-  setDietQtyMap,
+  syncDietQtyMap,
   plusQty,
   minusQty,
   setProductToAdd,
   setProductToDel,
   deleteBSProduct,
   resetBSData,
+  setLoweringCtaDecision,
+  resetLoweringCta,
+  setDietQtyMap,
+  setSummaryInfoPToRemove,
+  setSummaryInfoPToAdd,
+  setPChangeStep,
 } = bottomSheetSlice.actions;
 export default bottomSheetSlice.reducer;

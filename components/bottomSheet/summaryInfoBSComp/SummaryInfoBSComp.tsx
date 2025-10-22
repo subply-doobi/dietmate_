@@ -4,11 +4,20 @@ import {
   IDietDetailProductData,
   IDietTotalObjData,
 } from "@/shared/api/types/diet";
+import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import styled from "styled-components/native";
-import { useCallback, useMemo } from "react";
-import { MENU_LABEL } from "@/shared/constants";
+import { useCallback, useMemo, useEffect } from "react";
+import {
+  MENU_KIND_LABEL,
+  MENU_LABEL,
+  MENU_NUM_LABEL,
+} from "@/shared/constants";
 import { Col, TextSub } from "@/shared/ui/styledComps";
-import { plusQty, minusQty } from "@/features/reduxSlices/bottomSheetSlice";
+import {
+  plusQty,
+  minusQty,
+  setLoweringCtaDecision,
+} from "@/features/reduxSlices/bottomSheetSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import DietCard from "./DietCard";
 import colors from "@/shared/colors";
@@ -19,6 +28,8 @@ import {
 } from "@/shared/utils/dietSummary";
 import { useRouter } from "expo-router";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
+import { determineCtaTypesForAllMenus } from "@/shared/utils/ctaDecision";
+import ConfirmChangeCard from "./ConfirmChangeCard";
 
 const SummaryInfoBSComp = () => {
   // navigation
@@ -27,23 +38,35 @@ const SummaryInfoBSComp = () => {
   // redux
   const dispatch = useAppDispatch();
   const dietQtyMap = useAppSelector(
-    (state) => state.bottomSheet.bsData.dietQtyMap
+    (state) => state.bottomSheet.bsData.summaryInfo.dietQtyMap
+  );
+  const originalDietQtyMap = useAppSelector(
+    (state) => state.bottomSheet.bsData.summaryInfo.originalDietQtyMap
   );
   const changedDietNoArr = useAppSelector(
-    (state) => state.bottomSheet.bsData.changedDietNoArr
+    (state) => state.bottomSheet.bsData.summaryInfo.changedDietNoArr
+  );
+  const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
+  const selectedPMap = useAppSelector(
+    (state) => state.bottomSheet.bsData.summaryInfo.selectedPMap
+  );
+  const pChangeStep = useAppSelector(
+    (state) => state.bottomSheet.bsData.summaryInfo.pChangeStep
   );
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
+  const { data: bLData } = useGetBaseLine();
   const createDietMutation = useCreateDiet();
 
-  // useMemo
+  // useMemo - compute platform summaries and diet entries
   const {
     dietEntries,
     emptyMenuNum,
     firstTargetSeller,
     remainToFree,
     totalMenuNum,
+    summaryTotals,
   } = useMemo(() => {
     if (!dTOData)
       return {
@@ -54,10 +77,20 @@ const SummaryInfoBSComp = () => {
           sellers: string[];
         }>,
         emptyMenuNum: undefined,
+        summaryTotals: undefined,
       };
+
     const emptyMenuNum = getEmptyMenuNum(dTOData);
-    const summaryArr = getPlatformSummaries(dTOData);
-    const totals = getSummaryTotalsFromSummaries(summaryArr, dTOData);
+
+    const summaryArr = getPlatformSummaries(
+      dTOData,
+      changedDietNoArr.length > 0 ? dietQtyMap : undefined
+    );
+    const totals = getSummaryTotalsFromSummaries(
+      summaryArr,
+      dTOData,
+      changedDietNoArr.length > 0 ? dietQtyMap : undefined
+    );
     const sellers = summaryArr.map((s) => s.platformNm);
     const totalMenuNum = totals.menuNumTotal;
 
@@ -85,16 +118,30 @@ const SummaryInfoBSComp = () => {
       firstTargetSeller,
       remainToFree,
       totalMenuNum,
+      summaryTotals: totals,
     };
-  }, [dTOData]);
+  }, [dTOData, dietQtyMap]);
 
-  const handleMinus = (dietNo: string) => {
-    dispatch(minusQty({ dietNo }));
-  };
-  const handlePlus = (dietNo: string) => {
-    dispatch(plusQty({ dietNo }));
-  };
+  // Compute and store CTA decisions per menu whenever dTOData or dietQtyMap changes
+  useEffect(() => {
+    if (!dTOData || !bLData || !summaryTotals) return;
 
+    // Get CTA decisions for all menus at once
+    const ctaDecisions = determineCtaTypesForAllMenus({
+      dTOData,
+      freeShippingTarget: summaryTotals.freeShippingTarget,
+      alreadyFreeShipping: summaryTotals.alreadyFreeShipping,
+      dietQtyMap,
+      originalDietQtyMap,
+      baseLine: bLData,
+      totalFoodList,
+      totalMenuNum,
+    });
+
+    dispatch(setLoweringCtaDecision(ctaDecisions));
+  }, [dTOData, dietQtyMap, bLData, totalFoodList, totalMenuNum, summaryTotals]);
+
+  // fn
   const addFirstTargetSeller = useCallback(async () => {
     if (!firstTargetSeller) return;
     const res = await createDietMutation.mutateAsync();
@@ -108,6 +155,16 @@ const SummaryInfoBSComp = () => {
     });
   }, [firstTargetSeller]);
 
+  // Check if any diet is in confirm step
+  const confirmDietNo = Object.keys(selectedPMap).find((dietNo) => {
+    const selected = selectedPMap[dietNo];
+    return (
+      pChangeStep === "showCandidates" &&
+      selected?.pToRemove &&
+      selected?.pToAdd
+    );
+  });
+
   return (
     <Container>
       <Col style={{ width: "100%", rowGap: 48 }}>
@@ -120,14 +177,14 @@ const SummaryInfoBSComp = () => {
             sellers={diet.sellers}
             qty={dietQtyMap[diet.dietNo] ?? 1}
             isChanged={changedDietNoArr.includes(diet.dietNo)}
-            onMinus={handleMinus}
-            onPlus={handlePlus}
           />
         ))}
       </Col>
+      {/* Show confirm change card when in confirm step */}
+      {confirmDietNo && <ConfirmChangeCard dietNo={confirmDietNo} />}
       {emptyMenuNum !== undefined &&
         emptyMenuNum === 0 &&
-        totalMenuNum < MENU_LABEL.length &&
+        totalMenuNum < MENU_NUM_LABEL.length &&
         changedDietNoArr.length === 0 &&
         firstTargetSeller && (
           <NewMenuBtn onPress={addFirstTargetSeller}>

@@ -22,7 +22,8 @@ import Icon from "@/shared/ui/Icon";
 import { Row, TextMain } from "@/shared/ui/styledComps";
 import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
 
-const PICKER_DATA_ARR = [...MENU_KIND_LABEL].slice(2, 8); // [3, 4, 5, 6, 7]
+// MENU_KIND_LABEL = ["한 가지", "두 가지", "세 가지", "네 가지", "다섯 가지", "여섯 가지", "일곱 가지"];
+const PICKER_DATA_ARR = [...MENU_KIND_LABEL].slice(2);
 
 const SelectNumOfMenu = () => {
   // redux

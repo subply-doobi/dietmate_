@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { setDietQtyMap } from "@/features/reduxSlices/bottomSheetSlice";
+import { syncDietQtyMap } from "@/features/reduxSlices/bottomSheetSlice";
 import {
   useListDietTotalObj,
   useUpdateDietDetail,
@@ -15,20 +15,20 @@ const SummaryInfoFooterBSComp = () => {
 
   // Sync redux qty state when backend data changes
   useEffect(() => {
-    dispatch(setDietQtyMap(dTOData));
+    dispatch(syncDietQtyMap(dTOData));
   }, [dTOData, dispatch]);
 
   const updateDietDetailMutation = useUpdateDietDetail();
   const dietQtyMap = useAppSelector(
-    (state) => state.bottomSheet.bsData.dietQtyMap
+    (state) => state.bottomSheet.bsData.summaryInfo.dietQtyMap
   );
   const changedDietNoArr = useAppSelector(
-    (state) => state.bottomSheet.bsData.changedDietNoArr
+    (state) => state.bottomSheet.bsData.summaryInfo.changedDietNoArr
   );
 
   // 취소: reset dietQtyMap to dTOData
   const handleCancel = () => {
-    dispatch(setDietQtyMap(dTOData));
+    dispatch(syncDietQtyMap(dTOData));
   };
 
   // 저장: update all changed diets

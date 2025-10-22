@@ -1,15 +1,39 @@
-import { Col, Row, TextMain, TextSub } from "@/shared/ui/styledComps";
+import {
+  Col,
+  HorizontalSpace,
+  Row,
+  TextMain,
+  TextSub,
+} from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import styled from "styled-components/native";
 import { Image } from "react-native";
+import React, { useState } from "react";
 import Icon from "@/shared/ui/Icon";
 import { ENV, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
-import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { snapBS } from "@/features/reduxSlices/bottomSheetSlice";
+import { IProductData } from "@/shared/api/types/product";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import {
+  useListDietTotalObj,
+  useDeleteDietDetail,
+  useCreateDietDetail,
+} from "@/shared/api/queries/diet";
+import {
+  snapBS,
+  setSummaryInfoPToRemove,
+  setSummaryInfoPToAdd,
+  setPChangeStep,
+  minusQty,
+  plusQty,
+} from "@/features/reduxSlices/bottomSheetSlice";
 import { scrollCarouselTo } from "@/features/reduxSlices/formulaSlice";
 import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
+import { CtaType } from "@/shared/utils/ctaDecision";
+import { useRouter } from "expo-router";
+import DietCardCta from "./DietCardCta";
+import DietCardChangeBtn from "./DietCardChangeBtn";
+import ProductRow from "./ProductRow";
 
 interface DietCardProps {
   dietNo: string;
@@ -18,8 +42,6 @@ interface DietCardProps {
   sellers: string[];
   qty: number;
   isChanged: boolean;
-  onMinus: (dietNo: string) => void;
-  onPlus: (dietNo: string) => void;
 }
 
 const DietCard = ({
@@ -29,18 +51,36 @@ const DietCard = ({
   sellers,
   qty,
   isChanged,
-  onMinus,
-  onPlus,
 }: DietCardProps) => {
+  // navigation
+  const router = useRouter();
+
   // redux
   const dispatch = useAppDispatch();
+  const decisions = useAppSelector(
+    (state) => state.bottomSheet.bsData.summaryInfo.ctaDecisions
+  );
+  const decision = decisions[dietNo];
+  const selectedPMap = useAppSelector(
+    (state) => state.bottomSheet.bsData.summaryInfo.selectedPMap
+  );
+  const selected = selectedPMap[dietNo];
+  const pToRemove = selected?.pToRemove;
+  const pToAdd = selected?.pToAdd;
+  const pChangeStep = useAppSelector(
+    (state) => state.bottomSheet.bsData.summaryInfo.pChangeStep
+  );
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
+  const deleteDietDetailMutation = useDeleteDietDetail();
+  const createDietDetailMutation = useCreateDietDetail();
   const menuIdx = Object.keys(dTOData || {}).indexOf(dietNo);
   const menuPrice = sumUpPrice(dTOData?.[dietNo]?.dietDetail || []);
 
   const isEmpty = sellers.length === 0;
+
+  // fn
   const moveToMenu = () => {
     dispatch(
       snapBS({
@@ -54,10 +94,30 @@ const DietCard = ({
     }, 300);
   };
 
+  const onSelect = (isSelected: boolean, product: IDietDetailProductData) => {
+    if (isSelected) {
+      dispatch(setSummaryInfoPToRemove(null));
+    } else {
+      dispatch(
+        setSummaryInfoPToRemove({
+          dietNo,
+          product,
+        })
+      );
+    }
+  };
+
+  // confirm step logic: show separate SelectedBox (non-clickable) for replacement preview
+  const isReadyToChange = !!pToRemove && !!pToAdd;
+  const showConfirmBox = pChangeStep === "showCandidates" && isReadyToChange;
+
   return (
     <Card>
       <HeaderRow isEmpty={isEmpty}>
-        <QtyBtn onPress={() => onMinus(dietNo)} disabled={isEmpty}>
+        <QtyBtn
+          onPress={() => dispatch(minusQty({ dietNo }))}
+          disabled={isEmpty}
+        >
           <Icon
             boxSize={32}
             iconSize={20}
@@ -72,7 +132,10 @@ const DietCard = ({
           )}원)`}</QtyValue>
           <QtyValue isChanged={isChanged}>{`x${qty}`}</QtyValue>
         </MenuBtn>
-        <QtyBtn onPress={() => onPlus(dietNo)} disabled={isEmpty}>
+        <QtyBtn
+          onPress={() => dispatch(plusQty({ dietNo }))}
+          disabled={isEmpty}
+        >
           <Icon
             boxSize={32}
             iconSize={20}
@@ -81,48 +144,100 @@ const DietCard = ({
           />
         </QtyBtn>
       </HeaderRow>
-      {sellers.length === 0 ? (
-        <EmptyBtn onPress={moveToMenu}>
-          <EmptyText>식품을 추가해봐요</EmptyText>
-        </EmptyBtn>
-      ) : (
-        <Col style={{ marginTop: 24, rowGap: 20 }}>
-          {sellers.map((seller) => {
-            const products = regrouped[seller] || [];
-            return (
-              <Col key={seller} style={{ rowGap: 12 }}>
-                <Row style={{ columnGap: 8 }}>
-                  <SellerName>{seller}</SellerName>
-                </Row>
-                {products.map((p: IDietDetailProductData) => (
-                  <ProductRow key={p.productNo}>
-                    <ThumbWrapper>
-                      {p.mainAttUrl ? (
-                        <Thumb
-                          source={{ uri: `${ENV.BASE_URL}${p.mainAttUrl}` }}
-                        />
-                      ) : (
-                        <ThumbPlaceholder />
-                      )}
-                    </ThumbWrapper>
-                    <Col style={{ flex: 1, rowGap: 2 }}>
-                      <ProductName numberOfLines={1} ellipsizeMode="tail">
-                        {p.productNm}
-                      </ProductName>
-                      <Price>
-                        {(
-                          Number(p.price) + SERVICE_PRICE_PER_PRODUCT
-                        ).toLocaleString()}
-                        원
-                      </Price>
-                    </Col>
-                  </ProductRow>
-                ))}
-              </Col>
-            );
-          })}
-        </Col>
-      )}
+      <Col style={{ marginTop: 24, rowGap: 20 }}>
+        {/* seller list */}
+        {sellers.map((seller) => {
+          const products = regrouped[seller] || [];
+          return (
+            <Col key={seller} style={{ rowGap: 12 }}>
+              <Row style={{ columnGap: 8 }}>
+                <SellerName>{seller}</SellerName>
+              </Row>
+              {/* product list */}
+              {products.map((p: IDietDetailProductData) => {
+                const isSelected =
+                  pToRemove?.dietNo === dietNo &&
+                  pToRemove?.product?.productNo === p.productNo;
+
+                return (
+                  <Col key={p.productNo} style={{ rowGap: 12 }}>
+                    <SelectedBox
+                      onPress={() => onSelect(isSelected, p)}
+                      activeOpacity={0.7}
+                      isSelected={isSelected}
+                    >
+                      <ProductRow
+                        product={p}
+                        showInfo={isSelected}
+                        dimmed={!!pToAdd && isSelected}
+                      />
+                      {/* Change CTA */}
+                      {isSelected && <DietCardChangeBtn dietNo={dietNo} />}
+                    </SelectedBox>
+                    {/* Confirm replacement box directly under selected product */}
+                    {isSelected && showConfirmBox && pToAdd && (
+                      <Col style={{ rowGap: 12 }}>
+                        <Row style={{ justifyContent: "center" }}>
+                          <Icon
+                            name="chevronDown"
+                            iconSize={18}
+                            boxSize={24}
+                            color={colors.textSub}
+                          />
+                        </Row>
+                        <SellerName>{pToAdd.product.platformNm}</SellerName>
+                        <ConfirmSelectedBox activeOpacity={1}>
+                          <ProductRow
+                            product={pToAdd.product}
+                            showInfo={true}
+                          />
+                          <Row style={{ columnGap: 8, marginTop: 12 }}>
+                            <ConfirmBtn
+                              onPress={() => {
+                                dispatch(setSummaryInfoPToAdd(null));
+                                dispatch(setPChangeStep("showCandidates"));
+                              }}
+                            >
+                              <BtnText style={{ color: colors.textSub }}>
+                                취소
+                              </BtnText>
+                            </ConfirmBtn>
+                            <ConfirmBtn
+                              style={{ borderColor: colors.main }}
+                              onPress={async () => {
+                                try {
+                                  await deleteDietDetailMutation.mutateAsync({
+                                    dietNo,
+                                    productNo: pToRemove!.product.productNo,
+                                  });
+                                  await createDietDetailMutation.mutateAsync({
+                                    dietNo,
+                                    food: pToAdd.product,
+                                  });
+                                  dispatch(setSummaryInfoPToRemove(null));
+                                  dispatch(setSummaryInfoPToAdd(null));
+                                  dispatch(setPChangeStep("standBy"));
+                                } catch (e) {
+                                  console.error(e);
+                                }
+                              }}
+                            >
+                              <BtnText style={{ color: colors.white }}>
+                                교체하기
+                              </BtnText>
+                            </ConfirmBtn>
+                          </Row>
+                        </ConfirmSelectedBox>
+                      </Col>
+                    )}
+                  </Col>
+                );
+              })}
+            </Col>
+          );
+        })}
+      </Col>
+      <DietCardCta dietNo={dietNo} />
     </Card>
   );
 };
@@ -165,52 +280,54 @@ const SellerName = styled(TextMain)`
   margin-left: 2px;
   color: ${colors.textSub};
 `;
-const ProductRow = styled(Row)`
-  align-items: center;
-  column-gap: 8px;
-`;
-const ThumbWrapper = styled.View`
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  overflow: hidden;
-  background-color: ${colors.blackOpacity80};
-`;
-const Thumb = styled(Image)`
+
+// Selectable row styles
+const SelectedBox = styled.TouchableOpacity<{ isSelected?: boolean }>`
   width: 100%;
-  height: 100%;
+  flex-direction: column;
+  border-width: ${({ isSelected }) => (isSelected ? "1px" : "0px")};
+  border-color: ${colors.line};
+  border-radius: 2px;
+  padding: ${({ isSelected }) => (isSelected ? "16px" : "0px")};
 `;
-const ThumbPlaceholder = styled.View`
-  flex: 1;
-  background-color: ${colors.line};
+
+const ConfirmSelectedBox = styled.TouchableOpacity`
+  width: 100%;
+  flex-direction: column;
+  border-width: 1px;
+  border-color: ${colors.line};
+  border-radius: 2px;
+  padding: 16px;
 `;
-const ProductName = styled(TextMain)`
-  font-size: 12px;
-  line-height: 14px;
-  color: ${colors.white};
+
+const PlatformBadge = styled.View`
+  align-self: flex-start;
+  padding: 4px 8px;
+  background-color: ${colors.blackOpacity30};
+  border-radius: 4px;
 `;
-const Price = styled(TextSub)`
-  font-size: 12px;
+const PlatformText = styled(TextSub)`
+  font-size: 11px;
   line-height: 14px;
   color: ${colors.textSub};
+`;
+const ConfirmBtn = styled.TouchableOpacity`
+  flex: 1;
+  height: 40px;
+  border-radius: 4px;
+  border-width: 0.5px;
+  border-color: ${colors.line};
+  align-items: center;
+  justify-content: center;
+`;
+const BtnText = styled(TextMain)`
+  font-size: 12px;
+  line-height: 16px;
+  color: ${colors.white};
 `;
 
 const MenuBtn = styled.TouchableOpacity`
   flex-direction: row;
   column-gap: 8px;
   align-items: flex-end;
-`;
-
-const EmptyBtn = styled.TouchableOpacity`
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-`;
-
-const EmptyText = styled(TextSub)`
-  font-size: 12px;
-  line-height: 16px;
-  text-align: center;
-  color: ${colors.textSub};
-  margin-top: 24px;
 `;

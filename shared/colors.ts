@@ -44,4 +44,5 @@ export default {
   blackOpacity50: "#00000080",
   blackOpacity70: "#000000B3",
   blackOpacity80: "#000000CC",
+  transparent: "#00000000",
 };

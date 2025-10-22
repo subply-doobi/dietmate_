@@ -26,9 +26,6 @@ const ProductSelectShippingInfo = ({
 
   // useMemo
   const { platformSummary } = useMemo(() => {
-    console.log("ProductSelectShippingInfo useMemo called");
-    console.log("pToAdd:", pToAdd);
-    console.log("pToDel:", pToDel);
     const foodChangeMap = {
       [currentDietNo]: { delete: pToDel[0], add: pToAdd[0] },
     };
@@ -47,14 +44,6 @@ const ProductSelectShippingInfo = ({
     new Set(
       [pToAdd[0]?.platformNm, pToDel[0]?.platformNm].filter(Boolean) as string[]
     )
-  );
-  console.log(
-    "ProductSelectShippingInfo relevantSellerNmArr:",
-    relevantSellerNmArr
-  );
-  console.log(
-    "ProductSelectShippingInfo platformSummary:",
-    JSON.stringify(platformSummary, null, 2)
   );
 
   return (

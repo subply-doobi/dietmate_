@@ -22,7 +22,6 @@ import {
   useCreateDietDetail,
   useDeleteDietDetail,
 } from "@/shared/api/queries/diet";
-import ProductRow from "./ProductRow";
 import React, { useEffect, useRef } from "react";
 
 const DietCardChangeBtn = ({ dietNo }: { dietNo: string }) => {
@@ -122,11 +121,6 @@ const DietCardChangeBtn = ({ dietNo }: { dietNo: string }) => {
     }
   };
 
-  console.log(
-    "addCandidates",
-    plan[pToRemove.product.productNo]?.addCandidates.length
-  );
-
   // preserve horizontal scroll position across hide/show
   const listRef = useRef<FlatList>(null);
   const lastOffsetRef = useRef(0);
@@ -134,7 +128,6 @@ const DietCardChangeBtn = ({ dietNo }: { dietNo: string }) => {
   useEffect(() => {
     if (confirmedStep === "showCandidates" && lastOffsetRef.current > 0) {
       // Use a short timeout to ensure FlatList is fully mounted
-      console.log("scrollTo last offset:", lastOffsetRef.current);
       const timer = setTimeout(() => {
         listRef.current?.scrollToOffset({
           offset: lastOffsetRef.current,

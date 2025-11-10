@@ -77,20 +77,10 @@ export default function DietPlatformSummary({
       };
     }
 
-    console.log("=== DietPlatformSummary Debug ===");
-    console.log("changedDietNoArr:", changedDietNoArr);
-    console.log("dietQtyMap:", dietQtyMap);
-    console.log("selectedPDietNo:", selectedPDietNo);
-    console.log("foodChangeMap:", JSON.stringify(foodChangeMap, null, 2));
-
     const summaries = getPlatformSummaries(
       dTOData,
       changedDietNoArr.length > 0 ? dietQtyMap : undefined,
       foodChangeMap
-    );
-    console.log(
-      "DietPlatformSummary summaries:",
-      JSON.stringify(summaries, null, 2)
     );
     const totals = getSummaryTotalsFromSummaries(
       summaries,

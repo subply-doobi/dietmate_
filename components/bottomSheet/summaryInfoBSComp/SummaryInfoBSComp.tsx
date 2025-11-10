@@ -6,7 +6,7 @@ import {
 } from "@/shared/api/types/diet";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import styled from "styled-components/native";
-import { useCallback, useMemo, useEffect } from "react";
+import { useCallback, useMemo, useEffect, useRef } from "react";
 import {
   MENU_KIND_LABEL,
   MENU_LABEL,
@@ -17,6 +17,7 @@ import {
   plusQty,
   minusQty,
   setLoweringCtaDecision,
+  closeBSAll,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import DietCard from "./DietCard";
@@ -29,7 +30,6 @@ import {
 import { useRouter } from "expo-router";
 import { setCurrentFMCIdx } from "@/features/reduxSlices/formulaSlice";
 import { determineCtaTypesForAllMenus } from "@/shared/utils/ctaDecision";
-import ConfirmChangeCard from "./ConfirmChangeCard";
 
 const SummaryInfoBSComp = () => {
   // navigation
@@ -180,8 +180,6 @@ const SummaryInfoBSComp = () => {
           />
         ))}
       </Col>
-      {/* Show confirm change card when in confirm step */}
-      {confirmDietNo && <ConfirmChangeCard dietNo={confirmDietNo} />}
       {emptyMenuNum !== undefined &&
         emptyMenuNum === 0 &&
         totalMenuNum < MENU_NUM_LABEL.length &&

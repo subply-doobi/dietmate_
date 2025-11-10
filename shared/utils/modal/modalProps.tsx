@@ -97,9 +97,7 @@ export const useModalProps = () => {
   const router = useRouter();
 
   // useState
-  const [isCreating, setIsCreating] = useState(false);
   const [isFriendCdError, setIsFriendCdError] = useState(false);
-  const [numOfCreateDiet, setNumOfCreateDiet] = useState(5);
 
   // react-query
   const { data: userData } = useGetUser({ enabled: false });
@@ -107,10 +105,7 @@ export const useModalProps = () => {
   const { data: dTOData, refetch: refetchDTOData } = useListDietTotalObj({
     enabled: false,
   });
-  const deleteDietMutation = useDeleteDiet();
   const deleteDietAllMutation = useDeleteDietAll();
-  const createDietCntMutation = useCreateDietCnt();
-  const deleteDietDetailMutation = useDeleteDietDetail();
   const deleteUser = useDeleteUser();
   const deleteAddressMutation = useDeleteAddress();
 

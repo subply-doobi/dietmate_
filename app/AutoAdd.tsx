@@ -118,10 +118,6 @@ const AutoAdd = () => {
       return;
     }
     dispatch(openBS({ bsNm: "productToAddSelect", from: "AutoAdd.tsx" }));
-    pToAdd.length > 0 &&
-      dispatch(
-        snapBS({ bsNm: "productToAddSelect", index: 1, from: "AutoAdd.tsx" })
-      );
   }, [isFocused]);
 
   useEffect(() => {

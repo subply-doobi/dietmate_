@@ -4,8 +4,11 @@ import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetScrollView,
+  useBottomSheetSpringConfigs,
+  useBottomSheetTimingConfigs,
 } from "@gorhom/bottom-sheet";
 import {
+  BS_ANIMATION_DURATION,
   DEFAULT_BOTTOM_TAB_HEIGHT,
   NUTRIENT_PROGRESS_HEIGHT,
   SCREENHEIGHT,
@@ -22,6 +25,7 @@ import {
   IBSAction,
   closeBSWOAction,
   resetBSActionQueue,
+  setLastSnapshot,
 } from "@/features/reduxSlices/bottomSheetSlice";
 
 import colors from "@/shared/colors";
@@ -33,6 +37,7 @@ import SummaryInfoBSComp from "./summaryInfoBSComp/SummaryInfoBSComp";
 import SummaryInfoHeaderBSComp from "./summaryInfoBSComp/SummaryInfoHeaderBSComp";
 import SummaryInfoFooterBSComp from "./summaryInfoBSComp/SummaryInfoFooterBSComp";
 import { ScrollView } from "react-native-gesture-handler";
+import { Easing } from "react-native-reanimated";
 
 interface IBSConfig {
   renderBackdrop?: (props: any) => JSX.Element;
@@ -122,8 +127,7 @@ export const bsConfigByName: Partial<Record<IBSNm, IBSConfig>> = {
 const GlobalBSM = () => {
   // state
   const dispatch = useAppDispatch();
-
-  const { bsNmArr, actionQueue, currentValue } = useAppSelector(
+  const { bsNmArr, actionQueue, currentValue, lastSnapshot } = useAppSelector(
     (state) => state.bottomSheet
   );
   const currentBsNm = bsNmArr[bsNmArr.length - 1];
@@ -131,12 +135,20 @@ const GlobalBSM = () => {
   const action: IBSAction = actionQueue[0] || undefined;
   const bsConfig = bsConfigByName[configNm!] || bsBasicConfig;
 
+  // bs
+  const bsTimingConfig = useBottomSheetTimingConfigs({
+    duration: BS_ANIMATION_DURATION,
+    easing: Easing.circle,
+  });
+
   // --- refs ---
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const bottomSheetScrollViewRef = useRef<ScrollView>(null);
+  const currentScrollOffsetRef = useRef(0);
   const pathname = usePathname();
   const actionQueueRef = useRef(actionQueue);
   const currentValueRef = useRef(currentValue);
+  const lastSnapshotRef = useRef(lastSnapshot);
 
   // --- Effects ---
   useEffect(() => {
@@ -151,6 +163,10 @@ const GlobalBSM = () => {
   useEffect(() => {
     currentValueRef.current = currentValue;
   }, [currentValue]);
+
+  useEffect(() => {
+    lastSnapshotRef.current = lastSnapshot;
+  }, [lastSnapshot]);
 
   useEffect(() => {
     // console.log("----- GlobalBSM useEffect action ------");
@@ -240,6 +256,7 @@ const GlobalBSM = () => {
   // --- Handlers ---
   const onChange = (index: number, position: number) => {
     const prevValue = currentValueRef.current;
+    const lastSnapshot = lastSnapshotRef.current;
     const changeType =
       prevValue.index < 0 && index >= 0
         ? "open"
@@ -250,15 +267,51 @@ const GlobalBSM = () => {
         : "none";
     dispatch(setCurrentValue({ index, position }));
 
+    const actionLength = actionQueueRef.current.length;
     const action = actionQueueRef.current[0] || undefined;
     let shouldDequeue = false;
     switch (changeType) {
       case "open":
-        if (action?.type === "open") shouldDequeue = true;
+        if (action?.type !== "open") {
+          break;
+        }
+        shouldDequeue = true;
+
+        // set lastSnapshot if exist
+        if (
+          !lastSnapshot ||
+          lastSnapshot.bsNm !== action.bsNm ||
+          actionLength !== 1
+        ) {
+          currentScrollOffsetRef.current = 0;
+          break;
+        }
+
+        console.log("[GlobalBSM] Restoring last snapshot:", lastSnapshot);
+        setTimeout(() => {
+          bottomSheetModalRef.current?.snapToIndex(lastSnapshot.index);
+          // Restore scroll position after layout settles
+        }, 0);
+        setTimeout(() => {
+          bottomSheetScrollViewRef.current?.scrollTo({
+            y: lastSnapshot.scrollOffset,
+            animated: true,
+          });
+          currentScrollOffsetRef.current = lastSnapshot.scrollOffset;
+        }, BS_ANIMATION_DURATION);
+        dispatch(setLastSnapshot(null));
+
         break;
       case "close":
         if (action?.type === "close" || action?.type === "closeAll") {
           shouldDequeue = true;
+          const lastSnapShot = {
+            bsNm: currentBsNm,
+            index: prevValue.index,
+            position: prevValue.position,
+            scrollOffset: currentScrollOffsetRef.current,
+          };
+          dispatch(setLastSnapshot(lastSnapShot));
           break;
         }
         dispatch(closeBSWOAction({ from: "GlobalBSM.tsx" }));
@@ -294,10 +347,16 @@ const GlobalBSM = () => {
       backgroundStyle={{
         backgroundColor: bsConfig.bsBackgroundColor,
       }}
+      animationConfigs={bsTimingConfig}
       onChange={onChange}
     >
       {bsHeaderByName[configNm!] || <></>}
-      <BottomSheetScrollView ref={bottomSheetScrollViewRef}>
+      <BottomSheetScrollView
+        ref={bottomSheetScrollViewRef}
+        onScroll={(e) => {
+          currentScrollOffsetRef.current = e.nativeEvent.contentOffset.y;
+        }}
+      >
         {bsCompByName[configNm!] || <></>}
       </BottomSheetScrollView>
       {bsFooterByName[configNm!] || <></>}

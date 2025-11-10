@@ -119,37 +119,11 @@ export function getPlatformSummaries(
         Object.entries(foodChangeMap).forEach(([dietNo, change]) => {
           // apply only both delete and add exist
           if (change.delete && change.add) {
-            console.log(
-              `[${platformNm}] Processing food change for dietNo=${dietNo}`
-            );
-            console.log(
-              `[${platformNm}] Before filter:`,
-              changedItems.map((it) => ({
-                dietNo: it.dietNo,
-                productNo: it.productNo,
-                productNm: it.productNm,
-              }))
-            );
-
             // Remove item if delete is specified
-            const beforeLength = changedItems.length;
             changedItems = changedItems.filter(
               (it) =>
                 it.dietNo !== dietNo ||
                 it.productNo !== change.delete?.productNo
-            );
-            console.log(
-              `[${platformNm}] Removed ${
-                beforeLength - changedItems.length
-              } items`
-            );
-            console.log(
-              `[${platformNm}] After filter:`,
-              changedItems.map((it) => ({
-                dietNo: it.dietNo,
-                productNo: it.productNo,
-                productNm: it.productNm,
-              }))
             );
 
             // Add item if add is specified (only to the target platform)
@@ -165,9 +139,6 @@ export function getPlatformSummaries(
                 statusCd: "",
                 statusNm: "",
               });
-              console.log(
-                `[${platformNm}] Added product: ${change.add.productNm}`
-              );
             }
           }
         });

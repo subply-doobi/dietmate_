@@ -36,13 +36,12 @@ export const ENV = {
 export const { width, height } = Dimensions.get("screen");
 export const SCREENWIDTH = Math.min(width, height);
 export const SCREENHEIGHT = Math.max(width, height);
-export const DESIGN_WIDTH = 360;
 export const DALERT_WIDTH = 280;
 export const IS_ANDROID = Platform.OS === "android";
 export const IS_IOS = Platform.OS === "ios";
+
+// design constants
 export const NUTRIENT_PROGRESS_HEIGHT = 48;
-export const FOOD_LIST_ITEM_HEIGHT = 152;
-export const HOME_FILTER_HEADER_HEIGHT = 120;
 export const DEFAULT_BOTTOM_TAB_HEIGHT = 83;
 export const BOTTOM_INDICATOR_IOS = 16;
 export const FORMULA_CAROUSEL_HEIGHT = 390;
@@ -62,6 +61,9 @@ export const MAIN_FOODLIST_HEADER_HEIGHT =
   4 +
   SORT_FILTER_HEIGHT;
 // HorizontalFoodlist 컴포넌트 height + SortFilter 컴포넌트 height
+
+// animation constants
+export const BS_ANIMATION_DURATION = 150;
 
 // service constants
 export const MAX_NUM_OF_RECENT_PRODUCT = 10;

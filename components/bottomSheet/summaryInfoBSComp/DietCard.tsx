@@ -160,7 +160,7 @@ const DietCard = ({
                   pToRemove?.product?.productNo === p.productNo;
 
                 return (
-                  <Col key={p.productNo} style={{ rowGap: 12 }}>
+                  <Col key={p.productNo}>
                     <SelectedBox
                       onPress={() => onSelect(isSelected, p)}
                       activeOpacity={0.7}
@@ -176,8 +176,13 @@ const DietCard = ({
                     </SelectedBox>
                     {/* Confirm replacement box directly under selected product */}
                     {isSelected && showConfirmBox && pToAdd && (
-                      <Col style={{ rowGap: 12 }}>
-                        <Row style={{ justifyContent: "center" }}>
+                      <Col>
+                        <Row
+                          style={{
+                            justifyContent: "center",
+                            marginTop: 12,
+                          }}
+                        >
                           <Icon
                             name="chevronDown"
                             iconSize={18}
@@ -186,6 +191,7 @@ const DietCard = ({
                           />
                         </Row>
                         <SellerName>{pToAdd.product.platformNm}</SellerName>
+                        <HorizontalSpace height={12} />
                         <ConfirmSelectedBox activeOpacity={1}>
                           <ProductRow
                             product={pToAdd.product}
@@ -300,17 +306,6 @@ const ConfirmSelectedBox = styled.TouchableOpacity`
   padding: 16px;
 `;
 
-const PlatformBadge = styled.View`
-  align-self: flex-start;
-  padding: 4px 8px;
-  background-color: ${colors.blackOpacity30};
-  border-radius: 4px;
-`;
-const PlatformText = styled(TextSub)`
-  font-size: 11px;
-  line-height: 14px;
-  color: ${colors.textSub};
-`;
 const ConfirmBtn = styled.TouchableOpacity`
   flex: 1;
   height: 40px;

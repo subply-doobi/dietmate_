@@ -35,6 +35,13 @@ export type IBSAction =
       from?: string;
     };
 
+export interface IBSLastSnapshot {
+  bsNm: IBSNm;
+  index: number;
+  position: number;
+  scrollOffset: number;
+}
+
 interface BottomSheetState {
   bsData: {
     pToAdd: IProductData[];
@@ -57,6 +64,7 @@ interface BottomSheetState {
   bsNmArr: IBSNm[];
   actionQueue: IBSAction[];
   currentValue: { index: number; position: number };
+  lastSnapshot: IBSLastSnapshot | null;
 }
 
 // --- Stack helpers ---
@@ -88,6 +96,7 @@ const initialState: BottomSheetState = {
   bsNmArr: [],
   actionQueue: [],
   currentValue: { index: -1, position: 0 },
+  lastSnapshot: null,
   bsData: {
     pToAdd: [],
     pToDel: [],
@@ -113,6 +122,7 @@ const bottomSheetSlice = createSlice({
       const { bsNm, from, option } = action.payload;
       const top = peekStack(state.bsNmArr);
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
+
       // if duplicate action, do nothing
       if (lastAction?.type === "open" && lastAction.bsNm === bsNm) {
         return;
@@ -121,23 +131,39 @@ const bottomSheetSlice = createSlice({
       // If another is open, queue close and open
       if (state.bsNmArr.length > 0 && top !== bsNm) {
         state.actionQueue.push({ type: "close", bsNm: top, from });
-        state.actionQueue.push({ type: "open", bsNm: bsNm, from });
+        state.actionQueue.push({
+          type: "open",
+          bsNm: bsNm,
+          from,
+        });
         state.bsNmArr =
           option === "reset"
             ? [bsNm]
             : pushStack(removeFromStack(state.bsNmArr, bsNm), bsNm);
+
         return;
       }
 
       // default
-      state.actionQueue.push({ type: "open", bsNm: bsNm, from });
+      state.actionQueue.push({
+        type: "open",
+        bsNm: bsNm,
+        from,
+      });
       state.bsNmArr =
         option === "reset"
           ? [bsNm]
           : pushStack(removeFromStack(state.bsNmArr, bsNm), bsNm);
+
       return;
     },
-    closeBS: (state, action: PayloadAction<{ bsNm: IBSNm; from?: string }>) => {
+    closeBS: (
+      state,
+      action: PayloadAction<{
+        bsNm: IBSNm;
+        from?: string;
+      }>
+    ) => {
       const from = action?.payload.from;
       const bsNm = action?.payload.bsNm;
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
@@ -162,12 +188,19 @@ const bottomSheetSlice = createSlice({
     },
     closeBSAll: (
       state,
-      action: PayloadAction<{ from?: string } | undefined>
+      action: PayloadAction<
+        { from?: string; scrollOffset?: number } | undefined
+      >
     ) => {
       const from =
         action?.payload && typeof action.payload === "object"
           ? action.payload.from
           : undefined;
+      const scrollOffset =
+        action?.payload && typeof action.payload === "object"
+          ? action.payload.scrollOffset ?? 0
+          : 0;
+
       // if duplicate action, do nothing
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
       if (lastAction?.type === "closeAll") return;
@@ -211,7 +244,6 @@ const bottomSheetSlice = createSlice({
       state,
       action: PayloadAction<{ bsNm: IBSNm; from?: string }>
     ) => {
-      console.log("[bottomSheetSlice/expandBS]", action.payload);
       // if duplicate action, do nothing
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
       if (lastAction?.type === "expand") return;
@@ -223,7 +255,6 @@ const bottomSheetSlice = createSlice({
       // if already expanded, do nothing
       const snapPoints = bsConfigByName[action.payload.bsNm]?.snapPoints;
       const maxIndex = snapPoints ? snapPoints.length - 1 : 0;
-      console.log("maxIndex:", maxIndex);
       if (state.currentValue.index > maxIndex) return;
 
       const { bsNm, from } = action.payload;
@@ -274,6 +305,9 @@ const bottomSheetSlice = createSlice({
       action: PayloadAction<{ index: number; position: number }>
     ) => {
       state.currentValue = action.payload;
+    },
+    setLastSnapshot: (state, action: PayloadAction<IBSLastSnapshot | null>) => {
+      state.lastSnapshot = action.payload;
     },
     resetBSData: (state) => {
       state.bsData = initialState.bsData;
@@ -427,6 +461,7 @@ export const {
 
   // bs value in onChange
   setCurrentValue,
+  setLastSnapshot,
 
   // action queue
   dequeueBSAction,

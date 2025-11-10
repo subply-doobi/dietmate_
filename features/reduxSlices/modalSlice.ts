@@ -2,11 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type IModalName =
   // alert
-  // 끼니 추가삭제, 식품 삭제
   | "menuDeleteAllAlert"
-
-  // 자동구성
-  | "autoMenuOverPriceAlert"
+  | "autoMenuOverPriceAlert" // 자동구성 예산초과
 
   // 튜토리얼
   | "tutorialCompleteAlert"

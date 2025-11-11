@@ -50,7 +50,6 @@ import {
   makeTableData,
 } from "@/shared/utils/screens/foodDetail/makeNutrTable";
 import { addToRecentProduct } from "@/shared/utils/asyncStorage";
-import { setProductToAdd } from "@/features/reduxSlices/bottomSheetSlice";
 import Icon from "@/shared/ui/Icon";
 
 interface IShowPart {

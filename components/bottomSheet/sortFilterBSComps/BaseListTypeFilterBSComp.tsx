@@ -34,7 +34,12 @@ const BaseListTypeFilterBSComp = () => {
   const dDData = dTOData?.[currentDietNo]?.dietDetail || [];
 
   const selectBaseListType = (type: "totalFoodList" | "availableFoods") => {
-    dispatch(closeBS());
+    dispatch(
+      closeBS({
+        bsNm: "baseListTypeFilter",
+        from: "BaseListTypeFilterBSComp.tsx",
+      })
+    );
     if (pathName === "/Search" && type === "availableFoods") {
       pToAdd.length > 0 && dispatch(setProductToDel([]));
       router.push({
@@ -45,11 +50,21 @@ const BaseListTypeFilterBSComp = () => {
     }
 
     if (type === baseListType) {
-      dispatch(closeBS());
+      dispatch(
+        closeBS({
+          bsNm: "baseListTypeFilter",
+          from: "BaseListTypeFilterBSComp.tsx",
+        })
+      );
       return;
     }
     dispatch(setBaseListType(type));
-    dispatch(closeBS());
+    dispatch(
+      closeBS({
+        bsNm: "baseListTypeFilter",
+        from: "BaseListTypeFilterBSComp.tsx",
+      })
+    );
   };
 
   return (

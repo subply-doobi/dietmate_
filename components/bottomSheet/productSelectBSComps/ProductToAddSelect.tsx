@@ -70,7 +70,7 @@ const ProductToAddSelect = () => {
   const numOfMenu = Object.keys(dTOData || {}).length;
   const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx] || "";
   const currentMenu = dTOData?.[currentDietNo]?.dietDetail || [];
-  const MenuLabel = MENU_LABEL[currentFMCIdx].slice(0, -2);
+  const MenuLabel = MENU_LABEL[currentFMCIdx].slice(2);
   const isIncluded = currentMenu.some(
     (m) => m.productNo === pToAdd[0]?.productNo
   );
@@ -110,7 +110,6 @@ const ProductToAddSelect = () => {
     if (!pToAdd) {
       return;
     }
-    // dispatch(closeBS());
 
     await addToRecentProduct(pToAdd[0]?.productNo);
     const recentlyOpenedFoodsPNoArr = await getRecentProducts();
@@ -144,7 +143,9 @@ const ProductToAddSelect = () => {
     }, 10);
     dispatch(deleteBSProduct());
     setTimeout(() => {
-      dispatch(closeBS());
+      dispatch(
+        closeBS({ bsNm: "productToAddSelect", from: "ProductToAddSelect.tsx" })
+      );
       if (pathNm !== "/Search") {
         router.back();
       }
@@ -167,10 +168,10 @@ const ProductToAddSelect = () => {
             <Icon name="chevronLeft" color={colors.textSub} />
           </LRBtn>
         )}
-        <LRBtn onPress={() => router.push("/(tabs)/Formula")}>
+        <LRBtn>
           <Row style={{ columnGap: 2 }}>
-            <ProductNm style={{ fontWeight: 600 }}>{MenuLabel}</ProductNm>
             <Icon name="appIcon" iconSize={20} />
+            <ProductNm style={{ fontWeight: 600 }}>{MenuLabel}</ProductNm>
           </Row>
         </LRBtn>
         {pathNm !== "/AutoAdd" && (
@@ -179,6 +180,12 @@ const ProductToAddSelect = () => {
           </LRBtn>
         )}
       </Row>
+
+      {/* 영양정보 */}
+      <NutrientsProgress
+        dietDetailData={expectedMenu}
+        textColor={colors.textSub}
+      />
 
       {/* 현재 근 식품 확인 */}
       <HorizontalSpace height={12} />
@@ -243,7 +250,12 @@ const ProductToAddSelect = () => {
             {bsValue.index === 1 && (
               <TouchableOpacity
                 onPress={() =>
-                  dispatch(expandBS({ bsNm: "productToAddSelect" }))
+                  dispatch(
+                    expandBS({
+                      bsNm: "productToAddSelect",
+                      from: "ProductToAddSelect.tsx",
+                    })
+                  )
                 }
               >
                 <Icon
@@ -260,13 +272,6 @@ const ProductToAddSelect = () => {
               containerStyle={{ marginLeft: 2, marginTop: 12 }}
             />
           )}
-
-          {/* 영양정보 */}
-          <HorizontalSpace height={24} />
-          <NutrientsProgress
-            dietDetailData={expectedMenu}
-            textColor={colors.textSub}
-          />
 
           {/* 식품추가 버튼 */}
           <CTA

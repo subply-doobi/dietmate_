@@ -126,16 +126,6 @@ export default function RootLayout() {
                   }}
                 />
 
-                {/* 배송비절약  */}
-                <Stack.Screen
-                  name="LowerShipping"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "",
-                    // headerLeft: () => <BackArrow goBackFn={router.back} />,
-                  }}
-                />
-
                 <Stack.Screen
                   name="Mypage"
                   options={{

@@ -19,21 +19,15 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import DTooltip from "@/shared/ui/DTooltip";
 import Icon, { IconName } from "@/shared/ui/Icon";
 import { TextMain, TextSub } from "@/shared/ui/styledComps";
-import {
-  commaToNum,
-  getSortedShippingPriceObj,
-  sumUpDietFromDTOData,
-} from "@/shared/utils/sumUp";
-import { useBottomSheet, useBottomSheetModal } from "@gorhom/bottom-sheet";
-import { useLocalSearchParams, usePathname } from "expo-router";
+import { getPlatformSummaries } from "@/shared/utils/dietSummary";
+import { commaToNum } from "@/shared/utils/sumUp";
+import { usePathname } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, TextInput } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 
 const SortFilter = () => {
   // navigation
-  // const autoAddType = useLocalSearchParams()?.type;
   const pathName = usePathname();
 
   // redux
@@ -81,19 +75,20 @@ const SortFilter = () => {
   const { data: dTOData } = useListDietTotalObj();
 
   // useMemo
-  const { firstTargetSeller, tooltipText, priceTotal } = useMemo(() => {
+  const { firstTargetSeller, tooltipText } = useMemo(() => {
     if (!dTOData) return { firstTargetSeller: "", tooltipText: "" };
-    const { shippingPriceObj, priceTotal } = sumUpDietFromDTOData(dTOData);
-    const { free, notFree } = getSortedShippingPriceObj(shippingPriceObj);
-    const firstTargetSeller = notFree[0]?.platformNm || "";
+
+    const platformSummaries = getPlatformSummaries(dTOData);
+    const firstTargetSeller = platformSummaries[0]?.platformNm || "";
+    const remainToFree = platformSummaries[0]?.changedRemainToFree || 0;
+
     const tooltipText = `"${firstTargetSeller}" 무료배송까지 ${commaToNum(
-      notFree[0]?.remainPrice
+      remainToFree
     )}원`;
 
     return {
       firstTargetSeller,
       tooltipText,
-      priceTotal,
     };
   }, [dTOData]);
 
@@ -133,7 +128,10 @@ const SortFilter = () => {
       iconName: "target",
       iconSize: 18,
       iconColor: isActiveObj.baseListType ? colors.main : colors.textSub,
-      onPress: () => dispatch(openBS("baseListTypeFilter")),
+      onPress: () =>
+        dispatch(
+          openBS({ bsNm: "baseListTypeFilter", from: "SortFilter.tsx" })
+        ),
     },
     // 카테고리
     {
@@ -144,7 +142,7 @@ const SortFilter = () => {
       iconSize: 18,
       iconColor: isActiveObj.category ? colors.main : colors.textSub,
       onPress: () => {
-        dispatch(openBS("categoryFilter"));
+        dispatch(openBS({ bsNm: "categoryFilter", from: "SortFilter.tsx" }));
       },
     },
     // 검색
@@ -179,7 +177,7 @@ const SortFilter = () => {
       iconSize: 18,
       iconColor: isActiveObj.platformNm ? colors.main : colors.textSub,
       onPress: () => {
-        dispatch(openBS("platformFilter"));
+        dispatch(openBS({ bsNm: "platformFilter", from: "SortFilter.tsx" }));
         isTooltipShow && setIsTooltipShow(false);
       },
     },
@@ -248,7 +246,7 @@ const SortFilter = () => {
       iconSize: 14,
       iconColor: isActiveObj.sortBy ? colors.main : colors.textSub,
       onPress: () => {
-        dispatch(openBS("sort"));
+        dispatch(openBS({ bsNm: "sort", from: "SortFilter.tsx" }));
       },
     },
     // 초기화

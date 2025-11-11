@@ -16,12 +16,7 @@ import SelectAllRow from "./SelectAllRow";
 import CarouselCta from "./CarouselCta";
 import CarouselFoodList from "./CarouselFoodList";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import DSmallBtn from "@/shared/ui/DSmallBtn";
 import Icon from "@/shared/ui/Icon";
-import {
-  openBS,
-  setLSQtyChange,
-} from "@/features/reduxSlices/bottomSheetSlice";
 
 interface ICarouselContent {
   carouselRef: React.RefObject<ICarouselInstance | null>;
@@ -110,23 +105,6 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
             <Title>{MENU_LABEL[carouselIdx]}</Title>
             {Number(currentQty) > 1 && <SubTitle>( x{currentQty} )</SubTitle>}
           </Row>
-          {carouselMenu.length > 0 && (
-            <DSmallBtn
-              btnText="근수 변경"
-              style={{
-                borderWidth: 1,
-                borderColor: colors.lineLight,
-                paddingTop: 8,
-                paddingBottom: 8,
-                paddingLeft: 8,
-                paddingRight: 8,
-              }}
-              onPress={() => {
-                dispatch(setLSQtyChange({ menuIdx: currentFMCIdx }));
-                dispatch(openBS("QtyChange"));
-              }}
-            />
-          )}
         </Row>
 
         {/* 삭제 버튼 */}

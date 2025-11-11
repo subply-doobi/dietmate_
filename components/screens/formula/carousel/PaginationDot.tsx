@@ -7,16 +7,12 @@ import { useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import Toast from "react-native-toast-message";
 import Icon from "@/shared/ui/Icon";
 
 const PaginationDot = ({ index }: { index: number }) => {
   // redux
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-  const formulaProgress = useAppSelector(
-    (state) => state.formula.formulaProgress
-  );
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -50,20 +46,21 @@ const PaginationDot = ({ index }: { index: number }) => {
   // }, [nutrStatus]);
 
   const isActive = currentFMCIdx === index;
-  const text = isActive ? MENU_LABEL[index].slice(0, -2) : MENU_LABEL[index];
+  const text = isActive ? MENU_LABEL[index].slice(-2) : MENU_LABEL[index];
+
   const isSatisfied = nutrStatus === "satisfied";
 
   return (
     <PaginationDotView>
-      <PaginationText>{text}</PaginationText>
       {isActive && (
         <Icon
           name="appIcon"
-          boxSize={16}
-          iconSize={16}
-          style={{ marginRight: -3 }}
+          boxSize={18}
+          iconSize={18}
+          style={{ marginLeft: -4, marginRight: -4 }}
         />
       )}
+      <PaginationText>{text}</PaginationText>
       {isSatisfied && (
         <Icon
           name="check"

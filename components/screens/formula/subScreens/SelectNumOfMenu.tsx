@@ -15,14 +15,15 @@ import {
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
-import { MENU_LABEL } from "@/shared/constants";
+import { MENU_KIND_LABEL } from "@/shared/constants";
 import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import CtaButton from "@/shared/ui/CtaButton";
 import Icon from "@/shared/ui/Icon";
 import { Row, TextMain } from "@/shared/ui/styledComps";
 import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
 
-const PICKER_DATA_ARR = [...MENU_LABEL];
+// MENU_KIND_LABEL = ["한 가지", "두 가지", "세 가지", "네 가지", "다섯 가지", "여섯 가지", "일곱 가지"];
+const PICKER_DATA_ARR = [...MENU_KIND_LABEL].slice(2);
 
 const SelectNumOfMenu = () => {
   // redux
@@ -64,7 +65,7 @@ const SelectNumOfMenu = () => {
       <PickerBox>
         <ScrollPicker
           dataSource={PICKER_DATA_ARR}
-          selectedIndex={4}
+          selectedIndex={2}
           renderItem={(data, _, isSelected) => (
             <Row>
               <PickerItem isSelected={isSelected}>{data}</PickerItem>
@@ -76,7 +77,8 @@ const SelectNumOfMenu = () => {
             </Row>
           )}
           onValueChange={(data, selectedIndex) =>
-            setNumOfMenu(selectedIndex + 1)
+            // pickerDataArr -> [3, 4, 5, 6, 7]
+            setNumOfMenu(selectedIndex + 3)
           }
           wrapperHeight={80 * 3}
           wrapperBackground={colors.white}
@@ -88,7 +90,7 @@ const SelectNumOfMenu = () => {
       <CtaButton
         style={{ position: "absolute", bottom: 8 }}
         btnStyle="active"
-        btnText={`${PICKER_DATA_ARR[numOfMenu - 1]}으로 공식 만들기`}
+        btnText={`${MENU_KIND_LABEL[numOfMenu - 1]} 근 으로 공식 만들기`}
         onPress={() => createMenu(numOfMenu)}
       />
     </Container>

@@ -36,13 +36,12 @@ export const ENV = {
 export const { width, height } = Dimensions.get("screen");
 export const SCREENWIDTH = Math.min(width, height);
 export const SCREENHEIGHT = Math.max(width, height);
-export const DESIGN_WIDTH = 360;
 export const DALERT_WIDTH = 280;
 export const IS_ANDROID = Platform.OS === "android";
 export const IS_IOS = Platform.OS === "ios";
+
+// design constants
 export const NUTRIENT_PROGRESS_HEIGHT = 48;
-export const FOOD_LIST_ITEM_HEIGHT = 152;
-export const HOME_FILTER_HEADER_HEIGHT = 120;
 export const DEFAULT_BOTTOM_TAB_HEIGHT = 83;
 export const BOTTOM_INDICATOR_IOS = 16;
 export const FORMULA_CAROUSEL_HEIGHT = 390;
@@ -63,6 +62,9 @@ export const MAIN_FOODLIST_HEADER_HEIGHT =
   SORT_FILTER_HEIGHT;
 // HorizontalFoodlist 컴포넌트 height + SortFilter 컴포넌트 height
 
+// animation constants
+export const BS_ANIMATION_DURATION = 150;
+
 // service constants
 export const MAX_NUM_OF_RECENT_PRODUCT = 10;
 export const SERVICE_PRICE_PER_PRODUCT = 300;
@@ -77,13 +79,22 @@ export const PLAY_STORE_URL = "market://details?id=com.subply.dietmate";
 export const APP_STORE_URL =
   "itms-apps://itunes.apple.com/us/app//id6472628268";
 export const MENU_LABEL = [
-  "한 근",
-  "두 근",
-  "세 근",
-  "네 근",
-  "다섯 근",
-  "여섯 근",
-  "일곱 근",
+  "근 1",
+  "근 2",
+  "근 3",
+  "근 4",
+  "근 5",
+  "근 6",
+  "근 7",
+];
+export const MENU_KIND_LABEL = [
+  "한 가지",
+  "두 가지",
+  "세 가지",
+  "네 가지",
+  "다섯 가지",
+  "여섯 가지",
+  "일곱 가지",
 ];
 export const MENU_NUM_LABEL = [
   "한 근",

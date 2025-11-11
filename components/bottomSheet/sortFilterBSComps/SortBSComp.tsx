@@ -83,7 +83,7 @@ const SortBSComp = () => {
   };
 
   const applySort = () => {
-    dispatch(closeBS());
+    dispatch(closeBS({ bsNm: "sort", from: "SortBSComp.tsx" }));
     dispatch(
       setSortBy(
         tempSortState.sortNm.concat(

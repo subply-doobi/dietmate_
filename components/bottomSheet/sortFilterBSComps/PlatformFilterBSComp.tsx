@@ -4,11 +4,8 @@ import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { Col, HorizontalLine, Row, TextMain } from "@/shared/ui/styledComps";
-import {
-  sumUpDietFromDTOData,
-  getSortedShippingPriceObj,
-  commaToNum,
-} from "@/shared/utils/sumUp";
+import { getPlatformSummaries } from "@/shared/utils/dietSummary";
+import { commaToNum } from "@/shared/utils/sumUp";
 import { useMemo } from "react";
 import styled from "styled-components/native";
 
@@ -31,22 +28,22 @@ const PlatformFilterBSComp = () => {
   const { data: dTOData } = useListDietTotalObj();
 
   // useMemo
-  const { firstTargetSeller, shippingPriceObj } = useMemo(() => {
+  const { platformSummaries, firstTargetSeller } = useMemo(() => {
     if (!dTOData) return { firstTargetSeller: "", shippingPriceObj: {} };
-    const { shippingPriceObj } = sumUpDietFromDTOData(dTOData);
-    const { free, notFree } = getSortedShippingPriceObj(shippingPriceObj);
-    const firstTargetSeller = notFree[0]?.platformNm || "";
+    const platformSummaries = getPlatformSummaries(dTOData);
+    const firstTargetSeller = platformSummaries[0]?.platformNm || "";
+
     return {
+      platformSummaries,
       firstTargetSeller,
-      shippingPriceObj,
     };
   }, [dTOData]);
 
-  console.log("PlatformFilterBSComp");
-
   // fn
   const selectPlatform = (platform: string) => {
-    dispatch(closeBS());
+    dispatch(
+      closeBS({ bsNm: "platformFilter", from: "PlatformFilterBSComp.tsx" })
+    );
     if (platformNm[0] === platform) {
       return;
     }
@@ -62,15 +59,16 @@ const PlatformFilterBSComp = () => {
         //     const remainText = `"${firstTargetSeller}" ${commaToNum(
         //   notFree[0]?.remainPrice
         // )}원 더 담으면 무료배송`;
-        const obj = shippingPriceObj[item.value];
-        console.log("obj", obj);
+        const obj = platformSummaries?.find((s) => s.platformNm === item.value);
+        const remainPrice = obj?.changedRemainToFree ?? 0;
+
         let shippingText = "";
         if (!obj) {
           shippingText = "(아직 담은 식품이 없어요)";
-        } else if (obj.remainPrice > 0) {
-          shippingText = `(무료배송까지 ${commaToNum(obj.remainPrice)}원)`;
+        } else if (remainPrice > 0) {
+          shippingText = `(무료배송까지 ${commaToNum(remainPrice)}원)`;
         } else {
-          shippingText = "무료배송";
+          shippingText = "(무료배송)";
         }
 
         return (

@@ -21,7 +21,7 @@ import {
   setCustomData,
   setPayParams,
 } from "@/shared/utils/screens/order/setPayData";
-import { commaToNum, sumUpDietFromDTOData } from "@/shared/utils/sumUp";
+import { commaToNum } from "@/shared/utils/sumUp";
 import { getOrderAccordionContent } from "@/shared/utils/screens/order/orderAccordion";
 import { tfDTOToDDA } from "@/shared/utils/dataTransform";
 
@@ -31,15 +31,15 @@ import { PAY_METHOD } from "@/shared/utils/screens/order/payConsts";
 import BusinessInfo from "@/components/common/businessInfo/BusinessInfo";
 import CtaButton from "@/shared/ui/CtaButton";
 import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
+import { useListDietTotalObj } from "@/shared/api/queries/diet";
+import { getSummaryTotals } from "@/shared/utils/dietSummary";
 
 const Order = () => {
   //navigation
   const router = useRouter();
 
   // redux
-  const { foodToOrder, selectedAddrIdx, shippingPrice } = useAppSelector(
-    (state) => state.order
-  );
+  const { selectedAddrIdx } = useAppSelector((state) => state.order);
   const { buyerName, buyerTel, entranceType, entranceNote, paymentMethod, pg } =
     useAppSelector((state) => state.userInput);
 
@@ -47,6 +47,7 @@ const Order = () => {
   const [activeSections, setActiveSections] = useState<number[]>([]);
 
   // react-query
+  const { data: dTOData } = useListDietTotalObj();
   const { data: listAddressData, isLoading: listAddressDataLoading } =
     useListAddress();
   const { data: userData } = useGetUser();
@@ -57,12 +58,18 @@ const Order = () => {
     priceTotal,
     menuNum,
     productNum,
+    shippingPrice,
     dietDetailAllData,
     accordionContent,
   } = useMemo(() => {
-    const { priceTotal, menuNum, productNum } =
-      sumUpDietFromDTOData(foodToOrder);
-    const dietDetailAllData = tfDTOToDDA(foodToOrder);
+    const {
+      changedProductsTotal: priceTotal,
+      changedShippingTotal: shippingPrice,
+      menuNumTotal: menuNum,
+      productNumTotal: productNum,
+    } = getSummaryTotals(dTOData);
+
+    const dietDetailAllData = tfDTOToDDA(dTOData);
 
     const currentPayMethodItem = PAY_METHOD.find(
       (item) => item.value === paymentMethod.value
@@ -84,10 +91,11 @@ const Order = () => {
       priceTotal,
       menuNum,
       productNum,
+      shippingPrice,
       dietDetailAllData,
       accordionContent,
     };
-  }, [foodToOrder, listAddressData, activeSections]);
+  }, [dTOData, listAddressData, activeSections]);
 
   // validation
   const invalidateInput = [buyerName, buyerTel, paymentMethod].find(

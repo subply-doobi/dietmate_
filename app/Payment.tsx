@@ -12,7 +12,7 @@ import {
 import { useUpdateDiet } from "@/shared/api/queries/diet";
 import { useDeleteOrder, useUpdateOrder } from "@/shared/api/queries/order";
 import { openModal } from "@/features/reduxSlices/modalSlice";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
+import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { IIamportPayParams } from "@/shared/utils/screens/order/setPayData";

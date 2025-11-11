@@ -5,7 +5,7 @@ import {
 } from "@/features/reduxSlices/formulaSlice";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
-import { MENU_LABEL } from "@/shared/constants";
+import { MENU_KIND_LABEL, MENU_LABEL } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { Container } from "@/shared/ui/styledComps";
 import { getAddDietStatusFrDTData } from "@/shared/utils/getDietAddStatus";
@@ -25,8 +25,8 @@ const FormulaMore = () => {
   const createDietMutation = useCreateDiet();
 
   // etc
-  const numOfMenu = Object.keys(dTOData || {}).length;
-  const numOfMenuLabel = MENU_LABEL[numOfMenu - 1];
+  const numOfMenuKind = Object.keys(dTOData || {}).length;
+  const menuKindLabel = MENU_KIND_LABEL[numOfMenuKind - 1];
   const maxMenuNum = MENU_LABEL.length;
 
   const {
@@ -36,13 +36,13 @@ const FormulaMore = () => {
   } = getAddDietStatusFrDTData(dTOData);
 
   const isAddMenuActive =
-    numOfMenu <= maxMenuNum - 1 && addDietStatus === "possible";
+    numOfMenuKind <= maxMenuNum - 1 && addDietStatus === "possible";
   const METHOD_BTN =
-    numOfMenu === 0
+    numOfMenuKind === 0
       ? []
       : [
           {
-            text: `자동으로 ${numOfMenuLabel} 공식 만들기`,
+            text: `자동으로 ${menuKindLabel} 근 공식 만들기`,
             subText: "",
             iconName: "calculator",
             isActive: true,
@@ -52,7 +52,7 @@ const FormulaMore = () => {
             },
           },
           {
-            text: `${numOfMenuLabel} 모두 삭제하기`,
+            text: `${menuKindLabel} 근 모두 삭제하기`,
             subText: "",
             iconName: "cancelCircle",
             isActive: true,
@@ -61,13 +61,13 @@ const FormulaMore = () => {
             },
           },
           {
-            text: isAddMenuActive ? "한 근 추가하기" : addBtnText,
+            text: isAddMenuActive ? "한 가지 근 추가하기" : addBtnText,
             subText: addBtnSubText,
             iconName: "plusCircle",
             isActive: isAddMenuActive,
             onPress: () => {
-              createDietMutation.mutate({ setDietNo: true });
-              dispatch(setCurrentFMCIdx(numOfMenu));
+              createDietMutation.mutate();
+              dispatch(setCurrentFMCIdx(numOfMenuKind));
               router.back();
             },
           },

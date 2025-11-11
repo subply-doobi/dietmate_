@@ -22,7 +22,11 @@ import { getNutrStatus } from "@/shared/utils/sumUp";
 import { setGlobalLoading } from "@/features/reduxSlices/commonSlice";
 import { useRouter } from "expo-router";
 import { useMemo, useState, useEffect } from "react";
-import { setProductToDel } from "@/features/reduxSlices/bottomSheetSlice";
+import {
+  closeBSAll,
+  resetBSData,
+  setProductToDel,
+} from "@/features/reduxSlices/bottomSheetSlice";
 import Icon from "@/shared/ui/Icon";
 import { getAutoMenuData } from "@/shared/utils/asyncStorage";
 import { setAMSettingProgress } from "@/features/reduxSlices/autoMenuSlice";
@@ -190,6 +194,8 @@ const CarouselCta = ({
   };
 
   const onCtaPress = () => {
+    dispatch(closeBSAll({ from: "CarouselCta.tsx" }));
+    dispatch(resetBSData());
     router.push({
       pathname: "/AutoAdd",
       params: { menu: JSON.stringify(carouselMenu), type: "add" },
@@ -300,8 +306,6 @@ const CarouselCta = ({
     </>
   );
 };
-
-/* <LoadingAlertContent /> */
 
 export default CarouselCta;
 

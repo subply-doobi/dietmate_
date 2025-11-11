@@ -42,7 +42,7 @@ const HorizontalFoodlist = ({
 
       <FlatList
         data={products}
-        keyExtractor={(item) => item.productNo}
+        keyExtractor={(item, idx) => `${item.productNo}_${idx}`}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{

@@ -2,6 +2,7 @@ import Foodlist from "@/components/common/mainFoodlist/Foodlist";
 import {
   selectFilteredSortedProducts,
   setAvailableFoods,
+  setInitialSortFilter,
 } from "@/features/reduxSlices/filteredPSlice";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
@@ -36,6 +37,11 @@ const AutoAdd = () => {
   // navigation
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  const params = useLocalSearchParams();
+  const currentMenu = JSON.parse(params?.menu as string);
+  const initialFilter = params?.initialSortFilter
+    ? JSON.parse(params.initialSortFilter as string)
+    : undefined;
 
   // redux
   const dispatch = useAppDispatch();
@@ -47,12 +53,7 @@ const AutoAdd = () => {
 
   const pToAdd = useAppSelector((state) => state.bottomSheet.bsData.pToAdd);
   const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
-  const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
-  const bsIndex = useAppSelector(
-    (state) => state.bottomSheet.currentValue.index
-  );
   const products = useAppSelector(selectFilteredSortedProducts);
-  const currentMenu = JSON.parse(useLocalSearchParams()?.menu as string);
 
   // react-query
   const { data: bLData } = useGetBaseLine();
@@ -91,13 +92,13 @@ const AutoAdd = () => {
           likeData: likeData || [],
         })
       );
+      initialFilter && dispatch(setInitialSortFilter(initialFilter));
 
       return recommendedMenu;
     }
   );
 
   useEffect(() => {
-    dispatch(setProductToAdd([]));
     navigation.setOptions({
       headerTitle: !!pToDel[0] ? "식품교체" : "식품추가",
     });
@@ -113,13 +114,19 @@ const AutoAdd = () => {
 
   useEffect(() => {
     if (!isFocused) {
-      dispatch(closeBSAll());
+      dispatch(closeBSAll({ from: "AutoAdd.tsx" }));
       return;
     }
-    bsIndex < 0 && dispatch(openBS("productToAddSelect"));
-    pToAdd.length > 0 &&
-      dispatch(snapBS({ bsNm: "productToAddSelect", index: 1 }));
-  }, [isFocused, pToAdd, bsNmArr]);
+    dispatch(openBS({ bsNm: "productToAddSelect", from: "AutoAdd.tsx" }));
+  }, [isFocused]);
+
+  useEffect(() => {
+    return () => {
+      // Formula - AutoAdd are in different Nav stacks
+      dispatch(closeBSAll({ from: "AutoAdd.tsx" }));
+      dispatch(setProductToAdd([]));
+    };
+  }, []);
 
   if (isLoading || !isDelayOver) {
     return (

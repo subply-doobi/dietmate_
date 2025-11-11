@@ -27,7 +27,9 @@ const CategoryFilterBSComp = () => {
     if (c !== category) {
       dispatch(setCategory(c));
     }
-    dispatch(closeBS());
+    dispatch(
+      closeBS({ bsNm: "categoryFilter", from: "CategoryFilterBSComp.tsx" })
+    );
   };
 
   return (

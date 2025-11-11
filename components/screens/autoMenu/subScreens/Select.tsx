@@ -2,7 +2,6 @@ import { useEffect } from "react";
 
 import styled from "styled-components/native";
 
-import MenuAcInactiveHeader from "@/components/menuAccordion/MenuAcInactiveHeader";
 import { Col } from "@/shared/ui/styledComps";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
@@ -12,6 +11,7 @@ import { Platform, ScrollView } from "react-native";
 import CtaButton from "@/shared/ui/CtaButton";
 import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
 import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
+import MenuAcInactiveHeader from "../MenuAcInactiveHeader";
 
 const Select = () => {
   // redux

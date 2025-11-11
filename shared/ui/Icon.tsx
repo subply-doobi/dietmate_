@@ -60,8 +60,12 @@ const iconMap = {
     name: "plus-circle",
   },
   plusSquare: {
-    kind: AntDesign,
-    name: "plussquare",
+    kind: FontAwesome6,
+    name: "plus-square",
+  },
+  minusSquare: {
+    kind: FontAwesome6,
+    name: "minus-square",
   },
   cancelCircle: {
     kind: MaterialIcons,
@@ -284,7 +288,7 @@ const Icon: React.FC<IconProps> = ({
         />
       ) : (
         <IconComponent
-          name={iconMap[name].name as any}
+          name={iconMap[name].name}
           size={iconSize}
           color={color}
           {...rest}

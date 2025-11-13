@@ -3,7 +3,11 @@ import {
   IDietDetailProductData,
   IDietTotalObjData,
 } from "@/shared/api/types/diet";
-import { SERVICE_PRICE_PER_PRODUCT } from "../constants";
+import {
+  MENU_KIND_LABEL,
+  MENU_NUM_LABEL,
+  SERVICE_PRICE_PER_PRODUCT,
+} from "../constants";
 import { IProductData } from "../api/types/product";
 
 export interface PlatformSummary {
@@ -347,3 +351,45 @@ export function getSummaryTotals(
   const summaries = getPlatformSummaries(dTOData, dietQtyMap, foodChangeMap);
   return getSummaryTotalsFromSummaries(summaries, dTOData, dietQtyMap);
 }
+
+export const getDietNum = (dTOData: IDietTotalObjData | undefined) => {
+  if (!dTOData)
+    return {
+      menuNum: 0,
+      productNum: 0,
+      menuKindNum: 0,
+      menuKindLabel: "",
+      menuNumLabel: "",
+    };
+  const dietNoArr = Object.keys(dTOData);
+  const menuKindNum = dietNoArr.length;
+
+  let menuNum = 0;
+  let productNum = 0;
+
+  dietNoArr.forEach((dietNo) => {
+    const dietDetail = dTOData[dietNo]?.dietDetail || [];
+    const menuQty = parseInt(dietDetail[0]?.qty) || 0;
+    menuNum += menuQty;
+    dietDetail.forEach((item) => {
+      const productQty = parseInt(item?.qty) || 0;
+      productNum += productQty;
+    });
+  });
+
+  console.log("--------- getDietNum ---------");
+  console.log("menuKindNum:", menuKindNum);
+  console.log("menuNum:", menuNum);
+  console.log("productNum:", productNum);
+  console.log("menuKindLabel:", MENU_KIND_LABEL[menuKindNum - 1]);
+  console.log("menuNumLabel:", MENU_NUM_LABEL[menuNum - 1]);
+  console.log("------------------------------");
+
+  return {
+    menuNum,
+    productNum,
+    menuKindNum,
+    menuKindLabel: MENU_KIND_LABEL[menuKindNum - 1],
+    menuNumLabel: MENU_NUM_LABEL[menuNum - 1],
+  };
+};

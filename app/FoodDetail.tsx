@@ -12,14 +12,7 @@ import CtaButton from "@/shared/ui/CtaButton";
 import NutrientPart from "@/components/screens/foodDetail/NutrientPart";
 import FoodPart from "@/components/screens/foodDetail/FoodPart";
 import ShippingPart from "@/components/screens/foodDetail/ShippingPart";
-import {
-  Col,
-  Row,
-  TextMain,
-  TextSub,
-  StickyFooter,
-  Dot,
-} from "@/shared/ui/styledComps";
+import { Col, Row, TextMain, TextSub, Dot } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { IProductData } from "@/shared/api/types/product";
 
@@ -51,6 +44,7 @@ import {
 } from "@/shared/utils/screens/foodDetail/makeNutrTable";
 import { addToRecentProduct } from "@/shared/utils/asyncStorage";
 import Icon from "@/shared/ui/Icon";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface IShowPart {
   clicked: string;
@@ -68,6 +62,9 @@ const ShowPart = ({ clicked, table, data }: IShowPart) => {
 };
 
 const FoodDetail = () => {
+  // insets
+  const insets = useSafeAreaInsets();
+
   // redux
   const dispatch = useAppDispatch();
   const currentFMCIdx = useAppSelector((state) => state.formula.currentFMCIdx);
@@ -296,7 +293,7 @@ const FoodDetail = () => {
       </ScrollView>
       <View>
         {/* 하단 CTA버튼, like 버튼 */}
-        <BtnBox>
+        <BtnBox style={{ bottom: insets.bottom + 8 }}>
           <LikeBtn onPress={handlePressLikeBtn}>
             <Icon
               name={isIncludedInLike ? "heart" : "heartBorder"}
@@ -397,9 +394,12 @@ const NutritionInImage = styled.View`
   background-color: ${colors.blackOpacity50};
 `;
 
-const BtnBox = styled(StickyFooter)`
+const BtnBox = styled.View`
   flex: 1;
   flex-direction: row;
+  position: absolute;
+  right: 24px;
+  bottom: 0;
   column-gap: 6px;
   justify-content: flex-end;
 `;

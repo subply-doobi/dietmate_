@@ -20,7 +20,7 @@ import { getNutrStatus } from "@/shared/utils/sumUp";
 import { flatOrderMenuWithQty } from "@/shared/utils/screens/checklist/menuFlat";
 import { closeModal, openModal } from "@/features/reduxSlices/modalSlice";
 
-import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
+import { ScreenContainer, HorizontalSpace } from "@/shared/ui/styledComps";
 
 import CurrentDietCard from "@/components/screens/home/CurrentDietCard";
 import OrderChecklistCard from "@/components/screens/home/OrderCheckListCard";
@@ -160,7 +160,7 @@ const NewHome = () => {
   const statusBarHeight = useSafeAreaInsets().top;
 
   return (
-    <Container
+    <ScreenContainer
       style={{
         backgroundColor: colors.backgroundLight,
         paddingLeft: 0,
@@ -228,7 +228,7 @@ const NewHome = () => {
           }}
         /> */}
       </ScrollView>
-    </Container>
+    </ScreenContainer>
   );
 };
 

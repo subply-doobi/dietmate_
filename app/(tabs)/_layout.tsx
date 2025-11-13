@@ -9,8 +9,6 @@ import {
 import { useColorScheme } from "@/hooks/useColorScheme";
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { tfDTOToDDA } from "@/shared/utils/dataTransform";
-import styled from "styled-components/native";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useListProduct } from "@/shared/api/queries/product";
 import { setTotalFoodList } from "@/features/reduxSlices/commonSlice";

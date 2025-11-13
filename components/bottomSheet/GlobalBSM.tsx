@@ -1,25 +1,13 @@
-import { useRef, useEffect, useState, JSX } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import {
-  BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetScrollView,
-  useBottomSheetSpringConfigs,
   useBottomSheetTimingConfigs,
 } from "@gorhom/bottom-sheet";
-import {
-  BS_ANIMATION_DURATION,
-  DEFAULT_BOTTOM_TAB_HEIGHT,
-  NUTRIENT_PROGRESS_HEIGHT,
-  SCREENHEIGHT,
-} from "@/shared/constants";
-import CategoryFilterBSComp from "./sortFilterBSComps/CategoryFilterBSComp";
-import BaseListTypeFilterBSComp from "./sortFilterBSComps/BaseListTypeFilterBSComp";
-import PlatformFilterBSComp from "./sortFilterBSComps/PlatformFilterBSComp";
-import SortBSComp from "./sortFilterBSComps/SortBSComp";
+import { BS_ANIMATION_DURATION } from "@/shared/constants";
 
 import {
-  IBSNm,
   dequeueBSAction,
   setCurrentValue,
   IBSAction,
@@ -28,103 +16,23 @@ import {
   setLastSnapshot,
 } from "@/features/reduxSlices/bottomSheetSlice";
 
-import colors from "@/shared/colors";
-import { StyleProp, ViewStyle } from "react-native";
-import ProductToAddSelect from "./productSelectBSComps/ProductToAddSelect";
-import ProductToDelSelect from "./productSelectBSComps/ProductToDelSelect";
 import { usePathname } from "expo-router";
-import SummaryInfoBSComp from "./summaryInfoBSComp/SummaryInfoBSComp";
-import SummaryInfoHeaderBSComp from "./summaryInfoBSComp/SummaryInfoHeaderBSComp";
-import SummaryInfoFooterBSComp from "./summaryInfoBSComp/SummaryInfoFooterBSComp";
 import { ScrollView } from "react-native-gesture-handler";
 import { Easing } from "react-native-reanimated";
-
-interface IBSConfig {
-  renderBackdrop?: (props: any) => JSX.Element;
-  bsBackgroundColor: string;
-  index?: number;
-  snapPoints?: Array<string | number>;
-  enableDynamicSizing?: boolean;
-  maxDynamicContentSize?: number;
-  handleIndicatorStyle: StyleProp<ViewStyle>;
-  enablePanDownToClose?: boolean;
-  bottomInset?: number;
-}
-
-const bsHeaderByName: Partial<Record<IBSNm, JSX.Element>> = {
-  summaryInfo: <SummaryInfoHeaderBSComp />,
-};
-
-const bsFooterByName: Partial<Record<IBSNm, JSX.Element>> = {
-  summaryInfo: <SummaryInfoFooterBSComp />,
-};
-
-const bsCompByName: Record<IBSNm, JSX.Element> = {
-  // sort and filter
-  baseListTypeFilter: <BaseListTypeFilterBSComp />,
-  categoryFilter: <CategoryFilterBSComp />,
-  platformFilter: <PlatformFilterBSComp />,
-  sort: <SortBSComp />,
-
-  // product select
-  productToAddSelect: <ProductToAddSelect />,
-  productToDelSelect: <ProductToDelSelect />,
-
-  // formula summary
-  summaryInfo: <SummaryInfoBSComp />,
-};
-
-const bsBasicConfig: IBSConfig = {
-  renderBackdrop: (props: any) => (
-    <BottomSheetBackdrop
-      {...props}
-      disappearsOnIndex={-1}
-      appearsOnIndex={0}
-      opacity={0.8}
-    />
-  ),
-  bsBackgroundColor: colors.white,
-  index: undefined,
-  handleIndicatorStyle: {},
-  snapPoints: undefined,
-  enableDynamicSizing: true,
-  maxDynamicContentSize: SCREENHEIGHT * 0.6,
-  enablePanDownToClose: true,
-};
-
-const bsOpacityConfig: IBSConfig = {
-  renderBackdrop: undefined,
-  bsBackgroundColor: colors.blackOpacity80,
-  handleIndicatorStyle: { backgroundColor: colors.white },
-  index: undefined,
-  snapPoints: undefined,
-  enableDynamicSizing: true,
-  maxDynamicContentSize: SCREENHEIGHT * 0.6,
-  enablePanDownToClose: true,
-};
-
-export const bsConfigByName: Partial<Record<IBSNm, IBSConfig>> = {
-  productToDelSelect: { ...bsOpacityConfig },
-  productToAddSelect: {
-    ...bsOpacityConfig,
-    maxDynamicContentSize: SCREENHEIGHT * 0.8,
-    enablePanDownToClose: false,
-    snapPoints: [
-      24 - 8 + 32 + 12 + 52 + 16 + NUTRIENT_PROGRESS_HEIGHT,
-      24 - 8 + 32 + 12 + 52 + 16 + 24 + 52 + 16 + NUTRIENT_PROGRESS_HEIGHT,
-    ],
-  },
-  summaryInfo: {
-    ...bsOpacityConfig,
-    enableDynamicSizing: false,
-    maxDynamicContentSize: undefined,
-    bottomInset: 48,
-    enablePanDownToClose: false,
-    snapPoints: [72, SCREENHEIGHT - 136],
-  },
-};
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  bsBasicConfig,
+  bsCompByName,
+  bsConfigByName,
+  bsFooterByName,
+  bsHeaderByName,
+  IBSNm,
+} from "./bsConfig";
 
 const GlobalBSM = () => {
+  // insets
+  const insets = useSafeAreaInsets();
+
   // state
   const dispatch = useAppDispatch();
   const { bsNmArr, actionQueue, currentValue, lastSnapshot } = useAppSelector(
@@ -287,7 +195,6 @@ const GlobalBSM = () => {
           break;
         }
 
-        console.log("[GlobalBSM] Restoring last snapshot:", lastSnapshot);
         setTimeout(() => {
           bottomSheetModalRef.current?.snapToIndex(lastSnapshot.index);
           // Restore scroll position after layout settles
@@ -335,7 +242,7 @@ const GlobalBSM = () => {
   return (
     <BottomSheetModal
       ref={bottomSheetModalRef}
-      bottomInset={bsConfig.bottomInset}
+      bottomInset={insets.bottom + (bsConfig.bottomInset ?? 0)}
       index={0}
       snapPoints={bsConfig.snapPoints}
       enableDynamicSizing={bsConfig.enableDynamicSizing}
@@ -353,7 +260,7 @@ const GlobalBSM = () => {
       {bsHeaderByName[configNm!] || <></>}
       <BottomSheetScrollView
         ref={bottomSheetScrollViewRef}
-        onScroll={(e) => {
+        onScroll={(e: any) => {
           currentScrollOffsetRef.current = e.nativeEvent.contentOffset.y;
         }}
       >

@@ -25,7 +25,7 @@ const calorieOptionItem: {
 ];
 
 interface ITargetCalorie {
-  scrollRef: RefObject<ScrollView>;
+  scrollRef: RefObject<ScrollView | null>;
 }
 const TargetCalorie = ({ scrollRef }: ITargetCalorie) => {
   // redux

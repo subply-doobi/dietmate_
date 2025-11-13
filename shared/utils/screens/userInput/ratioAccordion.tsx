@@ -90,7 +90,7 @@ const AcNutrBox = ({
 const AcManualInputs = ({
   scrollRef,
 }: {
-  scrollRef: RefObject<ScrollView>;
+  scrollRef: RefObject<ScrollView | null>;
 }) => {
   // react-query
   const { data: baseLineData } = useGetBaseLine();
@@ -214,7 +214,7 @@ const AcManualInputs = ({
 export const getRatioAcContent = (
   ratioCodeData: ICodeData,
   calorie: string,
-  scrollRef: React.RefObject<ScrollView>
+  scrollRef: React.RefObject<ScrollView | null>
 ) => {
   const manualContent = {
     activeHeader: <AcHeader isActive={true} title="영양성분 직접 설정" />,

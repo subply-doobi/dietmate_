@@ -18,7 +18,6 @@ import colors from "@/shared/colors";
 import CtaButton from "@/shared/ui/CtaButton";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { commaToNum } from "@/shared/utils/sumUp";
-import { useAppDispatch } from "@/shared/hooks/reduxHooks";
 import { MENU_NUM_LABEL } from "@/shared/constants";
 import Icon from "@/shared/ui/Icon";
 

@@ -70,7 +70,7 @@ const ProductToAddSelect = () => {
   const numOfMenu = Object.keys(dTOData || {}).length;
   const currentDietNo = Object.keys(dTOData || {})[currentFMCIdx] || "";
   const currentMenu = dTOData?.[currentDietNo]?.dietDetail || [];
-  const MenuLabel = MENU_LABEL[currentFMCIdx].slice(2);
+  const MenuLabel = MENU_LABEL[currentFMCIdx];
   const isIncluded = currentMenu.some(
     (m) => m.productNo === pToAdd[0]?.productNo
   );

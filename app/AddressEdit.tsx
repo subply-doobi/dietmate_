@@ -14,12 +14,12 @@ import {
   AlertContentContainer,
   BtnCTA,
   BtnText,
-  Container,
+  ScreenContainer,
   HorizontalSpace,
   Row,
-  StickyFooter,
   TextMain,
   TextSub,
+  Col,
 } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 
@@ -35,6 +35,7 @@ import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import Icon from "@/shared/ui/Icon";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const renderDeleteAlertContent = () => (
   <AlertContentContainer>
@@ -44,6 +45,9 @@ const renderDeleteAlertContent = () => (
 );
 
 const AddressEdit = () => {
+  // insets
+  const insets = useSafeAreaInsets();
+
   // redux
   const dispatch = useAppDispatch();
   const { selectedAddrIdx } = useAppSelector((state) => state.order);
@@ -115,92 +119,89 @@ const AddressEdit = () => {
       headerTitle: isUpdate ? "배송지 변경" : "배송지 추가",
     });
   }, [params]);
-
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <ScreenContainer>
       <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
-        <Container>
-          {hasAddrValue && (
-            <>
-              {/* 기본주소 */}
-              <Row style={{ marginTop: 24, justifyContent: "space-between" }}>
-                <PostalCode>우편번호: {zipCode.value}</PostalCode>
-                {isUpdate && (
-                  <AddressDeleteBtn
-                    onPress={() => {
-                      const nextAddrIdx =
-                        addrIdx === undefined || selectedAddrIdx === 0
-                          ? 0
-                          : selectedAddrIdx < addrIdx
-                          ? selectedAddrIdx
-                          : selectedAddrIdx - 1;
-                      dispatch(
-                        openModal({
-                          name: "addressDeleteAlert",
-                          values: {
-                            addressNoToDel: addrNo as string,
-                            nextAddrIdx,
-                          },
-                        })
-                      );
-                    }}
-                  >
-                    <Icon
-                      name="cancelCircle"
-                      color={colors.inactive}
-                      boxSize={24}
-                      iconSize={20}
-                    />
-                  </AddressDeleteBtn>
-                )}
-              </Row>
-              <AddressBase>{addr1.value}</AddressBase>
-              <HorizontalSpace height={24} />
+        {hasAddrValue && (
+          <>
+            {/* 기본주소 */}
+            <Row style={{ marginTop: 24, justifyContent: "space-between" }}>
+              <PostalCode>우편번호: {zipCode.value}</PostalCode>
+              {isUpdate && (
+                <AddressDeleteBtn
+                  onPress={() => {
+                    const nextAddrIdx =
+                      addrIdx === undefined || selectedAddrIdx === 0
+                        ? 0
+                        : selectedAddrIdx < addrIdx
+                        ? selectedAddrIdx
+                        : selectedAddrIdx - 1;
+                    dispatch(
+                      openModal({
+                        name: "addressDeleteAlert",
+                        values: {
+                          addressNoToDel: addrNo as string,
+                          nextAddrIdx,
+                        },
+                      })
+                    );
+                  }}
+                >
+                  <Icon
+                    name="cancelCircle"
+                    color={colors.inactive}
+                    boxSize={24}
+                    iconSize={20}
+                  />
+                </AddressDeleteBtn>
+              )}
+            </Row>
+            <AddressBase>{addr1.value}</AddressBase>
+            <HorizontalSpace height={24} />
 
-              {/* 상세주소 */}
-              <DTextInput
-                headerText="상세주소"
-                placeholder={"상세주소"}
-                value={addr2.value}
-                onChangeText={(v) =>
-                  dispatch(setValue({ name: "addr2", value: v }))
-                }
-                isActive={!!addr2.value}
-                isValid={addr2.isValid}
-                keyboardType="default"
-              />
-            </>
-          )}
+            {/* 상세주소 */}
+            <DTextInput
+              headerText="상세주소"
+              placeholder={"상세주소"}
+              value={addr2.value}
+              onChangeText={(v) =>
+                dispatch(setValue({ name: "addr2", value: v }))
+              }
+              isActive={!!addr2.value}
+              isValid={addr2.isValid}
+              keyboardType="default"
+            />
+          </>
+        )}
 
-          {/* 주소찾기 modal */}
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={postModalVisible}
-            onRequestClose={() => setPostModalVisible(!postModalVisible)}
-            style={{
-              flex: 1,
-              margin: 0,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <ModalBackground>
-              <ModalOutside onPress={() => setPostModalVisible(false)} />
-              {/* daum-post-code */}
-              <Postcode
-                style={{ width: SCREENWIDTH - 32, height: 410 }}
-                jsOptions={{ animation: true, hideMapBtn: false }}
-                onSelected={(data) => onPostCodeSelected(data)}
-                onError={() => console.error("오류")}
-              />
-            </ModalBackground>
-          </Modal>
-        </Container>
+        {/* 주소찾기 modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={postModalVisible}
+          onRequestClose={() => setPostModalVisible(!postModalVisible)}
+          style={{
+            flex: 1,
+            margin: 0,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ModalBackground>
+            <ModalOutside onPress={() => setPostModalVisible(false)} />
+            {/* daum-post-code */}
+            <Postcode
+              style={{ width: SCREENWIDTH - 32, height: 410 }}
+              jsOptions={{ animation: true, hideMapBtn: false }}
+              onSelected={(data) => onPostCodeSelected(data)}
+              onError={() => console.error("오류")}
+            />
+          </ModalBackground>
+        </Modal>
       </ScrollView>
 
       {/* 1. 주소추가,변경 | 2. 확인 버튼 */}
-      <BtnBox>
+      <Col style={{ rowGap: 8, marginVertical: 8 }}>
         <AddressEditBtn
           btnStyle="border"
           onPress={() => setPostModalVisible(true)}
@@ -216,8 +217,8 @@ const AddressEdit = () => {
         >
           <BtnText>{ctaBtnText}</BtnText>
         </AddressConfirmBtn>
-      </BtnBox>
-    </SafeAreaView>
+      </Col>
+    </ScreenContainer>
   );
 };
 
@@ -245,10 +246,7 @@ const AddressBase = styled(TextMain)`
 const AddressEditBtn = styled(BtnCTA)`
   height: 48px;
 `;
-const AddressConfirmBtn = styled(BtnCTA)`
-  margin-top: 8px;
-  margin-bottom: 8px;
-`;
+const AddressConfirmBtn = styled(BtnCTA)``;
 
 const AlertText = styled(TextMain)`
   font-size: 16px;
@@ -268,5 +266,3 @@ const ModalOutside = styled.Pressable`
   height: 100%;
   position: absolute;
 `;
-
-const BtnBox = styled(StickyFooter)``;

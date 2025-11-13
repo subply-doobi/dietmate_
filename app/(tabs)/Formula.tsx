@@ -10,7 +10,7 @@ import * as Progress from "react-native-progress";
 // doobi
 import colors from "@/shared/colors";
 import GuideTitle from "@/shared/ui/GuideTitle";
-import { Container } from "@/shared/ui/styledComps";
+import { ScreenContainer } from "@/shared/ui/styledComps";
 import { getPageItem } from "@/shared/utils/screens/formula/contentByPages";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
@@ -100,13 +100,14 @@ const Formula = () => {
   );
 
   return (
-    <Container style={{ backgroundColor: colors.white, paddingHorizontal: 0 }}>
+    <ScreenContainer
+      style={{ backgroundColor: colors.white, paddingHorizontal: 0 }}
+    >
       {/* <BackArrow style={{ marginLeft: 8 }} goBackFn={() => goPrev()} /> */}
       <ProgressBox>
         <Progress.Bar
-          progress={progressValue[currentPage] || 0}
+          progress={progressValue[currentPage] ?? 0}
           width={null}
-          height={4}
           color={colors.main}
           unfilledColor={colors.backgroundLight2}
           borderWidth={0}
@@ -127,7 +128,7 @@ const Formula = () => {
 
       {/* 각 페이지 내용 */}
       {getPageItem(currentPage)?.render()}
-    </Container>
+    </ScreenContainer>
   );
 };
 

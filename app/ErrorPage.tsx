@@ -5,7 +5,12 @@ import { reloadAsync } from "expo-updates";
 import styled from "styled-components/native";
 
 // doobi
-import { Col, Container, TextMain, TextSub } from "@/shared/ui/styledComps";
+import {
+  Col,
+  ScreenContainer,
+  TextMain,
+  TextSub,
+} from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { useLocalSearchParams } from "expo-router";
 import Icon from "@/shared/ui/Icon";
@@ -25,7 +30,7 @@ const ErrorPage = () => {
     errorCode === null ? "잠시 후 다시 시도해주세요" : `code: ${errorCode}`;
 
   return (
-    <Container style={{ alignItems: "center", justifyContent: "center" }}>
+    <ScreenContainer style={{ alignItems: "center", justifyContent: "center" }}>
       <Col style={{ alignItems: "center" }}>
         <Icon
           name="wifiOff"
@@ -40,7 +45,7 @@ const ErrorPage = () => {
           <RestartText>재시작</RestartText>
         </RestartBtn>
       </Col>
-    </Container>
+    </ScreenContainer>
   );
 };
 

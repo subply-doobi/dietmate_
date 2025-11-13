@@ -14,7 +14,7 @@ import { commaToNum } from "@/shared/utils/sumUp";
 import LastOrderNutr from "./LastOrderNutr";
 import { IFlattedOrderedProduct } from "@/shared/utils/screens/checklist/menuFlat";
 import { useRouter } from "expo-router";
-import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 import colors from "@/shared/colors";
 import Icon from "@/shared/ui/Icon";
 

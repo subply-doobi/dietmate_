@@ -7,12 +7,8 @@ import {
 } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import styled from "styled-components/native";
-import { Image } from "react-native";
-import React, { useState } from "react";
 import Icon from "@/shared/ui/Icon";
-import { ENV, SERVICE_PRICE_PER_PRODUCT } from "@/shared/constants";
 import { IDietDetailProductData } from "@/shared/api/types/diet";
-import { IProductData } from "@/shared/api/types/product";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import {
   useListDietTotalObj,
@@ -29,7 +25,6 @@ import {
 } from "@/features/reduxSlices/bottomSheetSlice";
 import { scrollCarouselTo } from "@/features/reduxSlices/formulaSlice";
 import { commaToNum, sumUpPrice } from "@/shared/utils/sumUp";
-import { CtaType } from "@/shared/utils/ctaDecision";
 import { useRouter } from "expo-router";
 import DietCardCta from "./DietCardCta";
 import DietCardChangeBtn from "./DietCardChangeBtn";

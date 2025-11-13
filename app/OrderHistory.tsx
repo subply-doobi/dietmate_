@@ -6,7 +6,7 @@ import { ActivityIndicator, ScrollView } from "react-native";
 // doobi
 import { useListOrder } from "@/shared/api/queries/order";
 
-import { Container } from "@/shared/ui/styledComps";
+import { ScreenContainer } from "@/shared/ui/styledComps";
 import OrderList from "@/components/screens/orderHistory/OrderList";
 
 const OrderHistory = () => {
@@ -15,11 +15,11 @@ const OrderHistory = () => {
   return isLoading ? (
     <ActivityIndicator />
   ) : (
-    <Container style={{ paddingLeft: 0, paddingRight: 0 }}>
+    <ScreenContainer style={{ paddingLeft: 0, paddingRight: 0 }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <OrderList />
       </ScrollView>
-    </Container>
+    </ScreenContainer>
   );
 };
 

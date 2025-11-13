@@ -6,7 +6,7 @@ import styled from "styled-components/native";
 
 // doobi
 import colors from "@/shared/colors";
-import { Container } from "@/shared/ui/styledComps";
+import { ScreenContainer } from "@/shared/ui/styledComps";
 import ListBtns from "@/shared/ui/ListBtns";
 import { link } from "@/shared/utils/linking";
 import { DEFAULT_BOTTOM_TAB_HEIGHT, INQUIRY_URL } from "@/shared/constants";
@@ -73,7 +73,7 @@ const Mypage = () => {
     },
   ];
   return (
-    <Container
+    <ScreenContainer
       style={{
         paddingLeft: 0,
         paddingRight: 0,
@@ -87,7 +87,7 @@ const Mypage = () => {
           <ListBtns btns={myPageBtns} />
         </Card>
       </ScrollView>
-    </Container>
+    </ScreenContainer>
   );
 };
 

@@ -2,7 +2,7 @@ import { IAddressData } from "@/shared/api/types/address";
 import { IDietDetailAllData } from "@/shared/api/types/diet";
 import { IUserData } from "@/shared/api/types/user";
 import { channelKey, IPG } from "./payConsts";
-import { ENV, MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
+import { ENV, MENU_NUM_LABEL } from "@/shared/constants";
 
 type IPayMethod =
   | "CARD"

@@ -16,7 +16,7 @@ import {
   BtnCTA,
   BtnText,
   Col,
-  Container,
+  ScreenContainer,
   TextMain,
 } from "@/shared/ui/styledComps";
 import { useEffect, useState } from "react";
@@ -57,7 +57,7 @@ const Login = () => {
   }, []);
 
   return (
-    <Container style={{ paddingHorizontal: 16 }}>
+    <ScreenContainer style={{ paddingHorizontal: 16 }}>
       {ENV.APP_VARIANT !== "production" && (
         <Col style={{ marginTop: 40, alignSelf: "center" }}>
           <TestTxt selectable={true}>
@@ -87,7 +87,7 @@ const Login = () => {
           source={require("../shared/assets/appIcon/appIcon_withT.png")}
         />
       </LogoBox>
-    </Container>
+    </ScreenContainer>
   );
 };
 

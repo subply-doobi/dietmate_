@@ -5,9 +5,14 @@ import {
 } from "@/features/reduxSlices/formulaSlice";
 import { openModal } from "@/features/reduxSlices/modalSlice";
 import { useCreateDiet, useListDietTotalObj } from "@/shared/api/queries/diet";
-import { MENU_KIND_LABEL, MENU_LABEL } from "@/shared/constants";
+import {
+  MAX_MENU_KIND,
+  MAX_MENU_NUM,
+  MENU_KIND_LABEL,
+} from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
-import { Container } from "@/shared/ui/styledComps";
+import { ScreenContainer } from "@/shared/ui/styledComps";
+import { getDietNum } from "@/shared/utils/dietSummary";
 import { getAddDietStatusFrDTData } from "@/shared/utils/getDietAddStatus";
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
@@ -25,9 +30,8 @@ const FormulaMore = () => {
   const createDietMutation = useCreateDiet();
 
   // etc
-  const numOfMenuKind = Object.keys(dTOData || {}).length;
-  const menuKindLabel = MENU_KIND_LABEL[numOfMenuKind - 1];
-  const maxMenuNum = MENU_LABEL.length;
+  const { menuKindNum, menuNum, productNum } = getDietNum(dTOData);
+  const menuKindLabel = MENU_KIND_LABEL[menuKindNum - 1];
 
   const {
     status: addDietStatus,
@@ -36,9 +40,10 @@ const FormulaMore = () => {
   } = getAddDietStatusFrDTData(dTOData);
 
   const isAddMenuActive =
-    numOfMenuKind <= maxMenuNum - 1 && addDietStatus === "possible";
+    (menuKindNum <= MAX_MENU_KIND - 1 || menuNum <= MAX_MENU_NUM - 1) &&
+    addDietStatus === "possible";
   const METHOD_BTN =
-    numOfMenuKind === 0
+    menuKindNum === 0
       ? []
       : [
           {
@@ -67,7 +72,7 @@ const FormulaMore = () => {
             isActive: isAddMenuActive,
             onPress: () => {
               createDietMutation.mutate();
-              dispatch(setCurrentFMCIdx(numOfMenuKind));
+              dispatch(setCurrentFMCIdx(menuKindNum));
               router.back();
             },
           },
@@ -76,7 +81,7 @@ const FormulaMore = () => {
   // const activeBtn = METHOD_BTN.filter((item) => item.isActive);
 
   return (
-    <Container style={{ paddingHorizontal: 16 }}>
+    <ScreenContainer style={{ paddingHorizontal: 16 }}>
       <BtnBox>
         {METHOD_BTN.map((item, idx) => (
           <SelectBtn
@@ -90,7 +95,7 @@ const FormulaMore = () => {
           />
         ))}
       </BtnBox>
-    </Container>
+    </ScreenContainer>
   );
 };
 

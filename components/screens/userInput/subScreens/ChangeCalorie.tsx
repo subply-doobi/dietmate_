@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import colors from "@/shared/colors";
 
 interface IChangeCalorie {
-  scrollRef: RefObject<ScrollView>;
+  scrollRef: RefObject<ScrollView | null>;
 }
 const ChangeCalorie = ({ scrollRef }: IChangeCalorie) => {
   // redux

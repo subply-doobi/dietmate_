@@ -92,7 +92,10 @@ const OrderChecklistCard = ({
             const percentage = Math.round((numerator / denominator) * 100);
             const pieSeries = [
               { value: numerator, color: colors.main },
-              { value: denominator - numerator, color: colors.white },
+              {
+                value: denominator - numerator,
+                color: colors.backgroundLight2,
+              },
             ];
             return (
               <ShadowView
@@ -141,7 +144,7 @@ const OrderChecklistCard = ({
                           series={pieSeries}
                           widthAndHeight={16}
                           style={{ zIndex: 2 }}
-                          coverRadius={0.6}
+                          cover={0.6}
                         />
                       </Col>
                     )}

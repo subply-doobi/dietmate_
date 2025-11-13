@@ -1,6 +1,6 @@
 // RN, expo
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BackHandler, ScrollView } from "react-native";
+import { BackHandler, ScrollView, KeyboardAvoidingView } from "react-native";
 import {
   useFocusEffect,
   useLocalSearchParams,
@@ -17,7 +17,7 @@ import { RootState } from "@/shared/store/reduxStore";
 // doobi
 import { IS_IOS, SCREENWIDTH } from "@/shared/constants";
 import colors from "@/shared/colors";
-import { Col, Container, Row } from "@/shared/ui/styledComps";
+import { Col, ScreenContainer, Row } from "@/shared/ui/styledComps";
 import GuideTitle from "@/shared/ui/GuideTitle";
 import BackArrow from "@/shared/ui/BackArrow";
 import { getPageItem } from "@/shared/utils/screens/userInput/pageIdx";
@@ -28,8 +28,12 @@ import {
   useUpdateBaseLine,
   useCreateBaseLine,
 } from "@/shared/api/queries/baseLine";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const UserInput = () => {
+  // insets
+  const insets = useSafeAreaInsets();
+  console.log("UserInput insets:", insets);
   // redux
   const userInputState = useSelector((state: RootState) => state.userInput);
 
@@ -144,46 +148,44 @@ const UserInput = () => {
   }, [params.from]);
 
   return (
-    <Container style={{ backgroundColor: colors.white }}>
-      <ProgressBox>
-        <Progress.Bar
-          progress={numerator / denominator}
-          width={null}
-          height={4}
-          color={colors.main}
-          unfilledColor={colors.backgroundLight2}
-          borderWidth={0}
-        />
-      </ProgressBox>
-      <ScrollView
-        ref={scrollRef}
-        contentContainerStyle={{
-          paddingBottom: 200,
-        }}
-        scrollEnabled={currentPage === "Start" ? false : true}
-        showsVerticalScrollIndicator={false}
-      >
-        <GuideTitle
-          style={{
-            marginTop: 48,
-            marginBottom: 64,
-          }}
-          title={getPageItem(currentPage).title}
-          subTitle={getPageItem(currentPage).subTitle}
-        />
-
-        {/* 각 페이지 내용 */}
-        {getPageItem(currentPage).render(scrollRef)}
-      </ScrollView>
-
-      {/* CTA버튼 */}
+    <ScreenContainer style={{ backgroundColor: colors.white }}>
       <KeyboardAvoidingView
+        style={{ flex: 1 }}
         behavior={IS_IOS ? "padding" : "height"}
-        // enabled={IS_IOS}
-        keyboardVerticalOffset={96}
+        keyboardVerticalOffset={62}
       >
+        <ProgressBox>
+          <Progress.Bar
+            progress={numerator / denominator}
+            width={null}
+            height={4}
+            color={colors.main}
+            unfilledColor={colors.backgroundLight2}
+            borderWidth={0}
+          />
+        </ProgressBox>
+        <ScrollView
+          ref={scrollRef}
+          scrollEnabled={currentPage === "Start" ? false : true}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <GuideTitle
+            style={{
+              marginTop: 48,
+              marginBottom: 64,
+            }}
+            title={getPageItem(currentPage).title}
+            subTitle={getPageItem(currentPage).subTitle}
+          />
+
+          {/* 각 페이지 내용 */}
+          {getPageItem(currentPage).render(scrollRef)}
+        </ScrollView>
+
+        {/* CTA버튼 */}
         {currentPage !== "CalculationOptions" ? (
-          <Col style={{ rowGap: 12 }}>
+          <Col style={{ rowGap: 12, marginBottom: 24 }}>
             {currentPage === "Start" &&
               baseLineData &&
               Object.keys(baseLineData).length !== 0 && (
@@ -202,7 +204,7 @@ const UserInput = () => {
             />
           </Col>
         ) : (
-          <Row style={{ columnGap: 8 }}>
+          <Row style={{ columnGap: 8, marginBottom: 24 }}>
             <CtaButton
               btnStyle="border"
               btnText="자세하게"
@@ -218,7 +220,7 @@ const UserInput = () => {
           </Row>
         )}
       </KeyboardAvoidingView>
-    </Container>
+    </ScreenContainer>
   );
 };
 
@@ -237,9 +239,4 @@ const GoStartBtn = styled.TouchableOpacity`
 const GoStartBtnText = styled.Text`
   font-size: 12px;
   color: ${colors.textMain};
-`;
-
-const KeyboardAvoidingView = styled.KeyboardAvoidingView`
-  margin-top: -120px;
-  bottom: 24px;
 `;

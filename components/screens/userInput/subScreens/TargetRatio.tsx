@@ -15,7 +15,7 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { getRatioAcContent } from "@/shared/utils/screens/userInput/ratioAccordion";
 
 interface ITargetRatio {
-  scrollRef: RefObject<ScrollView>;
+  scrollRef: RefObject<ScrollView | null>;
 }
 const TargetRatio = ({ scrollRef }: ITargetRatio) => {
   // redux

@@ -1,4 +1,4 @@
-import { Container } from "@/shared/ui/styledComps";
+import { ScreenContainer } from "@/shared/ui/styledComps";
 import { link } from "@/shared/utils/linking";
 import {
   KOREAN_NUTRITION_REFERENCE_URL,
@@ -30,9 +30,9 @@ const Notice = () => {
   ];
 
   return (
-    <Container style={{ backgroundColor: colors.white }}>
+    <ScreenContainer style={{ backgroundColor: colors.white }}>
       <ListBtns btns={noticeBtns} />
-    </Container>
+    </ScreenContainer>
   );
 };
 

@@ -32,7 +32,7 @@ import {
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import GlobalBSM from "@/components/bottomSheet/GlobalBSM";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 // Kakao SDK 초기화
 initializeKakaoSDK("5065665acbfa07f0dd876a374e66e618");
@@ -53,198 +53,198 @@ export default function RootLayout() {
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
           <BottomSheetModalProvider>
-            <SafeAreaView style={{ flex: 1 }}>
-              <StatusBar style="dark" backgroundColor={colors.white} />
+            {/* <SafeAreaView style={{ flex: 1 }}> */}
+            <StatusBar style="dark" backgroundColor={colors.white} />
 
-              {/* Loading */}
-              <AppLoading />
+            {/* Loading */}
+            <AppLoading />
 
-              {/* Screens */}
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  headerTitleAlign: "center",
+            {/* Screens */}
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                headerTitleAlign: "center",
+                headerTitleStyle: {
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  color: colors.textMain,
+                },
+                headerShadowVisible: false,
+                headerBackVisible: false,
+                headerLeft: () => <BackArrow goBackFn={router.back} />,
+              }}
+            >
+              {/* 로그인 */}
+              <Stack.Screen name="index" />
+              <Stack.Screen name="ResetToRoot" />
+              {/* 정보입력 */}
+              <Stack.Screen
+                name="UserInput"
+                options={{
+                  headerShown: true,
+                  headerTitle: "",
+                }}
+              />
+              {/* 홈 - 마이페이지 - 좋아요 - 장바구니 */}
+              <Stack.Screen name="(tabs)" />
+              {/* Formula More */}
+              <Stack.Screen
+                name="FormulaMore"
+                options={{
+                  headerShown: true,
+                  headerTitle: "",
+                }}
+              />
+              {/* AutoMenu settings */}
+              <Stack.Screen
+                name="AmSettings"
+                options={{
+                  headerShown: true,
+                  headerTitle: "자동공식 설정",
+                }}
+              />
+
+              {/* 식품 하나씩 추가 */}
+              <Stack.Screen
+                name="AutoAdd"
+                options={{
+                  headerShown: true,
+                  headerTitle: "",
+                  headerLeft: () => (
+                    <BackArrow
+                      goBackFn={() => {
+                        store.dispatch(
+                          setAutoAddFood({
+                            foodForAdd: undefined,
+                            foodForChange: undefined,
+                          })
+                        );
+                        router.back();
+                      }}
+                    />
+                  ),
+                }}
+              />
+
+              <Stack.Screen
+                name="Mypage"
+                options={{
+                  headerShown: true,
+                  headerTitle: "마이페이지",
+                  headerTitleAlign: "left",
                   headerTitleStyle: {
                     fontSize: 18,
                     fontWeight: "bold",
                     color: colors.textMain,
                   },
-                  headerShadowVisible: false,
-                  headerBackVisible: false,
-                  headerLeft: () => <BackArrow goBackFn={router.back} />,
                 }}
-              >
-                {/* 로그인 */}
-                <Stack.Screen name="index" />
-                <Stack.Screen name="ResetToRoot" />
-                {/* 정보입력 */}
-                <Stack.Screen
-                  name="UserInput"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "",
-                  }}
-                />
-                {/* 홈 - 마이페이지 - 좋아요 - 장바구니 */}
-                <Stack.Screen name="(tabs)" />
-                {/* Formula More */}
-                <Stack.Screen
-                  name="FormulaMore"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "",
-                  }}
-                />
-                {/* AutoMenu settings */}
-                <Stack.Screen
-                  name="AmSettings"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "자동공식 설정",
-                  }}
-                />
+              />
+              {/* 식품상세 */}
+              <Stack.Screen
+                name="FoodDetail"
+                options={{
+                  headerShown: true,
+                  headerTitle: "",
+                }}
+              />
+              {/* 주문 */}
+              <Stack.Screen
+                name="Order"
+                options={{
+                  headerShown: true,
+                  headerTitle: "주문 / 결제",
+                }}
+              />
+              {/* 배송지 수정 */}
+              <Stack.Screen
+                name="AddressEdit"
+                options={{
+                  headerShown: true,
+                  headerTitle: "배송지",
+                }}
+              />
+              {/* 결제페이지 */}
+              <Stack.Screen name="Payment" />
 
-                {/* 식품 하나씩 추가 */}
-                <Stack.Screen
-                  name="AutoAdd"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "",
-                    headerLeft: () => (
-                      <BackArrow
-                        goBackFn={() => {
-                          store.dispatch(
-                            setAutoAddFood({
-                              foodForAdd: undefined,
-                              foodForChange: undefined,
-                            })
-                          );
-                          router.back();
-                        }}
-                      />
-                    ),
-                  }}
-                />
+              {/* 주문정보 */}
+              <Stack.Screen
+                name="OrderHistory"
+                options={{
+                  headerShown: true,
+                  headerTitle: "구매내역",
+                  headerLeft: () => <BackArrow />,
+                }}
+              />
+              <Stack.Screen
+                name="OrderHistoryDetail"
+                options={{
+                  headerShown: true,
+                  headerRight: () => (
+                    <InquireBtn onPressIn={() => link(INQUIRY_URL)}>
+                      <BtnSmallText>문의</BtnSmallText>
+                    </InquireBtn>
+                  ),
+                }}
+              />
+              {/* 주문완료 */}
+              <Stack.Screen name="OrderComplete" />
+              {/* 계정 설정 */}
+              <Stack.Screen
+                name="Account"
+                options={{
+                  headerShown: true,
+                  headerTitle: "계정 설정",
+                }}
+              />
+              {/* 공지사항 */}
+              <Stack.Screen
+                name="Notice"
+                options={{
+                  headerShown: true,
+                  headerTitle: "공지사항",
+                }}
+              />
+              {/* 추천코드 */}
+              <Stack.Screen
+                name="RecommendCode"
+                options={{
+                  headerShown: true,
+                  headerTitle: "추천코드",
+                }}
+              />
+              {/* 내 보너스 현황 */}
+              <Stack.Screen
+                name="MyBonus"
+                options={{
+                  headerShown: true,
+                  headerTitle: "내 보너스 현황",
+                }}
+              />
+              {/* 체크리스트 */}
+              <Stack.Screen
+                name="Checklist"
+                options={{
+                  headerShown: true,
+                  headerTitle: "",
+                }}
+              />
+              {/* 에러페이지 */}
+              <Stack.Screen name="ErrorPage" />
+              <Stack.Screen name="+not-found" />
+            </Stack>
 
-                <Stack.Screen
-                  name="Mypage"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "마이페이지",
-                    headerTitleAlign: "left",
-                    headerTitleStyle: {
-                      fontSize: 18,
-                      fontWeight: "bold",
-                      color: colors.textMain,
-                    },
-                  }}
-                />
-                {/* 식품상세 */}
-                <Stack.Screen
-                  name="FoodDetail"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "",
-                  }}
-                />
-                {/* 주문 */}
-                <Stack.Screen
-                  name="Order"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "주문 / 결제",
-                  }}
-                />
-                {/* 배송지 수정 */}
-                <Stack.Screen
-                  name="AddressEdit"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "배송지",
-                  }}
-                />
-                {/* 결제페이지 */}
-                <Stack.Screen name="Payment" />
+            {/* Modal */}
+            <ModalComponent />
 
-                {/* 주문정보 */}
-                <Stack.Screen
-                  name="OrderHistory"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "구매내역",
-                    headerLeft: () => <BackArrow />,
-                  }}
-                />
-                <Stack.Screen
-                  name="OrderHistoryDetail"
-                  options={{
-                    headerShown: true,
-                    headerRight: () => (
-                      <InquireBtn onPressIn={() => link(INQUIRY_URL)}>
-                        <BtnSmallText>문의</BtnSmallText>
-                      </InquireBtn>
-                    ),
-                  }}
-                />
-                {/* 주문완료 */}
-                <Stack.Screen name="OrderComplete" />
-                {/* 계정 설정 */}
-                <Stack.Screen
-                  name="Account"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "계정 설정",
-                  }}
-                />
-                {/* 공지사항 */}
-                <Stack.Screen
-                  name="Notice"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "공지사항",
-                  }}
-                />
-                {/* 추천코드 */}
-                <Stack.Screen
-                  name="RecommendCode"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "추천코드",
-                  }}
-                />
-                {/* 내 보너스 현황 */}
-                <Stack.Screen
-                  name="MyBonus"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "내 보너스 현황",
-                  }}
-                />
-                {/* 체크리스트 */}
-                <Stack.Screen
-                  name="Checklist"
-                  options={{
-                    headerShown: true,
-                    headerTitle: "",
-                  }}
-                />
-                {/* 에러페이지 */}
-                <Stack.Screen name="ErrorPage" />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-
-              {/* Modal */}
-              <ModalComponent />
-
-              {/* </ThemeProvider> */}
-              {/* <ThemeProvider
+            {/* </ThemeProvider> */}
+            {/* <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         > */}
-              <Toast />
+            <Toast />
 
-              {/* bottomSheet */}
-              <GlobalBSM />
-            </SafeAreaView>
+            {/* bottomSheet */}
+            <GlobalBSM />
+            {/* </SafeAreaView> */}
           </BottomSheetModalProvider>
         </QueryClientProvider>
       </Provider>

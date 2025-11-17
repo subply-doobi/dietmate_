@@ -3,7 +3,7 @@ import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import GuideTitle from "@/shared/ui/GuideTitle";
 import Icon from "@/shared/ui/Icon";
-import { Container } from "@/shared/ui/styledComps";
+import { ScreenContainer } from "@/shared/ui/styledComps";
 import { getPageItem } from "@/shared/utils/screens/formula/contentByPages";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
@@ -56,7 +56,7 @@ const AmSettings = () => {
   );
 
   return (
-    <Container style={{ paddingHorizontal: 0 }}>
+    <ScreenContainer style={{ paddingHorizontal: 0 }}>
       <ProgressBox>
         <Progress.Bar
           progress={progress.length / 3}
@@ -77,7 +77,7 @@ const AmSettings = () => {
         subTitle={pageSubTitle}
       />
       {getPageItem(currentPage)?.render()}
-    </Container>
+    </ScreenContainer>
   );
 };
 

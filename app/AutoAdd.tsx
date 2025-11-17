@@ -14,7 +14,7 @@ import { useAsync } from "@/shared/hooks/asyncStateHooks";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import {
   Col,
-  Container,
+  ScreenContainer,
   HorizontalSpace,
   TextMain,
 } from "@/shared/ui/styledComps";
@@ -130,25 +130,25 @@ const AutoAdd = () => {
 
   if (isLoading || !isDelayOver) {
     return (
-      <Container style={{ paddingTop: 0, alignItems: "center" }}>
+      <ScreenContainer style={{ paddingTop: 0, alignItems: "center" }}>
         <Col style={{ top: "30%" }}>
           <LoadingText>목표 영양에 맞출 수 있는 식품을</LoadingText>
           <LoadingText>계산해서 보여드릴게요!</LoadingText>
           <HorizontalSpace height={40} />
           <ActivityIndicator size="large" color={colors.main} />
         </Col>
-      </Container>
+      </ScreenContainer>
     );
   }
 
   return (
-    <Container style={{ paddingLeft: 0, paddingRight: 0 }}>
+    <ScreenContainer style={{ paddingLeft: 0, paddingRight: 0 }}>
       <Foodlist
         itemSize={(SCREENWIDTH - 32 - 8) / 2}
         products={products}
         gap={8}
       />
-    </Container>
+    </ScreenContainer>
   );
 };
 

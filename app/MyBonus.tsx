@@ -2,7 +2,12 @@
 import styled from "styled-components/native";
 
 // doobi
-import { Container, Row, ShadowView, TextMain } from "@/shared/ui/styledComps";
+import {
+  ScreenContainer,
+  Row,
+  ShadowView,
+  TextMain,
+} from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import CtaButton from "@/shared/ui/CtaButton";
 import { link } from "@/shared/utils/linking";
@@ -27,7 +32,7 @@ const MyBonus = () => {
     : 0;
 
   return (
-    <Container style={{ backgroundColor: colors.backgroundLight }}>
+    <ScreenContainer style={{ backgroundColor: colors.backgroundLight }}>
       <Card>
         <QuestionBtn
           onPress={() => dispatch(openModal({ name: "myBonusGuideAlert" }))}
@@ -50,7 +55,7 @@ const MyBonus = () => {
           onPress={() => link(INQUIRY_URL)}
         />
       </Card>
-    </Container>
+    </ScreenContainer>
   );
 };
 

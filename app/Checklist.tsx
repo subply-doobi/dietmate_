@@ -9,7 +9,7 @@ import styled from "styled-components/native";
 import { ShadowView } from "../shared/ui/styledComps";
 import {
   Col,
-  Container,
+  ScreenContainer,
   HorizontalSpace,
   Row,
   TextMain,
@@ -79,8 +79,15 @@ const Checklist = () => {
     if (percentage !== 100) return;
     percentage === 100 && dispatch(openModal({ name: "changeTargetAlert" }));
   }, [checklist]);
+
+  // pieChart series
+  const pieSeries = [
+    { value: numerator, color: colors.main },
+    { value: denominator - numerator, color: colors.backgroundLight2 },
+  ];
+
   return (
-    <Container style={{ backgroundColor: colors.backgroundLight2 }}>
+    <ScreenContainer style={{ backgroundColor: colors.backgroundLight2 }}>
       <ScrollView
         contentContainerStyle={{ paddingBottom: 64 }}
         showsVerticalScrollIndicator={false}
@@ -110,11 +117,10 @@ const Checklist = () => {
                 }}
               >
                 <PieChart
-                  series={[numerator, denominator - numerator]}
+                  series={pieSeries}
                   widthAndHeight={16}
                   style={{ zIndex: 2 }}
-                  sliceColor={[colors.main, colors.white]}
-                  coverRadius={0.6}
+                  cover={0.6}
                 />
               </Col>
             )}
@@ -133,7 +139,7 @@ const Checklist = () => {
           />
         </Card>
       </ScrollView>
-    </Container>
+    </ScreenContainer>
   );
 };
 

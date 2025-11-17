@@ -1,4 +1,4 @@
-import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
+import { ScreenContainer, HorizontalSpace } from "@/shared/ui/styledComps";
 import ListBtns from "@/shared/ui/ListBtns";
 
 import { useGetUser } from "@/shared/api/queries/user";
@@ -43,7 +43,7 @@ const RecommendCode = () => {
   ];
 
   return (
-    <Container>
+    <ScreenContainer>
       <Card
         label="내 코드"
         value={userData?.suggestCd}
@@ -59,7 +59,7 @@ const RecommendCode = () => {
       )}
       <HorizontalSpace height={64} />
       <ListBtns btns={btns} />
-    </Container>
+    </ScreenContainer>
   );
 };
 

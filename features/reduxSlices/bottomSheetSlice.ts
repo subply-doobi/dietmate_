@@ -1,5 +1,5 @@
 // Utility: Convert dTOData to dietQtyMap
-import { bsConfigByName } from "@/components/bottomSheet/GlobalBSM";
+
 import {
   IDietDetailProductData,
   IDietTotalObjData,
@@ -7,18 +7,7 @@ import {
 import { IProductData } from "@/shared/api/types/product";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { CtaDecisionDetail } from "@/shared/utils/ctaDecision";
-
-export type IBSNm =
-  // sort and filter
-  | "baseListTypeFilter"
-  | "categoryFilter"
-  | "platformFilter"
-  | "sort"
-  // product select
-  | "productToAddSelect"
-  | "productToDelSelect"
-  // formula summary
-  | "summaryInfo";
+import { bsConfigByName, IBSNm } from "@/components/bottomSheet/bsConfig";
 
 export type IBSAction =
   | { type: "open"; bsNm: IBSNm; from?: string }
@@ -35,7 +24,7 @@ export type IBSAction =
       from?: string;
     };
 
-export interface IBSLastSnapshot {
+interface IBSLastSnapshot {
   bsNm: IBSNm;
   index: number;
   position: number;

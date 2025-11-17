@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { ScrollView } from "react-native";
 
 interface IAmr {
-  scrollRef: RefObject<ScrollView>;
+  scrollRef: RefObject<ScrollView | null>;
 }
 const Amr = ({ scrollRef }: IAmr) => {
   // redux

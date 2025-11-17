@@ -3,7 +3,7 @@ import styled from "styled-components/native";
 import {
   BtnCTA,
   Col,
-  Container,
+  ScreenContainer,
   TextMain,
   TextSub,
 } from "@/shared/ui/styledComps";
@@ -23,7 +23,7 @@ const OrderComplete = () => {
     router.replace({ pathname: "/(tabs)" });
   };
   return (
-    <Container>
+    <ScreenContainer>
       <CompleteText>구매 완료!</CompleteText>
       <Desc style={{ marginTop: 80 }}>
         [근의공식]{"\n"}
@@ -63,7 +63,7 @@ const OrderComplete = () => {
           <BtnText>근의공식 더 만들기</BtnText>
         </BtnCTA>
       </BtnBox>
-    </Container>
+    </ScreenContainer>
   );
 };
 

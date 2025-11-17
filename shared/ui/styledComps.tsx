@@ -10,6 +10,7 @@ import {
 } from "../constants";
 import { Platform, View, ViewProps } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSegments } from "expo-router";
 
 export const NotoSansLight = styled.Text`
   font-family: "NotoSansKRLight";
@@ -81,24 +82,35 @@ export const TextSub = styled.Text`
   font-weight: 300;
 `;
 
-export const Container = ({ children, ...props }: ViewProps) => {
+export const ScreenContainer = ({
+  children,
+  style,
+  fullScreen = false,
+  ...rest
+}: ViewProps & { fullScreen?: boolean }) => {
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
-  const statusBarHeight = headerHeight === 0 ? insets.top : 0;
-  const insetTop = Platform.OS === "android" ? statusBarHeight : 0;
-  const insetBottom = Platform.OS === "ios" ? DEFAULT_BOTTOM_TAB_HEIGHT : 0;
+  const segments = useSegments();
+  const inTabs = Array.isArray(segments) && segments[0] === "(tabs)";
+
+  // If header is visible, it's already placed below the status bar.
+  const hasHeader = headerHeight > 0;
+  const paddingTop = fullScreen ? 0 : hasHeader ? 0 : insets.top;
+  // Bottom rule per request: inside bottomTab => 0, otherwise use insets.bottom
+  const paddingBottom = fullScreen ? 0 : inTabs ? 0 : insets.bottom;
 
   return (
     <View
+      {...rest}
       style={[
         {
           flex: 1,
           backgroundColor: colors.white,
-          paddingTop: insetTop,
-          paddingBottom: insetBottom,
+          paddingTop,
+          paddingBottom,
           paddingHorizontal: 16,
         },
-        props.style,
+        style,
       ]}
     >
       {children}
@@ -195,17 +207,6 @@ export const BtnBottomCTA = styled(BtnCTA)`
   margin-top: -60px;
   margin-bottom: 8px;
   elevation: 8;
-`;
-
-export const StickyFooter = styled.View`
-  position: absolute;
-  bottom: ${Platform.OS === "ios" ? `${BOTTOM_INDICATOR_IOS + 8}px` : "8px"};
-  left: 0;
-  right: 0;
-  margin-left: 16px;
-  margin-right: 16px;
-  align-items: center;
-  padding: 0px 8px 0px 8px;
 `;
 
 interface IBtnSmall {

@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 import SelectBtn from "../SelectBtn";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
-import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
+import { MENU_NUM_LABEL } from "@/shared/constants";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import { useEffect } from "react";
 import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";

@@ -1,5 +1,5 @@
 import { IDietTotalObjData } from "../api/types/diet";
-import { MENU_KIND_LABEL, MENU_LABEL } from "../constants";
+import { MENU_KIND_LABEL } from "../constants";
 
 export const getAddDietStatusFrDTData = (
   dTOData: IDietTotalObjData | undefined

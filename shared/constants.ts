@@ -42,7 +42,7 @@ export const IS_IOS = Platform.OS === "ios";
 
 // design constants
 export const NUTRIENT_PROGRESS_HEIGHT = 48;
-export const DEFAULT_BOTTOM_TAB_HEIGHT = 83;
+export const DEFAULT_BOTTOM_TAB_HEIGHT = 48;
 export const BOTTOM_INDICATOR_IOS = 16;
 export const FORMULA_CAROUSEL_HEIGHT = 390;
 export const SORT_FILTER_HEIGHT = 80;
@@ -108,6 +108,8 @@ export const MENU_NUM_LABEL = [
   "아홉 근",
   "열 근",
 ];
+export const MAX_MENU_KIND = MENU_KIND_LABEL.length;
+export const MAX_MENU_NUM = MENU_NUM_LABEL.length;
 
 // autoMenu constants
 export const AM_SELECTED_CATEGORY_IDX = [0, 1, 2, 3, 4, 5];

@@ -7,18 +7,9 @@ import {
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import styled from "styled-components/native";
 import { useCallback, useMemo, useEffect, useRef } from "react";
-import {
-  MENU_KIND_LABEL,
-  MENU_LABEL,
-  MENU_NUM_LABEL,
-} from "@/shared/constants";
+import { MENU_LABEL, MENU_NUM_LABEL } from "@/shared/constants";
 import { Col, TextSub } from "@/shared/ui/styledComps";
-import {
-  plusQty,
-  minusQty,
-  setLoweringCtaDecision,
-  closeBSAll,
-} from "@/features/reduxSlices/bottomSheetSlice";
+import { setLoweringCtaDecision } from "@/features/reduxSlices/bottomSheetSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import DietCard from "./DietCard";
 import colors from "@/shared/colors";

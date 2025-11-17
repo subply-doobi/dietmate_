@@ -30,12 +30,16 @@ import { BOTTOM_INDICATOR_IOS, SCREENWIDTH } from "@/shared/constants";
 import { PAY_METHOD } from "@/shared/utils/screens/order/payConsts";
 import BusinessInfo from "@/components/common/businessInfo/BusinessInfo";
 import CtaButton from "@/shared/ui/CtaButton";
-import { Container, HorizontalSpace } from "@/shared/ui/styledComps";
+import { ScreenContainer, HorizontalSpace } from "@/shared/ui/styledComps";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { getSummaryTotals } from "@/shared/utils/dietSummary";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Order = () => {
-  //navigation
+  // insets
+  const insets = useSafeAreaInsets();
+
+  // navigation
   const router = useRouter();
 
   // redux
@@ -165,11 +169,11 @@ const Order = () => {
   const insetBottom = Platform.OS === "ios" ? BOTTOM_INDICATOR_IOS : 0;
 
   return listAddressDataLoading ? (
-    <Container style={{ justifyContent: "center", alignItems: "center" }}>
+    <ScreenContainer style={{ justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="small" color={colors.main} />
-    </Container>
+    </ScreenContainer>
   ) : (
-    <Container
+    <ScreenContainer
       style={{
         paddingRight: 0,
         paddingLeft: 0,
@@ -199,12 +203,12 @@ const Order = () => {
         style={{
           width: SCREENWIDTH - 32,
           position: "absolute",
-          bottom: insetBottom + 8,
+          bottom: insets.bottom + 8,
         }}
         onPress={async () => onHandleOrder()}
         btnText={ctaBtnText}
       />
-    </Container>
+    </ScreenContainer>
   );
 };
 

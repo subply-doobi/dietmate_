@@ -49,8 +49,8 @@ export interface ICommonState {
 
 const initialState: ICommonState = {
   inset: {
-    headerHeight: 91,
-    bottomTabBarHeight: 49,
+    headerHeight: 86,
+    bottomTabBarHeight: 48,
     insetTop: 0,
   },
   globalLoading: false,

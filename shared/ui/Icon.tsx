@@ -60,11 +60,11 @@ const iconMap = {
     name: "plus-circle",
   },
   plusSquare: {
-    kind: FontAwesome6,
+    kind: AntDesign,
     name: "plus-square",
   },
   minusSquare: {
-    kind: FontAwesome6,
+    kind: AntDesign,
     name: "minus-square",
   },
   cancelCircle: {
@@ -134,7 +134,7 @@ const iconMap = {
   // mypage
   questionCircle_mp: {
     kind: AntDesign,
-    name: "questioncircle",
+    name: "question-circle",
   },
   target_mp: {
     kind: Foundation,
@@ -222,7 +222,7 @@ const iconMap = {
   },
   questionCircle: {
     kind: AntDesign,
-    name: "questioncircle",
+    name: "question-circle",
   },
   userCircle: {
     kind: FontAwesome6,

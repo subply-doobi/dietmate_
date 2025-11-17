@@ -15,7 +15,7 @@ const APP_SCHEME_IAMPORT =
   extra?.EXPO_PUBLIC_APP_SCHEME_IAMPORT ?? "dietmate://payV2";
 const AXIOS_TIMEOUT = extra?.EXPO_PUBLIC_AXIOS_TIMEOUT ?? 2000;
 // const BASE_URL = extra?.EXPO_PUBLIC_BASE_URL ?? "";
-const BASE_URL = "http://54.180.29.212:8080"; // 서버 주소 변경되는 경우 종종 있는데 expo에서 업데이트하면 rebuild 필요해서 하드코딩
+const BASE_URL = "http://52.79.166.251:8080"; // 서버 주소 변경되는 경우 종종 있는데 expo에서 업데이트하면 rebuild 필요해서 하드코딩
 const REDIRECT_URL_IAMPORT =
   extra?.EXPO_PUBLIC_REDIRECT_URL_IAMPORT ?? "dietmate://payV2";
 const STORE_ID_IAMPORT = extra?.EXPO_PUBLIC_STORE_ID_IAMPORT ?? "";

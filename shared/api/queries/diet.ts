@@ -334,3 +334,114 @@ export const useDeleteDietDetail = (options?: IMutationOptions) => {
   });
   return mutation;
 };
+
+// BULK EDIT (Add/Delete multiple diet details in one mutation)
+// Supports operations across multiple dietNos to minimize invalidations and roundtrips
+export type TBulkEditOp =
+  | { type: "add"; dietNo: string; product: IProductData }
+  | { type: "delete"; dietNo: string; productNo: string };
+
+// Separate payload style for clarity when calling from UI layers
+export interface IBulkAddItem {
+  dietNo: string;
+  product: IProductData;
+}
+export interface IBulkDeleteItem {
+  dietNo: string;
+  productNo: string;
+}
+export interface IBulkEditPayload {
+  adds?: IBulkAddItem[];
+  deletes?: IBulkDeleteItem[];
+}
+
+export const useBulkEditDietDetails = (options?: IMutationOptions) => {
+  const onSuccess = options?.onSuccess;
+  const mutation = useMutation({
+    mutationFn: async ({ adds = [], deletes = [] }: IBulkEditPayload) => {
+      // Build requests list (add then delete or arbitrary order is fine; server enforces correctness)
+      const requests: Promise<any>[] = [];
+      adds.forEach((a) => {
+        requests.push(
+          mutationFn(
+            `${CREATE_DIET_DETAIL}?dietNo=${a.dietNo}&productNo=${a.product.productNo}`,
+            "put"
+          )
+        );
+      });
+      deletes.forEach((d) => {
+        requests.push(
+          mutationFn(
+            `${DELETE_DIET_DETAIL}?dietNo=${d.dietNo}&productNo=${d.productNo}`,
+            "delete"
+          )
+        );
+      });
+
+      const results = await Promise.allSettled(requests);
+      const rejected = results.find((r) => r.status === "rejected");
+      if (rejected) {
+        throw (
+          (rejected as PromiseRejectedResult).reason ??
+          new Error("Bulk edit failed")
+        );
+      }
+      return { addsCount: adds.length, deletesCount: deletes.length };
+    },
+    onMutate: async ({ adds = [], deletes = [] }: IBulkEditPayload) => {
+      await queryClient.cancelQueries({ queryKey: [DIET_TOTAL_OBJ] });
+      const prevDTOData = queryClient.getQueryData<IDietTotalObjData>([
+        DIET_TOTAL_OBJ,
+      ]);
+      if (!prevDTOData)
+        return { prevDTOData: undefined, newDTOData: undefined };
+
+      const newDTOData: IDietTotalObjData = JSON.parse(
+        JSON.stringify(prevDTOData)
+      );
+
+      // Apply deletions first to avoid re-adding then deleting same product
+      deletes.forEach(({ dietNo, productNo }) => {
+        if (!newDTOData[dietNo]) return;
+        newDTOData[dietNo].dietDetail = newDTOData[dietNo].dietDetail.filter(
+          (p) => p.productNo !== productNo
+        );
+      });
+
+      adds.forEach(({ dietNo, product }) => {
+        if (!newDTOData[dietNo]) return;
+        const exists = newDTOData[dietNo].dietDetail.some(
+          (p) => p.productNo === product.productNo
+        );
+        if (exists) return; // skip duplicates
+        const dietSeq = newDTOData[dietNo]?.dietSeq ?? "";
+        newDTOData[dietNo].dietDetail.push({
+          ...product,
+          qty: "1",
+          dietNo,
+          dietSeq,
+          statusCd: "SP012001",
+          statusNm: "판매중",
+        });
+      });
+
+      // Recent products update (fire & forget)
+      await Promise.allSettled(
+        adds.map((a) => addToRecentProduct(a.product.productNo))
+      );
+
+      queryClient.setQueryData([DIET_TOTAL_OBJ], () => newDTOData);
+      return { prevDTOData, newDTOData };
+    },
+    onSuccess: () => {
+      onSuccess && onSuccess();
+      queryClient.invalidateQueries({ queryKey: [DIET_TOTAL_OBJ] });
+    },
+    onError: (e, _payload, context) => {
+      queryClient.setQueryData([DIET_TOTAL_OBJ], context?.prevDTOData);
+      handleError(e);
+      console.log("useBulkEditDietDetails error: ", e);
+    },
+  });
+  return mutation;
+};

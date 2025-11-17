@@ -6,10 +6,7 @@ import styled from "styled-components/native";
 
 // doobi
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import {
-  useCreateDietDetail,
-  useDeleteDietDetail,
-} from "@/shared/api/queries/diet";
+import { useBulkEditDietDetails } from "@/shared/api/queries/diet";
 import { IDietDetailData } from "@/shared/api/types/diet";
 import { IProductData } from "@/shared/api/types/product";
 import colors from "@/shared/colors";
@@ -84,8 +81,7 @@ const CarouselCta = ({
 
   // react-query
   const { data: bLData } = useGetBaseLine();
-  const createDietDetailMutation = useCreateDietDetail();
-  const deleteDietDetailMutation = useDeleteDietDetail();
+  const bulkEditDietDetailsMutation = useBulkEditDietDetails();
 
   // useMemo
   const isMenuFull = useMemo(() => {
@@ -100,52 +96,24 @@ const CarouselCta = ({
 
   // fn
   const addMenu = async (data: IProductData[][]) => {
-    // 추가할 각 product 및 dietNo
-    const productToAddList: { dietNo: string; food: IProductData }[] = [];
-    data?.forEach((menu, idx) => {
-      menu.forEach((product) => {
-        productToAddList.push({
-          dietNo: carouselDietNo,
-          food: product,
-        });
-      });
-    });
-    const createMutations = async () => {
-      for (const p of productToAddList) {
-        await createDietDetailMutation.mutateAsync({
-          food: p.food,
-          dietNo: p.dietNo,
-        });
-      }
-    };
-
-    // 한꺼번에 추가할 mutation list
-    await createMutations();
+    // Flatten recommended products (menuNum could be >1 in future)
+    const adds = data.flatMap((menu) =>
+      menu.map((product) => ({ dietNo: carouselDietNo, product }))
+    );
+    if (adds.length === 0) return;
+    await bulkEditDietDetailsMutation.mutateAsync({ adds });
   };
 
   const overwriteMenu = async (data: IProductData[][]) => {
-    // selectedMenu 에 대한 각 productNo
-    let productToDeleteList: { dietNo: string; productNo: string }[] = [];
-    carouselMenu.forEach(
-      (p) =>
-        p.productNo &&
-        productToDeleteList.push({
-          dietNo: p.dietNo,
-          productNo: p.productNo,
-        })
+    // Build deletes for current menu, then adds for replacement products
+    const deletes = carouselMenu
+      .filter((p) => !!p.productNo)
+      .map((p) => ({ dietNo: p.dietNo, productNo: p.productNo as string }));
+    const adds = data.flatMap((menu) =>
+      menu.map((product) => ({ dietNo: carouselDietNo, product }))
     );
-
     try {
-      // 자동구성할 끼니 (선택된 끼니) 초기화 및 자동구성된 식품 각 끼니에 추가
-      await Promise.all(
-        productToDeleteList.map((p) =>
-          deleteDietDetailMutation.mutateAsync({
-            dietNo: p.dietNo,
-            productNo: p.productNo,
-          })
-        )
-      );
-      await addMenu(data);
+      await bulkEditDietDetailsMutation.mutateAsync({ adds, deletes });
     } catch (e) {
       console.log("끼니 덮어쓰기 중 오류: ", e);
     }

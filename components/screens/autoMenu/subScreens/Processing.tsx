@@ -10,8 +10,7 @@ import { Col } from "@/shared/ui/styledComps";
 import colors from "@/shared/colors";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import {
-  useCreateDietDetail,
-  useDeleteDietDetail,
+  useBulkEditDietDetails,
   useListDietTotalObj,
 } from "@/shared/api/queries/diet";
 
@@ -73,8 +72,7 @@ const Processing = () => {
   // react-query
   const { data: bLData } = useGetBaseLine();
   const { data: dTOData } = useListDietTotalObj();
-  const deleteDietDetailMutation = useDeleteDietDetail();
-  const createDietDetailMutation = useCreateDietDetail();
+  const bulkEditDietDetailsMutation = useBulkEditDietDetails();
 
   // selectedCategoryIdx is now from state above
 
@@ -169,39 +167,23 @@ const Processing = () => {
       return;
 
     const overwriteDiet = async () => {
-      let productToDeleteList: { dietNo: string; productNo: string }[] = [];
-      selectedDietNo.forEach((dietNo) => {
-        dTOData[dietNo].dietDetail.forEach((p) =>
-          productToDeleteList.push({
-            dietNo: p.dietNo,
-            productNo: p.productNo,
-          })
-        );
-      });
-      const productToAddList: { dietNo: string; food: IProductData }[] = [];
-      autoMenuResult?.recommendedMenu.forEach((menu, idx) => {
-        menu.forEach((product) => {
-          productToAddList.push({
-            dietNo: selectedDietNo[idx],
-            food: product,
-          });
-        });
-      });
-      const deleteMutations = productToDeleteList.map((p) =>
-        deleteDietDetailMutation.mutateAsync({
+      // Build deletes for all selected menus
+      const deletes = selectedDietNo.flatMap((dietNo) =>
+        dTOData[dietNo].dietDetail.map((p) => ({
           dietNo: p.dietNo,
           productNo: p.productNo,
-        })
+        }))
       );
-      const createMutations = productToAddList.map((p) =>
-        createDietDetailMutation.mutateAsync({
-          food: p.food,
-          dietNo: p.dietNo,
-        })
-      );
+      // Build adds for recommended products
+      const adds =
+        autoMenuResult?.recommendedMenu.flatMap((menu, idx) =>
+          menu.map((product) => ({
+            dietNo: selectedDietNo[idx],
+            product,
+          }))
+        ) ?? [];
       try {
-        await Promise.all(deleteMutations);
-        await Promise.all(createMutations);
+        await bulkEditDietDetailsMutation.mutateAsync({ adds, deletes });
       } catch (e) {
         console.log("선택된 끼니 덮어쓰기 중 오류: ", e);
       }
@@ -229,23 +211,16 @@ const Processing = () => {
       return;
 
     const addMenu = async () => {
-      const productToAddList: { dietNo: string; food: IProductData }[] = [];
-      autoMenuResult?.recommendedMenu.forEach((menu, idx) => {
-        menu.forEach((product) => {
-          productToAddList.push({
+      // Build adds for recommended products
+      const adds =
+        autoMenuResult?.recommendedMenu.flatMap((menu, idx) =>
+          menu.map((product) => ({
             dietNo: selectedDietNo[idx],
-            food: product,
-          });
-        });
-      });
-      const createMutations = productToAddList.map((p) =>
-        createDietDetailMutation.mutateAsync({
-          food: p.food,
-          dietNo: p.dietNo,
-        })
-      );
+            product,
+          }))
+        ) ?? [];
       try {
-        await Promise.all(createMutations);
+        await bulkEditDietDetailsMutation.mutateAsync({ adds });
       } catch (e) {
         console.log("남은영양 식품 추가 중 오류: ", e);
       }

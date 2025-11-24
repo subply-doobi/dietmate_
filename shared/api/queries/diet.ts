@@ -361,19 +361,19 @@ export const useBulkEditDietDetails = (options?: IMutationOptions) => {
     mutationFn: async ({ adds = [], deletes = [] }: IBulkEditPayload) => {
       // Build requests list (add then delete or arbitrary order is fine; server enforces correctness)
       const requests: Promise<any>[] = [];
-      adds.forEach((a) => {
-        requests.push(
-          mutationFn(
-            `${CREATE_DIET_DETAIL}?dietNo=${a.dietNo}&productNo=${a.product.productNo}`,
-            "put"
-          )
-        );
-      });
       deletes.forEach((d) => {
         requests.push(
           mutationFn(
             `${DELETE_DIET_DETAIL}?dietNo=${d.dietNo}&productNo=${d.productNo}`,
             "delete"
+          )
+        );
+      });
+      adds.forEach((a) => {
+        requests.push(
+          mutationFn(
+            `${CREATE_DIET_DETAIL}?dietNo=${a.dietNo}&productNo=${a.product.productNo}`,
+            "put"
           )
         );
       });

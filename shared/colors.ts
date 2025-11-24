@@ -1,13 +1,13 @@
 export default {
   white: "#FFFFFF",
   black: "#444444",
-  dark: `#444444`,
+  dark: "#444444",
   textMain: "#444444",
   textSub: "#8f8f8f",
   textLink: "#3D9AFF",
   inactive: "#E5E5E5",
   backgroundLight: "#F8F8F8",
-  backgroundLight2: `#F2F2F2`,
+  backgroundLight2: "#F2F2F2",
   bgBox: "#F0F0F0",
   line: "#8f8f8f",
   lineLight: "#E5E5E5",
@@ -21,7 +21,7 @@ export default {
   success: "#30D158",
   highlight: "#F5F5DC",
   brown: "#8E5C42",
-  darkBrown: `#3C2400`,
+  darkBrown: "#3C2400",
   pink: "#F1948A",
   green: "#A3CB37", // same as carb
   orange: "#F39C11", // same as calorie

@@ -14,7 +14,7 @@ const APP_VARIANT = extra?.APP_VARIANT ?? "development";
 const APP_SCHEME_IAMPORT =
   extra?.EXPO_PUBLIC_APP_SCHEME_IAMPORT ?? "dietmate://payV2";
 const AXIOS_TIMEOUT = extra?.EXPO_PUBLIC_AXIOS_TIMEOUT ?? 2000;
-// const BASE_URL = extra?.EXPO_PUBLIC_BASE_URL ?? "";
+// const BASE_URL = extra?.EXPO_PUBLIC_BASE_URL ?? "http://52.79.166.251:8080";
 const BASE_URL = "http://52.79.166.251:8080"; // 서버 주소 변경되는 경우 종종 있는데 expo에서 업데이트하면 rebuild 필요해서 하드코딩
 const REDIRECT_URL_IAMPORT =
   extra?.EXPO_PUBLIC_REDIRECT_URL_IAMPORT ?? "dietmate://payV2";
@@ -78,23 +78,13 @@ export const KOREAN_NUTRITION_REFERENCE_URL =
 export const PLAY_STORE_URL = "market://details?id=com.subply.dietmate";
 export const APP_STORE_URL =
   "itms-apps://itunes.apple.com/us/app//id6472628268";
-export const MENU_LABEL = [
-  "근 1",
-  "근 2",
-  "근 3",
-  "근 4",
-  "근 5",
-  "근 6",
-  "근 7",
-];
+export const MENU_LABEL = ["근 1", "근 2", "근 3", "근 4", "근 5"];
 export const MENU_KIND_LABEL = [
   "한 가지",
   "두 가지",
   "세 가지",
   "네 가지",
   "다섯 가지",
-  "여섯 가지",
-  "일곱 가지",
 ];
 export const MENU_NUM_LABEL = [
   "한 근",

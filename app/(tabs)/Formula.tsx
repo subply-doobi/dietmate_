@@ -98,13 +98,12 @@ const Formula = () => {
       return () => subscription.remove();
     }, [progress])
   );
-
   return (
     <ScreenContainer
       style={{ backgroundColor: colors.white, paddingHorizontal: 0 }}
     >
       {/* <BackArrow style={{ marginLeft: 8 }} goBackFn={() => goPrev()} /> */}
-      <ProgressBox>
+      {/* <ProgressBox>
         <Progress.Bar
           progress={progressValue[currentPage] ?? 0}
           width={null}
@@ -112,7 +111,7 @@ const Formula = () => {
           unfilledColor={colors.backgroundLight2}
           borderWidth={0}
         />
-      </ProgressBox>
+      </ProgressBox> */}
 
       {pageTitle && (
         <GuideTitle

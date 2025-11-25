@@ -7,7 +7,10 @@ import { Platform } from "react-native";
 import { BOTTOM_INDICATOR_IOS } from "@/shared/constants";
 import CtaButton from "@/shared/ui/CtaButton";
 import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
-import { getAutoMenuData, saveAutoMenuData } from "@/shared/utils/asyncStorage";
+import {
+  getAutoMenuSettings,
+  saveAutoMenuSettings,
+} from "@/shared/utils/asyncStorage";
 import { usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 
@@ -27,7 +30,7 @@ const Company = () => {
   // Load from AsyncStorage on mount
   useEffect(() => {
     (async () => {
-      const data = await getAutoMenuData();
+      const data = await getAutoMenuSettings();
       if (data?.wantedCompany) setWantedCompany(data.wantedCompany);
     })();
   }, []);
@@ -42,7 +45,7 @@ const Company = () => {
           value={wantedCompany}
           setValue={async (v) => {
             setWantedCompany(v);
-            // await saveAutoMenuData({ wantedCompany: v });
+            // await saveAutoMenuSettings({ wantedCompany: v });
           }}
           items={platformDDItems}
           style={{ width: "90%", alignSelf: "center" }}
@@ -60,7 +63,7 @@ const Company = () => {
             : dispatch(
                 setAMSettingProgress(amSettingProgress.concat("AMPrice"))
               );
-          await saveAutoMenuData({ wantedCompany });
+          await saveAutoMenuSettings({ wantedCompany });
         }}
       />
     </Container>

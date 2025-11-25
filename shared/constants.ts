@@ -102,9 +102,14 @@ export const MAX_MENU_KIND = MENU_KIND_LABEL.length;
 export const MAX_MENU_NUM = MENU_NUM_LABEL.length;
 
 // autoMenu constants
-export const AM_SELECTED_CATEGORY_IDX = [0, 1, 2, 3, 4, 5];
+export const AM_SELECTED_CATEGORY = [true, true, true, true, true, true];
 export const AM_PRICE_TARGET = [6000, 12000];
 export const AM_MENU_NUM = 1;
+export const AM_DEFAULT_SETTINGS = {
+  selectedCategory: AM_SELECTED_CATEGORY,
+  priceSliderValue: AM_PRICE_TARGET,
+  wantedCompany: "",
+};
 export const AM_INITIAL_STATUS = {
   isLoading: true,
   isSuccess: false,

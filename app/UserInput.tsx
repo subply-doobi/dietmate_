@@ -28,12 +28,8 @@ import {
   useUpdateBaseLine,
   useCreateBaseLine,
 } from "@/shared/api/queries/baseLine";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const UserInput = () => {
-  // insets
-  const insets = useSafeAreaInsets();
-  console.log("UserInput insets:", insets);
   // redux
   const userInputState = useSelector((state: RootState) => state.userInput);
 

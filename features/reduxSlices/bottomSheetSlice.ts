@@ -190,6 +190,9 @@ const bottomSheetSlice = createSlice({
           ? action.payload.scrollOffset ?? 0
           : 0;
 
+      // if no bottom sheet open, do nothing
+      if (state.bsNmArr.length === 0) return;
+
       // if duplicate action, do nothing
       const lastAction = state.actionQueue[state.actionQueue.length - 1];
       if (lastAction?.type === "closeAll") return;

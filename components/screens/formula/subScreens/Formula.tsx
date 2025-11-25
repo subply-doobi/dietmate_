@@ -27,18 +27,12 @@ import {
 } from "@/features/reduxSlices/formulaSlice";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import {
-  closeBS,
-  closeBSAll,
-  openBS,
-  resetBSData,
-} from "@/features/reduxSlices/bottomSheetSlice";
+import { resetBSData } from "@/features/reduxSlices/bottomSheetSlice";
 import Icon from "@/shared/ui/Icon";
 import { useListProduct } from "@/shared/api/queries/product";
 import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
 import { getSummaryTotals } from "@/shared/utils/dietSummary";
-
-const width = Dimensions.get("window").width;
+import { SCREENWIDTH } from "@/shared/constants";
 
 const Formula = () => {
   // navigation
@@ -54,7 +48,6 @@ const Formula = () => {
   );
   const currentFMProgress = formulaProgress[formulaProgress.length - 1];
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
-  const bsNmArr = useAppSelector((state) => state.bottomSheet.bsNmArr);
   const pToDel = useAppSelector((state) => state.bottomSheet.bsData.pToDel);
   const carouselActionQueue = useAppSelector(
     (state) => state.formula.carouselActionQueue
@@ -112,37 +105,7 @@ const Formula = () => {
     }
   }, [dTOData]);
 
-  useEffect(() => {
-    if (currentFMProgress !== "Formula") {
-      return;
-    }
-    if (isFocused) {
-      pToDel.length > 0
-        ? dispatch(
-            openBS({
-              bsNm: "productToDelSelect",
-              from: "Formula.tsx",
-              option: "reset",
-            })
-          )
-        : dispatch(
-            openBS({
-              bsNm: "summaryInfo",
-              from: "Formula.tsx",
-              option: "reset",
-            })
-          );
-      return;
-    }
-
-    // dispatch(closeBSAll({ from: "Formula.tsx" }));
-    bsNmArr.includes("summaryInfo") &&
-      dispatch(closeBS({ bsNm: "summaryInfo", from: "Formula.tsx" }));
-
-    bsNmArr.includes("productToDelSelect") &&
-      dispatch(closeBS({ bsNm: "productToDelSelect", from: "Formula.tsx" }));
-    return;
-  }, [pToDel, isFocused]);
+  // bottom sheet open/close logic moved to app/(tabs)/Formula.tsx
 
   // Carousel action queue handler
   useEffect(() => {
@@ -207,29 +170,32 @@ const Formula = () => {
         <Row
           style={{
             alignSelf: "center",
-            marginTop: 24,
-            justifyContent: "center",
+            marginTop: 16,
+            paddingLeft: 42,
+            paddingRight: 16,
+            justifyContent: "space-between",
             columnGap: 8,
-            width: "100%",
+            width: SCREENWIDTH,
           }}
         >
           <Pagination.Custom
             progress={paginationValue}
             data={menuArr}
             dotStyle={{
-              width: 40,
-              height: 26,
-              borderRadius: 6,
-              // borderWidth: 1,
-              // borderColor: colors.lineLight,
-              // backgroundColor: colors.white,
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.lineLight,
+              backgroundColor: colors.white,
               alignSelf: "flex-end",
             }}
             activeDotStyle={{
-              width: 48,
+              width: 40,
               height: 32,
-              // borderRadius: 8,
               backgroundColor: colors.white,
+              borderWidth: 1,
+              borderColor: colors.lineLight,
             }}
             renderItem={(_, index) => <PaginationDot index={index} />}
             containerStyle={{
@@ -253,7 +219,7 @@ const Formula = () => {
             gestureChain.activeOffsetX([-20, 20])
           }
           ref={carouselRef}
-          width={width}
+          width={SCREENWIDTH}
           // height={formulaCarouselHeight}
           data={menuArr}
           loop={false}

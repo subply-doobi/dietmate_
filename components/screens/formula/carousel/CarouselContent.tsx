@@ -7,11 +7,9 @@ import {
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
 import colors from "@/shared/colors";
 import {
-  FORMULA_CAROUSEL_HEIGHT,
   MENU_LABEL,
   SCREENHEIGHT,
-  AM_SELECTED_CATEGORY_IDX,
-  AM_PRICE_TARGET,
+  AM_DEFAULT_SETTINGS,
 } from "@/shared/constants";
 import {
   Col,
@@ -37,11 +35,13 @@ import {
   setProductToDel,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import { setGlobalLoading } from "@/features/reduxSlices/commonSlice";
+import { openModal } from "@/features/reduxSlices/modalSlice";
 import { setAMSettingProgress } from "@/features/reduxSlices/autoMenuSlice";
-import { getAutoMenuData } from "@/shared/utils/asyncStorage";
+import { getAutoMenuSettings } from "@/shared/utils/asyncStorage";
 import { makeAutoMenu3 } from "@/shared/utils/autoMenu3";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { IProductData } from "@/shared/api/types/product";
+import { bsConfigByName } from "@/components/bottomSheet/bsConfig";
 
 interface ICarouselContent {
   carouselRef: React.RefObject<ICarouselInstance | null>;
@@ -52,8 +52,9 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
   // insets
   const insets = useSafeAreaInsets();
   const bottomTabHeight = useBottomTabBarHeight();
+  const bsHeight = bsConfigByName["summaryInfo"]?.snapPoints?.[0] as number;
   const formulaCarouselHeight =
-    SCREENHEIGHT - insets.top - bottomTabHeight - (24 + 32 + 24 + 24 + 72);
+    SCREENHEIGHT - insets.top - bottomTabHeight - 16 - 32 - 16 - bsHeight - 16;
 
   // redux
   const dispatch = useAppDispatch();
@@ -69,11 +70,8 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
   // useState
   const [isCheckDelete, setIsCheckDelete] = useState(false);
   const [showCheckOverwrite, setShowCheckOverwrite] = useState(false);
-  const [autoMenuState, setAutoMenuState] = useState({
-    selectedCategoryIdx: AM_SELECTED_CATEGORY_IDX,
-    priceSliderValue: AM_PRICE_TARGET,
-    wantedCompany: "",
-  });
+  const [autoMenuSettings, setAutoMenuSettings] =
+    useState<typeof AM_DEFAULT_SETTINGS>(AM_DEFAULT_SETTINGS);
 
   // redux state
   const totalFoodList = useAppSelector((state) => state.common.totalFoodList);
@@ -90,20 +88,8 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
   // useEffect - load auto menu settings
   useEffect(() => {
     (async () => {
-      const data = await getAutoMenuData();
-      setAutoMenuState({
-        selectedCategoryIdx: data?.selectedCategory
-          ? data.selectedCategory.reduce(
-              (acc: number[], cur: boolean, idx: number) => {
-                if (cur) acc.push(idx);
-                return acc;
-              },
-              []
-            )
-          : [],
-        priceSliderValue: data?.priceSliderValue ?? [],
-        wantedCompany: data?.wantedCompany ?? "",
-      });
+      const data = await getAutoMenuSettings();
+      setAutoMenuSettings(data);
     })();
   }, []);
 
@@ -159,50 +145,70 @@ const CarouselContent = ({ carouselRef, carouselIdx }: ICarouselContent) => {
     const adds = data.flatMap((menu) =>
       menu.map((product) => ({ dietNo: carouselDietNo, product }))
     );
-    try {
-      await bulkEditDietDetailsMutation.mutateAsync({ deletes });
-      await bulkEditDietDetailsMutation.mutateAsync({ adds });
-    } catch (e) {
-      console.log("끼니 덮어쓰기 중 오류: ", e);
-    }
+    // Don't swallow errors - let them bubble up
+    await bulkEditDietDetailsMutation.mutateAsync({ deletes });
+    await bulkEditDietDetailsMutation.mutateAsync({ adds });
   };
 
   const setOneAutoMenu = async () => {
     if (!bLData || totalFoodList?.length === 0) {
       return;
     }
+
     dispatch(setProductToDel([]));
     dispatch(setGlobalLoading(true));
+
     let recommendedMenu: IProductData[][] = [];
+    let success = false;
 
     try {
-      const { recommendedMenu: tempRM } = await makeAutoMenu3({
+      const result = await makeAutoMenu3({
         medianCalorie,
         foodGroupForAutoMenu,
         initialMenu: isMenuFull ? [] : carouselMenu,
         baseLine: bLData,
-        selectedCategoryIdx: autoMenuState.selectedCategoryIdx,
-        priceTarget: autoMenuState.priceSliderValue,
-        wantedPlatform: autoMenuState.wantedCompany,
+        selectedCategory: autoMenuSettings.selectedCategory,
+        priceTarget: autoMenuSettings.priceSliderValue,
+        wantedPlatform: autoMenuSettings.wantedCompany,
         menuNum: 1,
       });
-      recommendedMenu = tempRM;
-    } catch (e) {
-      console.log("자동구성 중 오류 발생: ", e);
-      return;
-    }
 
-    try {
-      isMenuFull
-        ? await overwriteMenu(recommendedMenu)
-        : await addMenu(recommendedMenu);
+      if (!result || !result.recommendedMenu) {
+        throw new Error("makeAutoMenu3 returned invalid result");
+      }
+
+      recommendedMenu = result.recommendedMenu;
+
+      if (recommendedMenu.length === 0 || !Array.isArray(recommendedMenu[0])) {
+        throw new Error("Invalid recommendedMenu structure");
+      }
+
+      if (isMenuFull) {
+        await overwriteMenu(recommendedMenu);
+      } else {
+        await addMenu(recommendedMenu);
+      }
+
+      success = true;
     } catch (e) {
-      console.log("식품추가 중 오류 발생: ", e);
-      return;
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      console.log("자동구성/식품추가 중 오류 발생: ", errorMsg);
+      console.error("Error details:", e);
+
+      dispatch(
+        openModal({
+          name: "requestErrorAlert",
+          values: { msg: errorMsg },
+        })
+      );
     } finally {
-      setTimeout(() => {
-        dispatch(setGlobalLoading(false));
-      }, 500);
+      // Always reset loading state, with slight delay for UX
+      setTimeout(
+        () => {
+          dispatch(setGlobalLoading(false));
+        },
+        success ? 500 : 100
+      );
     }
   };
 
@@ -308,14 +314,14 @@ export default CarouselContent;
 
 const MenuCard = styled.View`
   margin: 0 40px;
-  padding: 24px 0 0 0;
+  padding: 16px 0 0 0;
   z-index: 0;
 `;
 
 const Box = styled.View`
   width: 100%;
-  border-radius: 16px;
-  padding: 24px 0 0 0;
+  border-radius: 12px;
+  padding: 24px 0 8px 0;
   background-color: ${colors.white};
 `;
 
@@ -339,6 +345,7 @@ const DeleteCheckBox = styled.View`
   right: 0;
   top: 0;
   z-index: 100;
+  border-radius: 12px;
   background-color: ${colors.blackOpacity80};
   align-items: center;
   justify-content: space-between;

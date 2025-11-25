@@ -10,7 +10,10 @@ import CtaButton from "@/shared/ui/CtaButton";
 import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
 import Icon from "@/shared/ui/Icon";
 import colors from "@/shared/colors";
-import { getAutoMenuData, saveAutoMenuData } from "@/shared/utils/asyncStorage";
+import {
+  getAutoMenuSettings,
+  saveAutoMenuSettings,
+} from "@/shared/utils/asyncStorage";
 import { usePathname } from "expo-router";
 
 const Category = () => {
@@ -34,7 +37,7 @@ const Category = () => {
   useEffect(() => {
     (async () => {
       if (categoryData) {
-        const data = await getAutoMenuData();
+        const data = await getAutoMenuSettings();
         if (
           data?.selectedCategory &&
           data.selectedCategory.length === categoryData.length
@@ -66,7 +69,7 @@ const Category = () => {
               const modV = [...selectedCategory];
               modV[idx] = modV[idx] ? false : true;
               setSelectedCategory(modV);
-              await saveAutoMenuData({ selectedCategory: modV });
+              await saveAutoMenuSettings({ selectedCategory: modV });
             }}
           >
             <Icon
@@ -89,7 +92,7 @@ const Category = () => {
             : dispatch(
                 setAMSettingProgress(amSettingProgress.concat("AMCompany"))
               );
-          await saveAutoMenuData({ selectedCategory });
+          await saveAutoMenuSettings({ selectedCategory });
         }}
       />
     </Container>

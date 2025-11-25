@@ -110,6 +110,9 @@ export const bsConfigByName: Partial<Record<IBSNm, IBSConfig>> = {
     maxDynamicContentSize: undefined,
     bottomInset: DEFAULT_BOTTOM_TAB_HEIGHT,
     enablePanDownToClose: false,
-    snapPoints: [72, SCREENHEIGHT - 136],
+    snapPoints: [
+      24 + 20 + 8 + 48 + 8,
+      SCREENHEIGHT - DEFAULT_BOTTOM_TAB_HEIGHT - 48,
+    ],
   },
 };

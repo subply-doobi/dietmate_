@@ -47,15 +47,8 @@ const DietCard = ({
   qty,
   isChanged,
 }: DietCardProps) => {
-  // navigation
-  const router = useRouter();
-
   // redux
   const dispatch = useAppDispatch();
-  const decisions = useAppSelector(
-    (state) => state.bottomSheet.bsData.summaryInfo.ctaDecisions
-  );
-  const decision = decisions[dietNo];
   const selectedPMap = useAppSelector(
     (state) => state.bottomSheet.bsData.summaryInfo.selectedPMap
   );
@@ -105,6 +98,10 @@ const DietCard = ({
   // confirm step logic: show separate SelectedBox (non-clickable) for replacement preview
   const isReadyToChange = !!pToRemove && !!pToAdd;
   const showConfirmBox = pChangeStep === "showCandidates" && isReadyToChange;
+
+  if (isEmpty) {
+    return null;
+  }
 
   return (
     <Card>

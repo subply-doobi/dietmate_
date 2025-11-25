@@ -58,11 +58,10 @@ const SellerName = styled(TextMain)`
   font-size: 11px;
   font-weight: bold;
   line-height: 16px;
-  color: ${colors.textSub};
 `;
 
 const ProductsRow = styled(Row)`
   flex: 1;
-  column-gap: 4px;
-  row-gap: 4px;
+  column-gap: 8px;
+  row-gap: 8px;
 `;

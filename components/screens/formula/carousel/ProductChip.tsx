@@ -38,7 +38,7 @@ const ProductChip = ({
           source={{ uri: `${ENV.BASE_URL}${product.mainAttUrl}` }}
           resizeMode="cover"
         />
-        <NameText numberOfLines={1} ellipsizeMode="tail">
+        <NameText numberOfLines={2} ellipsizeMode="tail">
           {product.productNm || "-"}
         </NameText>
         <PriceText>{formattedPrice}원</PriceText>

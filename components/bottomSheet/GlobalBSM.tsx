@@ -205,7 +205,7 @@ const GlobalBSM = () => {
             animated: true,
           });
           currentScrollOffsetRef.current = lastSnapshot.scrollOffset;
-        }, BS_ANIMATION_DURATION);
+        }, BS_ANIMATION_DURATION + 100);
         dispatch(setLastSnapshot(null));
 
         break;

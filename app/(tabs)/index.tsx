@@ -28,7 +28,7 @@ import LastOrderCard from "@/components/screens/home/LastOrderCard";
 import Profile from "@/components/screens/home/Profile";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 // import CtaButton from "@/shared/ui/CtaButton";
-// import { removeAutoMenuData } from "@/shared/utils/asyncStorage";
+// import { removeAutoMenuSettings } from "@/shared/utils/asyncStorage";
 import { getSummaryTotals } from "@/shared/utils/dietSummary";
 
 const NewHome = () => {
@@ -216,7 +216,7 @@ const NewHome = () => {
           onPress={() => {
             // async test
             // onPress={async () => {
-            //   await removeAutoMenuData();
+            //   await removeAutoMenuSettings();
             // }}
             // errorpage test
             // router.push({

@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import GuideTitle from "@/shared/ui/GuideTitle";
 import Icon from "@/shared/ui/Icon";
 import { ScreenContainer } from "@/shared/ui/styledComps";
-import { getPageItem } from "@/shared/utils/screens/formula/contentByPages";
+import { getPageItem } from "@/shared/utils/amSettings/contentByPages";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { BackHandler, Pressable } from "react-native";

@@ -1,6 +1,5 @@
 import {
   closeBS,
-  closeBSAll,
   setProductToDel,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import {
@@ -38,9 +37,6 @@ const ProductToDelSelect = () => {
 
   // fn
   const onInfoBtnPress = (productNo: string) => {
-    dispatch(
-      closeBS({ bsNm: "productToDelSelect", from: "ProductToDelSelect.tsx" })
-    );
     setTimeout(() => {
       router.push({
         pathname: "/FoodDetail",

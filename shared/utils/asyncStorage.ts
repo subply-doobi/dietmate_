@@ -1,32 +1,40 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { IProductData } from "../api/types/product";
-import { MAX_NUM_OF_RECENT_PRODUCT } from "../constants";
+import { MAX_NUM_OF_RECENT_PRODUCT, AM_DEFAULT_SETTINGS } from "../constants";
 
-// asyncStorage ------------------------ //
+// Centralized AsyncStorage keys for readability and safety
+export const AS_KEYS = {
+  ACCESS_TOKEN: "ACCESS_TOKEN",
+  REFRESH_TOKEN: "REFRESH_TOKEN",
+  NOT_SHOW_AGAIN: "NOT_SHOW_AGAIN",
+  CHECKLIST: "CHECKLIST",
+  RECENT_PRODUCTS: "RECENT_PRODUCTS",
+  AUTO_MENU_SETTINGS: "AUTO_MENU_SETTINGS",
+} as const;
+export type AsyncStorageKey = (typeof AS_KEYS)[keyof typeof AS_KEYS];
+
+// Tokens ------------------------ //
 export const storeToken = async (accessToken: string, refreshToken: string) => {
-  await AsyncStorage.setItem("ACCESS_TOKEN", accessToken);
-  await AsyncStorage.setItem("REFRESH_TOKEN", refreshToken);
+  await AsyncStorage.setItem(AS_KEYS.ACCESS_TOKEN, accessToken);
+  await AsyncStorage.setItem(AS_KEYS.REFRESH_TOKEN, refreshToken);
 };
 
 export const getStoredToken = async () => {
-  const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-  const refreshToken = await AsyncStorage.getItem("REFRESH_TOKEN");
-  return {
-    accessToken,
-    refreshToken,
-  };
+  const accessToken = await AsyncStorage.getItem(AS_KEYS.ACCESS_TOKEN);
+  const refreshToken = await AsyncStorage.getItem(AS_KEYS.REFRESH_TOKEN);
+  return { accessToken, refreshToken };
 };
 
 export const removeToken = async () => {
   try {
-    await AsyncStorage.removeItem("ACCESS_TOKEN");
-    await AsyncStorage.removeItem("REFRESH_TOKEN");
+    await AsyncStorage.removeItem(AS_KEYS.ACCESS_TOKEN);
+    await AsyncStorage.removeItem(AS_KEYS.REFRESH_TOKEN);
     console.log("removeToken: ", "success");
   } catch (e) {
     console.log("wipeDoobiTokenFail: ", e);
   }
 };
 
+// Not show again ------------------------ //
 interface INotShowAgainInitial {
   homeTooltip: boolean;
   onboarding: boolean;
@@ -40,7 +48,7 @@ const notShowAgainInitial: INotShowAgainInitial = {
 export const initializeNotShowAgainList = async () => {
   try {
     await AsyncStorage.setItem(
-      "NOT_SHOW_AGAIN",
+      AS_KEYS.NOT_SHOW_AGAIN,
       JSON.stringify(notShowAgainInitial)
     );
   } catch (e) {
@@ -49,7 +57,7 @@ export const initializeNotShowAgainList = async () => {
 };
 export const getNotShowAgainList = async (): Promise<INotShowAgainInitial> => {
   try {
-    const notShowAgainList = await AsyncStorage.getItem("NOT_SHOW_AGAIN");
+    const notShowAgainList = await AsyncStorage.getItem(AS_KEYS.NOT_SHOW_AGAIN);
     if (!notShowAgainList) return notShowAgainInitial;
     return JSON.parse(notShowAgainList);
   } catch (error) {
@@ -65,12 +73,12 @@ export const updateNotShowAgainList = async ({
   value: boolean;
 }) => {
   try {
-    const notShowAgainList = await AsyncStorage.getItem("NOT_SHOW_AGAIN").then(
-      (v) => (v ? JSON.parse(v) : notShowAgainInitial)
-    );
+    const notShowAgainList = await AsyncStorage.getItem(
+      AS_KEYS.NOT_SHOW_AGAIN
+    ).then((v) => (v ? JSON.parse(v) : notShowAgainInitial));
     notShowAgainList[key] = value;
     await AsyncStorage.setItem(
-      "NOT_SHOW_AGAIN",
+      AS_KEYS.NOT_SHOW_AGAIN,
       JSON.stringify(notShowAgainList)
     );
   } catch (error) {
@@ -78,16 +86,13 @@ export const updateNotShowAgainList = async ({
   }
 };
 
-// checklist
-// key -> orderNo
-// value -> menuNo/qtyIdx array
-
+// Checklist ------------------------ //
 interface IChecklist {
-  [key: string]: string[];
+  [key: string]: string[]; // {orderNo: menuNo/QtyIdx []}
 }
 export const getTotalChecklist = async () => {
   try {
-    const checklist = await AsyncStorage.getItem("CHECKLIST");
+    const checklist = await AsyncStorage.getItem(AS_KEYS.CHECKLIST);
     const parsedChecklist: IChecklist = checklist ? JSON.parse(checklist) : {};
     return parsedChecklist;
   } catch (e) {
@@ -112,7 +117,7 @@ export const updateTotalCheckList = async ({
       ? currentChecklist.filter((v) => v !== menuNoAndQtyIdx)
       : [...currentChecklist, menuNoAndQtyIdx];
     checklist[orderNo] = updatedChecklist;
-    await AsyncStorage.setItem("CHECKLIST", JSON.stringify(checklist));
+    await AsyncStorage.setItem(AS_KEYS.CHECKLIST, JSON.stringify(checklist));
   } catch (e) {
     console.log("AsyncStorage: updateTotalCheckList 오류");
   }
@@ -120,16 +125,16 @@ export const updateTotalCheckList = async ({
 
 export const clearChecklist = async () => {
   try {
-    await AsyncStorage.removeItem("CHECKLIST");
+    await AsyncStorage.removeItem(AS_KEYS.CHECKLIST);
   } catch (e) {
     console.log("AsyncStorage: updateTotalCheckList 오류");
   }
 };
 
-// Store a product as recently opened
+// Recent products ------------------------ //
 export const addToRecentProduct = async (productNo: string) => {
   try {
-    const json = await AsyncStorage.getItem("RECENT_PRODUCTS");
+    const json = await AsyncStorage.getItem(AS_KEYS.RECENT_PRODUCTS);
     let products: string[] = json ? JSON.parse(json) : [];
 
     const isProductExists = products.some((p) => p === productNo);
@@ -138,22 +143,22 @@ export const addToRecentProduct = async (productNo: string) => {
       products = products.filter((p) => p !== productNo);
     }
 
-    // Add to front
     products.unshift(productNo);
 
-    // Limit to maxItems
     if (products.length > MAX_NUM_OF_RECENT_PRODUCT)
       products = products.slice(0, MAX_NUM_OF_RECENT_PRODUCT);
-    await AsyncStorage.setItem("RECENT_PRODUCTS", JSON.stringify(products));
+    await AsyncStorage.setItem(
+      AS_KEYS.RECENT_PRODUCTS,
+      JSON.stringify(products)
+    );
   } catch (e) {
     console.error("Failed to store recent product", e);
   }
 };
 
-// Read recent products
 export const getRecentProducts = async (): Promise<string[]> => {
   try {
-    const json = await AsyncStorage.getItem("RECENT_PRODUCTS");
+    const json = await AsyncStorage.getItem(AS_KEYS.RECENT_PRODUCTS);
     return json ? JSON.parse(json) : [];
   } catch (e) {
     console.error("Failed to read recent products", e);
@@ -161,19 +166,22 @@ export const getRecentProducts = async (): Promise<string[]> => {
   }
 };
 
-// automenu settings
-export type AutoMenuStorageData = {
+// AutoMenu settings ------------------------ //
+export type AutoMenuSettings = {
   selectedCategory: boolean[];
   wantedCompany: string;
   priceSliderValue: number[];
 };
-const STORAGE_KEY = "autoMenuSliceData";
-export const saveAutoMenuData = async (data: Partial<AutoMenuStorageData>) => {
+
+export const saveAutoMenuSettings = async (data: Partial<AutoMenuSettings>) => {
   try {
-    const prev = await AsyncStorage.getItem(STORAGE_KEY);
-    const prevData: Partial<AutoMenuStorageData> = prev ? JSON.parse(prev) : {};
-    const newData: Partial<AutoMenuStorageData> = { ...prevData, ...data };
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+    const prev = await AsyncStorage.getItem(AS_KEYS.AUTO_MENU_SETTINGS);
+    const prevData: Partial<AutoMenuSettings> = prev ? JSON.parse(prev) : {};
+    const newData: Partial<AutoMenuSettings> = { ...prevData, ...data };
+    await AsyncStorage.setItem(
+      AS_KEYS.AUTO_MENU_SETTINGS,
+      JSON.stringify(newData)
+    );
     return true;
   } catch (e) {
     console.error("Failed to save autoMenu data:", e);
@@ -181,23 +189,30 @@ export const saveAutoMenuData = async (data: Partial<AutoMenuStorageData>) => {
   }
 };
 
-// Get all data
-export const getAutoMenuData = async (): Promise<
-  Partial<AutoMenuStorageData>
-> => {
+export const getAutoMenuSettings = async (): Promise<AutoMenuSettings> => {
+  // Default settings from constants
+  const defaults: AutoMenuSettings = {
+    selectedCategory: AM_DEFAULT_SETTINGS.selectedCategory,
+    wantedCompany: AM_DEFAULT_SETTINGS.wantedCompany,
+    priceSliderValue: AM_DEFAULT_SETTINGS.priceSliderValue,
+  };
+
   try {
-    const value = await AsyncStorage.getItem(STORAGE_KEY);
-    return value ? JSON.parse(value) : {};
+    const value = await AsyncStorage.getItem(AS_KEYS.AUTO_MENU_SETTINGS);
+    if (value) {
+      // Merge with defaults to ensure all fields are present
+      return { ...defaults, ...JSON.parse(value) };
+    }
+    return defaults;
   } catch (e) {
     console.error("Failed to load autoMenu data:", e);
-    return {};
+    return defaults;
   }
 };
 
-// Remove all data
-export const removeAutoMenuData = async () => {
+export const removeAutoMenuSettings = async () => {
   try {
-    await AsyncStorage.removeItem(STORAGE_KEY);
+    await AsyncStorage.removeItem(AS_KEYS.AUTO_MENU_SETTINGS);
     return true;
   } catch (e) {
     console.error("Failed to remove autoMenu data:", e);

@@ -8,9 +8,17 @@ import colors from "@/shared/colors";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
 import styled from "styled-components/native";
 import DietPlatformSummary from "@/components/summary/DietPlatformSummary";
+import OrderCtaButton from "./OrderCtaButton";
+import { Col } from "@/shared/ui/styledComps";
 
 const SummaryInfoFooterBSComp = () => {
+  // redux
   const dispatch = useAppDispatch();
+  const bsIndex = useAppSelector(
+    (state) => state.bottomSheet.currentValue.index
+  );
+
+  // react-query
   const { data: dTOData } = useListDietTotalObj();
 
   // Sync redux qty state when backend data changes
@@ -58,6 +66,11 @@ const SummaryInfoFooterBSComp = () => {
         baseTextColor={colors.textSub}
         highlightColor={colors.green}
       />
+      {bsIndex === 1 && (
+        <Col style={{ width: "100%", paddingHorizontal: 16, paddingBottom: 8 }}>
+          <OrderCtaButton />
+        </Col>
+      )}
     </Box>
   );
 };

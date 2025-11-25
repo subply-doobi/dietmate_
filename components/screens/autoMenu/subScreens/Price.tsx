@@ -4,7 +4,10 @@ import { TextMain } from "@/shared/ui/styledComps";
 import { BOTTOM_INDICATOR_IOS, SCREENWIDTH } from "@/shared/constants";
 import DSlider from "@/shared/ui/DSlider";
 import { useEffect, useState } from "react";
-import { getAutoMenuData, saveAutoMenuData } from "@/shared/utils/asyncStorage";
+import {
+  getAutoMenuSettings,
+  saveAutoMenuSettings,
+} from "@/shared/utils/asyncStorage";
 import { AM_PRICE_TARGET } from "@/shared/constants";
 import CtaButton from "@/shared/ui/CtaButton";
 import { setFormulaProgress } from "@/features/reduxSlices/formulaSlice";
@@ -25,7 +28,7 @@ const Price = () => {
   // Load from AsyncStorage on mount
   useEffect(() => {
     (async () => {
-      const data = await getAutoMenuData();
+      const data = await getAutoMenuSettings();
       if (data?.priceSliderValue) setPriceSliderValue(data.priceSliderValue);
     })();
   }, []);
@@ -48,7 +51,7 @@ const Price = () => {
         style={{ position: "absolute", bottom: insetBottom + 8 }}
         btnText="다음"
         onPress={async () => {
-          await saveAutoMenuData({ priceSliderValue });
+          await saveAutoMenuSettings({ priceSliderValue });
           console.log("price: pathName: ", pathname);
           if (pathname.includes("Formula")) {
             dispatch(setFormulaProgress(progress.concat("AMProcessing")));

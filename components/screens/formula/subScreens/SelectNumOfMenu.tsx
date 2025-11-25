@@ -112,9 +112,10 @@ const PickerItem = styled(TextMain)<{ isSelected: boolean }>`
 `;
 
 const PickerBox = styled.View`
+  position: absolute;
+  bottom: 104px;
   width: 80%;
   height: 240px;
-  margin-top: 40px;
 `;
 
 const WhiteOpacityBox = styled.View`

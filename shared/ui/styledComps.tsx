@@ -11,6 +11,7 @@ import {
 import { Platform, View, ViewProps } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSegments } from "expo-router";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 export const NotoSansLight = styled.Text`
   font-family: "NotoSansKRLight";
@@ -92,12 +93,16 @@ export const ScreenContainer = ({
   const insets = useSafeAreaInsets();
   const segments = useSegments();
   const inTabs = Array.isArray(segments) && segments[0] === "(tabs)";
+  const bottomTabHeight = IS_IOS && inTabs ? useBottomTabBarHeight() : 0;
 
   // If header is visible, it's already placed below the status bar.
   const hasHeader = headerHeight > 0;
   const paddingTop = fullScreen ? 0 : hasHeader ? 0 : insets.top;
-  // Bottom rule per request: inside bottomTab => 0, otherwise use insets.bottom
-  const paddingBottom = fullScreen ? 0 : inTabs ? 0 : insets.bottom;
+  const paddingBottom = fullScreen
+    ? 0
+    : inTabs
+    ? bottomTabHeight
+    : insets.bottom;
 
   return (
     <View

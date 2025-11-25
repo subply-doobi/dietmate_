@@ -1,5 +1,10 @@
 ------------- package sync ----------------
-expo install --fix
+npm ci
+npm outdated
+npm ls
+npx expo install --check
+npx expo install --fix
+npx expo-doctor
 
 ------------------ etc --------------------
 

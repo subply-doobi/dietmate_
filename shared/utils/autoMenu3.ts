@@ -256,6 +256,10 @@ const getFood = ({
   }
 
   // errorScore 가장 작은 식품 선택
+  if (foodlistWithErrScore.length === 0) {
+    throw new Error("사용 가능한 식품이 없습니다. 필터 조건을 확인해주세요.");
+  }
+
   foodlistWithErrScore.sort((a, b) => a.errScore - b.errScore);
   return {
     food: foodlistWithErrScore[0].food,
@@ -391,7 +395,7 @@ interface IMakeAutoMenu {
   foodGroupForAutoMenu: IFoodGroupForAutoMenu;
   initialMenu: Array<IProductData>;
   baseLine: IBaseLineData;
-  selectedCategoryIdx?: number[];
+  selectedCategory?: boolean[];
   priceTarget: number[];
   wantedPlatform: string;
   menuNum: number;
@@ -401,7 +405,7 @@ export const makeAutoMenu3 = ({
   foodGroupForAutoMenu,
   initialMenu = [],
   baseLine,
-  selectedCategoryIdx = [1, 2, 3, 4, 5, 6],
+  selectedCategory = [true, true, true, true, true, true],
   priceTarget,
   wantedPlatform,
   menuNum,
@@ -417,6 +421,11 @@ export const makeAutoMenu3 = ({
 }> => {
   return new Promise((resolve, reject) => {
     try {
+      // Convert boolean array to selected indices
+      const selectedCategoryIdx = selectedCategory
+        .map((selected, idx) => (selected ? idx : -1))
+        .filter((idx) => idx !== -1);
+
       const { foodGroup, initRemainNutr, initRemainPrice, menuWithErrScore } =
         initialize({
           foodGroupForAutoMenu,
@@ -427,7 +436,7 @@ export const makeAutoMenu3 = ({
         });
 
       if (initRemainNutr.calorie < NUTR_ERROR_RANGE.calorie[0])
-        return reject("칼로리가 이미 초과되었어요");
+        throw new Error("칼로리가 이미 초과되었어요");
 
       // TRY_NUM 만큼 끼니 만들 것
       // 3. tryNum 만큼 반복

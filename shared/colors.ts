@@ -13,6 +13,7 @@ export default {
   lineLight: "#E5E5E5",
   //
   main: "#C7434E",
+  mainDark: "#652a2fff",
   calorie: "#F39C11",
   carb: "#A3CB37",
   protein: "#C7434E",

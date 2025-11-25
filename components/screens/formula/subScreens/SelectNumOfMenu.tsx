@@ -22,15 +22,15 @@ import Icon from "@/shared/ui/Icon";
 import { Row, TextMain } from "@/shared/ui/styledComps";
 import { checkEveryMenuEmpty } from "@/shared/utils/sumUp";
 
-// MENU_KIND_LABEL = ["한 가지", "두 가지", "세 가지", "네 가지", "다섯 가지", "여섯 가지", "일곱 가지"];
-const PICKER_DATA_ARR = [...MENU_KIND_LABEL].slice(2);
+// MENU_KIND_LABEL = ["한 가지", "두 가지", "세 가지", "네 가지", "다섯 가지"];
+const PICKER_DATA_ARR = [...MENU_KIND_LABEL];
 
 const SelectNumOfMenu = () => {
   // redux
   const dispatch = useAppDispatch();
 
   // useState
-  const [numOfMenu, setNumOfMenu] = useState(5);
+  const [numOfMenu, setNumOfMenu] = useState(3);
 
   // react-query
   const { data: dTOData } = useListDietTotalObj();
@@ -44,11 +44,11 @@ const SelectNumOfMenu = () => {
     if (isNoMenu) {
       return;
     }
-    const isEveryMenuEmpty = checkEveryMenuEmpty(dTOData);
-    if (isEveryMenuEmpty) {
-      dispatch(setFormulaProgress(["SelectMethod"]));
-      return;
-    }
+    // const isEveryMenuEmpty = checkEveryMenuEmpty(dTOData);
+    // if (isEveryMenuEmpty) {
+    //   dispatch(setFormulaProgress(["SelectMethod"]));
+    //   return;
+    // }
     dispatch(setFormulaProgress(["Formula"]));
   }, [dTOData]);
 
@@ -77,8 +77,7 @@ const SelectNumOfMenu = () => {
             </Row>
           )}
           onValueChange={(data, selectedIndex) =>
-            // pickerDataArr -> [3, 4, 5, 6, 7]
-            setNumOfMenu(selectedIndex + 3)
+            setNumOfMenu(selectedIndex + 1)
           }
           wrapperHeight={80 * 3}
           wrapperBackground={colors.white}

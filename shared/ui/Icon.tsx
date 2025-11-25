@@ -244,6 +244,10 @@ const iconMap = {
     kind: Ionicons,
     name: "settings-outline",
   },
+  squareRootBox : {
+    kind: MaterialCommunityIcons,
+    name: "square-root-box",
+  }
 };
 
 export type IconName = keyof typeof iconMap;

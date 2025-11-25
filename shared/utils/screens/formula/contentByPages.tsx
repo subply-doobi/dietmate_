@@ -37,63 +37,63 @@ export const PAGES: IPages = [
     name: "SelectNumOfMenu",
     title: "몇 가지 끼니를 공식으로\n만들 지 결정해주세요",
     subTitle:
-      "하루에 한 근(끼)만이라도 간편하게!\n나만의 식단으로 평일 5일 (다섯 근!)을 추천해요",
+      "세 가지 끼니로 시작해보세요\n같은 끼니를 여러 개 구매할 수 있어요",
     render: () => <SelectNumOfMenu />,
   },
-  {
-    progress: 1 / 10,
-    header: "방법 선택",
-    name: "SelectMethod",
-    title: "공식을 만들\n방법을 선택해주세요",
-    subTitle: "한 근씩 공식 만들기를 추천해요",
-    render: () => <Method />,
-  },
+  // {
+  //   progress: 1 / 10,
+  //   header: "방법 선택",
+  //   name: "SelectMethod",
+  //   title: "공식을 만들\n방법을 선택해주세요",
+  //   subTitle: "한 근씩 공식 만들기를 추천해요",
+  //   render: () => <Method />,
+  // },
   // 자동구성
-  {
-    progress: 2 / 10,
-    header: "자동 공식",
-    name: "AMSelect",
-    title: "현재 구성중인\n끼니가 있어요",
-    subTitle:
-      "자동으로 구성할 끼니를 선택해주세요\n선택된 끼니의 식품들은 초기화됩니다",
-    render: () => <Select />,
-  },
-  {
-    progress: 3 / 10,
-    header: "자동 공식",
-    name: "AMCategory",
-    title: "원하는 식품유형을\n3가지 이상 선택해주세요",
-    subTitle: "선택한 유형을 포함해 구성됩니다\n모든 유형이 포함되지는 않아요",
+  // {
+  //   progress: 2 / 10,
+  //   header: "자동 공식",
+  //   name: "AMSelect",
+  //   title: "현재 구성중인\n끼니가 있어요",
+  //   subTitle:
+  //     "자동으로 구성할 끼니를 선택해주세요\n선택된 끼니의 식품들은 초기화됩니다",
+  //   render: () => <Select />,
+  // },
+  // {
+  //   progress: 3 / 10,
+  //   header: "자동 공식",
+  //   name: "AMCategory",
+  //   title: "원하는 식품유형을\n3가지 이상 선택해주세요",
+  //   subTitle: "선택한 유형을 포함해 구성됩니다\n모든 유형이 포함되지는 않아요",
 
-    render: () => <Category />,
-  },
-  {
-    progress: 4 / 10,
-    header: "자동 공식",
-    name: "AMCompany",
-    title: "포함하고 싶은\n식품사가 있나요?",
-    subTitle: "무료 배송비를 맞추는 데에\n도움이 될 수 있어요",
+  //   render: () => <Category />,
+  // },
+  // {
+  //   progress: 4 / 10,
+  //   header: "자동 공식",
+  //   name: "AMCompany",
+  //   title: "포함하고 싶은\n식품사가 있나요?",
+  //   subTitle: "무료 배송비를 맞추는 데에\n도움이 될 수 있어요",
 
-    render: () => <Company />,
-  },
-  {
-    progress: 5 / 10,
-    header: "자동 공식",
-    name: "AMPrice",
-    title: "한 끼니 가격을\n설정해주세요",
-    subTitle: "목표섭취량이 높다면\n가격이 낮을 때 구성이 안될 수 있어요",
+  //   render: () => <Company />,
+  // },
+  // {
+  //   progress: 5 / 10,
+  //   header: "자동 공식",
+  //   name: "AMPrice",
+  //   title: "한 끼니 가격을\n설정해주세요",
+  //   subTitle: "목표섭취량이 높다면\n가격이 낮을 때 구성이 안될 수 있어요",
 
-    render: () => <Price />,
-  },
-  {
-    progress: 6 / 10,
-    header: "자동 공식",
-    name: "AMProcessing",
-    title: "목표영양에 딱 맞는\n식품 조합 찾는 중",
-    subTitle: "조금만 기다려주세요",
+  //   render: () => <Price />,
+  // },
+  // {
+  //   progress: 6 / 10,
+  //   header: "자동 공식",
+  //   name: "AMProcessing",
+  //   title: "목표영양에 딱 맞는\n식품 조합 찾는 중",
+  //   subTitle: "조금만 기다려주세요",
 
-    render: () => <Processing />,
-  },
+  //   render: () => <Processing />,
+  // },
 
   // 근 별 공식 전체 페이지
   {

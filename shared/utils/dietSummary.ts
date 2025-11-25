@@ -377,13 +377,13 @@ export const getDietNum = (dTOData: IDietTotalObjData | undefined) => {
     });
   });
 
-  console.log("--------- getDietNum ---------");
-  console.log("menuKindNum:", menuKindNum);
-  console.log("menuNum:", menuNum);
-  console.log("productNum:", productNum);
-  console.log("menuKindLabel:", MENU_KIND_LABEL[menuKindNum - 1]);
-  console.log("menuNumLabel:", MENU_NUM_LABEL[menuNum - 1]);
-  console.log("------------------------------");
+  // console.log("--------- getDietNum ---------");
+  // console.log("menuKindNum:", menuKindNum);
+  // console.log("menuNum:", menuNum);
+  // console.log("productNum:", productNum);
+  // console.log("menuKindLabel:", MENU_KIND_LABEL[menuKindNum - 1]);
+  // console.log("menuNumLabel:", MENU_NUM_LABEL[menuNum - 1]);
+  // console.log("------------------------------");
 
   return {
     menuNum,

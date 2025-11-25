@@ -14,7 +14,6 @@ import Carousel, {
 import colors from "@/shared/colors";
 import { useListDietTotalObj } from "@/shared/api/queries/diet";
 import { Row } from "@/shared/ui/styledComps";
-import { SCREENWIDTH } from "@/shared/constants";
 import CarouselContent from "../carousel/CarouselContent";
 import PaginationDot from "../carousel/PaginationDot";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks/reduxHooks";
@@ -26,10 +25,8 @@ import {
   dequeueCarouselAction,
   resetCarouselActionQueue,
 } from "@/features/reduxSlices/formulaSlice";
-import CtaButton from "@/shared/ui/CtaButton";
 import { getNutrStatus } from "@/shared/utils/sumUp";
 import { useGetBaseLine } from "@/shared/api/queries/baseLine";
-import DTooltip from "@/shared/ui/DTooltip";
 import {
   closeBS,
   closeBSAll,
@@ -37,9 +34,6 @@ import {
   resetBSData,
 } from "@/features/reduxSlices/bottomSheetSlice";
 import Icon from "@/shared/ui/Icon";
-import { checkNoStockPAll } from "@/shared/utils/productStatusCheck";
-import { openModal } from "@/features/reduxSlices/modalSlice";
-import { setTotalFoodList } from "@/features/reduxSlices/commonSlice";
 import { useListProduct } from "@/shared/api/queries/product";
 import { initialState as initialSortFilterState } from "@/features/reduxSlices/sortFilterSlice";
 import { getSummaryTotals } from "@/shared/utils/dietSummary";
@@ -260,7 +254,7 @@ const Formula = () => {
           }
           ref={carouselRef}
           width={width}
-          // height={FORMULA_CAROUSEL_HEIGHT + 24}
+          // height={formulaCarouselHeight}
           data={menuArr}
           loop={false}
           onSnapToItem={(index) => {
@@ -276,47 +270,6 @@ const Formula = () => {
             />
           )}
         />
-
-        {isAllSuccess && (
-          <CtaButton
-            btnStyle="active"
-            btnText="공식 계산하기"
-            style={{
-              position: "absolute",
-              bottom: 76,
-              right: 16,
-              left: 16,
-              width: SCREENWIDTH - 32,
-              zIndex: 0,
-            }}
-            onPress={async () => {
-              if (menuNum === 0 || priceTotal === 0) {
-                return;
-              }
-
-              const refetchedDTOData = (await refetchDTOData()).data;
-              const hasNoStock = checkNoStockPAll(refetchedDTOData);
-              if (hasNoStock) {
-                dispatch(openModal({ name: "noStockAlert" }));
-                // 전체 식품이 바뀐 경우이므로 totalFoodList도 업데이트 필요함
-                const data = (await refetchLPData()).data;
-                !!data && dispatch(setTotalFoodList(data));
-                return;
-              }
-              router.push({ pathname: "/Order" });
-            }}
-          />
-        )}
-
-        {isAllSuccess && (
-          <DTooltip
-            tooltipShow={isAllSuccess}
-            text="모든 근이 완료되었어요!"
-            boxLeft={20}
-            boxBottom={68 + 8 + 52 - 4}
-            color={colors.green}
-          />
-        )}
       </Container>
     );
   }

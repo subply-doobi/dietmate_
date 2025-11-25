@@ -46,16 +46,16 @@ const FormulaMore = () => {
     menuKindNum === 0
       ? []
       : [
-          {
-            text: `자동으로 ${menuKindLabel} 근 공식 만들기`,
-            subText: "",
-            iconName: "calculator",
-            isActive: true,
-            onPress: () => {
-              router.back();
-              dispatch(setFormulaProgress(progress.concat("AMSelect")));
-            },
-          },
+          // {
+          //   text: `자동으로 ${menuKindLabel} 근 공식 만들기`,
+          //   subText: "",
+          //   iconName: "calculator",
+          //   isActive: true,
+          //   onPress: () => {
+          //     router.back();
+          //     dispatch(setFormulaProgress(progress.concat("AMSelect")));
+          //   },
+          // },
           {
             text: `${menuKindLabel} 근 모두 삭제하기`,
             subText: "",
